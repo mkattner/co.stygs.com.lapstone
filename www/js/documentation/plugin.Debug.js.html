@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: plugin.Debug.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: plugin.Debug.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ * 1	
+ * 2
+ * 3
+ * 4
+ * 5
+ * 6
+ * 7
+ * 8
+ * 9
+ * 10	page interface methods
+ * 11	plugin interface methods
+ * 12	page event methods
+ * 13
+ * 14
+ * 15
+ * 16
+ * 17
+ * 18
+ * 19
+ * 20
+ * 21
+ */
+/**
+ * Plugin:
+ * 
+ * @version 1.0
+ * @namespace plugin_Debug
+ */
+var plugin_Debug = {
+	/**
+	 * Configuration loaded from json file or html5 storage. Use plugin_Informator to get access.
+	 * 
+	 * @private
+	 */
+	config : null,
+
+	/**
+	 * Log object
+	 * 
+	 * @private
+	 */
+	logObject : {},
+	// obligate functions
+
+	/**
+	 * Constructor is called by plugins.js
+	 * 
+	 * @protected
+	 * 
+	 */
+	constructor : function() {
+	},
+
+	/**
+	 * PluginsLoaded event. Called by plugins.js after all plugins are loaded.
+	 * 
+	 * @protected
+	 */
+	pluginsLoaded : function() {
+		app.debug.alert(this.config.name + ".pluginsLoaded()", 5);
+	},
+
+	// called after all pages are loaded
+	/**
+	 * PagesLoaded event. Called by pages.js after all pages are loaded.
+	 * 
+	 * @protected
+	 */
+	pagesLoaded : function() {
+		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+	},
+	/**
+	 * Define the jQuery event delegations for the plugin. Called by pages.js
+	 * after ...
+	 * 
+	 * @protected
+	 * @returns {boolean} Succesfull or unsuccessful
+	 */
+	definePluginEvents : function() {
+		$("body").on("change", "#cbxToggleDebug", function() {
+			if ($(this).prop("checked")) {
+				app.info.set("plugin_Debug.config.doDebugging", true);
+			} else {
+				app.info.set("plugin_Debug.config.doDebugging", false);
+			}
+		});
+		$("body").on("click", "#btnRefresh", function() {
+			location.reload();
+		});
+	},
+
+	// called by pages.js
+	/**
+	 * AfterHtmlInjectedBeforePageComputing event. Called by pages.js after
+	 * page.create().
+	 * 
+	 * @protected
+	 * @param container
+	 *            {object} jQuery page div
+	 */
+	afterHtmlInjectedBeforePageComputing : function(container) {
+		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+		if (plugin_Debug.config.debugPanel) {
+			plugin_Debug.appendDebugArea(container);
+		}
+		if (this.config.doDebugging) {
+			$("#cbxToggleDebug").prop('checked', true);
+		} else {
+			$("#cbxToggleDebug").prop('checked', false);
+		}
+	},
+	/**
+	 * Called once by pages.js
+	 * 
+	 * @protected
+	 * @param container
+	 *            {object} jQuery page div
+	 */
+	pageSpecificEvents : function(container) {
+		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+
+	},
+
+	// private functions
+	/**
+	 * @private
+	 */
+	appendDebugArea : function(container) {
+		app.debug.alert(this.config.name + ".appendDebugArea()", 5);
+		// get inputs via FormInputDesigner
+		var append = '';
+		append += '&lt;div id="divDebugCheckbox" data-role="fieldcontain">';
+		append += '&lt;fieldset class="debugGroup" data-role="controlgroup">';
+		append += '&lt;legend>Debug Area:&lt;/legend>';
+		append += '&lt;input type="button" name="btnRefresh" id="btnRefresh" class="custom" value="Refresh Page"/>';
+		append += '&lt;input type="checkbox" name="cbxToggleDebug" id="cbxToggleDebug" class="custom" />';
+		append += '&lt;label for="cbxToggleDebug">Toggle Debug&lt;/label>';
+		append += '&lt;/fieldset>';
+		append += '&lt;/div>';
+		$(container).append(append);
+	},
+
+	// public functions
+	/**
+	 * @namespace plugin_Debug.functions
+	 * 
+	 */
+	functions : {
+		/**
+		 * Alert if the configured debug level is smaller then the current debug
+		 * level.
+		 * 
+		 * @param {string}
+		 *            text Text to show.
+		 * @param {int}
+		 *            level Current debug level.
+		 */
+		alert : function(text, level) {
+			if (plugin_Debug.config.doDebugging &amp;&amp; (level >= plugin_Debug.config.debugLevel)) {
+				alert("DebugLevel: " + level + "\n" + text);
+			}
+		},
+		/**
+		 * Add line to log object.
+		 * 
+		 * @param {string}
+		 *            text text to log
+		 */
+		log : function(text) {
+			plugin_Debug.logObject[Date.now()] = text;
+		},
+		/**
+		 * Shows the log object in an alert window
+		 */
+		showLog : function() {
+			alert(JSON.stringify(plugin_Debug.logObject));
+		}
+	}
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="FormInputDesigner.html">FormInputDesigner</a></li></ul><h3>Namespaces</h3><ul><li><a href="plugin_Debug.html">plugin_Debug</a></li><li><a href="plugin_Debug.functions.html">functions</a></li><li><a href="plugin_GlobalSettings.html">plugin_GlobalSettings</a></li><li><a href="plugin_GlobalSettings.functions.html">functions</a></li><li><a href="plugin_HTML5Storage.html">plugin_HTML5Storage</a></li><li><a href="plugin_HtmlTemplates.html">plugin_HtmlTemplates</a></li><li><a href="plugin_Informator.html">plugin_Informator</a></li><li><a href="plugin_jQueryExtend.html">plugin_jQueryExtend</a></li><li><a href="plugin_KeyValueStack.html">plugin_KeyValueStack</a></li><li><a href="plugin_LoadExternalScripts.html">plugin_LoadExternalScripts</a></li><li><a href="plugin_MultilanguageIso639_3.html">plugin_MultilanguageIso639_3</a></li><li><a href="plugin_native_batteryStatus.html">plugin_native_batteryStatus</a></li><li><a href="plugin_native_camera.html">plugin_native_camera</a></li><li><a href="plugin_native_console.html">plugin_native_console</a></li><li><a href="plugin_native_contacts.html">plugin_native_contacts</a></li><li><a href="plugin_native_cordova.html">plugin_native_cordova</a></li><li><a href="plugin_native_device.html">plugin_native_device</a></li><li><a href="plugin_native_deviceMotion.html">plugin_native_deviceMotion</a></li><li><a href="plugin_native_deviceOrientation.html">plugin_native_deviceOrientation</a></li><li><a href="plugin_native_dialogs.html">plugin_native_dialogs</a></li><li><a href="plugin_native_file.html">plugin_native_file</a></li><li><a href="plugin_native_fileTransfer.html">plugin_native_fileTransfer</a></li><li><a href="plugin_native_geolocation.html">plugin_native_geolocation</a></li><li><a href="plugin_native_globalization.html">plugin_native_globalization</a></li><li><a href="plugin_native_inappbrowser.html">plugin_native_inappbrowser</a></li><li><a href="plugin_native_media.html">plugin_native_media</a></li><li><a href="plugin_native_mediaCapture.html">plugin_native_mediaCapture</a></li><li><a href="plugin_native_networkInformation.html">plugin_native_networkInformation</a></li><li><a href="plugin_native_splashscreen.html">plugin_native_splashscreen</a></li><li><a href="plugin_native_statusbar.html">plugin_native_statusbar</a></li><li><a href="plugin_native_vibration.html">plugin_native_vibration</a></li><li><a href="plugin_RestClient.html">plugin_RestClient</a></li><li><a href="plugin_WebServiceClient.html">plugin_WebServiceClient</a></li><li><a href="plugins.html">plugins</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Mon Apr 07 2014 08:27:24 GMT+1200 (NZST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

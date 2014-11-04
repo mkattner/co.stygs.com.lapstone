@@ -1,0 +1,7 @@
+{
+	"name":"ImageProvider",
+	"shortname":"img",
+	"imgdFiles":{
+		"../files/imgd.themis.json":true
+	}
+}

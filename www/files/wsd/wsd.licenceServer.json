@@ -1,0 +1,12 @@
+{
+	"registerDevice":{
+		"url":"/co.stygs.com.licence.server/REST/register/registerDevice?deviceId={deviceId}§subjectId={subjectId}",
+		"method":"POST",
+		"timeout":15000
+	},
+	"registerUser":{
+		"url":"/co.stygs.com.licence.server/REST/register/registerUser?userId={userId}&email={email}&password={password}&firstname={firstname}&lastname={lastname}§subjectId={subjectId}",
+		"method":"POST",
+		"timeout":15000
+	}
+}

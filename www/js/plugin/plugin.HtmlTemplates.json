@@ -1,0 +1,22 @@
+{
+	"name":"HtmlTemplates",
+	"shortname":"template",
+	"templates":{
+		"JQueryMobilePageStructure":"../template/JQueryMobilePageStructure.html",
+		"JQueryMobilePlainPage":"../template/JQueryMobilePlainPage.html",
+		"JQueryMobileHeaderPage":"../template/JQueryMobileHeaderPage.html",
+		"JQueryMobileNavigationPanel":"../template/JQueryMobileNavigationPanel.html",
+		"JQueryMobilePopupDialog":"../template/JQueryMobilePopupDialog.html",
+		"JQueryMobilePopupAlert":"../template/JQueryMobilePopupAlert.html",
+		"app-loader-bubble":"../template/app.loader.bubble.html",
+		"themis":{
+			"ThemisHeaderContent":"../template/ThemisHeaderContent.html",
+			"ThemisNavigationPanelContent":"../template/ThemisNavigationPanelContent.html"
+		},
+		"responsive":{
+			"grid-33-33-33":"../template/app.responsive.grid.33.33.33.html",
+			"listA":"../template/app.responsive.list.A.html",
+			"listB":"../template/app.responsive.list.B.html"
+		}
+	}
+}

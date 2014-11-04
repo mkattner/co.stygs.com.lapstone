@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: plugin.HTML5Storage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: plugin.HTML5Storage.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// data-html5-*
+/**
+ * Plugin:
+ * 
+ * @version 1.0
+ * @namespace
+ */
+plugin_HTML5Storage = {
+	config : null,
+	constructor : function() {
+	},
+	pluginsLoaded : function() {
+	},
+
+	// called after all pages are loaded
+	pagesLoaded : function() {
+		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+	},
+
+	definePluginEvents : function() {
+		// data-html5-&lt;storage id>
+		$("body").on("click", "a", function(event) {
+			$.each($(this).attrs(), function(key, value) {
+				if (key.substring(0, 11).trim().toLowerCase() == "data-html5-")
+					plugin_HTML5Storage.functions.set(key.substring(11), value)
+			});
+		});
+	},
+
+	// called by pages.js
+	afterHtmlInjectedBeforePageComputing : function(container) {
+		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+	},
+	pageSpecificEvents : function(container) {
+		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+	},
+
+	// private functions
+	setDeep : function(el, key, value) {
+		key = key.split('.');
+		var i = 0, n = key.length;
+		for (; i &lt; n - 1; ++i) {
+			el = el[key[i]];
+		}
+		return el[key[i]] = value;
+	},
+
+	getDeep : function(el, key) {
+		key = key.split('.');
+		var i = 0, n = key.length;
+		for (; i &lt; n; ++i) {
+			el = el[key[i]];
+		}
+		return el;
+	},
+
+	parseValue : function(value) {
+		switch (value) {
+		// is true?
+		case "true":
+			value = true;
+			break;
+		// is false?
+		case "false":
+			value = false;
+			break;
+		// is null?
+		case "null":
+			value = null;
+			break;
+		default:
+			// is int?
+			if (/^(\+|\-){0,1}([0-9])+$/.test(value)) {
+				value = parseInt(value);
+			}
+			// is float?
+			if (/^(\+|\-){0,1}([0-9])+(\.){1}([0-9])+$/.test(value)) {
+				value = parseFloat(value);
+			}
+			break;
+		}
+		return value;
+	},
+
+	// public functions
+	functions : {
+		loadValueIntoObject : function(locator) {
+			var propertyLocation = locator.substring("config.".length);
+			var value = this.localStorage.get(locator);
+			plugin_HTML5Storage.setDeep(window, propertyLocation, value);
+		},
+
+		localStorage : {
+			set : function(key, val) {
+				app.debug.alert('plugin_HTML5Storage.localStorage.set(' + key + ', ' + val + ')', 3);
+				window.localStorage.setItem(app.config.name + "." + key, val);
+			},
+			get : function(key) {
+				app.debug.alert('plugin_HTML5Storage.localStorage.get(' + key + ')', 3);
+				return plugin_HTML5Storage.parseValue(window.localStorage.getItem(app.config.name + "." + key));
+			},
+			clear : function() {
+				window.localStorage.clear();
+			},
+			removeItem : function(key) {
+				window.localStorage.removeItem(app.config.name + "." + key);
+			},
+			show : function() {
+				var string = '';
+				$.each(window.localStorage, function(key, value) {
+					// alert(key.substring(0, app.config.name.length));
+					if (key.substring(0, app.config.name.length) == app.config.name)
+						string += key.substring(app.config.name.length + 1) + " = " + value + "\n";
+				});
+				alert(string);
+			}
+		},
+		sessionStorage : {
+			set : function(key, val) {
+				app.debug.alert('plugin_HTML5Storage.sessionStorage.set(' + key + ', ' + val + ')', 3);
+				window.sessionStorage.setItem(key, val);
+			},
+			get : function(key) {
+				app.debug.alert('plugin_HTML5Storage.sessionStorage.get(' + key + ')', 3);
+				window.sessionStorage.getItem(key);
+			},
+			clear : function() {
+				window.sessionStorage.clear();
+			},
+			removeItem : function(key) {
+				window.sessionStorage.removeItem(key);
+			},
+			show : function() {
+
+			}
+		},
+		ss : this.sessionStorage,
+	}
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="FormInputDesigner.html">FormInputDesigner</a></li></ul><h3>Namespaces</h3><ul><li><a href="plugin_Debug.html">plugin_Debug</a></li><li><a href="plugin_Debug.functions.html">functions</a></li><li><a href="plugin_GlobalSettings.html">plugin_GlobalSettings</a></li><li><a href="plugin_GlobalSettings.functions.html">functions</a></li><li><a href="plugin_HTML5Storage.html">plugin_HTML5Storage</a></li><li><a href="plugin_HtmlTemplates.html">plugin_HtmlTemplates</a></li><li><a href="plugin_Informator.html">plugin_Informator</a></li><li><a href="plugin_jQueryExtend.html">plugin_jQueryExtend</a></li><li><a href="plugin_KeyValueStack.html">plugin_KeyValueStack</a></li><li><a href="plugin_LoadExternalScripts.html">plugin_LoadExternalScripts</a></li><li><a href="plugin_MultilanguageIso639_3.html">plugin_MultilanguageIso639_3</a></li><li><a href="plugin_native_batteryStatus.html">plugin_native_batteryStatus</a></li><li><a href="plugin_native_camera.html">plugin_native_camera</a></li><li><a href="plugin_native_console.html">plugin_native_console</a></li><li><a href="plugin_native_contacts.html">plugin_native_contacts</a></li><li><a href="plugin_native_cordova.html">plugin_native_cordova</a></li><li><a href="plugin_native_device.html">plugin_native_device</a></li><li><a href="plugin_native_deviceMotion.html">plugin_native_deviceMotion</a></li><li><a href="plugin_native_deviceOrientation.html">plugin_native_deviceOrientation</a></li><li><a href="plugin_native_dialogs.html">plugin_native_dialogs</a></li><li><a href="plugin_native_file.html">plugin_native_file</a></li><li><a href="plugin_native_fileTransfer.html">plugin_native_fileTransfer</a></li><li><a href="plugin_native_geolocation.html">plugin_native_geolocation</a></li><li><a href="plugin_native_globalization.html">plugin_native_globalization</a></li><li><a href="plugin_native_inappbrowser.html">plugin_native_inappbrowser</a></li><li><a href="plugin_native_media.html">plugin_native_media</a></li><li><a href="plugin_native_mediaCapture.html">plugin_native_mediaCapture</a></li><li><a href="plugin_native_networkInformation.html">plugin_native_networkInformation</a></li><li><a href="plugin_native_splashscreen.html">plugin_native_splashscreen</a></li><li><a href="plugin_native_statusbar.html">plugin_native_statusbar</a></li><li><a href="plugin_native_vibration.html">plugin_native_vibration</a></li><li><a href="plugin_RestClient.html">plugin_RestClient</a></li><li><a href="plugin_WebServiceClient.html">plugin_WebServiceClient</a></li><li><a href="plugins.html">plugins</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Mon Apr 07 2014 08:27:24 GMT+1200 (NZST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

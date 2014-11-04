@@ -1,0 +1,14 @@
+{
+	"name":"RestClient",
+	"shortname":"rc",
+	"wsdFiles":{
+		"../files/wsd/wsd.template.json":true
+	},
+	"webservices":{
+		"template":{
+			"url":"string url",
+			"method":"string method",
+			"timeout":"int timeout"
+		}
+	}
+}

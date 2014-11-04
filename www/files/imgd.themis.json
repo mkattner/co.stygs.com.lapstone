@@ -1,0 +1,8 @@
+{
+	"org.backmeup.dropbox":"../images/logo.dropbox.jpg",
+	"org.backmeup.facebook":"../images/logo.facebook.jpg",
+	"org.backmeup.mail":"../images/logo.mail.jpg",
+	"org.backmeup.moodle":"../images/logo.moodle.jpg",
+	"org.backmeup.skydrive":"../images/logo.skydrive.jpg",
+	"org.backmeup.twitter":"../images/logo.twitter.jpg"
+}

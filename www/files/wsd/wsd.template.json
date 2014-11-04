@@ -1,0 +1,7 @@
+{
+	"template":{
+		"url":"string url",
+		"method":"string method",
+		"timeout":"int timeout"
+	}
+}
