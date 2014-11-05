@@ -22,7 +22,7 @@ var plugin_Notification = {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
 		if (plugin_Notification.config.enablePushNotifications)
 			setTimeout(function() {
-				//alert(JSON.stringify(plugin_Notification.config.pushConfig));
+				// alert(JSON.stringify(plugin_Notification.config.pushConfig));
 
 				var promise = app.rc.getJson([ [ "licence.registerDevice", {
 					"deviceId" : "aa",
@@ -128,7 +128,7 @@ var plugin_Notification = {
 						$("#popupAlert div.ui-content p").html(notification.text);
 					}
 					$("#popupAlert").popup("open");
-					//$("#popupAlert").popup("reposition");
+					// $("#popupAlert").popup("reposition");
 				}, delay);
 				plugin_Notification.callbackFunction = notification.callback;
 				break;
@@ -144,7 +144,7 @@ var plugin_Notification = {
 						$("#popupDialog div.ui-content p").html(notification.text);
 					}
 					$("#popupDialog").popup("open");
-					//$("#popupDialog").popup("reposition");
+					// $("#popupDialog").popup("reposition");
 				}, delay);
 				plugin_Notification.callbackFunctionBtnLeft = notification.callbackButtonLeft;
 				plugin_Notification.callbackFunctionBtnRight = notification.callbackButtonRight;
@@ -171,7 +171,7 @@ var plugin_Notification = {
 						$("#popupAlert #btn-alert").text(notification.button);
 						$("#popupAlert div.ui-content p").html(notification.text);
 						$("#popupAlert").popup("open");
-						//$("#popupAlert").popup("reposition");
+						// $("#popupAlert").popup("reposition");
 					}, delay);
 				}
 			}
@@ -209,6 +209,8 @@ var plugin_Notification = {
 				button = false;
 			if (callbackButton == undefined)
 				callbackButton = false;
+			if (delayInMs == undefined || delayInMs == null)
+				delayInMs = 100;
 			notification = {
 				"type" : "alert",
 				"text" : text,
@@ -234,6 +236,8 @@ var plugin_Notification = {
 				callbackButtonLeft = false;
 			if (callbackButtonRight == undefined || callbackButtonRight == null)
 				callbackButtonRight = false;
+			if (delayInMs == undefined || delayInMs == null)
+				delayInMs = 100;
 			notification = {
 				"type" : "dialog",
 				"text" : text,
@@ -246,8 +250,12 @@ var plugin_Notification = {
 			};
 			plugin_Notification.popupShow(notification, delayInMs);
 		},
+		close : function() {
+			$("#popupAlert").popup("close");
+			$("#popupDialog").popup("close");
+		},
 		add : {
-			alert : function(text, title, headline, button, callbackButton) {
+			alert : function(text, title, headline, button, callbackButton, delayInMs) {
 				if (text == undefined)
 					text = false;
 				if (headline == undefined)
@@ -262,6 +270,8 @@ var plugin_Notification = {
 					plugin_Notification.notifications = app.store.localStorage.getObject("popup_notifications");
 				if (!plugin_Notification.notifications)
 					plugin_Notification.notifications = {};
+				if (delayInMs == undefined || delayInMs == null)
+					delayInMs = 100;
 				var nextKey = Object.keys(plugin_Notification.notifications).length + 1;
 				plugin_Notification.notifications[nextKey] = {
 					"type" : "alert",
