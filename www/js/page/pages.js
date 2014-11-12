@@ -277,8 +277,7 @@ var pages = {
 				// case 2: page is inline-static
 				app.debug.alert("pages.js case: page type is inline-static", 5);
 				var staticContainer = container.clone();
-				if (window['page_' + container.attr('id')].config.isGlobalPage || window['page_' + container.attr('id')].config.isGlobalPage == undefined)
-					globalPage[eventName](event, container);
+				globalPage[eventName](event, container);
 				pages.eventFunctions.everyPage[eventName](event, container);
 				pages.eventFunctions.staticInlinePage[eventName](event, container, staticContainer);
 			} else if (window['page_' + container.attr('id')] == undefined) {
@@ -326,7 +325,6 @@ var pages = {
 			pagehide : function(event, container) {
 				app.debug.alert("pages.js plugin.eventFunctions.everyPage.pagehide(" + event + ", " + container + ")", 5);
 
-				
 				$("#" + container.attr("id")).off();
 
 				app.debug.alert("pages.js remove page from DOM: " + container.attr('id'), 5);

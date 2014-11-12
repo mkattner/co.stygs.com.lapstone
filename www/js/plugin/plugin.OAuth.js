@@ -64,6 +64,21 @@ var plugin_OAuth = {
 		return false;
 	},
 	functions : {
+		generic : function(url) {
+			if (url.indexOf("dropbox") > -1)
+				return app.oa.dropbox(url);
+			else if (url.indexOf("facebook") > -1)
+				return app.oa.facebook(url);
+			else {
+				var dfd = $.Deferred();
+
+				window.setTimeout(function() {
+					dfd.resolve("Unkonwn URL: " + url);
+				}, 1000);
+
+				return dfd.promise();
+			}
+		},
 		// dropbox
 		dropbox : function(url) {
 			var dfd = $.Deferred();

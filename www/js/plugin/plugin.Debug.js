@@ -221,6 +221,7 @@ var plugin_Debug = {
 		 *            level Current debug level.
 		 */
 		alert : function(text, level) {
+			//console.log(text);
 			if (plugin_Debug.config.doDebugging && (level >= plugin_Debug.config.debugLevel)) {
 				alert("DebugLevel: " + level + "\n" + text);
 			}

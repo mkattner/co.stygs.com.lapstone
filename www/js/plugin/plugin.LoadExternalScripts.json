@@ -15,7 +15,8 @@
 		"javascript":{
 			"../ext/MD5.js":true,
 			"../ext/DATE.js":true,
-			"../ext/aerogear.min.js":true
+			"../ext/aerogear.min.js":true,
+			"../ext/jquery.serializejson.min.js":true
 		}
 	}
 }

@@ -105,7 +105,7 @@ var plugin_WebServiceClient = {
 							split[1] = JSON.parse(split[1]);
 							obj[split[0]] = split[1];
 						} catch (e) {
-							alert("Ein parameter ist nicht gesetzt: " + split[0]);
+							app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() Ein parameter ist nicht gesetzt: " + split[0], 9);
 						}
 					} else {
 						obj[split[0]] = split[1];

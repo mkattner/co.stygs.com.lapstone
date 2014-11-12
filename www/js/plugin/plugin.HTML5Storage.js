@@ -20,10 +20,11 @@ var plugin_HTML5Storage = {
 
 	definePluginEvents : function() {
 		// data-html5-<storage id>
-		$("body").on("click", "a", function(event) {
+		$(document).on("click", "a", function(event) {
+			app.debug.alert("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()", 12);
 			$.each($(this).attrs(), function(key, value) {
 				if (key.substring(0, 11).trim().toLowerCase() == "data-html5-") {
-					app.debug.alert("Set html5 data from LINK to localStorage.\n" + key + " = " + value, 60);
+					app.debug.alert("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + key + " = " + value, 60);
 					plugin_HTML5Storage.functions.localStorage.set(key, value);
 				}
 			});
@@ -116,11 +117,13 @@ var plugin_HTML5Storage = {
 		localStorage : {
 			set : function(key, val) {
 				app.debug.alert('plugin_HTML5Storage.localStorage.set(' + key + ', ' + val + ')', 1);
+				key = key.toLowerCase();
 				window.localStorage.setItem(app.config.name + "." + key, val);
 				return true;
 			},
 			get : function(key) {
 				app.debug.alert('plugin_HTML5Storage.localStorage.get(' + key + ')', 3);
+				key = key.toLowerCase();
 				return plugin_HTML5Storage.parseValue(window.localStorage.getItem(app.config.name + "." + key));
 			},
 			clear : function() {

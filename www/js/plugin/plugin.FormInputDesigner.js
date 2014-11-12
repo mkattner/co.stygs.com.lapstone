@@ -42,6 +42,8 @@ var plugin_FormInputDesigner = {
 			attributes += ' placeholder="' + options.placeholder + '"';
 		if (options.id != undefined)
 			attributes += ' id="' + options.id + '"';
+		if (options.name != undefined)
+			attributes += ' name="' + options.name + '"';
 		if (options.value != undefined)
 			attributes += ' value="' + options.value + '"';
 		if (options.attributes != undefined) {
