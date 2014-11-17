@@ -1,5 +1,6 @@
 {
 	"Actions":true,
+	"Backmeup":true,
 	"Debug":true,
 	"Detector":true,
 	"FormInputDesigner":true,
