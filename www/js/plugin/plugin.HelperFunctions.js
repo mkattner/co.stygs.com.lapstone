@@ -150,7 +150,7 @@ var plugin_HelperFunctions = {
 						});
 					else
 						$(location).attr("href", url);
-				}, 20);
+				}, 50);
 			},
 			back : function() {
 				window.history.back();

@@ -108,6 +108,7 @@ var plugin_HTML5Storage = {
 
 	// public functions
 	functions : {
+		pufferedFormValuePrefix : "pufferedFormValue-",
 		loadValueIntoObject : function(locator) {
 			var propertyLocation = locator.substring("config.".length);
 			var value = this.localStorage.get(locator);
@@ -149,15 +150,21 @@ var plugin_HTML5Storage = {
 				});
 				return true;
 			},
+
 			pufferFormValues : function(container) {
 				app.debug.alert('plugin_HTML5Storage.localStorage.pufferFormValues()', 3);
 				container.find("input[type=text]").each(function(elementNumber, element) {
-					plugin_HTML5Storage.functions.localStorage.set(container.attr("id") + "__" + $(element).attr("id"), $(element).val());
+					plugin_HTML5Storage.functions.localStorage.set(plugin_HTML5Storage.functions.pufferedFormValuePrefix + container.attr("id") + "__" + $(element).attr("id"), $(element).val());
 				});
 			},
 			getPufferedFormValue : function(container, id) {
 				app.debug.alert('plugin_HTML5Storage.localStorage.getPufferedFormValue()', 3);
-				return plugin_HTML5Storage.functions.localStorage.get(container.attr("id") + "__" + id);
+				var containerId;
+				if (typeof container == "object")
+					containerId = container.attr("id");
+				else
+					containerId = container;
+				return plugin_HTML5Storage.functions.localStorage.get(plugin_HTML5Storage.functions.pufferedFormValuePrefix + containerId + "__" + id);
 			},
 			restorePufferedFormValues : function(container) {
 				app.debug.alert('plugin_HTML5Storage.localStorage.restorePufferedFormValues()', 3);
@@ -165,6 +172,21 @@ var plugin_HTML5Storage = {
 					var id = $(element).attr("id");
 					var value = plugin_HTML5Storage.functions.localStorage.getPufferedFormValue(container, id);
 					$(element).val(value);
+				});
+			},
+			clearPufferedFormValues : function() {
+				$.each(window.localStorage, function(key, value) {
+					if (key.substring(0, app.config.name.length) == app.config.name) {
+						newkey = key.substring(app.config.name.length + 1);
+						var comp1 = newkey.substring(0, plugin_HTML5Storage.functions.pufferedFormValuePrefix.length).toLowerCase();
+						var comp2 = plugin_HTML5Storage.functions.pufferedFormValuePrefix.toLowerCase();
+						//console.log(comp1 + " == " + comp2);
+						//console.log(comp2);
+						if (comp1 == comp2) {
+							//alert("dsasd");
+							window.localStorage.removeItem(key);
+						}
+					}
 				});
 			},
 			removeItem : function(key) {

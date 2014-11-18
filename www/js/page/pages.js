@@ -288,13 +288,11 @@ var pages = {
 			} else {
 				// case 4: page is a common lapstone page
 				app.debug.alert("pages.js case: page is a common lapstone page", 5);
-				if (window['page_' + container.attr('id')].config.isGlobalPage || window['page_' + container.attr('id')].config.isGlobalPage == undefined)
-					globalPage[eventName](event, container);
+				globalPage[eventName](event, container);
 				pages.eventFunctions.everyPage[eventName](event, container);
-
 				pages.eventFunctions.lapstonePage[eventName](event, container);
-
 			}
+
 		},
 
 		everyPage : {
@@ -460,7 +458,10 @@ var pages = {
 			pagebeforecreate : function(event, container) {
 				app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + container + ")", 5);
 
-				if (plugin_WebServiceClient.config.useKeepAlive) {
+				if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
+					alert("You must be logged in!! redirect to start page");
+					app.help.navigation.redirect("start.html");
+				} else if (plugin_WebServiceClient.config.useKeepAlive) {
 					app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive", 5);
 					if (window['page_' + container.attr('id')].config.useKeepAlive != undefined) {
 						app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json", 5);

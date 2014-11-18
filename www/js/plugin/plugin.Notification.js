@@ -20,25 +20,7 @@ var plugin_Notification = {
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
-		if (plugin_Notification.config.enablePushNotifications)
-			setTimeout(function() {
-				// alert(JSON.stringify(plugin_Notification.config.pushConfig));
 
-				var promise = app.rc.getJson([ [ "licence.registerDevice", {
-					"deviceId" : "aa",
-					"subjectId" : "suRegisterDevice"
-				} ], [ "licence.registerUser", {
-					"userId" : "suRegisterUser",
-					"email" : "aa",
-					"password" : "aa",
-					"firstname" : "aa",
-					"lastname" : "aa",
-					"subjectId" : "aa"
-				} ] ], true);
-
-				if (window.push != undefined)
-					push.register(plugin_Notification.functions.push_onNotification, plugin_Notification.functions.push_successHandler, plugin_Notification.functions.push_errorHandler, plugin_Notification.config.pushConfig);
-			}, 100);
 	},
 
 	// called after all pages are loaded
@@ -102,6 +84,27 @@ var plugin_Notification = {
 		// if (($("body #popupAlert").length == 0))
 		app.template.append("#" + $(container).attr("id"), "JQueryMobilePopupAlert");
 
+		if (plugin_Notification.config.enablePushNotifications && app.config.apacheCordova && app.sess.loggedIn() == true)
+			setTimeout(function() {
+				//alert("its time to register the device")
+				//alert("device uuid: " + device.uuid);
+
+				var promise = app.rc.getJson("notifyme.registerDevice", {
+					"deviceId" : device.uuid,
+					"contextToken" : app.sess.getValue("userToken")
+				}, true);
+
+				promise.done(function(resultObject) {
+					;
+				});
+
+				promise.fail(function(errorObject) {
+					;
+				});
+
+				if (window.push != undefined)
+					push.register(plugin_Notification.functions.push_onNotification, plugin_Notification.functions.push_successHandler, plugin_Notification.functions.push_errorHandler, plugin_Notification.config.pushConfig);
+			}, 100);
 	},
 	// called once
 	// set the jQuery delegates

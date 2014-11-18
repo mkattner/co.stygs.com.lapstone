@@ -98,6 +98,8 @@ var plugin_RestClient = {
 			var server = plugin_WebServiceClient.config.defaultServer;
 		}
 
+		app.debug.alert("plugin.RestClient.js getSingleJsonAsync() server: " + server + "; service: " + service, 33);
+
 		// get the path wich is defined in wsd file
 		var path = plugin_RestClient.config.webservices[service].url;
 		// replace the parameters in path string
