@@ -1,3 +1,4 @@
 {
-	"appname":"lappstone-app"
+	"appname":"lappstone-app",
+	"startPage":"start.html"
 }

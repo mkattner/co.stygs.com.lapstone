@@ -460,7 +460,7 @@ var pages = {
 
 				if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
 					alert("You must be logged in!! redirect to start page");
-					app.help.navigation.redirect("start.html");
+					app.help.navigation.redirect(app.config.startPage);
 				} else if (plugin_WebServiceClient.config.useKeepAlive) {
 					app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive", 5);
 					if (window['page_' + container.attr('id')].config.useKeepAlive != undefined) {

@@ -153,7 +153,7 @@ var plugin_HTML5Storage = {
 
 			pufferFormValues : function(container) {
 				app.debug.alert('plugin_HTML5Storage.localStorage.pufferFormValues()', 3);
-				container.find("input[type=text]").each(function(elementNumber, element) {
+				container.find("input[type=text], input[type=password]").each(function(elementNumber, element) {
 					plugin_HTML5Storage.functions.localStorage.set(plugin_HTML5Storage.functions.pufferedFormValuePrefix + container.attr("id") + "__" + $(element).attr("id"), $(element).val());
 				});
 			},
@@ -180,10 +180,10 @@ var plugin_HTML5Storage = {
 						newkey = key.substring(app.config.name.length + 1);
 						var comp1 = newkey.substring(0, plugin_HTML5Storage.functions.pufferedFormValuePrefix.length).toLowerCase();
 						var comp2 = plugin_HTML5Storage.functions.pufferedFormValuePrefix.toLowerCase();
-						//console.log(comp1 + " == " + comp2);
-						//console.log(comp2);
+						// console.log(comp1 + " == " + comp2);
+						// console.log(comp2);
 						if (comp1 == comp2) {
-							//alert("dsasd");
+							// alert("dsasd");
 							window.localStorage.removeItem(key);
 						}
 					}

@@ -25,6 +25,8 @@ if [ -n "$1" ]
         echo "---- copy plugin *.js files"
         cp -a ./www/js/plugin/*.js $1/www/js/plugin/
 
+	#cp -an ./www/js/plugin/*.json $1/www/js/plugin/
+
         echo "---- plugin folder after copying new files"
         ls $1www/js/plugin/
 

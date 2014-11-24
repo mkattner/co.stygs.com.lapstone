@@ -86,8 +86,8 @@ var plugin_Notification = {
 
 		if (plugin_Notification.config.enablePushNotifications && app.config.apacheCordova && app.sess.loggedIn() == true)
 			setTimeout(function() {
-				//alert("its time to register the device")
-				//alert("device uuid: " + device.uuid);
+				// alert("its time to register the device")
+				// alert("device uuid: " + device.uuid);
 
 				var promise = app.rc.getJson("notifyme.registerDevice", {
 					"deviceId" : device.uuid,
@@ -122,7 +122,12 @@ var plugin_Notification = {
 			switch (notification.type) {
 			case "alert":
 				setTimeout(function() {
-					$("#popupAlert div[data-role=header] h1").text(notification.title);
+					if (notification.title) {
+						$("#popupAlert div[data-role=header] h1").text(notification.title);
+						$("#popupAlert div[data-role=header] h1").css("display", "block");
+					} else {
+						$("#popupAlert div[data-role=header] h1").css("display", "none");
+					}
 					$("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
 					$("#popupAlert #btn-alert").text(notification.button);
 					if (typeof notification.text == "object") {
@@ -137,7 +142,12 @@ var plugin_Notification = {
 				break;
 			case "dialog":
 				setTimeout(function() {
-					$("#popupDialog div[data-role=header] h1").text(notification.title);
+					if (notification.title) {
+						$("#popupDialog div[data-role=header] h1").text(notification.title);
+						$("#popupDialog div[data-role=header] h1").css("display", "block");
+					} else {
+						$("#popupDialog div[data-role=header] h1").css("display", "none");
+					}
 					$("#popupDialog div.ui-content h3.ui-title").text(notification.headline);
 					$("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
 					$("#popupDialog #btn-dialog-right").text(notification.buttonRight);

@@ -95,7 +95,7 @@ var plugin_WebServiceClient = {
 
 			} else if (dataType.toLowerCase() == "json") {
 				app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() case: contentType = application/json; charset=utf-8", 60);
-				app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() Create json object", 60);
+				app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() create json object", 60);
 				var obj = {};
 				var pairs = data.split('&');
 				for (i in pairs) {
@@ -175,6 +175,12 @@ var plugin_WebServiceClient = {
 					json = false;
 					if (dfd != undefined && dfd != null) {
 						app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() case: reject deferred object", 60);
+						var rejectObject;
+						switch (jqXHR.status) {
+						case 500:
+							delete jqXHR.responseText;
+							break;
+						}
 						dfd.reject({
 							"call" : {
 								"url" : url,

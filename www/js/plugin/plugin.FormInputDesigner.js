@@ -279,6 +279,14 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			}
 		},
+		radio : {
+			radio : function(options) {
+				options = plugin_FormInputDesigner.verifyOptions(options);
+				var type = "radio";
+				plugin_FormInputDesigner.addClassToOptions(options, "app-form-input-radio");
+				return plugin_FormInputDesigner.generateInput(options, type);
+			}
+		},
 		checkbox : {
 			checkbox : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.checkbox.checkbox()", 20);

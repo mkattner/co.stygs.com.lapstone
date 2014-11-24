@@ -74,6 +74,7 @@ $(document).ready(function() {
 
 	var configuration = JsonLoader("../js/lapstone.json");
 	app.config.name = configuration.appname;
+	app.config['startPage'] = configuration.startPage;
 
 	var success = true;
 	success = loadPlugins();
