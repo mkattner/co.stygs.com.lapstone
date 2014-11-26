@@ -60,6 +60,9 @@ var plugin_Session = {
 				return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey);
 			if (typeof value == "boolean") {
 				app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey, value);
+				if(value==false){
+					//app.store.localStorage.clear();
+				}
 				return value;
 			} else
 				return null;

@@ -288,7 +288,12 @@ var pages = {
 			} else {
 				// case 4: page is a common lapstone page
 				app.debug.alert("pages.js case: page is a common lapstone page", 5);
-				globalPage[eventName](event, container);
+				// alert(window["page_" +
+				// container.attr('id')].config.isGlobalPage)
+				if (window["page_" + container.attr('id')].config.isGlobalPage == true)
+					globalPage[eventName](event, container);
+				else if (window["page_" + container.attr('id')].config.isGlobalPage == undefined)
+					globalPage[eventName](event, container);
 				pages.eventFunctions.everyPage[eventName](event, container);
 				pages.eventFunctions.lapstonePage[eventName](event, container);
 			}
@@ -324,6 +329,7 @@ var pages = {
 				app.debug.alert("pages.js plugin.eventFunctions.everyPage.pagehide(" + event + ", " + container + ")", 5);
 
 				$("#" + container.attr("id")).off();
+				$(document).off("#" + container.attr("id"));
 
 				app.debug.alert("pages.js remove page from DOM: " + container.attr('id'), 5);
 				container.remove();

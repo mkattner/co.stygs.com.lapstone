@@ -1,0 +1,139 @@
+.bubblingG-inline-button {
+	display: inline-block;
+	position: absolute;
+	right: 5px;
+	width: 40px;
+	top: 0px; height : 100%;
+	z-index: 1000;
+	text-align: center;
+	height: 100%;
+}
+
+.bubblingG-inline-button span {
+	display: inline-block;
+	vertical-align: middle;
+	position: static;
+	margin-top: 44%;
+	width: 5px;
+	height: 5px;
+	background: #000000;
+	-moz-border-radius: 50px;
+	-moz-animation: bubblingG-inline-button 1.0s infinite alternate;
+	-webkit-border-radius: 50px;
+	-webkit-animation: bubblingG-inline-button 1.0s infinite alternate;
+	-ms-border-radius: 50px;
+	-ms-animation: bubblingG-inline-button 1.0s infinite alternate;
+	-o-border-radius: 50px;
+	-o-animation: bubblingG-inline-button 1.0s infinite alternate;
+	border-radius: 50px;
+	animation: bubblingG-inline-button 1.0s infinite alternate;
+}
+
+#bubblingG-inline-button_1 {
+-moz-animation-delay: 0s;
+-webkit-animation-delay: 0s;
+-ms-animation-delay: 0s;
+-o-animation-delay: 0s;
+animation-delay: 0s;
+}
+
+#bubblingG-inline-button_2 {
+-moz-animation-delay: 0.39s;
+-webkit-animation-delay: 0.39s;
+-ms-animation-delay: 0.39s;
+-o-animation-delay: 0.39s;
+animation-delay: 0.39s;
+}
+
+#bubblingG-inline-button_3 {
+-moz-animation-delay: 0.78s;
+-webkit-animation-delay: 0.78s;
+-ms-animation-delay: 0.78s;
+-o-animation-delay: 0.78s;
+animation-delay: 0.78s;
+}
+
+@-moz-keyframes bubblingG-inline-button {
+0% {
+width: 5px;
+height: 5px;
+background-color:#555555;
+-moz-transform: translateY(0);
+}
+
+100% {
+width: 10px;
+height: 10px;
+background-color:#FFFFFF;
+-moz-transform: translateY(-10px);
+}
+
+}
+
+@-webkit-keyframes bubblingG-inline-button {
+0% {
+width: 5px;
+height: 5px;
+background-color:#555555;
+-webkit-transform: translateY(0);
+}
+
+100% {
+width: 10px;
+height: 10px;
+background-color:#FFFFFF;
+-webkit-transform: translateY(-10px);
+}
+
+}
+
+@-ms-keyframes bubblingG-inline-button {
+0% {
+width: 5px;
+height: 5px;
+background-color:#555555;
+-ms-transform: translateY(0);
+}
+
+100% {
+width: 10px;
+height: 10px;
+background-color:#FFFFFF;
+-ms-transform: translateY(-10px);
+}
+
+}
+
+@-o-keyframes bubblingG-inline-button {
+0% {
+width: 5px;
+height: 5px;
+background-color:#555555;
+-o-transform: translateY(0);
+}
+
+100% {
+width: 10px;
+height: 10px;
+background-color:#FFFFFF;
+-o-transform: translateY(-10px);
+}
+
+}
+
+@keyframes bubblingG-inline-button {
+0% {
+width: 5px;
+height: 5px;
+background-color:#555555;
+transform: translateY(0);
+}
+
+100% {
+width: 10px;
+height: 10px;
+background-color:#FFFFFF;
+transform: translateY(-10px);
+}
+
+}

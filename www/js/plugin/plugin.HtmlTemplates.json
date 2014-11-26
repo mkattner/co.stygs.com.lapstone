@@ -9,6 +9,7 @@
 		"JQueryMobilePopupDialog":"../template/JQueryMobilePopupDialog.html",
 		"JQueryMobilePopupAlert":"../template/JQueryMobilePopupAlert.html",
 		"app-loader-bubble":"../template/app.loader.bubble.html",
+		"app-loader-bubble-inline-button":"../template/app.loader.bubble.inline-button.html",
 		"themis":{
 			"ThemisHeaderContent":"../template/ThemisHeaderContent.html",
 			"ThemisNavigationPanelContent":"../template/ThemisNavigationPanelContent.html"
