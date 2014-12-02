@@ -135,7 +135,7 @@ var plugin_HelperFunctions = {
 				object.find('[data-role=listview]').listview().listview('refresh');
 				object.find('[type=button]').button();
 				object.find('[data-role=navbar]').navbar();
-				object.find('[type=text]').textinput();
+				object.find('[type=text], textarea, [type=search], [type=password], [type=number]').textinput();
 				object.find('[type=range]').slider();
 				object.find('[type=radio]').checkboxradio();
 				object.find('select').selectmenu();

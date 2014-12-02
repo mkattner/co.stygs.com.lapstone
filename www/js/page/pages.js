@@ -146,23 +146,28 @@ var pages = {
 		/*
 		 * 
 		 */
-		$(document).on('pagebeforecreate', '.app-page', function(event) {
-			app.debug.alert("pages.js jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'), 5);
-			pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforecreate");
-			// ---
-			//
-			// alert($(this).attr('data-type'));
-			if ($(this).attr('data-type') == "static" || $(this).attr('data-type') == "static-inline") {
+		$(document).on(
+				'pagebeforecreate',
+				'.app-page',
+				function(event) {
+					app.debug.alert("pages.js jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'), 5);
+					pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforecreate");
+					// ---
+					//
+					// alert($(this).attr('data-type'));
+					if ($(this).attr('data-type') == "static" || $(this).attr('data-type') == "static-inline") {
 
-			} else if (window['page_' + $(this).attr('id')] == undefined) {
-				alert("-Fatal error: Can't find the page object: page_" + $(this).attr('id') + "; Please have a look to your pages.json file. You'll be redirected to the index.html page.");
-				app.help.navigation.redirect("index.html");
-			} else {
-				// case 3: page is a common lapstone page
+					} else if (window['page_' + $(this).attr('id')] == undefined) {
+						alert("-Fatal error: Can't find the page object: page_"
+								+ $(this).attr('id')
+								+ "; Please have a look to your pages.json file. You'll be redirected to the index.html page.");
+						app.help.navigation.redirect("index.html");
+					} else {
+						// case 3: page is a common lapstone page
 
-			}
+					}
 
-		});
+				});
 
 		/*
 		 * 
@@ -283,7 +288,9 @@ var pages = {
 			} else if (window['page_' + container.attr('id')] == undefined) {
 				// case 3: page ist not defined in pages.json
 				app.debug.alert("pages.js case: page ist not defined in pages.json", 5);
-				alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + container.attr('id') + "; Please have a look to your pages.json file.");
+				alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_"
+						+ container.attr('id')
+						+ "; Please have a look to your pages.json file.");
 				app.help.navigation.redirect("index.html");
 			} else {
 				// case 4: page is a common lapstone page
@@ -468,44 +475,69 @@ var pages = {
 					alert("You must be logged in!! redirect to start page");
 					app.help.navigation.redirect(app.config.startPage);
 				} else if (plugin_WebServiceClient.config.useKeepAlive) {
-					app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive", 5);
+					app.debug
+							.alert(
+									"pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive",
+									5);
 					if (window['page_' + container.attr('id')].config.useKeepAlive != undefined) {
-						app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json", 5);
+						app.debug
+								.alert(
+										"pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json",
+										5);
 						if (window['page_' + container.attr('id')].config.useKeepAlive) {
-							app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE", 5);
+							app.debug.alert(
+									"pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE", 5);
 							if (plugin_WebServiceClient.config.keepAlive.isAlive) {
 								app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: server isAlive", 5);
 								pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 							} else {
-								app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server", 5);
-								app.debug.alert("pages.js Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.", 60);
-								app.notify.add.alert(app.lang.string("bad_connection", "notifications"), app.lang.string("bad_connection", "headlines"), app.lang.string("bad_connection", "headlines"));
+								app.debug.alert(
+										"pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server", 5);
+								app.debug
+										.alert(
+												"pages.js Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.",
+												60);
+								app.notify.add.alert(app.lang.string("bad_connection", "notifications"), false, app.lang.string(
+										"bad_connection", "headlines"), app.lang.string("ok", "actions"));
 								app.store.localStorage.clearHtml5();
 								$(document).off();
 								app.help.navigation.redirect("index.html");
 							}
 						} else {
-							app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file", 5);
+							app.debug
+									.alert(
+											"pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file",
+											5);
 							pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 						}
 					} else {
-						app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page does not require keepAlive", 5);
-						app.debug.alert("pages.js No useKeepAlive entry in your page_" + container.attr('id') + ".json. Please add it.", 60);
+						app.debug.alert(
+								"pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page does not require keepAlive", 5);
+						app.debug
+								.alert("pages.js No useKeepAlive entry in your page_" + container.attr('id') + ".json. Please add it.", 60);
 						pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 					}
 				} else {
-					app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: WebServiceClient does not require keepAlive", 5);
+					app.debug
+							.alert(
+									"pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate() case: WebServiceClient does not require keepAlive",
+									5);
 					pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 				}
 			},
 			pagebeforecreate_createPage : function(event, container) {
-				app.debug.alert("pages.js pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(" + event + ", " + container + ")", 5);
+				app.debug.alert("pages.js pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(" + event + ", " + container + ")",
+						5);
 				window['page_' + container.attr('id')].events.pagebeforecreate(event, container);
 				window['page_' + container.attr('id')].creator(container);
 				window['page_' + container.attr('id')].setEvents(container);
 				// call plugins' page functions
 				app.debug.alert('pages.js Call: pages.callPluginsPageFunctions()', 5);
 				pages.callPluginsPageFunctions(container);
+				app.debug.alert('pages.js add data- HTML Attributes', 5);
+				$.each(window['page_' + container.attr('id')].config, function(key, value) {
+					container.attr("data-" + key, value);
+				});
 			},
 			pagebeforehide : function(event, container) {
 				app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + container + ")", 5);
