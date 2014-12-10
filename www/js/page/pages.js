@@ -472,7 +472,10 @@ var pages = {
 				app.debug.alert("pages.js plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + container + ")", 5);
 
 				if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
-					alert("You must be logged in!! redirect to start page");
+					app.notify.add.alert(app.lang.string("login_obligate_text", "app-session"), false, app.lang.string(
+							"login_obligate_headline", "app-session"), app.lang.string("ok", "actions"));
+					app.store.localStorage.clearHtml5();
+					$(document).off();
 					app.help.navigation.redirect(app.config.startPage);
 				} else if (plugin_WebServiceClient.config.useKeepAlive) {
 					app.debug
@@ -497,11 +500,11 @@ var pages = {
 										.alert(
 												"pages.js Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.",
 												60);
-								app.notify.add.alert(app.lang.string("bad_connection", "notifications"), false, app.lang.string(
-										"bad_connection", "headlines"), app.lang.string("ok", "actions"));
+								app.notify.add.alert(app.lang.string("bad_connection_text", "app-keepAlive"), false, app.lang.string(
+										"bad_connection_headline", "app-keepAlive"), app.lang.string("ok", "actions"));
 								app.store.localStorage.clearHtml5();
 								$(document).off();
-								app.help.navigation.redirect("index.html");
+								app.help.navigation.redirect(app.config.startPage);
 							}
 						} else {
 							app.debug

@@ -157,6 +157,8 @@ echo "**************************************************************************
        
        cd $1
        cordova build $2
+       sudo chmod -R 774 $1
+       sudo chown -R $USER $1
     else
         echo "Parameter error: script needs the location of your cordova app as a parameter"
 fi

@@ -428,7 +428,7 @@ var plugin_Detector = {
 			},
 			debian : {
 				Debian : function() {
-					return navigator.userAgent.match(/Linux/i);
+					return navigator.userAgent.match(/X11; Linux/i);
 				},
 				version : {}
 			},

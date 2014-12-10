@@ -157,6 +157,13 @@ var plugin_HelperFunctions = {
 			},
 			forward : function() {
 				window.history.forward();
+			},
+			reload : function() {
+				location.reload();
+			},
+			redirectAndReload : function(url) {
+				$.mobile.ajaxEnabled = false;
+				window.location.replace(url);
 			}
 		},
 		form : {

@@ -27,7 +27,42 @@ var plugin_Notification = {
 	// caller pages.js
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		window.setTimeout(function() {
+			if (plugin_Notification.config.enablePushNotifications && app.config.apacheCordova && app.sess.loggedIn() == true) {
+				app.debug.alert("plugin_Notification.pagesLoaded() register device on licence and push server", 20);
+				// alert("its time to register the device")
+				// alert("device uuid: " + device.uuid);
+				if (window.device) {
+					var promise = app.rc.getJson("notifyme.registerDevice", {
+						"deviceId" : device.uuid,
+						"contextToken" : app.sess.getValue("userToken")
+					}, true);
 
+					promise.done(function(resultObject) {
+						if (window.push != undefined) {
+							app.debug.alert("plugin_Notification.pagesLoaded() register device on aerogear push server", 20);
+							plugin_Notification.config.pushConfig.alias = device.uuid;
+							push.register(plugin_Notification.functions.push_onNotification, function() {
+								app.debug.alert("plugin_Notification.pagesLoaded() success: device is registered on push server", 20);
+							}, function(error) {
+								app.debug.alert("plugin_Notification.pagesLoaded() error: device is not registered on push server", 20);
+								app.debug.alert("plugin_Notification.pagesLoaded() error: " + error, 20);
+							}, plugin_Notification.config.pushConfig);
+						} else {
+							app.debug.alert("plugin_Notification.pagesLoaded() cordova push plugin not installed", 20);
+						}
+					});
+
+					promise.fail(function(errorObject) {
+						app.debug.alert("plugin_Notification.pagesLoaded() not able to register device on licence server", 20);
+					});
+				} else {
+					app.debug.alert("plugin_Notification.pagesLoaded() cordova device plugin not installed", 20);
+				}
+			} else {
+				app.debug.alert("plugin_Notification.pagesLoaded() do not register device on licence and push server", 20);
+			}
+		}, 5000);
 	},
 
 	// called after pluginsLoaded()
@@ -88,28 +123,6 @@ var plugin_Notification = {
 		// if (($("body #popupAlert").length == 0))
 		app.template.append("#" + $(container).attr("id"), "JQueryMobilePopupAlert");
 
-		if (plugin_Notification.config.enablePushNotifications && app.config.apacheCordova && app.sess.loggedIn() == true)
-			setTimeout(function() {
-				// alert("its time to register the device")
-				// alert("device uuid: " + device.uuid);
-
-				var promise = app.rc.getJson("notifyme.registerDevice", {
-					"deviceId" : device.uuid,
-					"contextToken" : app.sess.getValue("userToken")
-				}, true);
-
-				promise.done(function(resultObject) {
-					;
-				});
-
-				promise.fail(function(errorObject) {
-					;
-				});
-
-				if (window.push != undefined)
-					push.register(plugin_Notification.functions.push_onNotification, plugin_Notification.functions.push_successHandler,
-							plugin_Notification.functions.push_errorHandler, plugin_Notification.config.pushConfig);
-			}, 100);
 	},
 	// called once
 	// set the jQuery delegates
@@ -316,6 +329,8 @@ var plugin_Notification = {
 				};
 				app.store.localStorage.setObject("popup_notifications", plugin_Notification.notifications);
 			}
+		},
+		push_onNotification : function() {
 		}
 
 	}
