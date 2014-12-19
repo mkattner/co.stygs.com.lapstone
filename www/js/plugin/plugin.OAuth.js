@@ -64,6 +64,22 @@ var plugin_OAuth = {
 		return false;
 	},
 	functions : {
+		tokenFromUrl : function(parameter) {
+			var url = window.location.href, regExpString, regExp, access_token, access_token;
+			regExpString = "" + parameter + "=(.+)$";
+			regExp = new RegExp(regExpString)
+			// var error = /\?error=(.+)$/.exec(url);
+			access_token = regExp.exec(url);
+			if (access_token) {
+				access_token = (access_token[0] + "").split("=");
+				access_token = access_token[1] + "";
+				access_token = access_token.split("&");
+				access_token = access_token[0];
+			} else {
+				return false;
+			}
+			return access_token;
+		},
 		generic : function(url) {
 			if (url.indexOf("dropbox") > -1)
 				return app.oa.dropbox(url);

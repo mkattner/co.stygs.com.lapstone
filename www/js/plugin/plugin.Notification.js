@@ -155,6 +155,8 @@ var plugin_Notification = {
 					}
 
 					$("#popupAlert #btn-alert").text(notification.button);
+
+					// $("#popupAlert div.ui-content p").html("");
 					if (typeof notification.text == "object") {
 						$("#popupAlert div.ui-content p").replaceWith(notification.text);
 					} else {
@@ -184,8 +186,10 @@ var plugin_Notification = {
 
 					$("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
 					$("#popupDialog #btn-dialog-right").text(notification.buttonRight);
+
+					
 					if (typeof notification.text == "object") {
-						$("#popupDialog div.ui-content p").replaceWith(notification.text);
+						$("#popupDialog div.ui-content p").html(notification.text);
 					} else {
 						$("#popupDialog div.ui-content p").html(notification.text);
 					}
@@ -284,6 +288,7 @@ var plugin_Notification = {
 				callbackButtonRight = false;
 			if (delayInMs == undefined || delayInMs == null)
 				delayInMs = 100;
+			// alert(text.html());
 			notification = {
 				"type" : "dialog",
 				"text" : text,

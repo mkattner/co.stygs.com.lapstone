@@ -1,4 +1,5 @@
 {
 	"appname":"lappstone-app",
-	"startPage":"start.html"
+	"startPage":"start.html",
+	"startPage_loggedIn":"start.html"
 }

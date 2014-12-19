@@ -6,6 +6,7 @@
 	list-style: none;
 	display: inline-block;
 	margin-bottom: 10px;
+	width: 100%;
 }
 
 .app-responsive-list-B li img {
@@ -17,7 +18,6 @@
 
 .app-responsive-list-B li div {
 	display: inline-block;
-	width: 490px;
 	margin-left: 9px;
 	vertical-align: top;
 }

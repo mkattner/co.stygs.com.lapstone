@@ -1,6 +1,6 @@
 {
 	"name":"Session",
 	"shortname":"sess",
-	"loginHtml5StorageKey":"data-html5-themis-loggedin",
-	"sessionHTML5StoragePrefix":"sessionValue"
+	"loginHtml5StorageKey":"themis-loggedin",
+	"sessionHTML5StoragePrefix":"sessionPluginValue-"
 }

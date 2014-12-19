@@ -56,24 +56,40 @@ var plugin_Session = {
 	 */
 	functions : {
 		loggedIn : function(value) {
-			if (value == undefined)
-				return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey);
-			if (typeof value == "boolean") {
-				app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey, value);
-				if(value==false){
-					//app.store.localStorage.clear();
+			app.debug.alert("plugin_Session.functions.loggedIn(" + value + ")", 20);
+			if (value == undefined) {
+				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined", 20);
+				app.debug.alert("plugin_Session.functions.loggedIn() - return: "
+						+ app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix
+								+ plugin_Session.config.loginHtml5StorageKey), 20);
+				return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix
+						+ plugin_Session.config.loginHtml5StorageKey);
+			} else if (typeof value == "boolean") {
+				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: typeof value == boolean", 20);
+				app.debug.alert("plugin_Session.functions.loggedIn() - set loged in to: " + value, 20);
+				app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey,
+						value);
+				if (value == false) {
+					app.debug.alert("plugin_Session.functions.loggedIn() - case: value == false", 20);
+					// app.store.localStorage.clear();
 				}
+				app.debug.alert("plugin_Session.functions.loggedIn() - return: " + value, 20);
 				return value;
-			} else
+			} else {
+				app.debug.alert("plugin_Session.functions.loggedIn() - return: null", 20);
 				return null;
+			}
 		},
 		setValue : function(key, value) {
+			app.debug.alert("plugin_Session.functions.setValue(" + key + ", " + value + ")", 20);
 			app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + key, value);
 		},
 		getValue : function(key) {
+			app.debug.alert("plugin_Session.functions.getValue(" + key + ")", 20);
 			return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + key);
 		},
 		destroy : function() {
+			app.debug.alert("plugin_Session.functions.destroy()", 20);
 			$.each(window.localStorage, function(key, value) {
 				if (key.substring(0, app.config.name.length) == app.config.name) {
 					newkey = key.substring(app.config.name.length + 1);

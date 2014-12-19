@@ -1,4 +1,12 @@
 {
 	"name":"OAuth",
-	"shortname":"oa"
+	"shortname":"oa",
+	"facebook":{
+		"error_name":"error_code",
+		"token_name":"code"
+	},
+	"dropbox":{
+		"error_name":"error",
+		"token_name":"oauth_token"
+	}
 }
