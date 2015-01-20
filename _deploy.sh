@@ -124,13 +124,18 @@ echo "**************************************************************************
 
 		mkdir $1/lapstone
 		mkdir $1/lapstone/ios
+		mkdir $1/lapstone/ios/image
+		mkdir $1/lapstone/ios/image/splash
+		mkdir $1/lapstone/ios/image/icons
 		mkdir $1/lapstone/android
+		mkdir $1/lapstone/android/image
+		
 		cp -an ./ios/ $1/lapstone/ios/
 		cp -an ./android/ $1/lapstone/android/
 
-		cp -a $1/lapstone/ios/image/icon-* $1/platforms/ios/themis/Resources/icons
-		cp -a $1/lapstone/ios/image/Default-* $1/platforms/ios/themis/Resources/splash
-		cp -a $1/lapstone/android/image/ $1/platforms/android/res/
+		cp $1/lapstone/ios/image/icons/* $1/platforms/ios/themis/Resources/icons
+		cp $1/lapstone/ios/image/splash/* $1/platforms/ios/themis/Resources/splash
+		cp $1/lapstone/android/image/ $1/platforms/android/res/
 
 echo "***************************************************************************************************************"
 echo "- x minify page"

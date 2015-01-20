@@ -239,6 +239,7 @@ var plugin_HTML5Storage = {
 			setObject : function(name, object) {
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.setObject()', 3);
 				// alert(JSON.stringify(object));
+				name = name.toLowerCase();
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.setObject(' + name + ', ' + JSON.stringify(object) + ')',
 						20);
 				$.each(object, function(key, value) {
@@ -253,7 +254,7 @@ var plugin_HTML5Storage = {
 			},
 			getObject : function(name) {
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.getObject()', 3);
-				// alert("get: " + name);
+				name = name.toLowerCase();
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.getObject("' + name + '")', 20);
 				var object = {};
 				$.each(window.localStorage, function(key, value) {
@@ -273,7 +274,7 @@ var plugin_HTML5Storage = {
 				}
 			},
 			removeObject : function(name) {
-				// alert("remove:" + name);
+				name = name.toLowerCase();
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.removeObject(' + name + ')', 20);
 				var success = true;
 				$.each(window.localStorage, function(key, value) {

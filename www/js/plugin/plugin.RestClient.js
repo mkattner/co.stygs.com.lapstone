@@ -301,27 +301,75 @@ var plugin_RestClient = {
 			app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.addWebserviceDefinitionFile(" + path + ")", 5);
 			plugin_RestClient.loadDefinitionFile(path);
 		},
-		getJson : function(service, parameter, async) {
+		getJson : function(service, parameter, async, attempts, dfd) {
 			app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson(" + service + ", " + parameter + ", " + async + ")", 20);
 
 			if (typeof service == "object" && (parameter == false || parameter == undefined)) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get multible json objects; async = false", 5);
-				return plugin_RestClient.getMultipleJson(service, parameter, async);
+				for ( var i = 0; i < attempts; i++) {
+					app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - AJAX attempt " + i + " of " + attempts, 5);
+					var json = plugin_RestClient.getMultipleJson(service, parameter, async);
+					if (json != null)
+						return json;
+				}
 			}
 
 			else if (typeof service == "object" && parameter == true) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get multible json objects; async = true", 5);
-				return plugin_RestClient.getMultipleJsonAsync(service, parameter, async);
+				var promise = plugin_RestClient.getMultipleJsonAsync(service, parameter, async);
+
+				if (dfd == null || dfd == undefined)
+					dfd = $.Deferred();
+
+				promise.done(function(json) {
+					dfd.resolve(json);
+				});
+
+				promise.fail(function(errorObject) {
+					if (async > 1) {
+						async--;
+						plugin_RestClient.functions.getJson(service, parameter, async, null, dfd);
+					} else {
+						dfd.reject(errorObject);
+					}
+				});
+
+				return dfd.promise();
+
 			}
 
 			else if (typeof service == "string" && (parameter == undefined || typeof parameter == "object") && (async == undefined || async == false)) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get a single json object; async = false", 5);
-				return plugin_RestClient.getSingleJson(service, parameter, async);
+				for ( var i = 0; i < attempts; i++) {
+					app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - AJAX attempt " + i + " of " + attempts, 5);
+					var json = plugin_RestClient.getSingleJson(service, parameter, async);
+					if (json != null)
+						return json;
+				}
 			}
 
 			else if (typeof service == "string" && (parameter == undefined || typeof parameter == "object") && async == true) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get a single json object; async = true", 5);
-				return plugin_RestClient.getSingleJsonAsync(service, parameter, async);
+				var promise = plugin_RestClient.getSingleJsonAsync(service, parameter, async);
+
+				if (dfd == null || dfd == undefined)
+					dfd = $.Deferred();
+
+				promise.done(function(json) {
+					dfd.resolve(json);
+				});
+
+				promise.fail(function(errorObject) {
+					if (attempts > 1) {
+						attempts--;
+						plugin_RestClient.functions.getJson(service, parameter, async, attempts, dfd);
+					} else {
+
+						dfd.reject();
+					}
+				});
+
+				return dfd.promise();
 			}
 
 			return null;

@@ -45,7 +45,12 @@ var plugin_Session = {
 
 	},
 	// private functions
-
+	getPrefix : function(prefix) {
+		if (prefix == undefined)
+			prefix = plugin_Session.config.sessionHTML5StoragePrefix;
+		prefix += "_";
+		return prefix;
+	},
 	// public functions
 	// called by user
 	/**
@@ -60,15 +65,12 @@ var plugin_Session = {
 			if (value == undefined) {
 				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined", 20);
 				app.debug.alert("plugin_Session.functions.loggedIn() - return: "
-						+ app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix
-								+ plugin_Session.config.loginHtml5StorageKey), 20);
-				return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix
-						+ plugin_Session.config.loginHtml5StorageKey);
+						+ app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey), 20);
+				return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey);
 			} else if (typeof value == "boolean") {
 				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: typeof value == boolean", 20);
 				app.debug.alert("plugin_Session.functions.loggedIn() - set loged in to: " + value, 20);
-				app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey,
-						value);
+				app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey, value);
 				if (value == false) {
 					app.debug.alert("plugin_Session.functions.loggedIn() - case: value == false", 20);
 					// app.store.localStorage.clear();
@@ -80,29 +82,42 @@ var plugin_Session = {
 				return null;
 			}
 		},
-		setValue : function(key, value) {
+		setValue : function(key, value, prefix) {
+			prefix = plugin_Session.getPrefix(prefix);
 			app.debug.alert("plugin_Session.functions.setValue(" + key + ", " + value + ")", 20);
-			app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + key, value);
+			app.store.localStorage.set(prefix + key, value);
 		},
-		getValue : function(key) {
+		getValue : function(key, prefix) {
+			prefix = plugin_Session.getPrefix(prefix);
 			app.debug.alert("plugin_Session.functions.getValue(" + key + ")", 20);
-			return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + key);
+			return app.store.localStorage.get(prefix + key);
 		},
-		destroy : function() {
+		destroy : function(prefix) {
+			prefix = plugin_Session.getPrefix(prefix);
 			app.debug.alert("plugin_Session.functions.destroy()", 20);
 			$.each(window.localStorage, function(key, value) {
 				if (key.substring(0, app.config.name.length) == app.config.name) {
+					var newkey, comp1, comp2;
 					newkey = key.substring(app.config.name.length + 1);
-					var comp1 = newkey.substring(0, plugin_Session.config.sessionHTML5StoragePrefix.length).toLowerCase();
-					var comp2 = plugin_Session.config.sessionHTML5StoragePrefix.toLowerCase();
-					// console.log(comp1 + " == " + comp2);
-					// console.log(comp2);
+					comp1 = newkey.substring(0, prefix.length).toLowerCase();
+					comp2 = prefix.toLowerCase();
 					if (comp1 == comp2) {
-						// alert("dsasd");
 						window.localStorage.removeItem(key);
 					}
 				}
 			});
+		},
+		setObject : function(name, object, prefix) {
+			prefix = plugin_Session.getPrefix(prefix);
+			name = prefix + name;
+			name = name.split(".").join("-");
+			app.store.localStorage.setObject(prefix + name, object);
+		},
+		getObject : function(name, prefix) {
+			prefix = plugin_Session.getPrefix(prefix);
+			name = prefix + name;
+			name = name.split(".").join("-");
+			return app.store.localStorage.getObject(prefix + name);
 		}
 
 	}

@@ -194,7 +194,7 @@ var plugin_WebServiceClient = {
 					app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - error: " + errorThrown, 50);
 					app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - error: " + JSON.stringify(jqXHR), 50);
 					app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - error: " + textStatus, 50);
-					json = false;
+					json = null;
 					if (dfd != undefined && dfd != null) {
 						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: reject deferred object", 60);
 						var rejectObject;
@@ -219,7 +219,7 @@ var plugin_WebServiceClient = {
 			});
 		} catch (err) {
 			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - catch block: " + JSON.stringify(err), 50);
-			json = false;
+			json = null;
 		}
 		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - Webservice returns: " + JSON.stringify(json), 60);
 		return json;

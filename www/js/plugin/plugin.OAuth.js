@@ -57,7 +57,7 @@ var plugin_OAuth = {
 	desktopOAuth : function(url) {
 		// alert(app.config.apacheCordova);
 		if (app.config.apacheCordova == null || app.config.apacheCordova == false) {
-			alert("desktop oauth");
+			// alert("desktop oauth");
 			app.help.navigation.redirect(url);
 			return true;
 		}
@@ -100,20 +100,16 @@ var plugin_OAuth = {
 			var dfd = $.Deferred();
 			if (plugin_OAuth.desktopOAuth(url))
 				return;
-			var loginWindow = window.open(url, '_blank', 'location=yes');
-			var eventCount = 0;
+			var loginWindow = window.open(url, '_blank', 'location=yes'), eventCount = 0;
 			$(loginWindow).on('loadstart', function(e) {
 				eventCount++;
 				if (eventCount > 2) {
 					var url = e.originalEvent.url;
 					var error = /\?error=(.+)$/.exec(url);
-					var access_token = /\?oauth_token=(.+)$/.exec(url);
-					if (access_token) {
+					var success = /\?oauth_token=(.+)$/.exec(url);
+					if (success) {
 						loginWindow.close();
-						var access_token = (access_token + "").split("=");
-						access_token = access_token[1] + "";
-						access_token = access_token.split("&");
-						dfd.resolve(access_token[0]);
+						dfd.resolve(url.split('?')[1]);
 					} else if (error) {
 						loginWindow.close();
 						dfd.reject(error);
@@ -128,26 +124,21 @@ var plugin_OAuth = {
 			var dfd = $.Deferred();
 			if (plugin_OAuth.desktopOAuth(url))
 				return;
-			var loginWindow = window.open(url, '_blank', 'location=yes');
+			var loginWindow = window.open(url, '_blank', 'location=yes'), eventCount = 0;
 			$(loginWindow).on('loadstart', function(e) {
-				alert('loadstart');
-				var url = e.originalEvent.url;
-				var error = /\?error_code=(.+)$/.exec(url);
-				var code = /\?code=(.+)$/.exec(url);
-				if (code) {
-					loginWindow.close();
-					var code = (access_token + "").split("=");
-					code = code[1] + "";
-					code = code.split("&");
-					alert(code);
-					// get token
-
-					dfd.resolve(code[0]);
-				} else if (error) {
-					loginWindow.close();
-					dfd.reject(error);
+				eventCount++;
+				if (eventCount > 2) {
+					var url = e.originalEvent.url;
+					var error = /\?error_code=(.+)$/.exec(url);
+					var success = /\?code=(.+)$/.exec(url);
+					if (success) {
+						loginWindow.close();
+						dfd.resolve(url.split('?')[1]);
+					} else if (error) {
+						loginWindow.close();
+						dfd.reject(error);
+					}
 				}
-
 			});
 
 			return dfd.promise();
