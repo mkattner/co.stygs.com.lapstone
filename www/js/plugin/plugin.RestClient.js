@@ -51,10 +51,10 @@ var plugin_RestClient = {
 
 	getSingleJson : function(service, parameter, async) {
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getSingleJson() - get a single json object; async = false", 60);
-		var server, path, pathX, data, json;
+		var server, path, pathX, data, json, splittedService;
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getSingleJson() - get server name", 20);
 		if (service.indexOf('.') != -1) {
-			var splittedService = service.split(".");
+			splittedService = service.split(".");
 			server = splittedService[0];
 			service = splittedService[1];
 		} else {
@@ -95,11 +95,11 @@ var plugin_RestClient = {
 	getSingleJsonAsync : function(service, parameter, async) {
 		app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.getSingleJsonAsync() - get a single json object; async = true;", 60);
 		// the deferred object for the caller
-		var dfd = $.Deferred(), server, path, pathX, data, promise;
+		var dfd = $.Deferred(), server, path, pathX, data, promise, splittedService;
 
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getSingleJsonAsync() - get server name", 20);
 		if (service.indexOf('.') != -1) {
-			var splittedService = service.split(".");
+			splittedService = service.split(".");
 			server = splittedService[0];
 			service = splittedService[1];
 		} else {
@@ -159,11 +159,11 @@ var plugin_RestClient = {
 		var jsonObject = {};
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJson() - generate ajax call for each webservice", 20);
 		$.each(service, function(key, call) {
-			var serviceName = call[0], parameter = call[1], server, path, pathX, json, data;
+			var serviceName = call[0], parameter = call[1], server, path, pathX, json, data, splittedService;
 
 			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJson() - get server name", 20);
 			if (serviceName.indexOf('.') != -1) {
-				var splittedService = serviceName.split(".");
+				splittedService = serviceName.split(".");
 				server = splittedService[0];
 				serviceName = splittedService[1];
 			} else {
@@ -214,7 +214,8 @@ var plugin_RestClient = {
 	getMultipleJsonAsync : function(service, parameter, async) {
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - get multible json objects; async = true", 60);
 		// the deferred object for the caller
-		var dfd = $.Deferred(), promiseArray = [], webserviceNamesArray = [], async = true;
+		async = true;
+		var dfd = $.Deferred(), promiseArray = [], webserviceNamesArray = [], splittedService;
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - generate a ajax call for each webservice", 20);
 		$.each(service, function(key, call) {
 			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - generate single async ajax call", 20);
@@ -222,7 +223,7 @@ var plugin_RestClient = {
 
 			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - get server name", 20);
 			if (serviceName.indexOf('.') != -1) {
-				var splittedService = serviceName.split(".");
+				splittedService = serviceName.split(".");
 				server = splittedService[0];
 				serviceName = splittedService[1];
 			} else {
@@ -303,12 +304,12 @@ var plugin_RestClient = {
 		},
 		getJson : function(service, parameter, async, attempts, dfd) {
 			app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson(" + service + ", " + parameter + ", " + async + ")", 20);
-
+			var json, i, promise;
 			if (typeof service == "object" && (parameter == false || parameter == undefined)) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get multible json objects; async = false", 5);
-				for ( var i = 0; i < attempts; i++) {
+				for (i = 0; i < attempts; i++) {
 					app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - AJAX attempt " + i + " of " + attempts, 5);
-					var json = plugin_RestClient.getMultipleJson(service, parameter, async);
+					json = plugin_RestClient.getMultipleJson(service, parameter, async);
 					if (json != null)
 						return json;
 				}
@@ -316,7 +317,7 @@ var plugin_RestClient = {
 
 			else if (typeof service == "object" && parameter == true) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get multible json objects; async = true", 5);
-				var promise = plugin_RestClient.getMultipleJsonAsync(service, parameter, async);
+				promise = plugin_RestClient.getMultipleJsonAsync(service, parameter, async);
 
 				if (dfd == null || dfd == undefined)
 					dfd = $.Deferred();
@@ -340,9 +341,9 @@ var plugin_RestClient = {
 
 			else if (typeof service == "string" && (parameter == undefined || typeof parameter == "object") && (async == undefined || async == false)) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get a single json object; async = false", 5);
-				for ( var i = 0; i < attempts; i++) {
+				for (i = 0; i < attempts; i++) {
 					app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - AJAX attempt " + i + " of " + attempts, 5);
-					var json = plugin_RestClient.getSingleJson(service, parameter, async);
+					json = plugin_RestClient.getSingleJson(service, parameter, async);
 					if (json != null)
 						return json;
 				}
@@ -350,7 +351,7 @@ var plugin_RestClient = {
 
 			else if (typeof service == "string" && (parameter == undefined || typeof parameter == "object") && async == true) {
 				app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - case: get a single json object; async = true", 5);
-				var promise = plugin_RestClient.getSingleJsonAsync(service, parameter, async);
+				promise = plugin_RestClient.getSingleJsonAsync(service, parameter, async);
 
 				if (dfd == null || dfd == undefined)
 					dfd = $.Deferred();

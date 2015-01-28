@@ -59,8 +59,7 @@ var plugin_HelperFunctions = {
 			firstname : function(firstname) {
 				app.debug.alert("plugin_HelperFunctions.functions.validate.firstname(" + firstname + ")", 20);
 
-				var success = false;
-				var regex = new RegExp(plugin_HelperFunctions.config.validate.firstname, "g");
+				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.firstname, "g");
 				if (firstname == undefined)
 					success = false;
 				else if (regex.test(firstname)) {
@@ -71,8 +70,7 @@ var plugin_HelperFunctions = {
 			lastname : function(lastname) {
 				app.debug.alert("plugin_HelperFunctions.functions.validate.lastname(" + lastname + ")", 20);
 
-				var success = false;
-				var regex = new RegExp(plugin_HelperFunctions.config.validate.lastname, "g");
+				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.lastname, "g");
 				if (lastname == undefined)
 					success = false;
 				else if (regex.test(lastname)) {
@@ -83,8 +81,7 @@ var plugin_HelperFunctions = {
 			username : function(username) {
 				app.debug.alert("plugin_HelperFunctions.functions.validate.username(" + username + ")", 20);
 
-				var success = false;
-				var regex = new RegExp(plugin_HelperFunctions.config.validate.username, "g");
+				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.username, "g");
 				if (username == undefined)
 					success = false;
 				else if (regex.test(username)) {
@@ -95,8 +92,7 @@ var plugin_HelperFunctions = {
 			email : function(email) {
 				app.debug.alert("plugin_HelperFunctions.functions.validate.email(" + email + ")", 20);
 
-				var success = false;
-				var regex = new RegExp(plugin_HelperFunctions.config.validate.email, "g");
+				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.email, "g");
 				if (email == undefined)
 					success = false;
 				else if (regex.test(email)) {
@@ -107,8 +103,7 @@ var plugin_HelperFunctions = {
 			password : function(password) {
 				app.debug.alert("plugin_HelperFunctions.functions.validate.password(" + password + ")", 20);
 
-				var success = false;
-				var regex = new RegExp(plugin_HelperFunctions.config.validate.password, "g");
+				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.password, "g");
 				if (password == undefined)
 					success = false;
 				else if (regex.test(password)) {
@@ -148,8 +143,9 @@ var plugin_HelperFunctions = {
 						$.mobile.changePage(url, {
 							transition : transition
 						});
-					else
+					else {
 						$(location).attr("href", url);
+					}
 				}, 50);
 			},
 			back : function() {

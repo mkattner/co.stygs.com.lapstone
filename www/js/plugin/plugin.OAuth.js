@@ -65,7 +65,7 @@ var plugin_OAuth = {
 	},
 	functions : {
 		tokenFromUrl : function(parameter) {
-			var url = window.location.href, regExpString, regExp, access_token, access_token;
+			var url = window.location.href, regExpString, regExp, access_token;
 			regExpString = "" + parameter + "=(.+)$";
 			regExp = new RegExp(regExpString)
 			// var error = /\?error=(.+)$/.exec(url);
@@ -79,6 +79,13 @@ var plugin_OAuth = {
 				return false;
 			}
 			return access_token;
+		},
+		getQueryString : function() {
+			try {
+				return window.location.href.split('?')[1];
+			} catch (e) {
+				return '';
+			}
 		},
 		generic : function(url) {
 			if (url.indexOf("dropbox") > -1)
@@ -97,51 +104,55 @@ var plugin_OAuth = {
 		},
 		// dropbox
 		dropbox : function(url) {
-			var dfd = $.Deferred();
 			if (plugin_OAuth.desktopOAuth(url))
 				return;
-			var loginWindow = window.open(url, '_blank', 'location=yes'), eventCount = 0;
-			$(loginWindow).on('loadstart', function(e) {
-				eventCount++;
-				if (eventCount > 2) {
-					var url = e.originalEvent.url;
-					var error = /\?error=(.+)$/.exec(url);
-					var success = /\?oauth_token=(.+)$/.exec(url);
-					if (success) {
-						loginWindow.close();
-						dfd.resolve(url.split('?')[1]);
-					} else if (error) {
-						loginWindow.close();
-						dfd.reject(error);
+			else {
+
+				$(loginWindow).on('loadstart', function(e) {
+					eventCount++;
+					if (eventCount > 2) {
+						var url, error, success;
+						url = e.originalEvent.url;
+						error = /\?error=(.+)$/.exec(url);
+						success = /\?oauth_token=(.+)$/.exec(url);
+						if (success) {
+							loginWindow.close();
+							dfd.resolve(url.split('?')[1]);
+						} else if (error) {
+							loginWindow.close();
+							dfd.reject(error);
+						}
 					}
-				}
-			});
-			return dfd.promise();
+				});
+				return dfd.promise();
+			}
 		},
 
 		// facebook
 		facebook : function(url) {
-			var dfd = $.Deferred();
 			if (plugin_OAuth.desktopOAuth(url))
 				return;
-			var loginWindow = window.open(url, '_blank', 'location=yes'), eventCount = 0;
-			$(loginWindow).on('loadstart', function(e) {
-				eventCount++;
-				if (eventCount > 2) {
-					var url = e.originalEvent.url;
-					var error = /\?error_code=(.+)$/.exec(url);
-					var success = /\?code=(.+)$/.exec(url);
-					if (success) {
-						loginWindow.close();
-						dfd.resolve(url.split('?')[1]);
-					} else if (error) {
-						loginWindow.close();
-						dfd.reject(error);
+			else {
+				var dfd = $.Deferred(), loginWindow = window.open(url, '_blank', 'location=yes'), eventCount = 0;
+				$(loginWindow).on('loadstart', function(e) {
+					eventCount++;
+					if (eventCount > 2) {
+						var url, error, success;
+						url = e.originalEvent.url;
+						error = /\?error_code=(.+)$/.exec(url);
+						success = /\?code=(.+)$/.exec(url);
+						if (success) {
+							loginWindow.close();
+							dfd.resolve(url.split('?')[1]);
+						} else if (error) {
+							loginWindow.close();
+							dfd.reject(error);
+						}
 					}
-				}
-			});
+				});
 
-			return dfd.promise();
+				return dfd.promise();
+			}
 		},
 		facebookToken : function(code, client_id, client_secret, redirect_uri) {
 			$.post('https://accounts.google.com/o/oauth2/token', {

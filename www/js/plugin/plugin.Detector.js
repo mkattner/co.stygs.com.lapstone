@@ -53,8 +53,7 @@ var plugin_Detector = {
 		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
 
 		try {
-			var dfdCordovaDeviceReady = $.Deferred();
-			var dfdJQueryMobileInit = $.Deferred();
+			var dfdCordovaDeviceReady = $.Deferred(), dfdJQueryMobileInit = $.Deferred();
 
 			// resolve dfdCordovaDeviceReady on deviceready
 			document.addEventListener("deviceready", function() {
@@ -239,7 +238,9 @@ var plugin_Detector = {
 			}
 		},
 		isMobile : function() {
-			if (plugin_Detector.functions.mobile.isApple() || plugin_Detector.functions.mobile.isBlackberry() || plugin_Detector.functions.mobile.isCannonical() || plugin_Detector.functions.mobile.isGoogle() || plugin_Detector.functions.mobile.isMicrosoft() || plugin_Detector.functions.mobile.isMozilla())
+			if (plugin_Detector.functions.mobile.isApple() || plugin_Detector.functions.mobile.isBlackberry()
+					|| plugin_Detector.functions.mobile.isCannonical() || plugin_Detector.functions.mobile.isGoogle()
+					|| plugin_Detector.functions.mobile.isMicrosoft() || plugin_Detector.functions.mobile.isMozilla())
 				return "app-mobile";
 			else
 				return false;
@@ -375,7 +376,8 @@ var plugin_Detector = {
 			},
 		},
 		isDesktop : function() {
-			if (plugin_Detector.functions.desktop.isApple() || plugin_Detector.functions.desktop.isCannonical() || plugin_Detector.functions.desktop.isMicrosoft() || plugin_Detector.functions.desktop.isDebian())
+			if (plugin_Detector.functions.desktop.isApple() || plugin_Detector.functions.desktop.isCannonical()
+					|| plugin_Detector.functions.desktop.isMicrosoft() || plugin_Detector.functions.desktop.isDebian())
 				return "app-desktop";
 			else
 				return false;

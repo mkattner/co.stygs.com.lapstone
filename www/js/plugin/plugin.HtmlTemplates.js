@@ -30,8 +30,7 @@ var plugin_HtmlTemplates = {
 
 	getText : function(templateId, context) {
 		app.debug.alert("plugin_HtmlTemplates.getText(" + templateId + ", " + context + ")", 14);
-		var text = null;
-		var url = null;
+		var text = null, url = null;
 		if (context != undefined) {
 			url = plugin_HtmlTemplates.config.templates[context][templateId];
 		} else {
@@ -48,7 +47,7 @@ var plugin_HtmlTemplates = {
 	functions : {
 		get : function(templateId, context) {
 			app.debug.alert("plugin_HtmlTemplates.functions.get(" + templateId + ", " + context + ")", 20);
-			return plugin_HtmlTemplates.getText(templateId, context);
+			return $(plugin_HtmlTemplates.getText(templateId, context));
 		},
 		append : function(selector, templateId, context) {
 			app.debug.alert("plugin_HtmlTemplates.functions.append(" + selector + ", " + templateId + ", " + context + ")", 20);

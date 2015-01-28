@@ -70,43 +70,6 @@ function loadPages() {
 	return success;
 }
 
-$(document).ready(function() {
-
-	var configuration = JsonLoader("../js/lapstone.json");
-	app.config.name = configuration.appname;
-	app.config['startPage'] = configuration.startPage;
-	app.config['startPage_loggedIn'] = configuration.startPage_loggedIn;
-
-	var success = true;
-	success = loadPlugins();
-	success = loadPages();
-
-	// load jQuery mobile
-	if (app.config.useJQueryMobile) {
-		var url = "../ext/jquery.mobile-1.4.4.min.js";
-		$.ajax({
-			url : url,
-			dataType : "script",
-			async : false,
-			success : function(data, textStatus, jqXHR) {
-				;
-			},
-			error : function(jqXHR, textStatus, errorThrown) {
-				alert("Fatal error in javascriptLoader.js: Can't load jQuery mobile. Url: " + url + " Error: " + textStatus);
-				alert(errorThrown);
-				success = false;
-			}
-		});
-	}
-
-	app.debug.alert("app framework initialized", 30);
-
-	// app.store.localStorage.clear();
-	// app.store.localStorage.show();
-	// app.notify.add.alert("dasd", "sadsad", "asdsad");
-
-});
-
 function JsonLoader(url) {
 	var json = null;
 	$.ajax({
@@ -162,4 +125,43 @@ $(document).bind("mobileinit", function() {
 	$.mobile.loader.prototype.options.html = "";
 
 	$.mobile.defaultPageTransition = 'none';
+});
+
+$(document).ready(function() {
+
+	//$('body').append(TextLoader('../js/lapstone.html'));
+
+	var configuration = JsonLoader("../js/lapstone.json");
+	app.config.name = configuration.appname;
+	app.config['startPage'] = configuration.startPage;
+	app.config['startPage_loggedIn'] = configuration.startPage_loggedIn;
+
+	var success = true;
+	success = loadPlugins();
+	success = loadPages();
+
+	// load jQuery mobile
+	if (app.config.useJQueryMobile) {
+		var url = "../ext/jquery.mobile-1.4.4.min.js";
+		$.ajax({
+			url : url,
+			dataType : "script",
+			async : false,
+			success : function(data, textStatus, jqXHR) {
+				;
+			},
+			error : function(jqXHR, textStatus, errorThrown) {
+				alert("Fatal error in javascriptLoader.js: Can't load jQuery mobile. Url: " + url + " Error: " + textStatus);
+				alert(errorThrown);
+				success = false;
+			}
+		});
+	}
+
+	app.debug.alert("app framework initialized", 30);
+	// $('#LAPSTONE').remove();
+	// app.store.localStorage.clear();
+	// app.store.localStorage.show();
+	// app.notify.add.alert("dasd", "sadsad", "asdsad");
+
 });

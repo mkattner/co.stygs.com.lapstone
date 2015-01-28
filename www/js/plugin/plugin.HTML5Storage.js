@@ -122,8 +122,7 @@ var plugin_HTML5Storage = {
 		pufferedFormValuePrefix : "pufferedFormValue-",
 		loadValueIntoObject : function(locator) {
 			app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.loadValueIntoObject(' + locator + ')', 20);
-			var propertyLocation = locator.substring("config.".length);
-			var value = this.localStorage.get(locator);
+			var propertyLocation = locator.substring("config.".length), value = this.localStorage.get(locator);
 			plugin_HTML5Storage.setDeep(window, propertyLocation, value);
 		},
 
@@ -183,8 +182,9 @@ var plugin_HTML5Storage = {
 			restorePufferedFormValues : function(container) {
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.restorePufferedFormValues()', 3);
 				container.find("input[type=text]").each(function(elementNumber, element) {
-					var id = $(element).attr("id");
-					var value = plugin_HTML5Storage.functions.localStorage.getPufferedFormValue(container, id);
+					var id, value;
+					id = $(element).attr("id");
+					value = plugin_HTML5Storage.functions.localStorage.getPufferedFormValue(container, id);
 					$(element).val(value);
 				});
 			},
@@ -193,8 +193,9 @@ var plugin_HTML5Storage = {
 				$.each(window.localStorage, function(key, value) {
 					if (key.substring(0, app.config.name.length) == app.config.name) {
 						newkey = key.substring(app.config.name.length + 1);
-						var comp1 = newkey.substring(0, plugin_HTML5Storage.functions.pufferedFormValuePrefix.length).toLowerCase();
-						var comp2 = plugin_HTML5Storage.functions.pufferedFormValuePrefix.toLowerCase();
+						var comp1, comp2;
+						comp1 = newkey.substring(0, plugin_HTML5Storage.functions.pufferedFormValuePrefix.length).toLowerCase();
+						comp2 = plugin_HTML5Storage.functions.pufferedFormValuePrefix.toLowerCase();
 						// console.log(comp1 + " == " + comp2);
 						// console.log(comp2);
 						if (comp1 == comp2) {
@@ -211,8 +212,7 @@ var plugin_HTML5Storage = {
 			},
 			show : function() {
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.show()', 3);
-				var string = '';
-				var i = 0;
+				var string = '', i = 0;
 				$.each(window.localStorage, function(key, value) {
 					if (key.substring(0, app.config.name.length) == app.config.name) {
 						string += key + "\n" + plugin_HTML5Storage.getSpace(app.config.name.length + 1) + key.substring(app.config.name.length + 1) + " = "

@@ -37,7 +37,7 @@ var plugin_FormInputDesigner = {
 	// private functions
 	getAttributes : function(options) {
 		app.debug.alert("plugin_FormInputDesigner.getAttributes()", 5);
-		var attributes = 'class="' + plugin_FormInputDesigner.getClasses(options) + '"';
+		var attributes = 'class="' + plugin_FormInputDesigner.getClasses(options) + '"', styles = '';
 		if (options.placeholder != undefined)
 			attributes += ' placeholder="' + options.placeholder + '"';
 		if (options.id != undefined)
@@ -52,7 +52,6 @@ var plugin_FormInputDesigner = {
 			});
 		}
 		if (options.styles != undefined) {
-			var styles = '';
 			$.each(options.styles, function(key, value) {
 				styles += ' ' + key + ':' + value + ';';
 			});
@@ -73,18 +72,16 @@ var plugin_FormInputDesigner = {
 
 	getLabel : function(options) {
 		app.debug.alert("plugin_FormInputDesigner.getLabel()", 5);
-		var labelText = "";
-		if (options.labelText != undefined)
+		var labelText = "", visible = "", forId = "";
+		if (options.labelText != undefined) {
 			labelText = options.labelText;
-
-		var visible = "";
-		if (options.label != undefined && !options.label)
-			var visible = "ui-hidden-accessible app-form-label-hidden";
-
-		var forId = "";
-		if (options.id != undefined)
+		}
+		if (options.label != undefined && !options.label) {
+			visible = "ui-hidden-accessible app-form-label-hidden";
+		}
+		if (options.id != undefined) {
 			forId += ' for="' + options.id + '"';
-
+		}
 		return '<label ' + forId + ' class="' + visible + '">' + labelText + '</label>';
 	},
 
@@ -104,30 +101,30 @@ var plugin_FormInputDesigner = {
 	generateInput : function(options, type) {
 		app.debug.alert("plugin_FormInputDesigner.generateInput(" + options + ", " + type + ")", 14);
 		options = plugin_FormInputDesigner.verifyOptions(options);
-		var attributes = plugin_FormInputDesigner.getAttributes(options);
-		var input = '<input type="' + type + '"  ' + attributes + ' />';
-		var label = "";
+		var attributes = plugin_FormInputDesigner.getAttributes(options), input = '<input type="' + type + '"  ' + attributes + ' />', label = "", html;
 		if (options.label != undefined && options.label == true)
 			label = plugin_FormInputDesigner.getLabel(options);
-		if (options.container != undefined && options.container)
-			var html = plugin_FormInputDesigner.wrapInContainer(label, input);
-		else
-			var html = label + input;
+
+		if (options.container != undefined && options.container) {
+			html = plugin_FormInputDesigner.wrapInContainer(label, input);
+		} else {
+			html = label + input;
+		}
 		return html;
 	},
 
 	generateOutput : function(options, type) {
 		app.debug.alert("plugin_FormInputDesigner.generateOutput(" + options + ", " + type + ")", 14);
 		options = plugin_FormInputDesigner.verifyOptions(options);
-		var attributes = plugin_FormInputDesigner.getAttributes(options);
+		var attributes = plugin_FormInputDesigner.getAttributes(options), output;
 		if (options.text == undefined)
 			options.text = "";
 		switch (type) {
 		case 'img':
-			var output = '<' + type + ' ' + attributes + '/>';
+			output = '<' + type + ' ' + attributes + '/>';
 			break;
 		default:
-			var output = '<' + type + ' ' + attributes + '>' + options.text + '</' + type + '>';
+			output = '<' + type + ' ' + attributes + '>' + options.text + '</' + type + '>';
 			break;
 		}
 
@@ -145,15 +142,13 @@ var plugin_FormInputDesigner = {
 			form : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.form.form()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
-				var type = "form";
+				var type = "form", attributes = plugin_FormInputDesigner.getAttributes(options), output;
 				plugin_FormInputDesigner.addClassToOptions(options, "app-form");
 
-				var options = plugin_FormInputDesigner.verifyOptions(options);
-				var attributes = plugin_FormInputDesigner.getAttributes(options);
-				if (options.text == undefined)
+				if (options.text == undefined) {
 					options.text = "";
-
-				var output = '<' + type + ' ' + attributes + '>' + options.text + '</' + type + '>';
+				}
+				output = '<' + type + ' ' + attributes + '>' + options.text + '</' + type + '>';
 
 				return $(output);
 			}
@@ -176,7 +171,7 @@ var plugin_FormInputDesigner = {
 			textarea : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.text.textarea()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
-				var type = "text";
+				//var type = "text";
 				// options.classes.push("app-form-input-text");
 				// return plugin_FormInputDesigner.generateInput(options, type);
 			},
@@ -319,15 +314,13 @@ var plugin_FormInputDesigner = {
 			navbar : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.navigation.navbar()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
-				var attributes = plugin_FormInputDesigner.getAttributes(options);
-				var navbar = $('<div data-role="navbar" ' + attributes + '></div>');
+				var attributes = plugin_FormInputDesigner.getAttributes(options), navbar = $('<div data-role="navbar" ' + attributes + '></div>');
 				return navbar;
 			},
 			panel : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.navigation.panel()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
-				var attributes = plugin_FormInputDesigner.getAttributes(options);
-				var navbar = $('<div data-role="panel" ' + attributes + '></div>');
+				var attributes = plugin_FormInputDesigner.getAttributes(options), navbar = $('<div data-role="panel" ' + attributes + '></div>');
 				return navbar;
 			}
 		},
@@ -335,8 +328,7 @@ var plugin_FormInputDesigner = {
 			table : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.table.table()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
-				var attributes = plugin_FormInputDesigner.getAttributes(options);
-				var table = '<table ' + attributes + '><thead></thead><tbody></tbody></table>';
+				var attributes = plugin_FormInputDesigner.getAttributes(options), table = '<table ' + attributes + '><thead></thead><tbody></tbody></table>';
 				return $(table);
 			},
 			th : function(options) {

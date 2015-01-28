@@ -10,6 +10,7 @@
 		"JQueryMobilePopupAlert":"../template/JQueryMobilePopupAlert.html",
 		"app-loader-bubble":"../template/app.loader.bubble.html",
 		"app-loader-bubble-inline-button":"../template/app.loader.bubble.inline-button.html",
+		"app-loader-bubbleDiv":"../template/app.loader.bubbleDiv.html",
 		"themis":{
 			"ThemisHeaderContent":"../template/ThemisHeaderContent.html",
 			"ThemisNavigationPanelContent":"../template/ThemisNavigationPanelContent.html"

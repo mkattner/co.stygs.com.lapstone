@@ -73,7 +73,7 @@ var plugin_LoadExternalScripts = {
 				plugin_LoadExternalScripts.loadedScripts[url] = true;
 			}
 		},
-		javascript : function() {
+		javascript : function(url) {
 			app.debug.alert("plugin_LoadExternalScripts.functions.javascript(" + url + ")", 20);
 		}
 	}

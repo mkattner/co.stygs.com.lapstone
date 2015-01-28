@@ -187,7 +187,6 @@ var plugin_Notification = {
 					$("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
 					$("#popupDialog #btn-dialog-right").text(notification.buttonRight);
 
-					
 					if (typeof notification.text == "object") {
 						$("#popupDialog div.ui-content p").html(notification.text);
 					} else {
@@ -212,7 +211,7 @@ var plugin_Notification = {
 					plugin_Notification.notifications = null;
 				else {
 					// todo more popups
-					var notification = plugin_Notification.notifications['1'];
+					notification = plugin_Notification.notifications['1'];
 					// alert(JSON.stringify(notification));
 					delete plugin_Notification.notifications['1'];
 					setTimeout(function() {
@@ -336,6 +335,32 @@ var plugin_Notification = {
 			}
 		},
 		push_onNotification : function() {
+		},
+		loader : {
+			bubble : function(show) {
+				if (show) {
+					app.template.append("div[data-role=content]", "app-loader-bubble");
+				} else {
+					plugin_Notification.functions.loader.remove();
+				}
+			},
+			bubbleDiv : function(show, text, headline) {
+				if (show) {
+					var loader = app.template.get("app-loader-bubbleDiv");
+					if (text != undefined) {
+						loader.find("p").text(text);
+					}
+					if (headline != undefined) {
+						loader.find("h1").text(headline)
+					}
+					$("div[data-role=content]").append(loader);
+				} else {
+					plugin_Notification.functions.loader.remove();
+				}
+			},
+			remove : function() {
+				$(".app-loader").remove();
+			}
 		}
 
 	}

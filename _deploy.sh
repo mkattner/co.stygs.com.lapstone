@@ -109,6 +109,7 @@ echo "**************************************************************************
         echo "---- copy lapstone.js"
         cp ./www/js/lapstone.js $1/www/js/
         cp -n ./www/js/lapstone.json $1/www/js/
+        cp -n ./www/js/lapstone.html $1/www/js/
 
 echo "***************************************************************************************************************"
 echo "- x copy minifyer"
