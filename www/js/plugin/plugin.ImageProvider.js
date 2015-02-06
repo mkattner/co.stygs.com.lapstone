@@ -10,38 +10,61 @@ var plugin_ImageProvider = {
 	images : {},
 	// called by plugins.js
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
+	},
+
+	loadDefinitionFile : function(path) {
+		var dfd = $.Deferred(), promise;
+		promise = globalLoader.AsyncJsonLoader(path);
+		// alert(JSON.stringify(json));
+
+		promise.done(function(json) {
+			$.each(json, function(id, url) {
+				// alert(id + " = " + url);
+				plugin_ImageProvider.images[id] = url;
+			});
+			dfd.resolve();
+		});
+		promise.fail(function() {
+			dfd.reject();
+		});
+
+		return dfd.promise();
 	},
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
-		
-		try {
-			$.each(plugin_ImageProvider.config.imgdFiles, function(path, loadFile) {
-				if (loadFile) {
-					var json = JsonLoader(path);
-					// alert(JSON.stringify(json));
-					$.each(json, function(id, url) {
-						// alert(id + " = " + url);
-						plugin_ImageProvider.images[id] = url;
-					});
-				}
-			});
-			// alert(JSON.stringify(plugin_ImageProvider.images));
-			success = true;
-		} catch (err) {
-			app.debug.alert("Fatal exception!\n\n" + JSON.stringify(err, null, 4), 50);
-			app.debug.log(JSON.stringify(err, null, 4));
-			success = false;
-		}
-		return success;
+		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
+
+		$.each(plugin_ImageProvider.config.imgdFiles, function(path, loadFile) {
+			if (loadFile) {
+				promises.push(plugin_ImageProvider.loadDefinitionFile(path));
+			}
+		});
+
+		promiseOfPromises = $.when.apply($, promises);
+
+		promiseOfPromises.done(function() {
+			dfd.resolve();
+		});
+		promiseOfPromises.done(function() {
+			dfd.reject();
+		});
+
+		return dfd.promise();
 	},
 
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
 	},
 

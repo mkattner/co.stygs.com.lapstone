@@ -3,5 +3,7 @@
 	"shortname":"start",
 	"useKeepAlive":false,
 	"loginObligate":false,
-	"isGlobalPage":true
+	"isGlobalPage":true,
+	"contentRefresh":true,
+	"contentRefreshTimeout":10000
 }

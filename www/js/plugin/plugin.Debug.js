@@ -85,6 +85,9 @@ var plugin_Debug = {
 	 * 
 	 */
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	/**
@@ -94,6 +97,9 @@ var plugin_Debug = {
 	 */
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	// called after all pages are loaded
@@ -104,6 +110,9 @@ var plugin_Debug = {
 	 */
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 	/**
 	 * Define the jQuery event delegations for the plugin. Called by pages.js

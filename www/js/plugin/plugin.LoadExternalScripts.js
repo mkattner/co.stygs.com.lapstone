@@ -10,9 +10,15 @@ var plugin_LoadExternalScripts = {
 	loadedScripts : {},
 	// called by plugins.js
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+
+		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
+		console.log("todo");
 		$.each(plugin_LoadExternalScripts.config.scripts.css, function(key, value) {
 			if (value) {
 				if (key in plugin_LoadExternalScripts.loadedScripts) {
@@ -27,26 +33,29 @@ var plugin_LoadExternalScripts = {
 		});
 		$.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
 			if (value) {
-				var url = key;
-				$.ajax({
-					url : url,
-					dataType : "script",
-					async : false,
-					success : function(data, textStatus, jqXHR) {
-						;
-					},
-					error : function(jqXHR, textStatus, errorThrown) {
-						alert("Fatal error in plugin_LoadExternalScripts.js: Can't load the javascript. Url: " + key + " Error: " + textStatus);
-						alert(errorThrown);
-					}
-				});
+				promises.push(globalLoader.AsyncScriptLoader(key));
 			}
 		});
+
+		promiseOfPromises = $.when.apply($, promises);
+
+		promiseOfPromises.done(function() {
+			dfd.resolve();
+		});
+		
+		promiseOfPromises.fail(function() {
+			dfd.reject();
+		})
+
+		return dfd.promise();
 	},
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	definePluginEvents : function() {

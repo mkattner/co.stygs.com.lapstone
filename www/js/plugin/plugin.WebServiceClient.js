@@ -8,11 +8,15 @@ var plugin_WebServiceClient = {
 	config : null,
 	interval : null,
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
 	},
 	pluginsLoaded : function() {
 		app.debug.alert("plugin.WebServiceClient.js ~ " + this.config.name + ".pluginsLoaded()", 11);
 		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.pluginsLoaded() - try first keep alive", 5);
+		var dfd = $.Deferred();
 		if (plugin_WebServiceClient.config.useKeepAlive) {
 			app.debug
 					.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.pluginsLoaded() case: plugin_WebServiceClient.config.useKeepAlive == true", 5);
@@ -28,11 +32,17 @@ var plugin_WebServiceClient = {
 			plugin_WebServiceClient.interval = window.setInterval("plugin_WebServiceClient.keepAliveRequest()",
 					plugin_WebServiceClient.config.keepAlive.keepAliveIntervalInS * 1000);
 		}
+
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
 		app.debug.alert("plugin.WebServiceClient.js ~ plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	definePluginEvents : function() {

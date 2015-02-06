@@ -7,9 +7,15 @@
 var plugin_jQueryExtend = {
 	config : null,
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+
+		var dfd = $.Deferred();
+		
 		(function($) {
 			// Attrs
 			$.fn.attrs = function(attrs) {
@@ -40,11 +46,16 @@ var plugin_jQueryExtend = {
 				}
 			};
 		})(jQuery);
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	definePluginEvents : function() {

@@ -1,135 +1,206 @@
 var pages = {
 	config : null,
 	pageNames : [],
+	refreshInterval : null,
 	constructor : function() {
-		if (window.globalPage == undefined) {
-			var url = "../files/globalPage.js";
-			$.ajax({
-				url : url,
-				dataType : "script",
-				async : false,
-				success : function(data, textStatus, jqXHR) {
-					;
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					alert("Fatal error in plugin_//globalPage.js: Can't load the javascript. Url: " + url + " Error: " + textStatus);
-					alert(errorThrown);
-				}
-			});
-		}
+		var dfd = $.Deferred();
 
-		pages.loadPageConfig();
-		pages.verifyPageNames();
-		pages.loadPages();
-		pages.setEvents();
-		pages.callPluginsPagesLoaded();
+		// reverse order
+		startup.addFunction("call plugins' page funtions", pages.callPluginsPagesLoaded, "");
+		startup.addFunction("set page event", pages.setEvents, "");
+		startup.addFunction("load all pages", pages.loadPages, "");
+		startup.addFunction("vrify page names", pages.verifyPageNames, "");
+		startup.addFunction("load all page configs", pages.loadPageConfig, "");
+		startup.addFunction("load global page", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
+
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	callPluginsPagesLoaded : function() {
+		var dfd = $.Deferred();
+
 		$.each(plugins.pluginNames, function(key, value) {
 			window['plugin_' + value].pagesLoaded();
 		});
+
+		dfd.resolve();
+		return dfd.promise();
+
 	},
 
 	loadPageConfig : function() {
+		var dfd = $.Deferred(), promise;
+
 		if (app.config.min) {
 			pages.config = config_json;
+			dfd.resolve();
 		} else {
-			var url = "../js/page/pages.json";
-			$.ajax({
-				url : url,
-				async : false,
-				dataType : "json",
-				success : function(json) {
-					pages.config = json;
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					alert("Fatal error in pages.js: Can't load page. Url: " + url + " Error: " + textStatus);
-				}
+			promise = globalLoader.AsyncJsonLoader("../js/page/pages.json");
+			promise.done(function(json) {
+				pages.config = json;
+				dfd.resolve();
+			});
+			promise.fail(function() {
+				dfd.reject();
 			});
 		}
+
+		return dfd.promise();
+
 	},
 
 	verifyPageNames : function() {
+		var dfd = $.Deferred();
+
+		dfd.resolve();
+		return dfd.promise();
+
+	},
+
+	loadPageConfiguration : function(key) {
+		var dfd = $.Deferred(), promise;
+		if (app.config.min) {
+			window['page_' + key].config = window['config_' + key];
+			dfd.resolve();
+		} else {
+			promise = globalLoader.AsyncJsonLoader("../js/page/page." + key + ".json");
+			promise.done(function(json) {
+				window['page_' + key].config = json;
+				dfd.resolve();
+			});
+			promise.fail(function() {
+				dfd.reject();
+			});
+		}
+		// 
+		return dfd.promise();
 	},
 
 	onPageLoaded : function(key) {
+		var dfd = $.Deferred(), promise, promiseConfiguration;
+
 		if (window['page_' + key] == undefined) {
 			alert("Fatal error: Page class is not defined: page_" + key);
 			return;
 		}
 
-		if (app.config.min) {
-			window['page_' + key].config = window['config_' + key];
-		} else {
-			window['page_' + key].config = JsonLoader("../js/page/page." + key + ".json");
-		}
+		promiseConfiguration = pages.loadPageConfiguration(key);
 
-		if (window['page_' + key].config.name == undefined) {
-			alert("Fatal error: The property 'name' is not defined in JSON file: ../js/page." + key + ".json")
-			return false;
-		}
-		if (window['page_' + key].config.shortname == undefined) {
-			alert("Fatal error: The property 'shortname' is not defined in JSON file: ../js/page." + key + ".json")
-			return false;
-		}
+		promiseConfiguration.done(function() {
+			if (window['page_' + key].config.name == undefined) {
+				alert("Fatal error: The property 'name' is not defined in JSON file: ../js/page." + key + ".json")
+				return false;
+			}
+			if (window['page_' + key].config.shortname == undefined) {
+				alert("Fatal error: The property 'shortname' is not defined in JSON file: ../js/page." + key + ".json")
+				return false;
+			}
 
-		window['page_' + key].constructor();
-		window['page_' + key]['config']['page'] = key;
-		window['page_' + key]['config']['pageId'] = '#' + key;
+			// insert promise
+			promise = window['page_' + key].constructor();
+			promise.done(function() {
+				window['page_' + key]['config']['page'] = key;
+				window['page_' + key]['config']['pageId'] = '#' + key;
 
-		app.addObject(window['page_' + key].config.name, window['page_' + key].functions);
-		app.addObject(window['page_' + key].config.shortname, window['page_' + key].functions);
+				app.addObject(window['page_' + key].config.name, window['page_' + key].functions);
+				app.addObject(window['page_' + key].config.shortname, window['page_' + key].functions);
 
-		pages.pageNames.push(key);
+				pages.pageNames.push(key);
+
+				dfd.resolve();
+			});
+			promise.fail(function() {
+				dfd.reject();
+			});
+
+		});
+
+		promiseConfiguration.fail(function() {
+			dfd.reject();
+		});
+
+		return dfd.promise();
 
 	},
 
 	loadPages : function() {
-		var success = true;
+		var dfd = $.Deferred(), promises_js = Array(), promiseOfPromises_js, promises_func = Array(), promiseOfPromises_func;
+
 		$.each(pages.config, function(key, value) {
 			if (app.config.min) {
-				success = pages.onPageLoaded(key);
+				promises_js.push(pages.onPageLoaded(key));
 			} else {
-				var url = "../js/page/page." + key + ".js";
-				$.ajax({
-					url : url,
-					async : false,
-					dataType : "script",
-					success : function(json) {
-						success = pages.onPageLoaded(key);
-					},
-					error : function() {
-						alert("Fatal Error: Can't load page: " + url);
-					}
-				});
+				promises_js.push(globalLoader.AsyncScriptLoader("../js/page/page." + key + ".js"));
 			}
 		});
-		// set the plugins' events for pages
-		pages.callPluginPageEventFunctions();
+		promiseOfPromises_js = $.when.apply($, promises_js);
+
+		if (app.config.min) {
+			promiseOfPromises_js.done(function() {
+				dfd.resolve();
+			});
+			promiseOfPromises_js.fail(function() {
+				dfd.reject();
+			});
+		} else {
+
+			promiseOfPromises_js.done(function() {
+				$.each(pages.config, function(key, value) {
+					promises_func.push(pages.onPageLoaded(key));
+				});
+
+				promiseOfPromises_func = $.when.apply($, promises_func);
+
+				promiseOfPromises_func.done(function() {
+					pages.callPluginPageEventFunctions();
+					dfd.resolve();
+				});
+				promiseOfPromises_func.fail(function() {
+					dfd.reject()
+				});
+			});
+			promiseOfPromises_js.fail(function() {
+				dfd.reject();
+			});
+		}
+		return dfd.promise();
+
 	},
 
 	// call plugins' page functions
 	// is called only once
 	// use delegates in plugins
 	callPluginPageEventFunctions : function() {
+		var dfd = $.Deferred();
 
 		$.each(plugins.pluginNames, function(key, value) {
 			app.debug.alert("pages.js ~ try to call: plugin_" + value + ".pageSpecificEvents()", 6);
 			window['plugin_' + value].pageSpecificEvents();
 		});
+
+		dfd.resolve();
+		return dfd.promise();
+
 	},
 
 	// call plugins' page functions
 	// by pagebeforecreate
 	callPluginsPageFunctions : function(container) {
+		var dfd = $.Deferred();
+
 		var success = true;
 		// alert("plugin page functin");
 		$.each(plugins.pluginNames, function(key, value) {
 			window['plugin_' + value].afterHtmlInjectedBeforePageComputing(container);
 		});
+
+		dfd.resolve();
+		return dfd.promise();
+
 	},
 	setEvents : function() {
+		var dfd = $.Deferred();
 
 		// jQuery Mobile Events
 
@@ -263,6 +334,10 @@ var pages = {
 			app.debug.alert("pages.js ~ jQuery mobile event: pageshow for: " + $(this).attr('id'), 5);
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pageshow");
 		});
+
+		dfd.resolve();
+		return dfd.promise();
+
 	},
 
 	// a function for each event
@@ -314,12 +389,19 @@ var pages = {
 			},
 			pagebeforehide : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforehide(" + event + ", " + container + ")", 5);
+
+				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagehide: clear refresh interval", 5);
+				/*
+				 */
 			},
 			pagebeforeload : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforeload(" + event + ", " + container + ")", 5);
 			},
 			pagebeforeshow : function(event, container) {
-				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagechange(" + event + ", " + container + ")", 5);
+				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforeshow(" + event + ", " + container + ")", 5);
+
+				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforeshow: check refresh interval", 5);
+
 			},
 			pagechange : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagechange(" + event + ", " + container + ")", 5);
@@ -333,6 +415,7 @@ var pages = {
 			pagehide : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagehide(" + event + ", " + container + ")", 5);
 
+				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagehide: clear page specific event delegates", 5);
 				$("#" + container.attr("id")).off();
 				$(document).off("#" + container.attr("id"));
 
@@ -528,6 +611,11 @@ var pages = {
 			pagebeforehide : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + container + ")", 5);
 				window['page_' + container.attr('id')].events.pagebeforehide(event, container);
+
+				if (pages.refreshInterval != null) {
+					clearInterval(pages.refreshInterval);
+					pages.refreshInterval = null;
+				}
 			},
 			pagebeforeload : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforeload(" + event + ", " + container + ")", 5);
@@ -536,6 +624,21 @@ var pages = {
 			pagebeforeshow : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + container + ")", 5);
 				window['page_' + container.attr('id')].events.pagebeforeshow(event, container);
+
+				if (window['page_' + container.attr('id')].config.contentRefresh == true) {
+					app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforeshow: set refresh interval every "
+							+ window['page_' + container.attr('id')].config.contentRefreshInterval + " ms", 5);
+
+					pages.refreshInterval = window.setInterval(function() {
+						// $().empty();
+
+						$('div[data-role=content]').children().fadeOut(500).promise().then(function() {
+							$('div[data-role=content]').empty();
+							window['page_' + container.attr('id')].creator();
+						});
+
+					}, window['page_' + container.attr('id')].config.contentRefreshInterval);
+				}
 			},
 			pagechange : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + container + ")", 5);

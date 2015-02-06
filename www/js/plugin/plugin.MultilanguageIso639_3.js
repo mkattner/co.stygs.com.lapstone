@@ -9,14 +9,23 @@ var plugin_MultilanguageIso639_3 = {
 	dictionary : null,
 	parameter : null,
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	definePluginEvents : function() {
@@ -69,7 +78,8 @@ var plugin_MultilanguageIso639_3 = {
 				text = plugin_MultilanguageIso639_3.dictionary[id];
 			} else {
 				if (plugin_MultilanguageIso639_3.dictionary[context] == undefined) {
-					text = "context doesn't exist: " + context;
+					// text = "context doesn't exist: " + context;
+					text = id;
 				} else {
 					text = plugin_MultilanguageIso639_3.dictionary[context][id];
 				}

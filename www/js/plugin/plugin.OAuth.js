@@ -9,12 +9,18 @@ var plugin_OAuth = {
 	config : null,
 	// called by plugins.js
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
 	},
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
 	},
 
@@ -22,6 +28,9 @@ var plugin_OAuth = {
 	// caller pages.js
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
 	},
 
@@ -82,6 +91,7 @@ var plugin_OAuth = {
 		},
 		getQueryString : function() {
 			try {
+				//console.log("todo");
 				return window.location.href.split('?')[1];
 			} catch (e) {
 				return '';
@@ -107,7 +117,7 @@ var plugin_OAuth = {
 			if (plugin_OAuth.desktopOAuth(url))
 				return;
 			else {
-
+				var dfd = $.Deferred(), loginWindow = window.open(url, '_blank', 'location=yes'), eventCount = 0;
 				$(loginWindow).on('loadstart', function(e) {
 					eventCount++;
 					if (eventCount > 2) {

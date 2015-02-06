@@ -7,14 +7,23 @@
 var plugin_FormInputDesigner = {
 	config : null,
 	constructor : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 	},
 
 	definePluginEvents : function() {
@@ -171,7 +180,7 @@ var plugin_FormInputDesigner = {
 			textarea : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.text.textarea()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
-				//var type = "text";
+				// var type = "text";
 				// options.classes.push("app-form-input-text");
 				// return plugin_FormInputDesigner.generateInput(options, type);
 			},
@@ -291,6 +300,38 @@ var plugin_FormInputDesigner = {
 				var type = "checkbox";
 				plugin_FormInputDesigner.addClassToOptions(options, "app-form-input-checkbox");
 				return plugin_FormInputDesigner.generateInput(options, type);
+			}
+		},
+		select : {
+			multiple : function(options) {
+				app.debug.alert("plugin_FormInputDesigner.functions.select.select()", 20);
+				options = plugin_FormInputDesigner.verifyOptions(options);
+
+				options.attributes['multiple'] = "multiple";
+
+				var type = "select", attributes = plugin_FormInputDesigner.getAttributes(options), output;
+				plugin_FormInputDesigner.addClassToOptions(options, "app-form-select-multiple");
+
+				if (options.text == undefined) {
+					options.text = "";
+				}
+
+
+				output = '<' + type + ' ' + attributes + '>' + options.text + '</' + type + '>';
+				return $( output);
+			},
+			option : function(options) {
+				app.debug.alert("plugin_FormInputDesigner.functions.select.option()", 20);
+				options = plugin_FormInputDesigner.verifyOptions(options);
+				var type = "option", attributes = plugin_FormInputDesigner.getAttributes(options), output;
+				plugin_FormInputDesigner.addClassToOptions(options, "app-form-select-option");
+
+				if (options.text == undefined) {
+					options.text = "";
+				}
+				output = '<' + type + ' ' + attributes + '>' + options.text + '</' + type + '>';
+
+				return $(output);
 			}
 		},
 		collabsible : {},
