@@ -1,3 +1,22 @@
+/*
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+/**
+ * @author Martin Kattner <martin.kattner@gmail.com>
+ */
+
 // data-html5-*
 /**
  * Plugin:
@@ -50,6 +69,7 @@ var plugin_HTML5Storage = {
 
 	// private functions
 	setDeep : function(el, key, value) {
+		console.warn("Fuction is deprecated. Use: app.help.object.setDeep");
 		app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.setDeep(' + el + ', ' + key + ', ' + value + ')', 20);
 		key = key.split('.');
 		var i = 0, n = key.length;
@@ -75,6 +95,7 @@ var plugin_HTML5Storage = {
 	},
 
 	getDeep : function(el, key) {
+		console.warn("Fuction is deprecated. Use: app.help.object.getDeep");
 		app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.getDeep(' + el + ', ' + key + ')', 20);
 		key = key.split('.');
 		var i = 0, n = key.length;
@@ -107,12 +128,15 @@ var plugin_HTML5Storage = {
 			if (/^(\+|\-){0,1}([0-9])+$/.test(value)) {
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue() - case: typeof value == integer', 20);
 				value = parseInt(value);
+				if (/^(\+|\-){0,1}([0-9])+(\.){1}([0-9])+$/.test(value)) {
+					app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue() - case: typeof value == float', 20);
+					value = parseFloat(value);
+				}
+			} else {
+				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue() - case: value == ???', 20);
 			}
 			// is float?
-			if (/^(\+|\-){0,1}([0-9])+(\.){1}([0-9])+$/.test(value)) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue() - case: typeof value == float', 20);
-				value = parseFloat(value);
-			}
+
 			break;
 		}
 		app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue() - return: ' + value, 20);
@@ -129,11 +153,6 @@ var plugin_HTML5Storage = {
 	// public functions
 	functions : {
 		pufferedFormValuePrefix : "pufferedFormValue-",
-		loadValueIntoObject : function(locator) {
-			app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.loadValueIntoObject(' + locator + ')', 20);
-			var propertyLocation = locator.substring("config.".length), value = this.localStorage.get(locator);
-			plugin_HTML5Storage.setDeep(window, propertyLocation, value);
-		},
 
 		localStorage : {
 			set : function(key, val) {

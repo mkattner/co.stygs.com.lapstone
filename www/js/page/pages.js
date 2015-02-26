@@ -1,7 +1,30 @@
+/*
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+/**
+ * @author Martin Kattner <martin.kattner@gmail.com>
+ */
+
 var pages = {
 	config : null,
 	pageNames : [],
 	refreshInterval : null,
+
+	// history of pages
+	history : [],
+
 	constructor : function() {
 		var dfd = $.Deferred();
 
@@ -222,6 +245,7 @@ var pages = {
 				'.app-page',
 				function(event) {
 					app.debug.alert("pages.js ~ jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'), 5);
+
 					pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforecreate");
 					// ---
 					//
@@ -332,6 +356,9 @@ var pages = {
 		 */
 		$(document).on('pageshow', '.app-page', function(event) {
 			app.debug.alert("pages.js ~ jQuery mobile event: pageshow for: " + $(this).attr('id'), 5);
+
+			pages.history.push($(this).attr('id'));
+
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pageshow");
 		});
 
@@ -515,6 +542,7 @@ var pages = {
 			},
 			pagebeforeshow : function(event, container, staticContainer) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")", 5);
+
 			},
 			pagechange : function(event, container, staticContainer) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")", 5);
@@ -574,11 +602,13 @@ var pages = {
 										.alert(
 												"pages.js ~ Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.",
 												60);
-								app.notify.add.alert(app.lang.string("bad_connection_text", "app-keepAlive"), false, app.lang.string("bad_connection_headline",
-										"app-keepAlive"), app.lang.string("ok", "actions"));
-								app.store.localStorage.clearHtml5();
-								$(document).off();
-								app.help.navigation.redirect(app.config.startPage);
+								// app.notify.add.alert(app.lang.string("bad_connection_text",
+								// "app-keepAlive"), false,
+								// app.lang.string("bad_connection_headline","app-keepAlive"),
+								// app.lang.string("ok", "actions"));
+								// app.store.localStorage.clearHtml5();
+								// $(document).off();
+								app.help.navigation.redirect(app.config.badConnectionPage, "slideup");
 							}
 						} else {
 							app.debug.alert(
@@ -597,8 +627,51 @@ var pages = {
 			},
 			pagebeforecreate_createPage : function(event, container) {
 				app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(" + event + ", " + container + ")", 5);
+				var promise, elements = null;
 				window['page_' + container.attr('id')].events.pagebeforecreate(event, container);
-				window['page_' + container.attr('id')].creator(container);
+
+				// preload template
+				if (window['page_' + container.attr('id')].config.template != undefined) {
+					if (typeof window['page_' + container.attr('id')].config.template == "string"
+							&& window['page_' + container.attr('id')].config.template.length > 1) {
+
+						app.template.overwrite("#" + container.attr("id"), window['page_' + container.attr('id')].config.template);
+						elements = app.template.elements(window['page_' + container.attr('id')].config.template);
+
+						$.each(elements, function(name, selector) {
+							elements[name] = container.find(selector);
+						});
+
+						window['page_' + container.attr('id')].elements = elements;
+					}
+				}
+
+				// async or not async
+				if (window['page_' + container.attr('id')].config.asyncLoading === true) {
+					app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage page IS async", 5);
+
+					window['page_' + container.attr('id')].async.elements = window['page_' + container.attr('id')].elements;
+					promise = window['page_' + container.attr('id')].async.creator(container);
+
+					promise.done(function(result) {
+						window['page_' + container.attr('id')].async.result = result;
+						window['page_' + container.attr('id')].async.done(container);
+					});
+
+					promise.fail(function(error) {
+						window['page_' + container.attr('id')].async.result = error;
+						window['page_' + container.attr('id')].async.fail(container);
+					});
+
+					promise.always(function() {
+						window['page_' + container.attr('id')].async.always(container);
+					});
+
+				} else {
+					app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage page IS NOT async", 5);
+					window['page_' + container.attr('id')].creator(container);
+				}
+
 				window['page_' + container.attr('id')].setEvents(container);
 				// call plugins' page functions
 				app.debug.alert('pages.js ~ Call: pages.callPluginsPageFunctions()', 5);
@@ -634,7 +707,7 @@ var pages = {
 
 						$('div[data-role=content]').children().fadeOut(500).promise().then(function() {
 							$('div[data-role=content]').empty();
-							window['page_' + container.attr('id')].creator();
+							window['page_' + container.attr('id')].creator(container);
 						});
 
 					}, window['page_' + container.attr('id')].config.contentRefreshInterval);

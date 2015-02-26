@@ -1,3 +1,22 @@
+/*
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+/**
+ * @author Martin Kattner <martin.kattner@gmail.com>
+ */
+
 // ~/www/js$ jsdoc ./ -r -p -d documentation
 /**
  * Plugin: plugin_HelperFunctions
@@ -169,6 +188,40 @@ var plugin_HelperFunctions = {
 			redirectAndReload : function(url) {
 				$.mobile.ajaxEnabled = false;
 				window.location.replace(url);
+			}
+		},
+		object : {
+			setDeep : function(el, key, value) {
+				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.setDeep(" + el + ", " + key + ", " + value + ")", 20);
+				key = key.split('.');
+				var i = 0, n = key.length;
+				for (; i < n - 1; ++i) {
+					el = el[key[i]];
+				}
+				el[key[i]] = value;
+			},
+
+			setDeepBase64Key : function(el, key, value) {
+				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.setDeepBase64Key(" + el + ", " + key + ", " + value + ")",
+						20);
+				key = key.split('.');
+				var i = 0, n = key.length;
+				for (; i < n - 1; ++i) {
+					el = el[atob(key[i])];
+				}
+				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.setDeepBase64Key - " + el[atob(key[i])] + " = " + value,
+						20);
+				el[atob(key[i])] = value;
+			},
+
+			getDeep : function(el, key) {
+				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.getDeep(" + el + ", " + key + ")", 20);
+				key = key.split('.');
+				var i = 0, n = key.length;
+				for (; i < n; ++i) {
+					el = el[key[i]];
+				}
+				return el;
 			}
 		},
 		form : {

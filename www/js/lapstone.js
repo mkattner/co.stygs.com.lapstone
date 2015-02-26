@@ -1,4 +1,26 @@
+/*
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+/**
+ * @author Martin Kattner <martin.kattner@gmail.com>
+ */
+
 // app.store.localStorage.clear();
+
+//window.localStorage.clear();
+
 var app = {
 	config : {
 		name : "app",
@@ -65,6 +87,11 @@ function loadConfiguration() {
 	promise = globalLoader.AsyncJsonLoader("../js/lapstone.json");
 
 	promise.done(function(configuration) {
+		$.each(configuration, function(k, v) {
+			app.config[k] = v
+		});
+
+		console.log("TODO - clean lapstone configuration loading");
 		app.config.name = configuration.appname;
 		app.config['startPage'] = configuration.startPage;
 		app.config['startPage_loggedIn'] = configuration.startPage_loggedIn;
@@ -81,7 +108,7 @@ function loadConfiguration() {
 function enchantPages() {
 	var dfd = $.Deferred(), promise;
 
-	promise = globalLoader.AsyncScriptLoader("../ext/jquery.mobile-1.4.5.min.js");
+	promise = globalLoader.AsyncScriptLoader("../ext/jQueryMobile/jquery.mobile.min.js");
 
 	promise.done(function() {
 		initialisationPanel.changeStatus("jquery mobile  loaded");
@@ -223,7 +250,7 @@ $(document).bind("mobileinit", function() {
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-	//alert("cordova initialized", 30);
+	// alert("cordova initialized", 30);
 	app.config.apacheCordova = true;
 }
 
@@ -371,7 +398,8 @@ $(document).ready(function() {
 		// alert("init done");
 		setTimeout(function() {
 
-			initialisationPanel.finish()
+			initialisationPanel.finish();
+			console.log("TODO - cleanup framework loading");
 		}, 200);
 	});
 

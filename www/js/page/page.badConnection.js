@@ -1,7 +1,24 @@
-var page___Pagename__ = {
-	config : null,
+/*
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
-	elements : null,
+/**
+ * @author Martin Kattner <martin.kattner@gmail.com>
+ */
+
+var page_badConnection = {
+	config : null,
 
 	constructor : function() {
 		app.debug.alert("page_" + this.config.name + ".constructor()", 10);
@@ -14,41 +31,27 @@ var page___Pagename__ = {
 	// load the html structure
 	creator : function(container) {
 		app.debug.alert("page_" + this.config.name + ".creator()", 10);
+		app.template.overwrite("#" + container.attr("id"), "JQueryMobilePlainPage");
+		$.each(app.detect.classes.array(), function(key, name) {
+			if (!$('body').hasClass(key))
+				$('body').addClass(key);
+		});
+		var content = container.find('div[data-role=content]');
+		content.append(app.ni.element.h1({
+			"text" : "Bad Connection"
+		}));
+		content.append(app.ni.element.p({
+			"text" : "Check your internet connection. You will be redirected after your connection is back again."
+		}));
 
-	},
-
-	async : {
-		promise : null,// to implement
-
-		result : null,
-
-		elements : null,
-
-		creator : function(container) {
-
-		},
-
-		call : function(container) {
-			return app.rc.getJson();
-		},
-
-		done : function(container) {
-		},
-
-		fail : function(container) {
-		},
-
-		always : function(container) {
-		},
-
-		abort : function(container) {
-		}
 	},
 
 	// set the jquery events
 	setEvents : function(container) {
 		app.debug.alert("page_" + this.config.name + ".setEvents()", 10);
-
+		$(this.config.pageId).on("connectionisalive", function(event, duration) {
+			app.help.navigation.back();
+		});
 	},
 
 	events : {

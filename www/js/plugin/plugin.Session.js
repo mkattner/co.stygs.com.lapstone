@@ -1,3 +1,22 @@
+/*
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+/**
+ * @author Martin Kattner <martin.kattner@gmail.com>
+ */
+
 // ~/www/js$ jsdoc ./ -r -p -d documentation
 /**
  * Plugin: plugin_Session
@@ -75,7 +94,11 @@ var plugin_Session = {
 				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined", 20);
 				app.debug.alert("plugin_Session.functions.loggedIn() - return: "
 						+ app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey), 20);
-				return app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey);
+				if (app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey) == null) {
+					return false;
+				} else {
+					return true;
+				}
 			} else if (typeof value == "boolean") {
 				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: typeof value == boolean", 20);
 				app.debug.alert("plugin_Session.functions.loggedIn() - set loged in to: " + value, 20);

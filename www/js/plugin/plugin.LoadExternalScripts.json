@@ -3,7 +3,7 @@
 	"shortname":"load",
 	"scripts":{
 		"css":{
-			"../ext/jquery.mobile-1.4.4.min.css":true,
+			"../ext/jQueryMobile/jquery.mobile.min.css":true,
 			"../css/fonts.css":true,
 			"../css/global.css":true,
 			"../css/platform.android.css":true,

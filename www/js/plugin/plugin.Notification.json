@@ -1,7 +1,7 @@
 {
 	"name":"Notification",
 	"shortname":"notify",
-	"enablePushNotifications":true,
+	"enablePushNotifications":false,
 	"pushConfig":{
 		"pushServerURL":"https://aerogeardev-stygs.rhcloud.com/",
 		"alias":"mkattner@stygs.com",

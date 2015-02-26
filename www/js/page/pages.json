@@ -1,3 +1,4 @@
 {
-	"start":true
+	"badConnection":		true,
+	"start":				true
 }

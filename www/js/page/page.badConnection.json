@@ -1,6 +1,6 @@
 {
-	"name":						"start",
-	"shortname":				"start",
+	"name":						"badConnection",
+	"shortname":				"badConnection",
 	"template":					"",
 	"useKeepAlive":				false,
 	"loginObligate":			false,

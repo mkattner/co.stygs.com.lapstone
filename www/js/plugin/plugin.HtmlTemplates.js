@@ -1,3 +1,22 @@
+/*
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+/**
+ * @author Martin Kattner <martin.kattner@gmail.com>
+ */
+
 /**
  * Plugin:
  * 
@@ -41,9 +60,9 @@ var plugin_HtmlTemplates = {
 		app.debug.alert("plugin_HtmlTemplates.getText(" + templateId + ", " + context + ")", 14);
 		var text = null, url = null;
 		if (context != undefined) {
-			url = plugin_HtmlTemplates.config.templates[context][templateId];
+			url = plugin_HtmlTemplates.config.templates[context][templateId]['url'];
 		} else {
-			url = plugin_HtmlTemplates.config.templates[templateId];
+			url = plugin_HtmlTemplates.config.templates[templateId]['url'];
 		}
 		if (text = globalLoader.TextLoader(url)) {
 			app.load.css(url.substr(0, url.lastIndexOf(".")) + ".css");
@@ -51,6 +70,20 @@ var plugin_HtmlTemplates = {
 		} else {
 			return false;
 		}
+	},
+
+	getElements : function(templateId, context) {
+		app.debug.alert("plugin_HtmlTemplates.getElements(" + templateId + ", " + context + ")", 14);
+		var elements;
+		if (context != undefined) {
+			elements = plugin_HtmlTemplates.config.templates[context][templateId]['elements'];
+		} else {
+			elements = plugin_HtmlTemplates.config.templates[templateId]['elements'];
+		}
+		if (elements == undefined)
+			return {};
+		else
+			return elements;
 	},
 
 	functions : {
@@ -70,6 +103,9 @@ var plugin_HtmlTemplates = {
 			app.debug.alert("plugin_HtmlTemplates.functions.overwrite(" + selector + ", " + templateId + ", " + context + ")", 20);
 			$(selector).empty();
 			$(selector).prepend(plugin_HtmlTemplates.functions.get(templateId, context));
+		},
+		elements : function(templateId, context) {
+			return plugin_HtmlTemplates.getElements(templateId, context);
 		}
 	}
 };
