@@ -117,7 +117,6 @@ var plugin_Informator = {
 		app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - if property is in html5 storage then use this value",
 				20);
 		app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - else use property from json file", 20);
-		console.log("TODO - remove try catch");
 
 		if (!configurationObject || configurationObject == undefined)
 			return;

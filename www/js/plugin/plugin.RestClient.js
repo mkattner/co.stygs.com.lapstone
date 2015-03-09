@@ -35,14 +35,13 @@ var plugin_RestClient = {
 		// load the webservice definitions
 		$.each(plugin_RestClient.config.wsdFiles, function(path, loadFile) {
 			if (loadFile) {
-				promises.push(plugin_RestClient.loadDefinitionFile(path));
+				promises.push(plugin_RestClient.loadDefinitionFileAsync(path));
 			}
 		});
 
 		promiseOfPromises = $.when.apply($, promises);
 
 		promiseOfPromises.done(function() {
-
 			dfd.resolve();
 		});
 		promiseOfPromises.fail(function() {
@@ -77,7 +76,7 @@ var plugin_RestClient = {
 		var dfd = $.Deferred(), promise;
 		promise = globalLoader.AsyncJsonLoader(path);
 
-		promise.done(function() {
+		promise.done(function(json) {
 			$.each(json, function(name, values) {
 				app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.loadDefinitionFile() - add: " + name, 20);
 				plugin_RestClient.config.webservices[name] = values;

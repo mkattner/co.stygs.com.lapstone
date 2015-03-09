@@ -25,7 +25,9 @@ var page___Pagename__ = {
 		elements : null,
 
 		creator : function(container) {
-
+			var dfd = $.Deferred();
+			dfd.resolve();
+			return dfd.promise();
 		},
 
 		call : function(container) {

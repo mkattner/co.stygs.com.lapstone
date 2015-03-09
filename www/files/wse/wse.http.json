@@ -1,0 +1,14 @@
+{
+	"400":{
+		"description":	"Bad Request",
+		"action":		""
+	},
+	"402":{
+		"description":	"Unauthorized",
+		"action":		""
+	},
+	"500":{
+		"description":	"Internal Server Error",
+		"action":		""
+	}
+}

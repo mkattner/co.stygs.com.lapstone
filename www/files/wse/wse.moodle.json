@@ -1,0 +1,10 @@
+{
+	"The username was not found in the database":{
+		"description":	"The username was not found in the database",
+		"action":		""
+	},
+	"Web service is not available (it doesn't exist or might be disabled)":{
+		"description":	"Web service is not available (it doesn't exist or might be disabled)",
+		"action":		""
+	}
+}

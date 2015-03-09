@@ -155,7 +155,9 @@ var plugin_HelperFunctions = {
 		jQM : {
 			enhance : function(object) {
 				// http://stackoverflow.com/questions/14550396/jquery-mobile-markup-enhancement-of-dynamically-added-content
+
 				object.find('[data-role=listview]').listview().listview('refresh');
+				object.find('[data-role=collapsible]').collapsible();
 				object.find('[type=button]').button();
 				object.find('[data-role=navbar]').navbar();
 				object.find('[type=text], textarea, [type=search], [type=password], [type=number]').textinput();

@@ -29,6 +29,7 @@ var plugin_Session = {
 	// called by plugins.js
 	constructor : function() {
 		var dfd = $.Deferred();
+		console.log("TODO - create session registry")
 		dfd.resolve();
 		return dfd.promise();
 
@@ -90,11 +91,11 @@ var plugin_Session = {
 	functions : {
 		loggedIn : function(value) {
 			app.debug.alert("plugin_Session.functions.loggedIn(" + value + ")", 20);
+			var storedValue = app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey);
 			if (value == undefined) {
 				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined", 20);
-				app.debug.alert("plugin_Session.functions.loggedIn() - return: "
-						+ app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey), 20);
-				if (app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey) == null) {
+				app.debug.alert("plugin_Session.functions.loggedIn() - return: " + storedValue, 20);
+				if (storedValue === null || storedValue === false) {
 					return false;
 				} else {
 					return true;
@@ -138,6 +139,10 @@ var plugin_Session = {
 					}
 				}
 			});
+		},
+		destroyAll : function() {
+			this.destroy();
+			console.log("TODO - implement");
 		},
 		setObject : function(name, object, prefix) {
 			prefix = plugin_Session.getPrefix(prefix);

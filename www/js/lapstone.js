@@ -18,9 +18,7 @@
  */
 
 // app.store.localStorage.clear();
-
-//window.localStorage.clear();
-
+// window.localStorage.clear();
 var app = {
 	config : {
 		name : "app",
@@ -143,6 +141,9 @@ var globalLoader = {
 		return dfd.promise();
 	},
 	JsonLoader : function(url) {
+		console
+				.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: "
+						+ url);
 		var json = null;
 		$.ajax({
 			url : url,
@@ -182,6 +183,9 @@ var globalLoader = {
 		return dfd.promise();
 	},
 	ScriptLoader : function(url) {
+		console
+				.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: "
+						+ url);
 		$.ajax({
 			url : url,
 			async : false,
@@ -213,6 +217,9 @@ var globalLoader = {
 		return dfd.promise();
 	},
 	TextLoader : function(url) {
+		console
+				.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: "
+						+ url);
 		var text = null;
 		$.ajax({
 			url : url,

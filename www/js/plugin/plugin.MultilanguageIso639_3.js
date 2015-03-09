@@ -97,7 +97,7 @@ var plugin_MultilanguageIso639_3 = {
 				text = plugin_MultilanguageIso639_3.dictionary[id];
 			} else {
 				if (plugin_MultilanguageIso639_3.dictionary[context] == undefined) {
-					// text = "context doesn't exist: " + context;
+					console.warn("Language: context doesn't exist: " + context);
 					text = id;
 				} else {
 					text = plugin_MultilanguageIso639_3.dictionary[context][id];
@@ -116,8 +116,10 @@ var plugin_MultilanguageIso639_3 = {
 					});
 				}
 				return text;
-			} else
-				return context + '.' + id + " = undefined";
+			} else{
+				console.warn("Language: "+ context + '.' + id + " = undefined");
+				return id;
+			}
 		},
 		list : function(language) {
 			var list = "";
@@ -134,6 +136,10 @@ var plugin_MultilanguageIso639_3 = {
 				}
 			});
 			return list;
+		},
+		set : function(language) {
+			plugin_MultilanguageIso639_3.loadLanguageIntoDict(language);
+			app.info.set("plugin_MultilanguageIso639_3.config.defaultLanguage", language);
 		}
 	}
 };

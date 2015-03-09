@@ -1,0 +1,20 @@
+{
+	"name":							"WebServiceError",
+	"shortname":					"wse",
+	"wseFiles":{
+		"../files/wse/wse.http.json":true,
+		"../files/wse/wse.moodle.json":true
+	},
+	"actions":{
+		"redirect":		"",
+		"logout":		"",
+		"alert":		"",
+		"confirmation":	""
+	},
+	"wse":	{
+		"Template WebServiceErrorDefinition":{
+			"description":	"Bad Request",
+			"action":		""
+		}
+	}
+}

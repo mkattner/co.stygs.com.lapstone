@@ -395,8 +395,6 @@ var pages = {
 			} else {
 				// case 4: page is a common lapstone page
 				app.debug.alert("pages.js ~ case: page is a common lapstone page", 5);
-				// alert(window["page_" +
-				// container.attr('id')].config.isGlobalPage)
 				if (window["page_" + container.attr('id')].config.isGlobalPage == true)
 					globalPage[eventName](event, container);
 				else if (window["page_" + container.attr('id')].config.isGlobalPage == undefined)
@@ -581,11 +579,12 @@ var pages = {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + container + ")", 5);
 
 				if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
-					app.notify.add.alert(app.lang.string("login_obligate_text", "app-session"), false, app.lang
-							.string("login_obligate_headline", "app-session"), app.lang.string("ok", "actions"));
-					app.store.localStorage.clearHtml5();
-					$(document).off();
-					app.help.navigation.redirect(app.config.startPage);
+					app.notify.add.alert(app.lang.string("login obligate text", "lapstone"), false, app.lang.string("login obligate headline", "lapstone"),
+							app.lang.string("login obligate confirm", "lapstone"));
+					// app.store.localStorage.clearHtml5();
+					app.sess.destroyAll();
+					// $(document).off();
+					app.help.navigation.redirect(app.config.startPage, "slidefade");
 				} else if (plugin_WebServiceClient.config.useKeepAlive) {
 					app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive", 5);
 					if (window['page_' + container.attr('id')].config.useKeepAlive != undefined) {
@@ -635,14 +634,23 @@ var pages = {
 					if (typeof window['page_' + container.attr('id')].config.template == "string"
 							&& window['page_' + container.attr('id')].config.template.length > 1) {
 
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - overwrite template", 20);
 						app.template.overwrite("#" + container.attr("id"), window['page_' + container.attr('id')].config.template);
-						elements = app.template.elements(window['page_' + container.attr('id')].config.template);
 
+						elements = app.template.elements(window['page_' + container.attr('id')].config.template);
+						window['page_' + container.attr('id')].elements = {};
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - set elements", 20);
 						$.each(elements, function(name, selector) {
-							elements[name] = container.find(selector);
+							app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - set: " + name, 20);
+							// alert(window['page_' +
+							// container.attr('id')].elements[name]);
+							window['page_' + container.attr('id')].elements[name] = container.find(selector);
 						});
 
-						window['page_' + container.attr('id')].elements = elements;
+						// alert('page_' + container.attr('id'));
+						// window['page_' + container.attr('id')].elements =
+						// elements;
+
 					}
 				}
 

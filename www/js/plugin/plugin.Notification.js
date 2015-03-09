@@ -250,12 +250,29 @@ var plugin_Notification = {
 					// alert(JSON.stringify(notification));
 					delete plugin_Notification.notifications['1'];
 					setTimeout(function() {
-						$("#popupAlert div[data-role=header] h1").text(notification.title);
-						$("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
+						if (notification.title) {
+							$("#popupAlert div[data-role=header] h1").text(notification.title);
+							$("#popupAlert div[data-role=header] h1").css("display", "block");
+						} else {
+							$("#popupAlert div[data-role=header] h1").css("display", "none");
+						}
+
+						if (notification.headline) {
+							$("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
+							$("#popupAlert div.ui-content h3.ui-title").css("display", "block");
+						} else {
+							$("#popupAlert div.ui-content h3.ui-title").css("display", "none");
+						}
+
 						$("#popupAlert #btn-alert").text(notification.button);
-						$("#popupAlert div.ui-content p").html(notification.text);
+
+						if (typeof notification.text == "object") {
+							$("#popupAlert div.ui-content p").replaceWith(notification.text);
+						} else {
+							$("#popupAlert div.ui-content p").html(notification.text);
+						}
+
 						$("#popupAlert").popup("open");
-						// $("#popupAlert").popup("reposition");
 					}, delay);
 				}
 			}

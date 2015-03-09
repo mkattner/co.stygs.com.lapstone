@@ -37,6 +37,13 @@
 				"put":"json",
 				"delete":"json"
 			},
+			"template":{
+				"scheme":"http",
+				"scheme_specific_part":"://",
+				"host":"themis-dev01.backmeup.at",
+				"port":8080,
+				"path":""
+			},
 			"first":{
 				"scheme":"http",
 				"scheme_specific_part":"://",
@@ -57,6 +64,13 @@
 				"get":"form",
 				"put":"form",
 				"delete":"form"
+			},
+			"template":{
+				"scheme":"http",
+				"scheme_specific_part":"://",
+				"host":"localhost",
+				"port":8080,
+				"path":""
 			},
 			"first":{
 				"scheme":"http",

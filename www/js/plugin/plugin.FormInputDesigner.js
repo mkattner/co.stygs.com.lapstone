@@ -302,6 +302,13 @@ var plugin_FormInputDesigner = {
 				var type = "submit";
 				plugin_FormInputDesigner.addClassToOptions(options, "app-form-input-submit");
 				return plugin_FormInputDesigner.generateInput(options, type);
+			},
+			reset : function(options) {
+				app.debug.alert("plugin_FormInputDesigner.functions.button.reset()", 20);
+				options = plugin_FormInputDesigner.verifyOptions(options);
+				var type = "reset";
+				plugin_FormInputDesigner.addClassToOptions(options, "app-form-input-submit");
+				return plugin_FormInputDesigner.generateInput(options, type);
 			}
 		},
 		radio : {
@@ -348,7 +355,6 @@ var plugin_FormInputDesigner = {
 				if (options.text == undefined) {
 					options.text = "";
 				}
-
 
 				output = '<' + type + ' ' + attributes + '>' + options.text + '</' + type + '>';
 				return $(output);

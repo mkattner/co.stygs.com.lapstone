@@ -90,7 +90,7 @@ var plugin_Detector = {
 	afterHtmlInjectedBeforePageComputing : function(container) {
 		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
 
-		
+		console.log("TODO - clean up & do not use pagebeforecreate");
 			if (plugin_Detector.config.addCssClassesToBodyTag) {
 				// add css classes
 

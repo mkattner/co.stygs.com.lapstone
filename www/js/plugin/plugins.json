@@ -18,5 +18,6 @@
 	"OAuth":true,
 	"RestClient":true,
 	"Session":true,
-	"WebServiceClient":true
+	"WebServiceClient":true,
+	"WebServiceError":true
 }

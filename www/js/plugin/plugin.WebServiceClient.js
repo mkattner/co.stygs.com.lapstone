@@ -210,10 +210,27 @@ var plugin_WebServiceClient = {
 				},
 
 				success : function(data, textStatus, jqXHR) {
-					app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() Webservice done: " + JSON.stringify(data), 5);
+					app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() - Webservice done: " + JSON.stringify(data), 5);
 					json = data;
-					if (dfd != undefined && dfd != null) {
-						dfd.resolve(json);
+
+					app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - start exception handling", 60);
+					if (plugins.config.WebServiceError === true) {
+						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: wse plugin is active", 60);
+						if ((exeptionConfig = app.wse.getExceptionConfig(json)) === false) {
+							if (dfd != undefined && dfd != null) {
+								dfd.resolve(json);
+							}
+						} else {
+							if (dfd != undefined && dfd != null) {
+								dfd.reject(exeptionConfig);
+							}
+						}
+
+					} else {
+						if (dfd != undefined && dfd != null) {
+							console.warn("Webservice Success!: Please use the plugin.WebServiceError (wse) to compute your errors and exceptions");
+							dfd.resolve(json);
+						}
 					}
 				},
 
@@ -224,22 +241,24 @@ var plugin_WebServiceClient = {
 					json = null;
 					if (dfd != undefined && dfd != null) {
 						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: reject deferred object", 60);
-						switch (jqXHR.status) {
-						case 500:
-							delete jqXHR.responseText;
-							break;
+
+						if (plugins.config.WebServiceError === true) {
+							app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: wse plugin is active", 60);
+							dfd.reject(app.wse.getExceptionConfig(jqXHR));
+						} else {
+							console.warn("Webservice Error!: Please use the plugin.WebServiceError (wse) to compute your errors and exceptions");
+							dfd.reject({
+								"call" : {
+									"url" : url,
+									"data" : data,
+									"type" : type,
+									"async" : async,
+									"mehtod" : method,
+									"timeout" : timeout
+								},
+								"jqXHR" : JSON.parse(JSON.stringify(jqXHR))
+							});
 						}
-						dfd.reject({
-							"call" : {
-								"url" : url,
-								"data" : data,
-								"type" : type,
-								"async" : async,
-								"mehtod" : method,
-								"timeout" : timeout
-							},
-							"jqXHR" : JSON.parse(JSON.stringify(jqXHR))
-						});
 					}
 				}
 			});
@@ -301,6 +320,7 @@ var plugin_WebServiceClient = {
 				+ ")", 14);
 		try {
 			$.ajax({
+				cache : false,
 				url : url,
 				data : data,// ?key=value
 				dataType : type, // json
@@ -394,8 +414,65 @@ var plugin_WebServiceClient = {
 			// alert(JSON.stringify(server));
 			return server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path;
 		},
+		setServer : function(name, url) {
+			url = URI(url);
+			var scheme = url.scheme(), hostname = url.hostname(), port = url.port(), path = url.path();
+
+			if (scheme === "") {
+				scheme = plugin_WebServiceClient.config.server[name].template.scheme;
+			}
+
+			if (hostname === "") {
+				;
+			}
+
+			if (port === "") {
+				port = plugin_WebServiceClient.config.server[name].template.port;
+			}
+
+			if (path === "") {
+				path = plugin_WebServiceClient.config.server[name].template.path;
+			}
+
+			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.scheme", scheme);
+			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.host", hostname);
+			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.port", port);
+			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.path", path);
+
+			return plugin_WebServiceClient.functions.getServer(name);
+		},
 		keepAliveRequest : function() {
 			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.keepAliveRequest()", 20);
+		},
+		ping : function(serverName) {
+			var path, data, method, timeout, server, url, success = null;
+
+			path = plugin_WebServiceClient.config.server[serverName].pingPath;
+			data = "";
+			method = "GET";
+			timeout = 2000;
+			server = plugin_WebServiceClient.getPreferedServer(serverName);
+			url = server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path + path;
+			// alert(url);
+			try {
+				$.ajax({
+					cache : false,
+					url : url,
+					data : data,
+					async : false,
+					method : method,
+					timeout : timeout,
+					success : function() {
+						success = true;
+					},
+					error : function() {
+						success = false;
+					}
+				});
+			} catch (err) {
+				success = false;
+			}
+			return success;
 		}
 	}
 };
