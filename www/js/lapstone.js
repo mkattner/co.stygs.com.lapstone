@@ -293,12 +293,14 @@ function waitForDeviceready() {
 }
 
 var initialisationPanel = {
+	panel : null,
 	start : function() {
 		var dfd = $.Deferred(), promise;
 
 		promise = globalLoader.AsyncTextLoader('../js/lapstone.html');
 		promise.done(function(data) {
-			$('body').append(data);
+			initialisationPanel.panel = data;
+			initialisationPanel.show();
 			dfd.resolve();
 		});
 		promise.fail(function(e) {
@@ -306,46 +308,54 @@ var initialisationPanel = {
 		});
 		return dfd.promise();
 	},
+	show : function(status) {
+		$('body').append(initialisationPanel.panel);
+		if (status !== undefined)
+			initialisationPanel.changeStatus(status);
+	},
+	hide : function() {
+		$("#LAPSTONE").remove();
+	},
 	changeStatus : function(status) {
 		$("#LAPSTONE .lapstone-status").text(status);
 	},
 	finish : function() {
-		$("#LAPSTONE").remove();
+		initialisationPanel.hide();
 	}
 }
 
 var startupDefinition = [ {
-	"status" : "start initialisation",
+	"status" : "",
 	"function" : initialisationPanel.start,
 	"parameter" : "",
 	"result" : ""
 }, {
-	"status" : "load configuration",
+	"status" : "",
 	"function" : loadConfiguration,
 	"parameter" : "",
 	"result" : ""
 }, {
-	"status" : "load plugins",
+	"status" : "",
 	"function" : loadPlugins,
 	"parameter" : "",
 	"result" : ""
 }, {
-	"status" : "load pages",
+	"status" : "",
 	"function" : loadPages,
 	"parameter" : "",
 	"result" : ""
 }, {
-	"status" : "enchant pages",
+	"status" : "",
 	"function" : enchantPages,
 	"parameter" : "",
 	"result" : ""
 }, {
-	"status" : "wait for mobileinit",
+	"status" : "",
 	"function" : waitForMobileinit,
 	"parameter" : "",
 	"result" : ""
 }, {
-	"status" : "wait for deviceready",
+	"status" : "",
 	"function" : waitForDeviceready,
 	"parameter" : "",
 	"result" : ""
@@ -414,3 +424,10 @@ $(document).ready(function() {
 		alert("framework fail");
 	});
 });
+
+function handleOpenURL(url) {
+	// TODO: parse the url, and do something
+	setTimeout(function() {
+		alert(url);
+	}, 0);
+}

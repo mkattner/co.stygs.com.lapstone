@@ -18,7 +18,7 @@ var page___Pagename__ = {
 	},
 
 	async : {
-		promise : null,// to implement
+		promise : null,
 
 		result : null,
 
@@ -38,6 +38,7 @@ var page___Pagename__ = {
 		},
 
 		fail : function(container) {
+			alert("WS fails: " + JSON.stringify(this.result));
 		},
 
 		always : function(container) {
@@ -52,6 +53,8 @@ var page___Pagename__ = {
 		app.debug.alert("page_" + this.config.name + ".setEvents()", 10);
 
 	},
+
+	functions : {},
 
 	events : {
 

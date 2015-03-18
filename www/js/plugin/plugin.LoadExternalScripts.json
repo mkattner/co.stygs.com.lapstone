@@ -3,20 +3,22 @@
 	"shortname":"load",
 	"scripts":{
 		"css":{
-			"../ext/jQueryMobile/jquery.mobile.min.css":true,
-			"../css/fonts.css":true,
-			"../css/global.css":true,
-			"../css/platform.android.css":true,
-			"../css/platform.desktop.css":true,
-			"../css/platform.ios.css":true,
-			"../css/platform.mobile.css":true,
-			"../css/platform.cordova.css":true
+			"../ext/jQueryMobile/jquery.mobile.min.css":	true,
+			"../css/fonts.css":								true,
+			"../css/global.css":							true,
+			"../css/platform.android.css":					true,
+			"../css/platform.desktop.css":					true,
+			"../css/platform.ios.css":						true,
+			"../css/platform.mobile.css":					true,
+			"../css/platform.cordova.css":					true
 		},
 		"javascript":{
-			"../ext/MD5.js":true,
-			"../ext/DATE.js":true,
-			"../ext/aerogear.min.js":true,
-			"../ext/jquery.serializejson.min.js":true
+			"../ext/MD5.js":						true,
+			"../ext/DATE.js":						true,
+			"../ext/URI.js":						true,
+			"../ext/Chart/Chart.min.js":			true,
+			"../ext/aerogear.min.js":				true,
+			"../ext/jquery.serializejson.min.js":	true
 		}
 	}
 }

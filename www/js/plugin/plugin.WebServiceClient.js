@@ -216,14 +216,21 @@ var plugin_WebServiceClient = {
 					app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - start exception handling", 60);
 					if (plugins.config.WebServiceError === true) {
 						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: wse plugin is active", 60);
-						if ((exeptionConfig = app.wse.getExceptionConfig(json)) === false) {
+
+						if ((exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
 							if (dfd != undefined && dfd != null) {
+								app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(json),
+										60);
 								dfd.resolve(json);
 							}
+
 						} else {
 							if (dfd != undefined && dfd != null) {
+								app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: exception found: "
+										+ JSON.stringify(exeptionConfig), 60);
 								dfd.reject(exeptionConfig);
 							}
+
 						}
 
 					} else {

@@ -34,16 +34,15 @@ var plugin_jQueryExtend = {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
 
 		var dfd = $.Deferred();
-		
+
 		(function($) {
 			// Attrs
 			$.fn.attrs = function(attrs) {
-				var t, j, a, r, p, i;
-				t = $(this);
+				var t = $(this);
 				if (attrs) {
 					// Set attributes
 					t.each(function(i, e) {
-						j = $(e);
+						var j = $(e);
 						for ( var attr in attrs) {
 							j.attr(attr, attrs[attr]);
 						}
@@ -52,19 +51,21 @@ var plugin_jQueryExtend = {
 					return t;
 				} else {
 					// Get attributes
-					a = {}, r = t.get(0);
+					var a = {}, r = t.get(0);
 					if (r) {
 						r = r.attributes;
-						for (i in r) {
-							p = r[i];
-							if (typeof p.nodeValue !== 'undefined')
-								a[p.nodeName] = p.nodeValue;
+						for ( var i in r) {
+							var p = r[i];
+							if (p != null)
+								if (typeof p.value !== 'undefined')
+									a[p.nodeName] = p.value;
 						}
 					}
 					return a;
 				}
 			};
 		})(jQuery);
+
 		dfd.resolve();
 		return dfd.promise();
 	},

@@ -33,7 +33,8 @@ var plugin_WebServiceError = {
 		});
 		promiseOfPromises.fail(function() {
 			dfd.reject();
-		});;
+		});
+		;
 		return dfd.promise();
 
 	},
@@ -84,8 +85,6 @@ var plugin_WebServiceError = {
 			dfd.reject();
 		});
 
-		
-
 		return dfd.promise();
 	},
 
@@ -110,14 +109,15 @@ var plugin_WebServiceError = {
 
 			var errorName;
 
-			//alert(typeof exception + "  " + JSON.stringify(exception));
+			 //alert(typeof exception + " " + JSON.stringify(exception));
 
 			if (exception.error != undefined) {
-				errorName = exception.error
+				errorName = exception.error;
 			} else if (exception.status != undefined) {
-				errorName = exception.status
-			}
-
+				errorName = exception.status;
+			} else if (exception.exception)
+				errorName = exception.exception;
+			
 			app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - errors", 60);
 			for (key in plugin_WebServiceError.config.wse) {
 				app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - " + key + " == " + errorName, 60);

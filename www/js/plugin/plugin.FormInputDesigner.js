@@ -65,20 +65,36 @@ var plugin_FormInputDesigner = {
 	// private functions
 	getAttributes : function(options) {
 		app.debug.alert("plugin_FormInputDesigner.getAttributes()", 5);
+
 		var attributes = 'class="' + plugin_FormInputDesigner.getClasses(options) + '"', styles = '';
+
 		if (options.placeholder != undefined)
 			attributes += ' placeholder="' + options.placeholder + '"';
+
 		if (options.id != undefined)
 			attributes += ' id="' + options.id + '"';
+
 		if (options.name != undefined)
 			attributes += ' name="' + options.name + '"';
+
 		if (options.value != undefined)
 			attributes += ' value="' + options.value + '"';
+		
+		if (options.href != undefined)
+			attributes += ' href="' + options.href + '"';
+
+		if (options.disabled === true)
+			attributes += ' disabled="disabled"';
+
+		if (options.checked === true)
+			attributes += ' checked="checked"';
+
 		if (options.attributes != undefined) {
 			$.each(options.attributes, function(key, value) {
 				attributes += ' ' + key + '="' + value + '"';
 			});
 		}
+
 		if (options.styles != undefined) {
 			$.each(options.styles, function(key, value) {
 				styles += ' ' + key + ':' + value + ';';
@@ -182,6 +198,13 @@ var plugin_FormInputDesigner = {
 			}
 		},
 		text : {
+			hidden : function(options) {
+				app.debug.alert("plugin_FormInputDesigner.functions.text.text()", 20);
+				options = plugin_FormInputDesigner.verifyOptions(options);
+				var type = "hidden";
+				plugin_FormInputDesigner.addClassToOptions(options, "app-form-input-text");
+				return plugin_FormInputDesigner.generateInput(options, type);
+			},
 			text : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.text.text()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
@@ -324,6 +347,15 @@ var plugin_FormInputDesigner = {
 				app.debug.alert("plugin_FormInputDesigner.functions.checkbox.checkbox()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "checkbox";
+				plugin_FormInputDesigner.addClassToOptions(options, "app-form-input-checkbox");
+				return plugin_FormInputDesigner.generateInput(options, type);
+			}
+		},
+		range : {
+			range : function(options) {
+				app.debug.alert("plugin_FormInputDesigner.functions.range.range()", 20);
+				options = plugin_FormInputDesigner.verifyOptions(options);
+				var type = "range";
 				plugin_FormInputDesigner.addClassToOptions(options, "app-form-input-checkbox");
 				return plugin_FormInputDesigner.generateInput(options, type);
 			}
@@ -503,6 +535,13 @@ var plugin_FormInputDesigner = {
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "div";
 				plugin_FormInputDesigner.addClassToOptions(options, "app-div");
+				return $(plugin_FormInputDesigner.generateOutput(options, type));
+			},
+			canvas : function(options) {
+				app.debug.alert("plugin_FormInputDesigner.functions.element.canvas()", 20);
+				options = plugin_FormInputDesigner.verifyOptions(options);
+				var type = "canvas";
+				plugin_FormInputDesigner.addClassToOptions(options, "app-canvas");
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			}
 		}

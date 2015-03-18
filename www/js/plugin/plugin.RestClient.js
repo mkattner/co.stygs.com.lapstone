@@ -16,7 +16,7 @@
 
 /**
  * @author Martin Kattner <martin.kattner@gmail.com>
- 
+ * 
  * Plugin:
  * 
  * @version 1.0
@@ -86,8 +86,6 @@ var plugin_RestClient = {
 		promise.done(function() {
 			dfd.reject();
 		});
-
-		
 
 		return dfd.promise();
 	},
@@ -199,13 +197,13 @@ var plugin_RestClient = {
 					});
 				}
 			}
-			app.debug.alert("pugin.RestClient.js Webservice call done: " + JSON.stringify(json), 60);
+			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getSingleJsonAsync()- Webservice call done: " + JSON.stringify(json), 60);
 			dfd.resolve(json);
 		});
 
-		promise.fail(function(jqXHR) {
-			app.debug.alert("pugin.RestClient.js Webservice call failed: " + JSON.stringify(jqXHR), 60);
-			dfd.reject(jqXHR);
+		promise.fail(function(error) {
+			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getSingleJsonAsync() - Webservice call failed: " + JSON.stringify(error), 60);
+			dfd.reject(error);
 		});
 
 		return dfd.promise();
@@ -332,12 +330,12 @@ var plugin_RestClient = {
 					app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - resolve deferred object", 20);
 					dfd.resolve(resultObject);
 				},
-				function(errorObject) {
+				function(error) {
 					app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - error on ohne or more async webservices", 20);
-					app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - async webservice call failed: "
-							+ JSON.stringify(errorObject), 60);
+					app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - async webservice call failed: " + JSON.stringify(error),
+							60);
 					app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - reject deferred object", 20);
-					dfd.reject(errorObject);
+					dfd.reject(error);
 				});
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - return: deferred promise", 20);
 		return dfd.promise();
@@ -384,10 +382,13 @@ var plugin_RestClient = {
 				});
 
 				promise.fail(function(errorObject) {
+					app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - multible json object; case: webservice failed: "
+							+ JSON.stringify(errorObject), 5);
 					if (async > 1) {
 						async--;
 						plugin_RestClient.functions.getJson(service, parameter, async, null, dfd);
 					} else {
+						app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - multiple json object; reject deferred object", 5);
 						dfd.reject(errorObject);
 					}
 				});
@@ -418,12 +419,14 @@ var plugin_RestClient = {
 				});
 
 				promise.fail(function(errorObject) {
+					app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - single json object; case: webservice failed: "
+							+ JSON.stringify(errorObject), 5);
 					if (attempts > 1) {
 						attempts--;
 						plugin_RestClient.functions.getJson(service, parameter, async, attempts, dfd);
 					} else {
-
-						dfd.reject();
+						app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.functions.getJson() - single json object; reject deferred object", 5);
+						dfd.reject(errorObject);
 					}
 				});
 

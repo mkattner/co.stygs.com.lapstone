@@ -25,6 +25,7 @@
  */
 var plugin_HtmlTemplates = {
 	config : null,
+	templates : {},
 	constructor : function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -32,8 +33,60 @@ var plugin_HtmlTemplates = {
 	},
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
-		var dfd = $.Deferred();
-		dfd.resolve();
+
+		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
+
+		$.each(plugin_HtmlTemplates.config.templates, function(key, template) {
+			if (template.url != undefined) {
+				promises.push(globalLoader.AsyncTextLoader(template.url));
+				promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
+			} else {
+				$.each(plugin_HtmlTemplates.config.templates[key], function(key, template) {
+					if (template.url != undefined) {
+						promises.push(globalLoader.AsyncTextLoader(template.url));
+						promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
+					}
+
+				});
+			}
+		});
+
+		promiseOfPromises = $.when.apply($, promises);
+
+		promiseOfPromises.done(function() {
+			var args = arguments, context, i = 0;
+			$.each(plugin_HtmlTemplates.config.templates, function(key, template) {
+				if (template.url != undefined) {
+					plugin_HtmlTemplates.templates[key] = {};
+					// console.log(i + args[i]);
+					plugin_HtmlTemplates.templates[key]['html'] = (args[i]);
+					i = i + 1;
+					// console.log(i + args[i]);
+					plugin_HtmlTemplates.templates[key]['css'] = (args[i]);
+					i = i + 1;
+				} else {
+					context = key;
+					plugin_HtmlTemplates.templates[context] = {};
+					$.each(plugin_HtmlTemplates.config.templates[key], function(key, template) {
+						if (template.url != undefined) {
+							plugin_HtmlTemplates.templates[context][key] = {};
+							// console.log(i + args[i]);
+							plugin_HtmlTemplates.templates[context][key]['html'] = (args[i]);
+							i = i + 1;
+							// console.log(i + args[i]);
+							plugin_HtmlTemplates.templates[context][key]['css'] = (args[i]);
+							i = i + 1;
+						}
+
+					});
+				}
+			});
+			dfd.resolve();
+		});
+		promiseOfPromises.fail(function() {
+			dfd.reject();
+		});
+
 		return dfd.promise();
 	},
 
@@ -58,18 +111,36 @@ var plugin_HtmlTemplates = {
 
 	getText : function(templateId, context) {
 		app.debug.alert("plugin_HtmlTemplates.getText(" + templateId + ", " + context + ")", 14);
-		var text = null, url = null;
+		var text = null, css = null, styleIsActive;
 		if (context != undefined) {
-			url = plugin_HtmlTemplates.config.templates[context][templateId]['url'];
+			text = plugin_HtmlTemplates.templates[context][templateId]['html'];
+			css = plugin_HtmlTemplates.templates[context][templateId]['css'];
+			styleIsActive = plugin_HtmlTemplates.templates[context][templateId]['styleIsActive'];
+			if (styleIsActive == undefined)
+				styleIsActive = plugin_HtmlTemplates.templates[context][templateId]['styleIsActive'] = false;
+
 		} else {
-			url = plugin_HtmlTemplates.config.templates[templateId]['url'];
+			text = plugin_HtmlTemplates.templates[templateId]['html'];
+			css = plugin_HtmlTemplates.templates[templateId]['css'];
+			styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'];
+			if (styleIsActive == undefined)
+				styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = false;
 		}
-		if (text = globalLoader.TextLoader(url)) {
-			app.load.css(url.substr(0, url.lastIndexOf(".")) + ".css");
-			return text;
-		} else {
-			return false;
+
+		if ($("style")[0] == undefined)
+			$('head').append("<style></style>");
+
+		if (styleIsActive === false) {
+			$("style").append(css);
+			
+			if (context != undefined) {
+				plugin_HtmlTemplates.templates[context][templateId]['styleIsActive'] = true;
+			} else {
+				plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = true;
+			}
 		}
+
+		return text;
 	},
 
 	getElements : function(templateId, context) {

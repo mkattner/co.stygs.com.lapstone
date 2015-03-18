@@ -158,11 +158,13 @@ var plugin_HelperFunctions = {
 
 				object.find('[data-role=listview]').listview().listview('refresh');
 				object.find('[data-role=collapsible]').collapsible();
-				object.find('[type=button]').button();
+				object.find('[data-role=controlgroup]').controlgroup();
+				object.find('[data-role=slider]').flipswitch().flipswitch( "refresh" );
+				object.find('[type=button], [type=submit]').button();
 				object.find('[data-role=navbar]').navbar();
-				object.find('[type=text], textarea, [type=search], [type=password], [type=number]').textinput();
-				object.find('[type=range]').slider();
-				object.find('[type=radio]').checkboxradio();
+				object.find('[type=text], textarea, [type=search], [type=password], [type=number], [type=file]').textinput();
+				object.find('[type=range]').slider().slider("refresh");
+				object.find('[type=radio], [type=checkbox]').checkboxradio();
 				object.find('select').selectmenu();
 			}
 		},

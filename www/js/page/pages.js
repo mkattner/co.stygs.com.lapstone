@@ -29,12 +29,14 @@ var pages = {
 		var dfd = $.Deferred();
 
 		// reverse order
-		startup.addFunction("call plugins' page funtions", pages.callPluginsPagesLoaded, "");
-		startup.addFunction("set page event", pages.setEvents, "");
-		startup.addFunction("load all pages", pages.loadPages, "");
-		startup.addFunction("vrify page names", pages.verifyPageNames, "");
-		startup.addFunction("load all page configs", pages.loadPageConfig, "");
-		startup.addFunction("load global page", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
+		
+		startup.addFunction("", pages.callPluginsPagesLoaded, "");
+		startup.addFunction("", pages.setEvents, "");
+		startup.addFunction("", pages.verifyPages, "");
+		startup.addFunction("", pages.loadPages, "");
+		startup.addFunction("", pages.verifyPageNames, "");
+		startup.addFunction("", pages.loadPageConfig, "");
+		startup.addFunction("", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
 
 		dfd.resolve();
 		return dfd.promise();
@@ -75,6 +77,96 @@ var pages = {
 
 	verifyPageNames : function() {
 		var dfd = $.Deferred();
+
+		dfd.resolve();
+		return dfd.promise();
+
+	},
+
+	verifyPages : function() {
+		var dfd = $.Deferred(), currentPage;
+		// alert(JSON.stringify(pages.pageNames));
+		$.each(pages.pageNames, function(key, pageName) {
+			currentPage = window['page_' + pageName];
+
+			if (currentPage.config === undefined) {
+				console.warn("The page: " + pageName + " has no 'config' property.");
+			} else {
+				if (currentPage.config.name === undefined)
+					console.warn("The page: " + pageName + " has no 'config.name' property.");
+
+				if (currentPage.config.shortname === undefined)
+					console.warn("The page: " + pageName + " has no 'config.shortname' property.");
+
+				if (currentPage.config.template === undefined)
+					console.warn("The page: " + pageName + " has no 'config.template' property.");
+
+				if (currentPage.config.useKeepAlive === undefined)
+					console.warn("The page: " + pageName + " has no 'config.useKeepAlive' property.");
+
+				if (currentPage.config.loginObligate === undefined)
+					console.warn("The page: " + pageName + " has no 'config.loginObligate' property.");
+
+				if (currentPage.config.isGlobalPage === undefined)
+					console.warn("The page: " + pageName + " has no 'config.isGlobalPage' property.");
+
+				if (currentPage.config.contentRefresh === undefined)
+					console.warn("The page: " + pageName + " has no 'config.contentRefresh' property.");
+
+				if (currentPage.config.contentRefreshTimeout === undefined)
+					console.warn("The page: " + pageName + " has no 'config.contentRefreshTimeout' property.");
+
+				if (currentPage.config.asyncLoading === undefined)
+					console.warn("The page: " + pageName + " has no 'config.asyncLoading' property.");
+			}
+
+			if (currentPage.elements === undefined)
+				console.warn("The page: " + pageName + " has no 'elements' property.");
+
+			if (currentPage.constructor === undefined)
+				console.warn("The page: " + pageName + " has no 'constructor' property.");
+
+			if (currentPage.creator === undefined)
+				console.warn("The page: " + pageName + " has no 'creator' property.");
+
+			if (currentPage.async === undefined) {
+				console.warn("The page: " + pageName + " has no 'async' property.");
+
+			} else {
+				if (currentPage.async.promise === undefined)
+					console.warn("The page: " + pageName + " has no 'async.promise' property.");
+
+				if (currentPage.async.result === undefined)
+					console.warn("The page: " + pageName + " has no 'async.result' property.");
+
+				if (currentPage.async.elements === undefined)
+					console.warn("The page: " + pageName + " has no 'async.elements' property.");
+
+				if (currentPage.async.creator === undefined)
+					console.warn("The page: " + pageName + " has no 'async.creator' property.");
+
+				if (currentPage.async.call === undefined)
+					console.warn("The page: " + pageName + " has no 'async.call' property.");
+
+				if (currentPage.async.done === undefined)
+					console.warn("The page: " + pageName + " has no 'async.done' property.");
+
+				if (currentPage.async.fail === undefined)
+					console.warn("The page: " + pageName + " has no 'async.fail' property.");
+
+				if (currentPage.async.always === undefined)
+					console.warn("The page: " + pageName + " has no 'async.always' property.");
+
+				if (currentPage.async.abort === undefined)
+					console.warn("The page: " + pageName + " has no 'async.abort' property.");
+			}
+
+			if (currentPage.setEvents === undefined)
+				console.warn("The page: " + pageName + " has no 'setEvents' property.");
+
+			if (currentPage.functions === undefined)
+				console.warn("The page: " + pageName + " has no 'functions' property.");
+		});
 
 		dfd.resolve();
 		return dfd.promise();
@@ -581,19 +673,21 @@ var pages = {
 				if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
 					app.notify.add.alert(app.lang.string("login obligate text", "lapstone"), false, app.lang.string("login obligate headline", "lapstone"),
 							app.lang.string("login obligate confirm", "lapstone"));
-					// app.store.localStorage.clearHtml5();
 					app.sess.destroyAll();
-					// $(document).off();
 					app.help.navigation.redirect(app.config.startPage, "slidefade");
+
 				} else if (plugin_WebServiceClient.config.useKeepAlive) {
 					app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive", 5);
+
 					if (window['page_' + container.attr('id')].config.useKeepAlive != undefined) {
 						app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json",
 								5);
+
 						if (window['page_' + container.attr('id')].config.useKeepAlive) {
 							app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE", 5);
 							if (plugin_WebServiceClient.config.keepAlive.isAlive) {
 								app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: server isAlive", 5);
+
 								pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 							} else {
 								app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server", 5);
@@ -601,12 +695,6 @@ var pages = {
 										.alert(
 												"pages.js ~ Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.",
 												60);
-								// app.notify.add.alert(app.lang.string("bad_connection_text",
-								// "app-keepAlive"), false,
-								// app.lang.string("bad_connection_headline","app-keepAlive"),
-								// app.lang.string("ok", "actions"));
-								// app.store.localStorage.clearHtml5();
-								// $(document).off();
 								app.help.navigation.redirect(app.config.badConnectionPage, "slideup");
 							}
 						} else {
@@ -626,7 +714,7 @@ var pages = {
 			},
 			pagebeforecreate_createPage : function(event, container) {
 				app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(" + event + ", " + container + ")", 5);
-				var promise, elements = null;
+				var promise, elements = null, timeout;
 				window['page_' + container.attr('id')].events.pagebeforecreate(event, container);
 
 				// preload template
@@ -656,27 +744,44 @@ var pages = {
 
 				// async or not async
 				if (window['page_' + container.attr('id')].config.asyncLoading === true) {
-					app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage page IS async", 5);
+					app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - page IS async", 5);
 
 					window['page_' + container.attr('id')].async.elements = window['page_' + container.attr('id')].elements;
+
+					app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.creator()", 5);
 					promise = window['page_' + container.attr('id')].async.creator(container);
 
+					timeout = window.setTimeout(function() {
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - show loader", 5);
+						app.notify.loader.bubbleDiv(true, app.lang.string("text", "pageloading"), app.lang.string("headline", "pageloading"));
+					}, 200);
+
 					promise.done(function(result) {
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: "
+								+ JSON.stringify(result), 5);
 						window['page_' + container.attr('id')].async.result = result;
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()", 5);
 						window['page_' + container.attr('id')].async.done(container);
 					});
 
 					promise.fail(function(error) {
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: "
+								+ JSON.stringify(error), 5);
 						window['page_' + container.attr('id')].async.result = error;
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.fail()", 5);
 						window['page_' + container.attr('id')].async.fail(container);
 					});
 
 					promise.always(function() {
+						window.clearTimeout(timeout);
+						app.notify.loader.remove();
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.always()", 5);
 						window['page_' + container.attr('id')].async.always(container);
 					});
 
 				} else {
-					app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage page IS NOT async", 5);
+					app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - page IS NOT async", 5);
+
 					window['page_' + container.attr('id')].creator(container);
 				}
 
@@ -756,6 +861,8 @@ var pages = {
 			pageshow : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pageshow(" + event + ", " + container + ")", 5);
 				window['page_' + container.attr('id')].events.pageshow(event, container);
+				if (navigator.splashscreen != undefined)
+					navigator.splashscreen.hide();
 			}
 		}
 	}

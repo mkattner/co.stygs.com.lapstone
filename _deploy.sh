@@ -134,8 +134,8 @@ echo "**************************************************************************
 		cp -an ./ios/ $1/lapstone/ios/
 		cp -an ./android/ $1/lapstone/android/
 
-		cp $1/lapstone/ios/image/icons/* $1/platforms/ios/themis/Resources/icons
-		cp $1/lapstone/ios/image/splash/* $1/platforms/ios/themis/Resources/splash
+		cp $1/lapstone/ios/image/icons/* $1/platforms/ios/elove/Resources/icons
+		cp $1/lapstone/ios/image/splash/* $1/platforms/ios/elove/Resources/splash
 		cp $1/lapstone/android/image/ $1/platforms/android/res/
 
 echo "***************************************************************************************************************"

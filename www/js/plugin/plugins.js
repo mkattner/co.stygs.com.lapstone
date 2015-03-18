@@ -30,11 +30,11 @@ var plugins = {
 		var dfd = $.Deferred();
 
 		// reverse order
-		startup.addFunction("plugins: plugin events", plugins.callPluginEvents, "");
-		startup.addFunction("plugins: plugin loaded event", plugins.callPluginsLoadedEvent, "");
-		startup.addFunction("plugins: load all plugin files", plugins.loadPlugins, "");
-		startup.addFunction("plugins: verify plugin names", plugins.verifyPluginNames, "");
-		startup.addFunction("plugins: load all plugin config files", plugins.loadPluginConfig, "");
+		startup.addFunction("", plugins.callPluginEvents, "");
+		startup.addFunction("", plugins.callPluginsLoadedEvent, "");
+		startup.addFunction("", plugins.loadPlugins, "");
+		startup.addFunction("", plugins.verifyPluginNames, "");
+		startup.addFunction("", plugins.loadPluginConfig, "");
 		dfd.resolve();
 		return dfd.promise();
 	},
@@ -206,11 +206,12 @@ var plugins = {
 	callPluginEvents : function() {
 		var dfd = $.Deferred();
 		$.each(plugins.pluginNames, function(key, value) {
-		//	try {
-				window['plugin_' + value].definePluginEvents();
-			//} catch (err) {
-			//	app.debug.alert("Notify: The plugin has no definePluginEvents() method: plugin_" + value, 10);
-		//	}
+			// try {
+			window['plugin_' + value].definePluginEvents();
+			// } catch (err) {
+			// app.debug.alert("Notify: The plugin has no definePluginEvents()
+			// method: plugin_" + value, 10);
+			// }
 		});
 		dfd.resolve();
 		return dfd.promise();
