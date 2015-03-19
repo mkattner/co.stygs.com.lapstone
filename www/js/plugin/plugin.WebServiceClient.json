@@ -1,55 +1,55 @@
 {
-	"name":"WebServiceClient",
-	"shortname":"wsc",
-	"defaultWebServiceTimeoutMs":5000,
-	"defaultWebServiceMethod":"post",
-	"defaultWebServiceType":"json",
-	"useKeepAlive":false,
+	"name":							"WebServiceClient",
+	"shortname":					"wsc",
+	"defaultWebServiceTimeoutMs":	5000,
+	"defaultWebServiceMethod":		"post",
+	"defaultWebServiceType":		"json",
+	"useKeepAlive":					false,
 	"keepAlive":{
-		"keepAliveServer":"backmeup",
-		"keepAliveIntervalInS":20,
-		"keepAlivePath":"keepAlive.json",
-		"method":"get",
-		"type":"json",
-		"timeout":"12000",
-		"lastDuration":null,
-		"isAlive":true,
-		"maximumResponseTime":13000,
+		"keepAliveServer":				"backmeup",
+		"keepAliveIntervalInS":			20,
+		"keepAlivePath":				"keepAlive.json",
+		"method":						"get",
+		"type":							"json",
+		"timeout":						"12000",
+		"lastDuration":					null,
+		"isAlive":						true,
+		"maximumResponseTime":			13000,
 		"error":{
-			"text":"",
-			"code":0
+			"text":	"",
+			"code":	0
 		}
 	},
-	"useServerShuffle":true,
-	"useHeaderToken":true,
+	"useServerShuffle":	true,
+	"useHeaderToken":	true,
 	"headerToken":{
-		"key":"Authorization",
-		"value":"data-html5-themis-token"
+		"key":		"Authorization",
+		"value":	"data-html5-themis-token"
 	},
 	"defaultServer":"backmeup",
 	"server":{
 		"backmeup":{
-			"active":true,
-			"pingPath":"",
+			"active":					true,
+			"pingPath":					"",
 			"mappings":{
-				"post":"json",
-				"get":"query",
-				"put":"json",
-				"delete":"json"
+				"post":					"json",
+				"get":					"query",
+				"put":					"json",
+				"delete":				"json"
 			},
 			"template":{
-				"scheme":"http",
-				"scheme_specific_part":"://",
-				"host":"themis-dev01.backmeup.at",
-				"port":8080,
-				"path":""
+				"scheme":				"http",
+				"scheme_specific_part":	"://",
+				"host":					"themis-dev01.backmeup.at",
+				"port":					8080,
+				"path":					""
 			},
 			"first":{
-				"scheme":"http",
-				"scheme_specific_part":"://",
-				"host":"themis-dev01.backmeup.at",
-				"port":8080,
-				"path":""
+				"scheme":				"http",
+				"scheme_specific_part":	"://",
+				"host":					"themis-dev01.backmeup.at",
+				"port":					8080,
+				"path":					""
 			},
 			"second":{},
 			"third":{},
@@ -57,8 +57,8 @@
 			"fifth":{}
 		},
 		"licence":{
-			"active":true,
-			"pingPath":"REST/ping",
+			"active":	true,
+			"pingPath":	"REST/ping",
 			"mappings":{
 				"post":"json",
 				"get":"form",

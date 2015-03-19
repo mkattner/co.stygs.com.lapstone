@@ -89,10 +89,34 @@ function loadConfiguration() {
 			app.config[k] = v
 		});
 
-		console.log("TODO - clean lapstone configuration loading");
-		app.config.name = configuration.appname;
-		app.config['startPage'] = configuration.startPage;
-		app.config['startPage_loggedIn'] = configuration.startPage_loggedIn;
+		if (configuration.name === undefined)
+			console.warn("lapstone.json has no 'name' property.");
+
+		if (configuration.version === undefined) {
+			console.warn("lapstone.json has no 'version' property.");
+		} else {
+			if (configuration.version.app === undefined)
+				console.warn("lapstone.json has no 'version.app' property.");
+
+			if (configuration.version.lapstone === undefined)
+				console.warn("lapstone.json has no 'version.lapstone' property.");
+
+			if (configuration.version.update === undefined)
+				console.warn("lapstone.json has no 'version.update' property.");
+		}
+
+		if (configuration.startPage === undefined)
+			console.warn("lapstone.json has no 'startPage' property.");
+
+		if (configuration.startPage_firstStart === undefined)
+			console.warn("lapstone.json has no 'startPage_firstStart' property.");
+
+		if (configuration.startPage_loggedIn === undefined)
+			console.warn("lapstone.json has no 'startPage_loggedIn' property.");
+
+		if (configuration.badConnectionPage === undefined)
+			console.warn("lapstone.json has no 'badConnectionPage' property.");
+
 		dfd.resolve();
 	});
 
@@ -100,6 +124,43 @@ function loadConfiguration() {
 		dfd.reject();
 	});
 
+	return dfd.promise();
+}
+
+function updateFramework() {
+	var dfd = $.Deferred();
+
+	var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;
+
+	currentAppVersion = app.config.version.app;
+	currentLapstoneVersion = app.config.version.lapstone;
+
+	plugin_Informator.loadConfigurationIntoHtml5Storage({
+		"app" : {
+			"config" : app.config
+		}
+	});
+
+	oldLapstoneVersion = app.config.version.lapstone;
+	oldAppVersion = app.config.version.app;
+
+	if (app.config.version.update === true) {
+		alert("update done")
+	}
+	//alert(currentAppVersion + oldAppVersion + currentLapstoneVersion + oldLapstoneVersion);
+	if (currentLapstoneVersion != oldLapstoneVersion || currentAppVersion != oldAppVersion) {
+		console.warn("TODO Lastone || App Version Update");
+		//alert("do update")
+		app.info.set("app.config.version.update", true);
+		
+		app.info.set("app.config.version.app", currentAppVersion);
+		app.info.set("app.config.version.lapstone", currentLapstoneVersion);
+		// reload
+		
+		location.reload();
+	}
+
+	dfd.resolve();
 	return dfd.promise();
 }
 
@@ -346,6 +407,11 @@ var startupDefinition = [ {
 	"result" : ""
 }, {
 	"status" : "",
+	"function" : updateFramework,
+	"parameter" : "",
+	"result" : ""
+}, {
+	"status" : "",
 	"function" : enchantPages,
 	"parameter" : "",
 	"result" : ""
@@ -423,6 +489,12 @@ $(document).ready(function() {
 	inititalisationPromise.fail(function() {
 		alert("framework fail");
 	});
+
+	inititalisationPromise.always(function() {
+		//alert();
+		app.info.set("app.config.version.update", false);
+	});
+
 });
 
 function handleOpenURL(url) {

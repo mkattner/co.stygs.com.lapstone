@@ -1,8 +1,14 @@
 {
-	"appname":				"lappstone-app",
-	"version":				"1.0.0",
-	"startPage":			"static-start.html",
-	"startPage_firstStart:	"static-start.html",
-	"startPage_loggedIn":	"static-start.html",
-	"badConnectionPage":	"badConnection.html"
+	"name": "lappstone-app",
+	"version": 
+	{
+		"lapstone": "0.0.1",
+		"app": "0.0.1",
+		"update": false
+	},
+
+	"startPage": "static-start.html",
+	"startPage_firstStart": "static-start.html",
+	"startPage_loggedIn": "static-start.html",
+	"badConnectionPage": "badConnection.html"
 }

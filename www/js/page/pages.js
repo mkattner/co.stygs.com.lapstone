@@ -29,7 +29,7 @@ var pages = {
 		var dfd = $.Deferred();
 
 		// reverse order
-		
+
 		startup.addFunction("", pages.callPluginsPagesLoaded, "");
 		startup.addFunction("", pages.setEvents, "");
 		startup.addFunction("", pages.verifyPages, "");
@@ -499,10 +499,14 @@ var pages = {
 
 		everyPage : {
 			pagebeforechange : function(event, container) {
+				// <!--
 				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforechange(" + event + ", " + container + ")", 5);
+				// -->
 			},
 			pagebeforecreate : function(event, container) {
+				// <!--
 				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforecreate(" + event + ", " + container + ")", 5);
+				// -->
 			},
 			pagebeforehide : function(event, container) {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforehide(" + event + ", " + container + ")", 5);
