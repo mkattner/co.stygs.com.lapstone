@@ -1,5 +1,6 @@
 {
 	"name": "lappstone-app",
+	"title": "Lapstone App",
 	"version": 
 	{
 		"lapstone": "0.0.1",
@@ -7,6 +8,7 @@
 		"update": false
 	},
 
+	"min": false,
 	"startPage": "static-start.html",
 	"startPage_firstStart": "static-start.html",
 	"startPage_loggedIn": "static-start.html",

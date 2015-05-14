@@ -16,7 +16,6 @@
 /**
  * @author Martin Kattner <martin.kattner@gmail.com>
  */
-
 var pages = {
 	config : null,
 	pageNames : [],
@@ -30,13 +29,13 @@ var pages = {
 
 		// reverse order
 
-		startup.addFunction("", pages.callPluginsPagesLoaded, "");
-		startup.addFunction("", pages.setEvents, "");
-		startup.addFunction("", pages.verifyPages, "");
-		startup.addFunction("", pages.loadPages, "");
-		startup.addFunction("", pages.verifyPageNames, "");
-		startup.addFunction("", pages.loadPageConfig, "");
-		startup.addFunction("", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
+		startup.addFunction("lapstone is calling the plugins' pages loaded function", pages.callPluginsPagesLoaded, "");
+		startup.addFunction("lapstone is calling the pages' setEvents() function", pages.setEvents, "");
+		startup.addFunction("lapstone is verifying the pages' properties", pages.verifyPages, "");
+		startup.addFunction("lapstone is loading the pages", pages.loadPages, "");
+		startup.addFunction("lapstone is verifying the pages' names", pages.verifyPageNames, "");
+		startup.addFunction("lapstone is loading the pages' configuration", pages.loadPageConfig, "");
+		startup.addFunction("lapstone is loading the script for global pages", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
 
 		dfd.resolve();
 		return dfd.promise();
@@ -113,8 +112,8 @@ var pages = {
 				if (currentPage.config.contentRefresh === undefined)
 					console.warn("The page: " + pageName + " has no 'config.contentRefresh' property.");
 
-				if (currentPage.config.contentRefreshTimeout === undefined)
-					console.warn("The page: " + pageName + " has no 'config.contentRefreshTimeout' property.");
+				if (currentPage.config.contentRefreshInterval === undefined)
+					console.warn("The page: " + pageName + " has no 'config.contentRefreshInterval' property.");
 
 				if (currentPage.config.asyncLoading === undefined)
 					console.warn("The page: " + pageName + " has no 'config.asyncLoading' property.");
@@ -218,8 +217,7 @@ var pages = {
 				window['page_' + key]['config']['page'] = key;
 				window['page_' + key]['config']['pageId'] = '#' + key;
 
-				app.addObject(window['page_' + key].config.name, window['page_' + key].functions);
-				app.addObject(window['page_' + key].config.shortname, window['page_' + key].functions);
+				app[window['page_' + key].config.shortname] = window['page_' + key].functions;
 
 				pages.pageNames.push(key);
 
@@ -253,6 +251,7 @@ var pages = {
 
 		if (app.config.min) {
 			promiseOfPromises_js.done(function() {
+				pages.callPluginPageEventFunctions();
 				dfd.resolve();
 			});
 			promiseOfPromises_js.fail(function() {
@@ -317,6 +316,263 @@ var pages = {
 	setEvents : function() {
 		var dfd = $.Deferred();
 
+		// jQM 1.4.5+
+		// pagecontainer
+		// $(document).on("pagecontainerbeforechange", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerbeforehide", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerbeforeload", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerbeforeshow", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerbeforetransition", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerchange", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerchangefailed", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainercreate", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerhide", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerhide", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerload", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pageloadfailed", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerloadfailed", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainerremove", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainershow", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecontainertransition", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// // page
+		// $(document).on("pagebeforecreate", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+		//
+		// $(document).on("pagecreate", function(event, ui) {
+		// var prev, to;
+		// app.debug.alert("pages.js ~ pages.setEvents() - Event: " + event.type
+		// + " on: " + event.target);
+		// app.debug.alert("pages.js ~ pages.setEvents() - properties of ui
+		// object: " + Object.keys(ui).toString());
+		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
+		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - prevPage: " + prev);
+		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
+		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
+		// app.debug.alert("pages.js ~ pages.setEvents() - toPage: " + to);
+		// });
+
+		// old
+
 		// jQuery Mobile Events
 
 		// jquery Mobile Events for specific pages
@@ -332,28 +588,24 @@ var pages = {
 		/*
 		 * 
 		 */
-		$(document).on(
-				'pagebeforecreate',
-				'.app-page',
-				function(event) {
-					app.debug.alert("pages.js ~ jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'), 5);
+		$(document).on('pagebeforecreate', '.app-page', function(event) {
+			app.debug.alert("pages.js ~ jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'), 5);
 
-					pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforecreate");
-					// ---
-					//
-					// alert($(this).attr('data-type'));
-					if ($(this).attr('data-type') == "static" || $(this).attr('data-type') == "static-inline") {
+			pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforecreate");
+			// ---
+			//
+			// alert($(this).attr('data-type'));
+			if ($(this).attr('data-type') == "static" || $(this).attr('data-type') == "static-inline") {
 
-					} else if (window['page_' + $(this).attr('id')] == undefined) {
-						alert("-Fatal error: Can't find the page object: page_" + $(this).attr('id')
-								+ "; Please have a look to your pages.json file. You'll be redirected to the index.html page.");
-						app.help.navigation.redirect("index.html");
-					} else {
-						// case 3: page is a common lapstone page
+			} else if (window['page_' + $(this).attr('id')] == undefined) {
+				alert("-Fatal error: Can't find the page object: page_" + $(this).attr('id') + "; Please have a look to your pages.json file. You'll be redirected to the index.html page.");
+				app.help.navigation.redirect("index.html");
+			} else {
+				// case 3: page is a common lapstone page
 
-					}
+			}
 
-				});
+		});
 
 		/*
 		 * 
@@ -475,14 +727,17 @@ var pages = {
 				// case 2: page is inline-static
 				app.debug.alert("pages.js ~ case: page type is inline-static", 5);
 				var staticContainer = container.clone();
-				globalPage[eventName](event, container);
+
+				if (container.attr('data-global') === "true") {
+					globalPage[eventName](event, container);
+				}
+
 				pages.eventFunctions.everyPage[eventName](event, container);
 				pages.eventFunctions.staticInlinePage[eventName](event, container, staticContainer);
 			} else if (window['page_' + container.attr('id')] == undefined) {
 				// case 3: page ist not defined in pages.json
 				app.debug.alert("pages.js ~ case: page ist not defined in pages.json", 5);
-				alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + container.attr('id')
-						+ "; Please have a look to your pages.json file.");
+				alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + container.attr('id') + "; Please have a look to your pages.json file.");
 				app.help.navigation.redirect("index.html");
 			} else {
 				// case 4: page is a common lapstone page
@@ -675,35 +930,29 @@ var pages = {
 				app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + container + ")", 5);
 
 				if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
-					app.notify.add.alert(app.lang.string("login obligate text", "lapstone"), false, app.lang.string("login obligate headline", "lapstone"),
-							app.lang.string("login obligate confirm", "lapstone"));
+					app.notify.add.alert(app.lang.string("login obligate text", "lapstone"), false, app.lang.string("login obligate headline", "lapstone"), app.lang.string("login obligate confirm", "lapstone"));
 					app.sess.destroyAll();
 					app.help.navigation.redirect(app.config.startPage, "slidefade");
 
-				} else if (plugin_WebServiceClient.config.useKeepAlive) {
+				} else if (plugins.config.KeepAlive === true) {
 					app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive", 5);
 
 					if (window['page_' + container.attr('id')].config.useKeepAlive != undefined) {
-						app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json",
-								5);
+						app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json", 5);
 
 						if (window['page_' + container.attr('id')].config.useKeepAlive) {
 							app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE", 5);
-							if (plugin_WebServiceClient.config.keepAlive.isAlive) {
+							if (app.alive.isAlive() === true) {
 								app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: server isAlive", 5);
 
 								pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 							} else {
 								app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server", 5);
-								app.debug
-										.alert(
-												"pages.js ~ Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.",
-												60);
-								app.help.navigation.redirect(app.config.badConnectionPage, "slideup");
+								app.debug.alert("pages.js ~ Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.", 60);
+								app.alive.badConnectionHandler();
 							}
 						} else {
-							app.debug.alert(
-									"pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file", 5);
+							app.debug.alert("pages.js ~ plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file", 5);
 							pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 						}
 					} else {
@@ -723,8 +972,7 @@ var pages = {
 
 				// preload template
 				if (window['page_' + container.attr('id')].config.template != undefined) {
-					if (typeof window['page_' + container.attr('id')].config.template == "string"
-							&& window['page_' + container.attr('id')].config.template.length > 1) {
+					if (typeof window['page_' + container.attr('id')].config.template == "string" && window['page_' + container.attr('id')].config.template.length > 1) {
 
 						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - overwrite template", 20);
 						app.template.overwrite("#" + container.attr("id"), window['page_' + container.attr('id')].config.template);
@@ -758,19 +1006,17 @@ var pages = {
 					timeout = window.setTimeout(function() {
 						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - show loader", 5);
 						app.notify.loader.bubbleDiv(true, app.lang.string("text", "pageloading"), app.lang.string("headline", "pageloading"));
-					}, 200);
+					}, 1200);
 
 					promise.done(function(result) {
-						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: "
-								+ JSON.stringify(result), 5);
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(result), 5);
 						window['page_' + container.attr('id')].async.result = result;
 						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()", 5);
 						window['page_' + container.attr('id')].async.done(container);
 					});
 
 					promise.fail(function(error) {
-						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: "
-								+ JSON.stringify(error), 5);
+						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(error), 5);
 						window['page_' + container.attr('id')].async.result = error;
 						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.fail()", 5);
 						window['page_' + container.attr('id')].async.fail(container);
@@ -816,8 +1062,7 @@ var pages = {
 				window['page_' + container.attr('id')].events.pagebeforeshow(event, container);
 
 				if (window['page_' + container.attr('id')].config.contentRefresh == true) {
-					app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforeshow: set refresh interval every "
-							+ window['page_' + container.attr('id')].config.contentRefreshInterval + " ms", 5);
+					app.debug.alert("pages.js ~ plugin.eventFunctions.everyPage.pagebeforeshow: set refresh interval every " + window['page_' + container.attr('id')].config.contentRefreshInterval + " ms", 5);
 
 					pages.refreshInterval = window.setInterval(function() {
 						// $().empty();

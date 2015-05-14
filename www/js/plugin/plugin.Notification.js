@@ -108,26 +108,44 @@ var plugin_Notification = {
 			plugin_Notification.popupShow();
 		});
 		$(document).on("click", "#btn-alert", function() {
+			$("#popupAlert").on("popupafterclose", function(event, ui) {
+				$("#popupAlert").off("popupafterclose");
+
+				if (plugin_Notification.callbackFunction) {
+					plugin_Notification.callbackFunction($("#popupAlert"));
+					plugin_Notification.callbackFunction == null;
+				}
+
+				plugin_Notification.cleanupPopup($("#popupAlert"));
+				plugin_Notification.popupShow();
+			});
+
 			$("#popupAlert").popup("close");
-			if (plugin_Notification.callbackFunction) {
-				plugin_Notification.callbackFunction($("#popupAlert"));
-				plugin_Notification.callbackFunction == null;
-			}
-			plugin_Notification.cleanupPopup($("#popupAlert"));
-			plugin_Notification.popupShow();
+
 		});
 
 		$(document).on("click", "#btn-dialog-left", function() {
+
+			$("#popupDialog").on("popupafterclose", function(event, ui) {
+				$("#popupDialog").off("popupafterclose");
+
+				if (plugin_Notification.callbackFunctionBtnLeft) {
+					plugin_Notification.callbackFunctionBtnLeft($("#popupDialog"));
+					plugin_Notification.callbackFunctionBtnLeft == null;
+				}
+
+				plugin_Notification.cleanupPopup($("#popupDialog"));
+				plugin_Notification.popupShow();
+			});
+
 			$("#popupDialog").popup("close");
-			if (plugin_Notification.callbackFunctionBtnLeft) {
-				plugin_Notification.callbackFunctionBtnLeft($("#popupDialog"));
-				plugin_Notification.callbackFunctionBtnLeft == null;
-			}
-			plugin_Notification.cleanupPopup($("#popupDialog"));
-			plugin_Notification.popupShow();
 		});
 
 		$(document).on("click", "#btn-dialog-right", function() {
+			$("#popupDialog").on("popupafterclose", function(event, ui) {
+				$("#popupDialog").off("popupafterclose");
+			});
+
 			$("#popupDialog").popup("close");
 			if (plugin_Notification.callbackFunctionBtnRight) {
 				plugin_Notification.callbackFunctionBtnRight($("#popupDialog"));
@@ -352,10 +370,44 @@ var plugin_Notification = {
 			};
 			plugin_Notification.popupShow(notification, delayInMs);
 		},
-		close : function() {
-			$("#popupAlert").popup("close");
-			$("#popupDialog").popup("close");
+		close : {
+			alert : function() {
+				var dfd = $.Deferred();
+				if ($("#popupAlert").parent().hasClass("ui-popup-active")) {
+					$("#popupAlert").on("popupafterclose", function(event, ui) {
+						$("#popupAlert").off("popupafterclose");
+						dfd.resolve();
+					});
+					$("#popupAlert").popup("close");
+					plugin_Notification.cleanupPopup($("#popupAlert"));
+				} else {
+					dfd.resolve();
+				}
+				return dfd.promise();
+			},
+			dialog : function() {
+				var dfd = $.Deferred();
+				if ($("#popupDialog").parent().hasClass("ui-popup-active")) {
+					$("#popupDialog").on("popupafterclose", function(event, ui) {
+						$("#popupDialog").off("popupafterclose");
+						dfd.resolve();
+					});
+					$("#popupDialog").popup("close");
+					plugin_Notification.cleanupPopup($("#popupDialog"));
+				} else {
+					dfd.resolve();
+				}
+				return dfd.promise();
+			},
+			all : function() {
+				var dfd = $.Deferred();
+				$.when(app.notify.close.alert(), app.notify.close.dialog()).done(function() {
+					dfd.resolve()
+				});
+				return dfd.promise();
+			}
 		},
+
 		add : {
 			alert : function(text, title, headline, button, callbackButton, delayInMs) {
 				if (text == undefined)

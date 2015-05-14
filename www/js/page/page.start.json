@@ -6,5 +6,5 @@
 	"loginObligate":			false,
 	"isGlobalPage":				false,
 	"contentRefresh":			false,
-	"contentRefreshTimeout":	0
+	"contentRefreshInterval":	0
 }

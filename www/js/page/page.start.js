@@ -29,17 +29,39 @@ var page_start = {
 	// load the html structure
 	creator : function(container) {
 		app.debug.alert("page_" + this.config.name + ".creator()", 10);
-		
-		app.template.overwrite("#" + container.attr("id"), "JQueryMobilePlainPage");
-		
-		var content = container.find('div[data-role=content]');
 
-		content.append(app.ni.element.h1({
-			"text" : "Insert Background"
-		}));
+		initialisationPanel.show("");
 
-	
+	},
+	async : {
+		promise : null,// to implement
 
+		result : null,
+
+		elements : null,
+
+		creator : function(container) {
+			var dfd = $.Deferred();
+			dfd.resolve();
+			return dfd.promise();
+		},
+
+		call : function(container) {
+			return app.rc.getJson();
+		},
+
+		done : function(container) {
+		},
+
+		fail : function(container) {
+			alert("WS fails: " + JSON.stringify(this.result));
+		},
+
+		always : function(container) {
+		},
+
+		abort : function(container) {
+		}
 	},
 
 	// set the jquery events
@@ -104,6 +126,7 @@ var page_start = {
 		// Triggered on the ���fromPage��� after the transition animation has
 		// completed.
 		pagehide : function(event, container) {
+			initialisationPanel.hide();
 		},
 
 		// Triggered on the page being initialized, after initialization occurs.
@@ -129,9 +152,13 @@ var page_start = {
 		// Triggered on the ���toPage��� after the transition animation has
 		// completed.
 		pageshow : function(event, container) {
-			
+
 			window.setTimeout(function() {
-				if (app.sess.loggedIn()) {
+				// alert(app.info.firstUse());
+				if (app.info.firstUse() === true) {
+					app.info.firstUse(false);
+					app.help.navigation.redirect(app.config.startPage_firstStart, "slideup");
+				} else if (app.sess.loggedIn()) {
 					app.help.navigation.redirect(app.config.startPage_loggedIn, "slideup");
 				} else {
 					app.help.navigation.redirect(app.config.startPage, "slideup");

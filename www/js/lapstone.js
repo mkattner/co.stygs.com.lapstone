@@ -21,14 +21,13 @@
 // window.localStorage.clear();
 var app = {
 	config : {
-		name : "app",
-		min : false,
+		// name : "app",
 		useJQueryMobile : true,
 		apacheCordova : null,
 		jQueryMobile : null
 	},
 	addObject : function(name, object) {
-		// alert("Add object to app: " + name);
+		console.log("Deprecated Function!");
 		app[name] = object;
 	}
 };
@@ -85,12 +84,16 @@ function loadConfiguration() {
 	promise = globalLoader.AsyncJsonLoader("../js/lapstone.json");
 
 	promise.done(function(configuration) {
+
 		$.each(configuration, function(k, v) {
 			app.config[k] = v
 		});
 
 		if (configuration.name === undefined)
 			console.warn("lapstone.json has no 'name' property.");
+
+		if (configuration.title === undefined)
+			console.warn("lapstone.json has no 'title' property.");
 
 		if (configuration.version === undefined) {
 			console.warn("lapstone.json has no 'version' property.");
@@ -105,6 +108,9 @@ function loadConfiguration() {
 				console.warn("lapstone.json has no 'version.update' property.");
 		}
 
+		if (configuration.min === undefined)
+			console.warn("lapstone.json has no 'min' property.");
+
 		if (configuration.startPage === undefined)
 			console.warn("lapstone.json has no 'startPage' property.");
 
@@ -116,6 +122,22 @@ function loadConfiguration() {
 
 		if (configuration.badConnectionPage === undefined)
 			console.warn("lapstone.json has no 'badConnectionPage' property.");
+		var lapstone_split = app.config.version.lapstone.split('.', 3), lapstone_int = "", currentKey, currentInt;
+
+		for (currentKey in lapstone_split) {
+			currentInt = lapstone_split[currentKey];
+			lapstone_int += Math.pow(10, parseInt(4 - currentInt.toString().length)).toString().substring(1).toString() + currentInt;
+		}
+		app.config.version['lapstone_int'] = parseInt(lapstone_int);
+
+		var app_split = app.config.version.app.split('.', 3), app_int = "", currentKey, currentInt;
+		for (currentKey in app_split) {
+			currentInt = app_split[currentKey];
+			app_int += Math.pow(10, parseInt(4 - currentInt.toString().length)).toString().substring(1).toString() + currentInt;
+		}
+		app.config.version['app_int'] = parseInt(app_int);
+
+		$('title').text(app.config.title);
 
 		dfd.resolve();
 	});
@@ -130,10 +152,13 @@ function loadConfiguration() {
 function updateFramework() {
 	var dfd = $.Deferred();
 
-	var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;
+	var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion, currentAppVersion_int, currentLapstoneVersion_int;
 
 	currentAppVersion = app.config.version.app;
 	currentLapstoneVersion = app.config.version.lapstone;
+
+	currentAppVersion_int = app.config.version.app_int;
+	currentLapstoneVersion_int = app.config.version.lapstone_int;
 
 	plugin_Informator.loadConfigurationIntoHtml5Storage({
 		"app" : {
@@ -145,23 +170,40 @@ function updateFramework() {
 	oldAppVersion = app.config.version.app;
 
 	if (app.config.version.update === true) {
-		alert("update done")
+		console.warn("update done");
 	}
-	//alert(currentAppVersion + oldAppVersion + currentLapstoneVersion + oldLapstoneVersion);
+	// alert(currentAppVersion + oldAppVersion + currentLapstoneVersion +
+	// oldLapstoneVersion);
 	if (currentLapstoneVersion != oldLapstoneVersion || currentAppVersion != oldAppVersion) {
 		console.warn("TODO Lastone || App Version Update");
-		//alert("do update")
+		// alert("do update")
 		app.info.set("app.config.version.update", true);
-		
+
 		app.info.set("app.config.version.app", currentAppVersion);
 		app.info.set("app.config.version.lapstone", currentLapstoneVersion);
+		app.info.set("app.config.version.app_int", currentAppVersion_int);
+		app.info.set("app.config.version.lapstone_int", currentLapstoneVersion_int);
 		// reload
-		
+
 		location.reload();
 	}
 
 	dfd.resolve();
 	return dfd.promise();
+}
+
+function cacheAjax() {
+	var cache, update;
+	if (JSON.parse(window.localStorage.getItem(app.config.name + ".informator-config.app.config.version.update")) !== null) {
+		update = JSON.parse(window.localStorage.getItem(app.config.name + ".informator-config.app.config.version.update"));
+		// console.warn("update: " + update)
+		cache = !update;
+	} else {
+		cache = false;
+	}
+	// true;
+	// console.warn("cache: " + cache);
+	return cache;
 }
 
 function enchantPages() {
@@ -184,108 +226,185 @@ function enchantPages() {
 }
 
 var globalLoader = {
-	AsyncJsonLoader : function(url) {
-		var dfd = $.Deferred();
+	globalTimeout : 10000,
+	globalAttempts : 3,
+
+	AsyncJsonLoader : function(url, attempts, attempt, dfd) {
+
+		if (dfd == undefined)
+			dfd = $.Deferred();
+
+		if (attempt == undefined)
+			attempt = 1;
+
+		if (attempts == undefined)
+			attempts = globalLoader.globalAttempts;
+
 		$.ajax({
+			cache : cacheAjax(),
 			url : url,
 			async : true,
 			dataType : "json",
-			timeout : 5000,
-			success : function(data) {
+			timeout : globalLoader.globalTimeout
+		}).done(function(data, textStatus, jqXHR) {
+			if (textStatus === "timeout") {
+				startup.log("Timeout while loading: " + url);
+				startup.log("It was attempt " + attempt + " of " + attempts + ".");
+				if (attempt < attempts) {
+					startup.log("So we try again.");
+					globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
+				} else {
+					startup.log("So the framework loading fails.");
+					dfd.reject(textStatus);
+				}
+			} else {
 				dfd.resolve(data);
-			},
-			error : function(jqXHR, textStatus, errorThrown) {
-				initialisationPanel.changeStatus("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus + " Thrown:" + JSON.stringify(jqXHR));
+			}
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			if (attempt < attempts) {
+				globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
+			} else {
+				initialisationPanel.changeStatus("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
 				dfd.reject(textStatus);
 			}
 		});
+
 		return dfd.promise();
 	},
-	JsonLoader : function(url) {
-		console
-				.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: "
-						+ url);
+
+	JsonLoader : function(url, attempts, attempt) {
+		console.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
 		var json = null;
 		$.ajax({
+			cache : cacheAjax(),
 			url : url,
 			async : false,
 			dataType : "json",
+			timeout : globalLoader.globalTimeout,
 			success : function(data) {
 				// alert(JSON.stringify(data));
 				json = data;
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
-				initialisationPanel.changeStatus("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus + " Thrown:" + JSON.stringify(jqXHR));
+				initialisationPanel.changeStatus("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
 			}
 		});
 		return json;
 	},
-	AsyncScriptLoader : function(url) {
-		var dfd = $.Deferred();
-		$
-				.ajax({
-					url : url,
-					async : true,
-					dataType : "script",
-					timeout : 5000,
-					success : function(data) {
-						window.setTimeout(function() {
-							dfd.resolve(data);
-						}, 200);
 
-					},
-					error : function(jqXHR, textStatus, errorThrown) {
-						initialisationPanel.changeStatus("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus + " Thrown:"
-								+ JSON.stringify(jqXHR));
+	AsyncScriptLoader : function(url, attempts, attempt, dfd) {
 
-						dfd.reject(textStatus);
-					}
-				});
+		if (dfd == undefined)
+			dfd = $.Deferred();
+
+		if (attempt == undefined)
+			attempt = 1;
+
+		if (attempts == undefined)
+			attempts = globalLoader.globalAttempts;
+
+		$.ajax({
+			cache : cacheAjax(),
+			url : url,
+			async : true,
+			dataType : "script",
+			timeout : globalLoader.globalTimeout
+		}).done(function(data, textStatus, jqXHR) {
+			if (textStatus === "timeout") {
+				startup.log("Timeout while loading: " + url);
+				startup.log("It was attempt " + attempt + " of " + attempts + ".");
+				if (attempt < attempts) {
+					startup.log("So we try again.");
+					globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
+				} else {
+					startup.log("So the framework loading fails.");
+					dfd.reject(textStatus);
+				}
+			} else {
+				window.setTimeout(function() {
+					dfd.resolve(data);
+				}, 200);
+			}
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			if (attempt < attempts) {
+				globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
+			} else {
+				initialisationPanel.changeStatus("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
+				dfd.reject(textStatus);
+			}
+		});
 		return dfd.promise();
 	},
-	ScriptLoader : function(url) {
-		console
-				.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: "
-						+ url);
+
+	ScriptLoader : function(url, attempts, attempt) {
+		console.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
 		$.ajax({
+			cache : cacheAjax(),
 			url : url,
 			async : false,
 			dataType : "script",
-			timeout : 5000,
+			timeout : globalLoader.globalTimeout,
 			success : function(data) {
 
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
-				alert("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus + " Thrown:" + JSON.stringify(jqXHR));
+				alert("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
 
 			}
 		});
 	},
-	AsyncTextLoader : function(url) {
-		var dfd = $.Deferred();
+
+	AsyncTextLoader : function(url, attempts, attempt, dfd) {
+
+		if (dfd == undefined)
+			dfd = $.Deferred();
+
+		if (attempt == undefined)
+			attempt = 1;
+
+		if (attempts == undefined)
+			attempts = globalLoader.globalAttempts;
+
 		$.ajax({
+			cache : cacheAjax(),
 			url : url,
 			async : false,
 			dataType : "text",
-			success : function(data) {
+			timeout : globalLoader.globalTimeout
+		}).done(function(data, textStatus, jqXHR) {
+			if (textStatus === "timeout") {
+				startup.log("Timeout while loading: " + url);
+				startup.log("It was attempt " + attempt + " of " + attempts + ".");
+				if (attempt < attempts) {
+					startup.log("So we try again.");
+					globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+				} else {
+					startup.log("So the framework loading fails.");
+					dfd.reject(textStatus);
+				}
+			} else {
 				dfd.resolve(data);
-			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			}
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			if (attempt < attempts) {
+				globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+			} else {
 				initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
 				dfd.reject(textStatus);
 			}
 		});
 		return dfd.promise();
 	},
-	TextLoader : function(url) {
-		console
-				.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: "
-						+ url);
+
+	TextLoader : function(url, attempts, attempt) {
+		console.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
 		var text = null;
 		$.ajax({
+			cache : cacheAjax(),
 			url : url,
 			async : false,
 			dataType : "text",
+			timeout : globalLoader.globalTimeout,
 			success : function(data) {
 				// alert(JSON.stringify(data));
 				text = data;
@@ -295,6 +414,40 @@ var globalLoader = {
 			}
 		});
 		return text;
+	},
+
+	AsyncStyleLoader : function(url, attempts, attempt, dfd) {
+
+		if (dfd == undefined)
+			dfd = $.Deferred();
+
+		if (attempt == undefined)
+			attempt = 1;
+
+		if (attempts == undefined)
+			attempts = globalLoader.globalAttempts;
+
+		var cssLink;
+
+		if (!cacheAjax())
+			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
+		else
+			cssLink = "<link rel='stylesheet' type='text/css' href='" + url + "'>";
+
+		$("head").append(cssLink);
+		dfd.resolve();
+		return dfd.promise();
+	},
+
+	StyleLoader : function(url, attempts, attempt) {
+		var css, cssLink;
+
+		if (!cacheAjax())
+			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
+		else
+			cssLink = "<link rel='stylesheet' type='text/css' href='" + url + "'>";
+
+		$("head").append(cssLink);
 	}
 }
 
@@ -320,6 +473,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady() {
 	// alert("cordova initialized", 30);
 	app.config.apacheCordova = true;
+	$('body').addClass("app-apache-cordova");
 }
 
 function waitForMobileinit() {
@@ -347,6 +501,7 @@ function waitForDeviceready() {
 			}
 		}, 50);
 	} else {
+		app.config.apacheCordova = false;
 		dfd.resolve();
 	}
 
@@ -358,12 +513,55 @@ var initialisationPanel = {
 	start : function() {
 		var dfd = $.Deferred(), promise;
 
+		$('head').append("<title>");
+		$('title').text("...");
+
 		promise = globalLoader.AsyncTextLoader('../js/lapstone.html');
+		globalLoader.StyleLoader("../js/lapstone.css");
 		promise.done(function(data) {
+			var interval;
 			initialisationPanel.panel = data;
+
 			initialisationPanel.show();
-			dfd.resolve();
+
+			// preload images
+			$.each(startupDefinition, function(index, object) {
+
+				startup.images[object.image] = {};
+
+				startup.images[object.image]['startup'] = new Image();
+				startup.images[object.image]['startup'].src = "../images/lapstone/init_" + object.image + "_startup.png";
+
+				startup.images[object.image]['success'] = new Image();
+				startup.images[object.image]['success'].src = "../images/lapstone/init_" + object.image + "_success.png";
+			});
+
+			interval = setInterval(function() {
+				var loaded = true;
+				for (imgKey in startup.images) {
+					if (startup.images[imgKey].startup.complete && startup.images[imgKey].success.complete) {
+						;
+					} else {
+						loaded = false;
+					}
+				}
+
+				if (loaded == true) {
+					clearInterval(interval);
+					for (imgKey in startup.images) {
+						$("#lapstone-progress").append($('<img>', {
+							id : 'imgInit-' + imgKey,
+							src : startup.images[imgKey].startup.src,
+							alt : imgKey
+						}).addClass("lapstone-startup-image"));
+					}
+					dfd.resolve();
+				}
+
+			}, 10);
+
 		});
+
 		promise.fail(function(e) {
 			dfd.reject();
 		});
@@ -380,57 +578,74 @@ var initialisationPanel = {
 	changeStatus : function(status) {
 		$("#LAPSTONE .lapstone-status").text(status);
 	},
+	alterImage : function(imgKey) {
+		// console.log(imgKey)
+		$("#imgInit-" + imgKey).replaceWith($('<img>', {
+			id : 'imgInit-' + imgKey,
+			src : startup.images[imgKey].success.src,
+			alt : imgKey
+		}).addClass("lapstone-startup-image"));
+	},
 	finish : function() {
 		initialisationPanel.hide();
 	}
 }
 
 var startupDefinition = [ {
-	"status" : "",
+	"status" : "lapstone starts initialisation",
 	"function" : initialisationPanel.start,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "start"
 }, {
-	"status" : "",
+	"status" : "lapstone is loading the configuration",
 	"function" : loadConfiguration,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "configuration"
 }, {
-	"status" : "",
+	"status" : "lapstone is loading the plugins",
 	"function" : loadPlugins,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "plugins"
 }, {
-	"status" : "",
+	"status" : "lapstone is loading the pages",
 	"function" : loadPages,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "pages"
 }, {
-	"status" : "",
+	"status" : "lapstone is checking for updates",
 	"function" : updateFramework,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "updates"
 }, {
-	"status" : "",
+	"status" : "lapstone enchants the pages",
 	"function" : enchantPages,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "enchantment"
 }, {
-	"status" : "",
+	"status" : "lapstone waits for jQuerys' mobileinit event",
 	"function" : waitForMobileinit,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "mobileinit"
 }, {
-	"status" : "",
+	"status" : "lapstone waits for apache cordovas' deviceready event",
 	"function" : waitForDeviceready,
 	"parameter" : "",
-	"result" : ""
+	"result" : "",
+	"image" : "deviceready"
 } ]
 
 var startup = {
 	currentPosition : 0,
 	dfd : $.Deferred(),
 	promise : null,
+	images : {},
 
 	addFunction : function(status, func, parameter) {
 		startupDefinition.splice(startup.currentPosition + 1, 0, {
@@ -441,19 +656,29 @@ var startup = {
 		});
 	},
 
+	log : function(text) {
+		console.log(text);
+	},
+
 	functionDone : function(data) {
 		var promise;
-		// console.log(startup.currentPosition + ": " +
-		// startupDefinition[startup.currentPosition]['status'] + "
-		// SUCCESSFUL");
+
+		if (startupDefinition[startup.currentPosition]['image'] != undefined)
+			initialisationPanel.alterImage(startupDefinition[startup.currentPosition]['image']);
+
 		startup.currentPosition++;
 
 		if (startupDefinition.length > startup.currentPosition) {
-			console.log(startup.currentPosition + ": " + startupDefinition[startup.currentPosition]['status']);
+			startup.log(startup.currentPosition + ": " + startupDefinition[startup.currentPosition]['status']);
 			initialisationPanel.changeStatus(startupDefinition[startup.currentPosition]['status']);
-			promise = startupDefinition[startup.currentPosition]['function'](startupDefinition[startup.currentPosition]['parameter']);
-			promise.done(startup.functionDone);
-			promise.fail(startup.functionFail);
+
+			// delay startup for a smoother user experience
+			window.setTimeout(function() {
+				promise = startupDefinition[startup.currentPosition]['function'](startupDefinition[startup.currentPosition]['parameter']);
+				promise.done(startup.functionDone);
+				promise.fail(startup.functionFail);
+			}, 50);
+
 			// alert('next')
 		} else {
 			startup.dfd.resolve();
@@ -467,6 +692,7 @@ var startup = {
 
 	initFramework : function() {
 		var promise = startupDefinition[0]['function'](startupDefinition[0]['parameter']);
+
 		promise.done(startup.functionDone);
 		promise.fail(startup.functionFail);
 		return startup.dfd.promise();
@@ -480,18 +706,17 @@ $(document).ready(function() {
 	inititalisationPromise.done(function() {
 		// alert("init done");
 		setTimeout(function() {
-
 			initialisationPanel.finish();
-			console.log("TODO - cleanup framework loading");
+
+			// console.clear();
 		}, 200);
-	});
-
-	inititalisationPromise.fail(function() {
-		alert("framework fail");
-	});
-
-	inititalisationPromise.always(function() {
-		//alert();
+	}).fail(function() {
+		if (confirm("App loading failed. Confirm to reload the app."))
+			location.reload();
+		else
+			alert("App loading failed. Close the app and restart again");
+	}).always(function() {
+		// alert();
 		app.info.set("app.config.version.update", false);
 	});
 

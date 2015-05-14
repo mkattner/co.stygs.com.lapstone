@@ -30,11 +30,12 @@ var plugins = {
 		var dfd = $.Deferred();
 
 		// reverse order
-		startup.addFunction("", plugins.callPluginEvents, "");
-		startup.addFunction("", plugins.callPluginsLoadedEvent, "");
-		startup.addFunction("", plugins.loadPlugins, "");
-		startup.addFunction("", plugins.verifyPluginNames, "");
-		startup.addFunction("", plugins.loadPluginConfig, "");
+		startup.addFunction("lapstone is defining the plugins' events", plugins.callPluginEvents, "");
+		startup.addFunction("lapstone is calling the plugins' loaded event", plugins.callPluginsLoadedEvent, "");
+		startup.addFunction("lapstone is verifying the plugins' properties", plugins.verifyPlugins, "");
+		startup.addFunction("lapstone is loading the plugins", plugins.loadPlugins, "");
+		startup.addFunction("lapstone us verifying the plugins' configuration", plugins.verifyPluginNames, "");
+		startup.addFunction("lapstone is loading the plugins' configuration", plugins.loadPluginConfig, "");
 		dfd.resolve();
 		return dfd.promise();
 	},
@@ -60,6 +61,12 @@ var plugins = {
 	},
 
 	verifyPluginNames : function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
+	},
+
+	verifyPlugins : function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -94,9 +101,9 @@ var plugins = {
 			return;
 		}
 
-		promisepromiseConfiguration = plugins.loadPluginConfiguration(key);
+		promiseConfiguration = plugins.loadPluginConfiguration(key);
 
-		promisepromiseConfiguration.done(function() { // check the config:
+		promiseConfiguration.done(function() { // check the config:
 			// name
 			if (window['plugin_' + key].config.name == undefined) {
 				alert("Fatal error: The property 'name' is not defined in JSON file: ../js/plugin." + key + ".json")
@@ -114,8 +121,7 @@ var plugins = {
 
 			promise.done(function() {
 				// attach plugin's public functions to app object
-				app.addObject(window['plugin_' + key].config.name, window['plugin_' + key].functions);
-				app.addObject(window['plugin_' + key].config.shortname, window['plugin_' + key].functions);
+				app[window['plugin_' + key].config.shortname] = window['plugin_' + key].functions;
 
 				// plugin succesfully loaded
 				// attach plugin's name to array
@@ -127,7 +133,8 @@ var plugins = {
 				dfd.reject()
 			});
 		});
-		promisepromiseConfiguration.fail(function() {
+
+		promiseConfiguration.fail(function() {
 			dfd.reject();
 		});
 

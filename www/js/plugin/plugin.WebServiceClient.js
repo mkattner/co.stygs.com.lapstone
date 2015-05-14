@@ -25,7 +25,6 @@
  */
 var plugin_WebServiceClient = {
 	config : null,
-	interval : null,
 	constructor : function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -34,24 +33,7 @@ var plugin_WebServiceClient = {
 	},
 	pluginsLoaded : function() {
 		app.debug.alert("plugin.WebServiceClient.js ~ " + this.config.name + ".pluginsLoaded()", 11);
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.pluginsLoaded() - try first keep alive", 5);
 		var dfd = $.Deferred();
-		if (plugin_WebServiceClient.config.useKeepAlive) {
-			app.debug
-					.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.pluginsLoaded() case: plugin_WebServiceClient.config.useKeepAlive == true", 5);
-			app.debug
-					.alert(
-							"plugin.WebServiceClient.js ~ plugin_WebServiceClient.pluginsLoaded() call: plugin_WebServiceClient.keepAliveRequest() to make a first keepAlive request",
-							5);
-			plugin_WebServiceClient.keepAliveRequest();
-			app.debug
-					.alert(
-							"plugin.WebServiceClient.js ~ plugin_WebServiceClient.pluginsLoaded() initialize the keepAlive interval: plugin_WebServiceClient.interval ",
-							5);
-			plugin_WebServiceClient.interval = window.setInterval("plugin_WebServiceClient.keepAliveRequest()",
-					plugin_WebServiceClient.config.keepAlive.keepAliveIntervalInS * 1000);
-		}
-
 		dfd.resolve();
 		return dfd.promise();
 	},
@@ -103,11 +85,12 @@ var plugin_WebServiceClient = {
 		});
 	},
 
-	getAjax : function(url, data, type, method, timeout, async, dataType) {
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout
-				+ ", " + async + ")", 14);
+	getAjax : function(url, data, parameter, type, method, timeout, async, dataType) {
+		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ", " + async + ")", 14);
 		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - webservice: " + url + "?" + data, 60);
-		var json = null, dfd = null, headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals;
+
+		var json = null, dfd = null, headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals, newData;
+
 		if (async) {
 			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: webservice is async - create deferred object", 60);
 			dfd = $.Deferred();
@@ -126,8 +109,16 @@ var plugin_WebServiceClient = {
 			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: dataType != undefined", 60);
 			if (dataType.toLowerCase() == "query") {
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: contentType = application/x-www-form-urlencoded", 60);
+				$.each(parameter, function(key, value) {
+					if (typeof value == "object") {
+						value = encodeURIComponent(JSON.stringify(value));
+					}
+					app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getPath() - set in path: " + key + " = " + encodeURI(value), 20);
+					data = data.replace('{' + key + '}', encodeURIComponent(value));
+				});
 
-			} else if (dataType.toLowerCase() == "json") {
+			} // end if
+			else if (dataType.toLowerCase() == "json") {
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: contentType = application/json; charset=utf-8", 60);
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - create json object", 60);
 				obj = {}
@@ -139,27 +130,21 @@ var plugin_WebServiceClient = {
 					// var split = pairs[i].split('=');
 					// alert(paramKey);
 					// alert(paramValue);
-					if (paramValue.substr(0, 1) == "{" || paramValue.substr(0, 1) == "[") {
-						try {
-							app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - map json/array object: key = " + paramKey, 20);
-							app.debug
-									.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - map json/array object: value = " + paramValue, 20);
-							paramValue = JSON.parse(paramValue);
-							obj[paramKey] = paramValue;
-						} catch (e) {
-							app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - Ein parameter ist nicht gesetzt: " + paramKey, 9);
-						}
+
+					if (paramValue.indexOf('{') != -1) {
+						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: " + paramKey + " = " + parameter[paramKey], 60);
+						obj[paramKey] = parameter[paramKey];
+
 					} else {
-						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - set to json object: " + paramKey + "=" + paramValue,
-								20);
-						obj[paramKey] = paramValue;
+						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: " + paramKey + " = " + paramValue, 60);
+						obj[paramKey] = paramValue
 					}
 
 				}
 				data = JSON.stringify(obj);
 				contentType = "application/json; charset=utf-8";
 			} else if (dataType.toLowerCase() == "form") {
-				app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() case: contentType = application/x-www-form-urlencoded", 60);
+				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() case: contentType = application/x-www-form-urlencoded", 60);
 				contentType = "application/x-www-form-urlencoded; charset=UTF-8";
 			} else {
 				alert("unknown type: " + dataType);
@@ -167,14 +152,14 @@ var plugin_WebServiceClient = {
 		}
 
 		try {
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - set up ajax request", 60);
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: url = " + url, 60);
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: data = " + data, 60);
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: dataType = " + dataType, 60);
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: contentType = " + contentType, 60);
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: async = " + async, 60);
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: method = " + method, 60);
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - parameter: timeout = " + timeout, 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax request", 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax parameter: url = " + url, 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax parameter: data = " + data, 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax parameter: dataType = " + dataType, 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax parameter: contentType = " + contentType, 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax parameter: async = " + async, 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax parameter: method = " + method, 60);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - ajax parameter: timeout = " + timeout, 60);
 			$.ajax({
 				url : url,
 				data : data,// ?key=value
@@ -186,15 +171,11 @@ var plugin_WebServiceClient = {
 				beforeSend : function(jqXHR, settings) {
 					app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() beforeSend: set http headers", 60);
 					if (plugin_WebServiceClient.config.useHeaderToken) {
-						app.debug.alert(
-								"plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() case: plugin_WebServiceClient.config.useHeaderToken =≠ true",
-								60);
-						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() paramerter: "
-								+ plugin_WebServiceClient.config.headerToken.key + " = "
+						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() case: plugin_WebServiceClient.config.useHeaderToken =≠ true", 60);
+						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() paramerter: " + plugin_WebServiceClient.config.headerToken.key + " = "
 								+ app.store.localStorage.get(plugin_WebServiceClient.config.headerToken.value), 60);
 
-						jqXHR.setRequestHeader(plugin_WebServiceClient.config.headerToken.key, app.store.localStorage
-								.get(plugin_WebServiceClient.config.headerToken.value));
+						jqXHR.setRequestHeader(plugin_WebServiceClient.config.headerToken.key, app.store.localStorage.get(plugin_WebServiceClient.config.headerToken.value));
 					}
 					if (headers != null) {
 						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: headers != null", 60);
@@ -202,8 +183,14 @@ var plugin_WebServiceClient = {
 						var pairs = headers.split('&'), split;
 						for (i in pairs) {
 							split = pairs[i].split('=');
-							app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - setRequestHeader(" + split[0] + ", " + split[1]
-									+ ")", 60);
+							paramKey = split[0];
+							paramValue = split[1];
+
+							if (paramValue.indexOf('{') != -1) {
+								paramValue = parameter[paramKey];
+							}
+
+							app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - setRequestHeader(" + paramKey + ", " + paramValue + ")", 60);
 							jqXHR.setRequestHeader(split[0], split[1]);
 						}
 					}
@@ -219,15 +206,13 @@ var plugin_WebServiceClient = {
 
 						if ((exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
 							if (dfd != undefined && dfd != null) {
-								app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(json),
-										60);
+								app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(json), 60);
 								dfd.resolve(json);
 							}
 
 						} else {
 							if (dfd != undefined && dfd != null) {
-								app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: exception found: "
-										+ JSON.stringify(exeptionConfig), 60);
+								app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: exception found: " + JSON.stringify(exeptionConfig), 60);
 								dfd.reject(exeptionConfig);
 							}
 
@@ -277,119 +262,15 @@ var plugin_WebServiceClient = {
 		return json;
 	},
 
-	keepAliveStartTime : 0.0,
-
-	keepAliveSuccess : function(data, textStatus, jqXHR) {
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.keepAliveSuccess()", 14);
-		var wsDuration = Date.now() - plugin_WebServiceClient.keepAliveStartTime;
-		if (wsDuration >= plugin_WebServiceClient.config.keepAlive.maximumResponseTime) {
-			app.info.set("plugin_WebServiceClient.config.keepAlive.lastDuration", wsDuration);
-			app.info.set("plugin_WebServiceClient.config.keepAlive.isAlive", false);
-			app.info.set("plugin_WebServiceClient.config.keepAlive.error.code", 2);
-			app.info.set("plugin_WebServiceClient.config.keepAlive.error.text", "Timeout error");
-		} else {
-			app.info.set("plugin_WebServiceClient.config.keepAlive.lastDuration", wsDuration);
-			app.info.set("plugin_WebServiceClient.config.keepAlive.isAlive", true);
-			app.info.set("plugin_WebServiceClient.config.keepAlive.error.code", 0);
-			app.info.set("plugin_WebServiceClient.config.keepAlive.error.text", "No error");
-		}
-		app.debug.alert(
-				"plugin.WebServiceClient.js ~ plugin_WebServiceClient.keepAliveSuccess() value: plugin_WebServiceClient.config.keepAlive.lastDuration = "
-						+ app.store.localStorage.get("config.plugin_WebServiceClient.config.keepAlive.lastDuration"), 50);
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.keepAliveSuccess() value: plugin_WebServiceClient.config.keepAlive.isAlive = "
-				+ app.store.localStorage.get("config.plugin_WebServiceClient.config.keepAlive.isAlive"), 50);
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.keepAliveSuccess() value: plugin_WebServiceClient.config.keepAlive.error.code = "
-				+ app.store.localStorage.get("config.plugin_WebServiceClient.config.keepAlive.error.code"), 50);
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.keepAliveSuccess() value: plugin_WebServiceClient.config.keepAlive.error.text = "
-				+ app.store.localStorage.get("config.plugin_WebServiceClient.config.keepAlive.error.text"), 50);
-		if (!plugin_WebServiceClient.config.keepAlive.isAlive) {
-			app.debug.alert("KeepAlive request failed.\nReason: " + plugin_WebServiceClient.config.keepAlive.error.text + "\nTime: " + wsDuration, 60);
-			$("[data-role=page]").trigger("connectionisdead", wsDuration);
-		} else if (plugin_WebServiceClient.config.keepAlive.isAlive) {
-			$("[data-role=page]").trigger("connectionisalive", wsDuration);
-		}
-	},
-
-	keepAliveError : function(jqXHR, textStatus, errorThrown) {
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.keepAliveError()", 14);
-		var wsDuration = Date.now() - plugin_WebServiceClient.keepAliveStartTime;
-		app.info.set("plugin_WebServiceClient.config.keepAlive.lastDuration", wsDuration);
-		app.info.set("plugin_WebServiceClient.config.keepAlive.isAlive", false);
-		app.info.set("plugin_WebServiceClient.config.keepAlive.error.code", 1);
-		app.info.set("plugin_WebServiceClient.config.keepAlive.error.text", "Webservice Error: ");
-		app.debug.alert("KeepAlive request failed.\nReason: " + plugin_WebServiceClient.config.keepAlive.error.text + "\nTime: " + wsDuration + "\n\n"
-				+ JSON.stringify(errorThrown, null, 4), 60);
-		$("[data-role=page]").trigger("connectionisdead", wsDuration);
-	},
-
-	keepAliveAjax : function(url, data, type, method, timeout) {
-		app.debug.alert("plugin.WebServiceClient.js plugin_WebServiceClient.keepAliveAjax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout
-				+ ")", 14);
-		try {
-			$.ajax({
-				cache : false,
-				url : url,
-				data : data,// ?key=value
-				dataType : type, // json
-				async : true,
-				method : method, // post
-				timeout : timeout, // 5000
-				success : plugin_WebServiceClient.keepAliveSuccess,
-				error : plugin_WebServiceClient.keepAliveError
-			});
-		} catch (err) {
-			alert("Fatal exception!\n\n" + JSON.stringify(err, null, 4), 50);
-			app.debug.log(JSON.stringify(err, null, 4));
-		}
-	},
-
-	/*
-	 * 
-	 * 0 OK; 1 Webservice failed; 2 Timeout Error
-	 */
-	keepAliveRequest : function() {
-		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.keepAliveRequest()", 14);
-
-		var path, data, method, timeout, server, url, wsDuration;
-
-		path = plugin_WebServiceClient.config.keepAlive.keepAlivePath;
-		data = "";
-		method = plugin_WebServiceClient.config.keepAlive.method;
-		timeout = plugin_WebServiceClient.config.keepAlive.timeout;
-		server = plugin_WebServiceClient.getPreferedServer(plugin_WebServiceClient.config.keepAlive.keepAliveServer);
-		url = server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path + path;
-		wsDuration = 0;
-
-		switch (plugin_WebServiceClient.config.keepAlive.type) {
-		case "json":
-			plugin_WebServiceClient.keepAliveStartTime = Date.now();
-			plugin_WebServiceClient.keepAliveAjax(url, data, "json", method, timeout);
-			break;
-		case "xml":
-			alert("still not implemented");
-			break;
-		case "text":
-			alert("still not implemented");
-			break;
-		case "html":
-			alert("still not implemented");
-			break;
-		default:
-			alert("keepAliveRequest: no such type: " + plugin_WebServiceClient.config.keepAlive.type);
-		}
-	},
-
 	functions : {
 		getXml : function(uri, data, method, timeout) {
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getXml(" + uri + ", " + data + ", " + method + ", " + type + ")",
-					20);
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getXml(" + uri + ", " + data + ", " + method + ", " + type + ")", 20);
 			var xml = plugin_WebServiceClient.getAjax(uri, data, "xml");
 			return xml;
 		},
 
-		getJson : function(path, data, method, timeout, async, local, server) {
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getJson(" + path + ", " + data + ", " + method + ", " + timeout
-					+ ", " + async + ", " + local + ", " + server + ")", 20);
+		getJson : function(path, data, parameter, method, timeout, async, local, server) {
+			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getJson(" + path + ", " + data + ", " + JSON.stringify(parameter) + ", " + method + ", " + timeout + ", " + async + ", " + local + ", " + server + ")", 20);
 			var url = null, dataType = null, json, serverConfig;
 			if (local === true) {
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getJson() - case: local == true", 20);
@@ -403,7 +284,7 @@ var plugin_WebServiceClient = {
 				// alert(dataType);
 			}
 
-			json = plugin_WebServiceClient.getAjax(url, data, "json", method, timeout, async, dataType);
+			json = plugin_WebServiceClient.getAjax(url, data, parameter, "json", method, timeout, async, dataType);
 			return json;
 		},
 
@@ -416,10 +297,17 @@ var plugin_WebServiceClient = {
 			plugin_WebServiceClient.config.preferedServer = preferedServer;
 			return success;
 		},
-		getServer : function(name) {
+		getServer : function(name, asObject) {
 			var server = plugin_WebServiceClient.getPreferedServer(name);
+			if (asObject == undefined)
+				asObject = false;
 			// alert(JSON.stringify(server));
-			return server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path;
+			if (asObject === true)
+				return server;
+			else if (asObject == false)
+				return server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path;
+			else
+				console.error("Error");
 		},
 		setServer : function(name, url) {
 			url = URI(url);
@@ -450,6 +338,7 @@ var plugin_WebServiceClient = {
 		},
 		keepAliveRequest : function() {
 			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.keepAliveRequest()", 20);
+			console.error("Deprecated function!")
 		},
 		ping : function(serverName) {
 			var path, data, method, timeout, server, url, success = null;

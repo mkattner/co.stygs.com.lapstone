@@ -1,5 +1,10 @@
 {
-	"name":"MultilanguageIso639_3",
-	"shortname":"lang",
-	"defaultLanguage":"deu"
+	"name": "MultilanguageIso639_3",
+	"shortname": "lang",
+	"defaultLanguage": "deu",
+	"availableLanguages": 
+	[
+		"deu",
+		"eng"
+	]
 }

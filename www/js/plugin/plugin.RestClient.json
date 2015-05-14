@@ -1,6 +1,7 @@
 {
 	"name":"RestClient",
 	"shortname":"rc",
+	"useKeepAlive":true,
 	"wsdFiles":{
 		"../files/wsd/wsd.template.json":true
 	},

@@ -1,0 +1,10 @@
+{
+	"name": "DeviceManager",
+	"shortname": "dm",
+	"files": 
+	{
+		"android": "../files/device/android",
+		"ios": "../files/device/ios",
+		"windows": "../files/device/windows"
+	}
+}

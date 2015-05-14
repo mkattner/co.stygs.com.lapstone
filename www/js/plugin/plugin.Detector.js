@@ -82,8 +82,9 @@ var plugin_Detector = {
 		$.when(dfdCordovaDeviceReady).then(plugin_Detector.cordovaLoaded);
 		$.when(dfdJQueryMobileInit).then(plugin_Detector.jQueryMobileLoaded);
 
-		//app.debug.alert("Fatal exception!\n\n" + JSON.stringify(err, null, 4), 50);
-		//app.debug.log(JSON.stringify(err, null, 4));
+		// app.debug.alert("Fatal exception!\n\n" + JSON.stringify(err, null,
+		// 4), 50);
+		// app.debug.log(JSON.stringify(err, null, 4));
 	},
 	// called by pages.js
 	// called for each page after createPage();
@@ -91,16 +92,16 @@ var plugin_Detector = {
 		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
 
 		console.log("TODO - clean up & do not use pagebeforecreate");
-			if (plugin_Detector.config.addCssClassesToBodyTag) {
-				// add css classes
+		if (plugin_Detector.config.addCssClassesToBodyTag) {
+			// add css classes
 
-				$.each(app.detect.classes.array(), function(key, name) {
-					if (!$('body').hasClass(key))
-						$('body').addClass(key);
-				});
-			}
-			success = true;
-		
+			$.each(app.detect.classes.array(), function(key, name) {
+				if (!$('body').hasClass(key))
+					$('body').addClass(key);
+			});
+		}
+		success = true;
+
 	},
 	// called once
 	// set the jQuery delegates
@@ -141,6 +142,7 @@ var plugin_Detector = {
 				return classes;
 			},
 			generate : function() {
+				var className;
 				if (className = plugin_Detector.functions.isMobile())
 					plugin_Detector.cssClasses[className] = null;
 
@@ -240,8 +242,7 @@ var plugin_Detector = {
 			}
 		},
 		isMobile : function() {
-			if (plugin_Detector.functions.mobile.isApple() || plugin_Detector.functions.mobile.isBlackberry()
-					|| plugin_Detector.functions.mobile.isCannonical() || plugin_Detector.functions.mobile.isGoogle()
+			if (plugin_Detector.functions.mobile.isApple() || plugin_Detector.functions.mobile.isBlackberry() || plugin_Detector.functions.mobile.isCannonical() || plugin_Detector.functions.mobile.isGoogle()
 					|| plugin_Detector.functions.mobile.isMicrosoft() || plugin_Detector.functions.mobile.isMozilla())
 				return "app-mobile";
 			else
@@ -378,8 +379,7 @@ var plugin_Detector = {
 			},
 		},
 		isDesktop : function() {
-			if (plugin_Detector.functions.desktop.isApple() || plugin_Detector.functions.desktop.isCannonical()
-					|| plugin_Detector.functions.desktop.isMicrosoft() || plugin_Detector.functions.desktop.isDebian())
+			if (plugin_Detector.functions.desktop.isApple() || plugin_Detector.functions.desktop.isCannonical() || plugin_Detector.functions.desktop.isMicrosoft() || plugin_Detector.functions.desktop.isDebian())
 				return "app-desktop";
 			else
 				return false;

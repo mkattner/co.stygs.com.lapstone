@@ -1,0 +1,159 @@
+body {
+	font-family: sans-serif;
+	margin: 0 0 0 5px;
+	padding: 0;
+}
+
+h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
+	font-weight: normal;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+/* - fixed - */
+#divFixedEdit {
+	position: fixed;
+	top: 25px;
+	left: 25px;
+	background-color: #FFF;
+	z-index: 1000;
+	display: none;
+	min-width: 250px;
+	padding: 10px;
+}
+
+#divFixedEdit>div.translationOveview {
+	
+}
+
+#divFixedEdit>div.translationOveview>div.translationContainer {
+	
+}
+
+#divFixedEdit>div.translationOveview>div.translationContainer h1 {
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+#divFixedEdit>div.translationOveview>div.translationContainer h1>span {
+	font-weight: bold;
+	font-style: italic;
+	color: #777;
+}
+
+#divFixedEdit>div.translationOveview>div.translationContainer h2 {
+	font-size: 14px;
+	margin-bottom: 6px;
+}
+
+#divFixedEdit>div.translationOveview>div.translationContainer h2>span {
+	font-weight: bold;
+	font-style: italic;
+	color: #777;
+}
+
+#divFixedEdit>div.translationOveview>div.translationContainer>textarea {
+	height: 250px;
+	width: 100%;
+	border: 1px solid #000;
+}
+
+#divFixedHeader {
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	background-color: #FFF;
+}
+
+#divFixedHeader>#divHeader {
+	width: 100%;
+	margin: 0 0 5px 0;
+}
+
+#divFixedHeader>#divHeader>#divFirstHeader>h1 {
+	display: inline-block;
+	padding-top: 10px;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+}
+
+#divFixedHeader>#divHeader>#divSecondHeader>div.column {
+	height: 30px;
+	vertical-align: top;
+}
+
+#divFixedHeader>#divHeader>#divSecondHeader>div.column img {
+	height: 20px;
+	width: 20px;
+}
+
+/* - global - */
+.column {
+	display: inline-block;
+	width: 300px;
+	margin: 0 5px 0 0px;
+	padding: 0 5px 0 5px;
+	background-color: #bfd9ed;
+}
+
+.row {
+	white-space: nowrap;
+}
+
+/* - editor - */
+#divEditor {
+	
+}
+
+#divEditor>.divContext {
+	margin: 5px 0 0 0;
+}
+
+#divEditor>.divContext>.divContextOperations {
+	width: 100%;
+}
+
+#divEditor>.divContext>.divContextOperations>h1 {
+	display: inline-block;
+	font-size: 16px;
+	background-color: #cde7ab;
+	padding-top: 7px;
+	padding-bottom: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
+}
+
+#divEditor>.divContext>.divTranslation {
+	
+}
+
+#divEditor>.divContext>.divTranslation>h2 {
+	display: inline-block;
+	font-size: 12px;
+	height: 20px;
+}
+
+#divEditor>.divContext>.divTranslation>input {
+	font-size: 12px;
+	height: 20px;
+}
+
+#divEditor>.divContext>.divTranslation:last-of-type>input {
+	padding-bottom: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+#divEditor>.divContext>.divTranslation>input.notranslation {
+	background-color: #cd8247;
+}
+
+#divEditor>.divContext>.divTranslation>input.active {
+	background-color: #92cd47 !important;
+}
+
+#divEditor>.divContext>.divTranslation>input.edited {
+	background-color: #83b6dd;
+}

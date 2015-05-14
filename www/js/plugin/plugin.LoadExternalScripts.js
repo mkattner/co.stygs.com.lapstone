@@ -43,8 +43,7 @@ var plugin_LoadExternalScripts = {
 				if (key in plugin_LoadExternalScripts.loadedScripts) {
 					;// do nothing already loaded
 				} else {
-					var cssLink = "<link rel='stylesheet' type='text/css' href='" + key + "'>";
-					$("head").append(cssLink);
+					globalLoader.AsyncStyleLoader(key);
 					plugin_LoadExternalScripts.loadedScripts[key] = true;
 				}
 
@@ -61,7 +60,7 @@ var plugin_LoadExternalScripts = {
 		promiseOfPromises.done(function() {
 			dfd.resolve();
 		});
-		
+
 		promiseOfPromises.fail(function() {
 			dfd.reject();
 		})
@@ -96,8 +95,7 @@ var plugin_LoadExternalScripts = {
 			if (url in plugin_LoadExternalScripts.loadedScripts) {
 				;// do nothing already loaded
 			} else {
-				var cssLink = "<link rel='stylesheet' type='text/css' href='" + url + "'>";
-				$("head").append(cssLink);
+				globalLoader.AsyncStyleLoader(url);
 				plugin_LoadExternalScripts.loadedScripts[url] = true;
 			}
 		},

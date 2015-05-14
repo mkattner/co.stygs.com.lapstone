@@ -1,93 +1,101 @@
 {
-	"name":"HtmlTemplates",
-	"shortname":"template",
-	"templates":{
-		"JQueryMobilePageStructure":		
+	"name": "HtmlTemplates",
+	"shortname": "template",
+	"templates": 
+	{
+		"JQueryMobilePageStructure": 
 		{
-			"url":			"../template/JQueryMobilePageStructure.html",
-			"elements":		
+			"url": "../template/JQueryMobilePageStructure.html",
+			"elements": 
 			{
-				"header":	"div[data-role=header]",
-				"content":	"div[data-role=content]",
-				"footer":	"div[data-role=footer]"
+				"header": "div[data-role=header]",
+				"content": "div[data-role=content]",
+				"footer": "div[data-role=footer]"
 			}
 		},
-		
-		"JQueryMobilePlainPage":			
+
+		"JQueryMobilePlainPage": 
 		{
-			"url":			"../template/JQueryMobilePlainPage.html",
-			"elements":		
+			"url": "../template/JQueryMobilePlainPage.html",
+			"elements": 
 			{
-				"content":	"div[data-role=content]"
+				"content": "div[data-role=content]"
 			}
 		},
-		
-		"JQueryMobileHeaderPage":			
+
+		"JQueryMobileHeaderPage": 
 		{
-			"url":			"../template/JQueryMobileHeaderPage.html",
-			"elements":		
+			"url": "../template/JQueryMobileHeaderPage.html",
+			"elements": 
 			{
-				"header":	"div[data-role=header]",
-				"content":	"div[data-role=content]"
+				"header": "div[data-role=header]",
+				"content": "div[data-role=content]"
 			}
 		},
-		
-		"JQueryMobileNavigationPanel":			
+
+		"JQueryMobileNavigationPanel": 
 		{
-			"url":				"../template/JQueryMobileNavigationPanel.html"
+			"url": "../template/JQueryMobileNavigationPanel.html"
 		},
-		
-		"JQueryMobilePopupDialog":			
+
+		"JQueryMobilePopupDialog": 
 		{
-			"url":				"../template/JQueryMobilePopupDialog.html"
+			"url": "../template/JQueryMobilePopupDialog.html"
 		},
-		
-		"JQueryMobilePopupAlert":						
+
+		"JQueryMobilePopupAlert": 
 		{
-			"url":			"../template/JQueryMobilePopupAlert.html"
+			"url": "../template/JQueryMobilePopupAlert.html"
 		},
-		
-		"app-loader-bubble":							
+
+		"app-loader-bubble": 
 		{
-			"url":			"../template/app.loader.bubble.html"
+			"url": "../template/app.loader.bubble.html"
 		},
-		
-		"app-loader-bubble-inline-button":				
+
+		"app-loader-bubble-inline-button": 
 		{
-			"url":			"../template/app.loader.bubble.inline-button.html"
+			"url": "../template/app.loader.bubble.inline-button.html"
 		},
-		
-		"app-loader-bubbleDiv":							
+
+		"app-loader-bubbleDiv": 
 		{
-			"url":			"../template/app.loader.bubbleDiv.html"
+			"url": "../template/app.loader.bubbleDiv.html"
 		},
-		
-		"themis":{
-			"ThemisHeaderContent":			
+
+		"chartjs-custom-tooltip": 
+		{
+			"url": "../template/chartjs.custom.tooltip.html"
+		},
+
+		"themis": 
+		{
+			"ThemisHeaderContent": 
 			{
-				"url":			"../template/ThemisHeaderContent.html"
+				"url": "../template/ThemisHeaderContent.html"
 			},
-			
-			"ThemisNavigationPanelContent":			
+
+			"ThemisNavigationPanelContent": 
 			{
-				"url":			"../template/ThemisNavigationPanelContent.html"
+				"url": "../template/ThemisNavigationPanelContent.html"
 			}
 		},
-		
-		"responsive":{
-			"grid-33-33-33":			
+
+		"responsive": 
+		{
+			"grid-33-33-33": 
 			{
-				"url":			"../template/app.responsive.grid.33.33.33.html"
+				"url": "../template/app.responsive.grid.33.33.33.html"
 			},
-			
-			"listA":			
+
+			"listA": 
 			{
-				"url":			"../template/app.responsive.list.A.html"
+				"url": "../template/app.responsive.list.A.html"
 			},
-			
-			"listB":			
+
+			"listB": 
 			{
-				"url":			"../template/app.responsive.list.B.html"
+				"url": "../template/app.responsive.list.B.html"
 			}
 		}
 	}

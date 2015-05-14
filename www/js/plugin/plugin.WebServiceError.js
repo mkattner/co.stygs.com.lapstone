@@ -107,23 +107,27 @@ var plugin_WebServiceError = {
 		getExceptionConfig : function(exception) {
 			app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig()", 60);
 
-			var errorName;
+			var errorName = null;
 
-			 //alert(typeof exception + " " + JSON.stringify(exception));
+			app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig()" + JSON.stringify(exception));
 
-			if (exception.error != undefined) {
+			if (exception.statusText === "error" && exception.readyState === 0 && exception.status === 0) {
+				errorName = "timeout";
+			} else if (exception.error != undefined) {
 				errorName = exception.error;
 			} else if (exception.status != undefined) {
 				errorName = exception.status;
 			} else if (exception.exception)
 				errorName = exception.exception;
-			
-			app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - errors", 60);
-			for (key in plugin_WebServiceError.config.wse) {
-				app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - " + key + " == " + errorName, 60);
-				if (key == errorName) {
-					app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - case: error found", 60);
-					return plugin_WebServiceError.config.wse[key];
+
+			if (errorName != null) {
+				app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - errors", 60);
+				for (key in plugin_WebServiceError.config.wse) {
+					app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - " + key + " == " + errorName, 60);
+					if (key == errorName) {
+						app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - case: error found", 60);
+						return plugin_WebServiceError.config.wse[key];
+					}
 				}
 			}
 

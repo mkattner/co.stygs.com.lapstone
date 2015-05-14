@@ -79,7 +79,7 @@ var plugin_FormInputDesigner = {
 
 		if (options.value != undefined)
 			attributes += ' value="' + options.value + '"';
-		
+
 		if (options.href != undefined)
 			attributes += ' href="' + options.href + '"';
 
@@ -88,6 +88,9 @@ var plugin_FormInputDesigner = {
 
 		if (options.checked === true)
 			attributes += ' checked="checked"';
+		
+		if (options.selected === true)
+			attributes += ' selected="selected"';
 
 		if (options.attributes != undefined) {
 			$.each(options.attributes, function(key, value) {
@@ -414,7 +417,7 @@ var plugin_FormInputDesigner = {
 				thumbnail += '<a href="' + options.href + '" ' + plugin_FormInputDesigner.getAttributes(options) + '> <img src="' + options.imageSrc
 						+ '" class="ui-li-thumb ">';
 				thumbnail += '<h2>' + options.headline + '</h2>';
-				thumbnail += '<p>' + options.text + '</p>';
+				thumbnail += '<p class="ui-li-responsive-p">' + options.text + '</p>';
 				thumbnail += '<p class="ui-li-aside">' + options.title + '</p>';
 				thumbnail += '</a>';
 				thumbnail += '</li>';
@@ -504,7 +507,7 @@ var plugin_FormInputDesigner = {
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "p";
 				plugin_FormInputDesigner.addClassToOptions(options, "app-p");
-				return plugin_FormInputDesigner.generateOutput(options, type);
+				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			a : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.element.a()", 20);

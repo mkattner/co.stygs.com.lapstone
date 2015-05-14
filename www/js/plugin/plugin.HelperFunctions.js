@@ -128,6 +128,17 @@ var plugin_HelperFunctions = {
 				}
 				return success;
 			},
+			website : function(website) {
+				app.debug.alert("plugin_HelperFunctions.functions.validate.website(" + website + ")", 20);
+
+				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.website, "g");
+				if (website == undefined)
+					success = false;
+				else if (regex.test(website)) {
+					success = true;
+				}
+				return success;
+			},
 			password : function(password) {
 				app.debug.alert("plugin_HelperFunctions.functions.validate.password(" + password + ")", 20);
 
@@ -159,17 +170,18 @@ var plugin_HelperFunctions = {
 				object.find('[data-role=listview]').listview().listview('refresh');
 				object.find('[data-role=collapsible]').collapsible();
 				object.find('[data-role=controlgroup]').controlgroup();
-				object.find('[data-role=slider]').flipswitch().flipswitch( "refresh" );
+				object.find('[data-role=slider]').flipswitch().flipswitch("refresh");
 				object.find('[type=button], [type=submit]').button();
 				object.find('[data-role=navbar]').navbar();
 				object.find('[type=text], textarea, [type=search], [type=password], [type=number], [type=file]').textinput();
-				object.find('[type=range]').slider().slider("refresh");
+				object.find('[data-type=range]').slider().slider("refresh");
 				object.find('[type=radio], [type=checkbox]').checkboxradio();
 				object.find('select').selectmenu();
 			}
 		},
 		navigation : {
 			redirect : function(url, transition) {
+				console.log("Deprecated Function! Use: ")
 				setTimeout(function() {
 					if (transition != undefined)
 						$.mobile.changePage(url, {
@@ -181,15 +193,19 @@ var plugin_HelperFunctions = {
 				}, 50);
 			},
 			back : function() {
+				console.warn("Deprecated Function! Use: app.nav...")
 				window.history.back();
 			},
 			forward : function() {
+				console.warn("Deprecated Function! Use: app.nav...")
 				window.history.forward();
 			},
 			reload : function() {
+				console.warn("Deprecated Function! Use: app.nav...")
 				location.reload();
 			},
 			redirectAndReload : function(url) {
+				console.warn("Deprecated Function! Use: app.nav...")
 				$.mobile.ajaxEnabled = false;
 				window.location.replace(url);
 			}

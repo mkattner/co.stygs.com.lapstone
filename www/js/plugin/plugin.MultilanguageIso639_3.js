@@ -76,6 +76,9 @@ var plugin_MultilanguageIso639_3 = {
 	},
 	// public functions
 	functions : {
+		get : function() {
+			return plugin_MultilanguageIso639_3.config.defaultLanguage;
+		},
 		addParameter : function(key, value) {
 			if (!plugin_MultilanguageIso639_3.parameter) {
 				plugin_MultilanguageIso639_3.parameter = {};
@@ -116,8 +119,8 @@ var plugin_MultilanguageIso639_3 = {
 					});
 				}
 				return text;
-			} else{
-				console.warn("Language: "+ context + '.' + id + " = undefined");
+			} else {
+				console.warn("Language: " + context + '.' + id + " = undefined");
 				return id;
 			}
 		},
