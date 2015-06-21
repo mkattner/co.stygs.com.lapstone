@@ -82,14 +82,13 @@ var plugin_Actions = {
 	 * 
 	 */
 	functions : {
-		html : {
-			redirect : function(reloadFramework) {
-				if (app.config.jQueryMobile) {
-					// redirect
-				} else {
-					// redirect
-				}
-			}
+		login : function() {
+		},
+		logout : function() {
+		},
+		alert : function() {
+		},
+		confimation : function() {
 		}
 	}
 };

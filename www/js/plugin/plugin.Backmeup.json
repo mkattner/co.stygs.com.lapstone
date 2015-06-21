@@ -1,4 +1,8 @@
 {
-	"name":"Backmeup",
-	"shortname":"bmu"
+	"name": "Backmeup",
+	"shortname": "bmu",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	]
 }

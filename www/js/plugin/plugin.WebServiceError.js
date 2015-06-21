@@ -19,6 +19,12 @@ var plugin_WebServiceError = {
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
+
+		if (plugin_WebServiceError.config.errorKeys == undefined) {
+			console.error("No errorKeys Array in plugin.WebServiceError.json");
+			dfd.reject();
+		}
+
 		// load the webservice definitions
 		$.each(plugin_WebServiceError.config.wseFiles, function(path, loadFile) {
 			if (loadFile) {
@@ -34,7 +40,7 @@ var plugin_WebServiceError = {
 		promiseOfPromises.fail(function() {
 			dfd.reject();
 		});
-		;
+
 		return dfd.promise();
 
 	},
@@ -113,12 +119,22 @@ var plugin_WebServiceError = {
 
 			if (exception.statusText === "error" && exception.readyState === 0 && exception.status === 0) {
 				errorName = "timeout";
-			} else if (exception.error != undefined) {
-				errorName = exception.error;
-			} else if (exception.status != undefined) {
-				errorName = exception.status;
-			} else if (exception.exception)
-				errorName = exception.exception;
+			} else {
+
+				// if (exception.error != undefined) {
+				// errorName = exception.error;
+				// } else if (exception.status != undefined) {
+				// errorName = exception.status;
+				// } else if (exception.exception)
+				// errorName = exception.exception;
+
+				$.each(plugin_WebServiceError.config.errorKeys, function(key, value) {
+					if (exception[value] != undefined) {
+						errorName = exception[value];
+						return false;
+					}
+				});
+			}
 
 			if (errorName != null) {
 				app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig() - errors", 60);

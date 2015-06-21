@@ -1,6 +1,11 @@
 {
 	"name": "MultilanguageIso639_3",
 	"shortname": "lang",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	],
+
 	"defaultLanguage": "deu",
 	"availableLanguages": 
 	[

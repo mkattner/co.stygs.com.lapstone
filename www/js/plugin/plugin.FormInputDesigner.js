@@ -88,7 +88,7 @@ var plugin_FormInputDesigner = {
 
 		if (options.checked === true)
 			attributes += ' checked="checked"';
-		
+
 		if (options.selected === true)
 			attributes += ' selected="selected"';
 
@@ -225,9 +225,9 @@ var plugin_FormInputDesigner = {
 			textarea : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.text.textarea()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
-				// var type = "text";
-				// options.classes.push("app-form-input-text");
-				// return plugin_FormInputDesigner.generateInput(options, type);
+				var type = "textarea";
+				plugin_FormInputDesigner.addClassToOptions(options, "app-textarea");
+				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			number : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.text.number()", 20);
@@ -414,8 +414,7 @@ var plugin_FormInputDesigner = {
 				app.debug.alert("plugin_FormInputDesigner.functions.list.thumbnail()", 20);
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var thumbnail = '<li>';
-				thumbnail += '<a href="' + options.href + '" ' + plugin_FormInputDesigner.getAttributes(options) + '> <img src="' + options.imageSrc
-						+ '" class="ui-li-thumb ">';
+				thumbnail += '<a href="' + options.href + '" ' + plugin_FormInputDesigner.getAttributes(options) + '> <img src="' + options.imageSrc + '" class="ui-li-thumb ">';
 				thumbnail += '<h2>' + options.headline + '</h2>';
 				thumbnail += '<p class="ui-li-responsive-p">' + options.text + '</p>';
 				thumbnail += '<p class="ui-li-aside">' + options.title + '</p>';
@@ -539,6 +538,13 @@ var plugin_FormInputDesigner = {
 				var type = "div";
 				plugin_FormInputDesigner.addClassToOptions(options, "app-div");
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
+			},
+			span : function(options) {
+				app.debug.alert("plugin_FormInputDesigner.functions.element.span()", 20);
+				options = plugin_FormInputDesigner.verifyOptions(options);
+				var type = "span";
+				plugin_FormInputDesigner.addClassToOptions(options, "app-span");
+				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			canvas : function(options) {
 				app.debug.alert("plugin_FormInputDesigner.functions.element.canvas()", 20);

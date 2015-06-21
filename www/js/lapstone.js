@@ -427,15 +427,37 @@ var globalLoader = {
 		if (attempts == undefined)
 			attempts = globalLoader.globalAttempts;
 
-		var cssLink;
+		$.ajax({
+			url : url,
+			async : false,
+			dataType : "text",
+			timeout : globalLoader.globalTimeout
+		}).done(function(data, textStatus, jqXHR) {
+			if (textStatus === "timeout") {
+				startup.log("Timeout while loading: " + url);
+				startup.log("It was attempt " + attempt + " of " + attempts + ".");
+				if (attempt < attempts) {
+					startup.log("So we try again.");
+					globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+				} else {
+					startup.log("So the framework loading fails.");
+					dfd.reject(textStatus);
+				}
+			} else {
+				if ($("style")[0] == undefined)
+					$('head').append("<style></style>");
 
-		if (!cacheAjax())
-			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
-		else
-			cssLink = "<link rel='stylesheet' type='text/css' href='" + url + "'>";
-
-		$("head").append(cssLink);
-		dfd.resolve();
+				$("style").before('<link rel="stylesheet" type="text/css" href="' + url + '">');
+				dfd.resolve(data);
+			}
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			if (attempt < attempts) {
+				globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+			} else {
+				initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
+				dfd.reject(textStatus);
+			}
+		});
 		return dfd.promise();
 	},
 
@@ -445,7 +467,7 @@ var globalLoader = {
 		if (!cacheAjax())
 			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
 		else
-			cssLink = "<link rel='stylesheet' type='text/css' href='" + url + "'>";
+			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '">';
 
 		$("head").append(cssLink);
 	}

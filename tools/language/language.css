@@ -71,16 +71,26 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
 	margin: 0 0 5px 0;
 }
 
+#divFixedHeader>#divHeader .column {
+	
+}
+
 #divFixedHeader>#divHeader>#divFirstHeader>h1 {
 	display: inline-block;
 	padding-top: 10px;
 	border-top-left-radius: 7px;
 	border-top-right-radius: 7px;
+	border-top: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
 }
 
 #divFixedHeader>#divHeader>#divSecondHeader>div.column {
 	height: 30px;
 	vertical-align: top;
+	border-bottom: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
 }
 
 #divFixedHeader>#divHeader>#divSecondHeader>div.column img {
@@ -94,7 +104,6 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
 	width: 300px;
 	margin: 0 5px 0 0px;
 	padding: 0 5px 0 5px;
-	background-color: #bfd9ed;
 }
 
 .row {
@@ -107,7 +116,7 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
 }
 
 #divEditor>.divContext {
-	margin: 5px 0 0 0;
+	margin: 10px 0 0 0;
 }
 
 #divEditor>.divContext>.divContextOperations {
@@ -117,12 +126,14 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
 #divEditor>.divContext>.divContextOperations>h1 {
 	display: inline-block;
 	font-size: 16px;
-	background-color: #cde7ab;
 	padding-top: 7px;
 	padding-bottom: 5px;
-	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	border-top-left-radius: 5px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
 }
 
 #divEditor>.divContext>.divTranslation {
@@ -140,6 +151,13 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
 	height: 20px;
 }
 
+#divEditor>.divContext>.divTranslation>input.column {
+	background-color: #FFF;
+	border-bottom: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
+}
+
 #divEditor>.divContext>.divTranslation:last-of-type>input {
 	padding-bottom: 5px;
 	border-bottom-left-radius: 5px;
@@ -147,13 +165,13 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
 }
 
 #divEditor>.divContext>.divTranslation>input.notranslation {
-	background-color: #cd8247;
+	background-color: #f16745;
 }
 
 #divEditor>.divContext>.divTranslation>input.active {
-	background-color: #92cd47 !important;
+	background-color: #7bc8a4 !important;
 }
 
 #divEditor>.divContext>.divTranslation>input.edited {
-	background-color: #83b6dd;
+	background-color: #e38c2d;
 }

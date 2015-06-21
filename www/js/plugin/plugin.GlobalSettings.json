@@ -1,4 +1,8 @@
 {
-	"name":"GlobalSettings",
-	"shortname":"settings"
+	"name": "GlobalSettings",
+	"shortname": "settings",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	]
 }

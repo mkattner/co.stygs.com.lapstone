@@ -1,5 +1,10 @@
 {
 	"name": "HtmlView",
 	"shortname": "view",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	],
+
 	"multilanguageContext": "view"
 }

@@ -5,7 +5,7 @@ var editor = {
 	inputId : 1,
 	loadLanguageFiles : function() {
 		var url;
-		url = "../../../www_debug/js/plugin/plugin.MultilanguageIso639_3.json";
+		url = "../../js/plugin/plugin.MultilanguageIso639_3.json";
 		$.ajax({
 			dataType : "json",
 			url : url,
@@ -14,7 +14,8 @@ var editor = {
 			editor.defaultLanguage = json.defaultLanguage;
 			$.each(json.availableLanguages, function(index, languageName) {
 				var url;
-				url = "../../../www_debug/files/language/" + languageName + ".json", $.ajax({
+				url = "../../files/language/" + languageName + ".json";
+				$.ajax({
 					dataType : "json",
 					url : url,
 					async : false
@@ -133,6 +134,7 @@ $(document).ready(
 			$.each(editor.languageObject, function(languageId, languageObject) {
 				var divOperation = $('<div class="column" data-languageid="' + languageId + '"></div>');
 				divOperation.append('<a href="#" class="reset"><img alt="reset" title="reset" src="img/reset.png" /></a>');
+				divOperation.append('<a href="#" class="deploy"><img alt="deploy" title="deploy" src="img/deploy.png" /></a>');
 				divOperation.append('<a href="#" class="export"><img alt="export" title="export" src="img/export.png" /></a>');
 				divSecond.append(divOperation);
 			});
@@ -181,13 +183,19 @@ $(document).ready(
 							editor.inputId++;
 							divTranslation.append(inputTranslation);
 
-							if (languageObject[contextId][translationId] == undefined) {
+							if (languageObject[contextId] == undefined) {
 								inputTranslation.val("");
 								inputTranslation.attr("data-original", "");
 								inputTranslation.addClass("notranslation");
 							} else {
-								inputTranslation.val(languageObject[contextId][translationId]);
-								inputTranslation.attr("data-original", languageObject[contextId][translationId]);
+								if (languageObject[contextId][translationId] == undefined) {
+									inputTranslation.val("");
+									inputTranslation.attr("data-original", "");
+									inputTranslation.addClass("notranslation");
+								} else {
+									inputTranslation.val(languageObject[contextId][translationId]);
+									inputTranslation.attr("data-original", languageObject[contextId][translationId]);
+								}
 							}
 							inputTranslation.addClass("column");
 						});
@@ -201,11 +209,14 @@ $(document).ready(
 // shortcuts
 $(document).on('keydown', 'input, textarea', function(e) {
 	// You may replace `c` with whatever key you want
+	
 	if ((e.ctrlKey || e.metaKey) && (String.fromCharCode(e.which) === '1')) {
+		e.preventDefault();
 		$('#divFixedEdit').css('display', 'block');
 		$('[data-id=' + $(this).attr('id') + ']').focus();
 		$('[data-id=' + $(this).attr('id') + ']').attr('tabindex', $(this).attr('id'));
 	} else if ((e.ctrlKey || e.metaKey) && (String.fromCharCode(e.which) === '2')) {
+		e.preventDefault();
 		var id = $(this).attr('data-id');
 		$('#' + id).focus();
 		$('#divFixedEdit').css('display', 'none');
@@ -245,10 +256,35 @@ $(document).on('click', '.reset', function(event) {
 	}
 });
 
+$(document).on('click', '.deploy', function(event) {
+	var languageId, exportObject = {};
+	languageId = $(this).parent().attr("data-languageid");
+	if (confirm('Do you realy want to deploy the translations to the development system?')) {
+		$('#divEditor').find('input[data-languageid=' + languageId + ']').each(function() {
+
+			if (exportObject[$(this).attr('data-contextid')] == undefined) {
+				exportObject[$(this).attr('data-contextid')] = {};
+			}
+
+			exportObject[$(this).attr('data-contextid')][$(this).attr('data-translationid')] = $(this).val();
+		});
+
+		$.ajax({
+			type : 'POST',
+			url : 'deploy.php',
+			async : true,
+			data : 'languageId=' + languageId + '&json=' + JSON.stringify(exportObject)
+		}).done(function(data) {
+			alert('Successful: ' + data);
+		}).fail(function() {
+			alert('fail');
+		});
+	}
+});
+
 $(document).on('scroll', function() {
 	$('#divFixedHeader').css({
 		'left' : -$(this).scrollLeft() + 5
-	// Why this 15, because in the CSS, we have set left 15, so as we scroll, we
-	// would want this to remain at 15px left
+
 	});
 });

@@ -1,4 +1,8 @@
 {
-	"name":"jQueryExtend",
-	"shortname":"jExt"
+	"name": "jQueryExtend",
+	"shortname": "jExt",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	]
 }

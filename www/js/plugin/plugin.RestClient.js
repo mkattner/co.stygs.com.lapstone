@@ -102,6 +102,7 @@ var plugin_RestClient = {
 
 	getPath : function(parameter, path) {
 		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getPath()", 20);
+		app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getPath() - parameter: " + JSON.stringify(parameter), 20);
 
 		var data = path.split('?')[1];
 		path = path.split('?')[0];
@@ -111,7 +112,7 @@ var plugin_RestClient = {
 				if (typeof value == "object") {
 					value = encodeURIComponent(JSON.stringify(value));
 				}
-				app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getPath() - set in path: " + key + " = " + encodeURI(value), 20);
+				app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getPath() - set in path: " + key + " = " + encodeURIComponent(value), 20);
 				path = path.replace('{' + key + '}', encodeURIComponent(value));
 			});
 		}
@@ -152,8 +153,7 @@ var plugin_RestClient = {
 		path = plugin_RestClient.getPath(parameter, path);
 
 		// ask for the json file
-		json = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[service].method, plugin_RestClient.config.webservices[service].timeout, async,
-				plugin_RestClient.config.webservices[service].local, server);
+		json = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[service].method, plugin_RestClient.config.webservices[service].timeout, async, plugin_RestClient.config.webservices[service].local, server);
 		// add language wildcards wich could be defined in webservice
 		// response
 		if (plugin_MultilanguageIso639_3 != undefined) {
@@ -188,8 +188,7 @@ var plugin_RestClient = {
 		path = plugin_RestClient.getPath(parameter, path);
 
 		// ask for the json file
-		promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[service].method, plugin_RestClient.config.webservices[service].timeout, async,
-				plugin_RestClient.config.webservices[service].local, server);
+		promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[service].method, plugin_RestClient.config.webservices[service].timeout, async, plugin_RestClient.config.webservices[service].local, server);
 		// add language wildcards wich could be defined in webservice
 		// response
 
@@ -239,8 +238,8 @@ var plugin_RestClient = {
 			path = plugin_RestClient.getPath(parameter, path);
 
 			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJson() -  ask for the json file", 20);
-			json = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async,
-					plugin_RestClient.config.webservices[serviceName].local, server);
+			json = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async, plugin_RestClient.config.webservices[serviceName].local,
+					server);
 
 			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJson() - add language wildcards wich could be defined in webservice response", 20);
 			if (plugin_MultilanguageIso639_3 != undefined) {
@@ -283,8 +282,8 @@ var plugin_RestClient = {
 
 			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - ask for the deferred promise object", 20);
 
-			promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async,
-					plugin_RestClient.config.webservices[serviceName].local, server);
+			promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async, plugin_RestClient.config.webservices[serviceName].local,
+					server);
 
 			promiseArray.push(promise);
 

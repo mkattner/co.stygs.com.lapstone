@@ -1,10 +1,11 @@
 {
-	"name":						"start",
-	"shortname":				"start",
-	"template":					"",
-	"useKeepAlive":				false,
-	"loginObligate":			false,
-	"isGlobalPage":				false,
-	"contentRefresh":			false,
-	"contentRefreshInterval":	0
+	"name": "start",
+	"shortname": "start",
+	"template": "",
+	"asyncLoading": false,
+	"useKeepAlive": false,
+	"loginObligate": false,
+	"isGlobalPage": false,
+	"contentRefresh": false,
+	"contentRefreshInterval": 0
 }

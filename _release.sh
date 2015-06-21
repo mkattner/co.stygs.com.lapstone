@@ -45,6 +45,8 @@ if [ -n "$1" ]
 		sudo chmod -R 774 $1
 		echo "chown -R id -u -n $1"
        	sudo chown -R martinkattner $1
+       	sudo chmod -R 774 $1
+       	sudo chown -R $USER $1
 		
 	else
         echo "Parameter error: script needs the absolute location of your cordova app as a parameter"

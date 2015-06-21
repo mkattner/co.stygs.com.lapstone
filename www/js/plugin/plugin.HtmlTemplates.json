@@ -1,6 +1,11 @@
 {
 	"name": "HtmlTemplates",
 	"shortname": "template",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	],
+
 	"templates": 
 	{
 		"JQueryMobilePageStructure": 
@@ -30,6 +35,16 @@
 			{
 				"header": "div[data-role=header]",
 				"content": "div[data-role=content]"
+			}
+		},
+
+		"JQueryMobileFooterPage": 
+		{
+			"url": "../template/JQueryMobileFooterPage.html",
+			"elements": 
+			{
+				"content": "div[data-role=content]",
+				"footer": "div[data-role=footer]"
 			}
 		},
 

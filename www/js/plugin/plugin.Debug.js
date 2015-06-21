@@ -17,64 +17,6 @@
  * @author Martin Kattner <martin.kattner@gmail.com>
  */
 
-
-/*
- * 1	
- * 2	iterations
- * 3
- * 4
- * 5	jQuery mobile event triggerd
- * 6
- * 7
- * 8
- * 9
- * 10	page interface methods
- * 11	plugin interface methods
- * 12	page event methods
- * 13	plugin private method inside
- * 14	plugin private method
- * 15	plugin public method inside
- * 16
- * 17
- * 18
- * 19
- * 20	plugin public method called (plugin_.functions.method)
- * 21
- * 22
- * 23
- * 24
- * 25	page event triggered
- * 26
- * 27
- * 28
- * 29
- * 30	framework initialized
- * 31
- * 32
- * 33
- * ...
- * 50	notifications - how to do it better
- * 51
- * 52
- * 53
- * ...
- * 60	only important news to developer
- * 61
- * 62
- * 63
- * 64
- * 65
- * 66
- * 67
- * 68
- * ..
- * 95
- * 96
- * 97
- * 98
- * 99
- * 100	language id debuging
- */
 /**
  * Plugin:
  * 
@@ -96,6 +38,10 @@ var plugin_Debug = {
 	 * @private
 	 */
 	logObject : [],
+	feedback : {
+		language : {},
+		image : {}
+	},
 	// obligate functions
 
 	/**
@@ -195,7 +141,7 @@ var plugin_Debug = {
 			}
 			// debug level
 			$('#txtDebugLevel').val(plugin_Debug.config.debugLevel);
-			
+
 		}
 	},
 	/**
@@ -230,7 +176,7 @@ var plugin_Debug = {
 		append += '<label for="cbxToggleDebug">Toggle Debug</label>';
 		append += '</fieldset>';
 		append += '</div>';
-		//alert(append);
+		// alert(append);
 		$('body').append(append);
 	},
 
@@ -250,12 +196,13 @@ var plugin_Debug = {
 		 *            level Current debug level.
 		 */
 		alert : function(text, level) {
-			//console.log(text);
+			// console.log(text);
 			if (plugin_Debug.config.doDebugging && (level >= plugin_Debug.config.debugLevel)) {
 				alert("DebugLevel: " + level + "\n" + text);
 			}
 			if (plugin_Debug.config.logDebug && (level >= plugin_Debug.config.logDebugLevel)) {
-				//plugin_Debug.functions.log("DebugLevel: " + level + " - " + text);
+				// plugin_Debug.functions.log("DebugLevel: " + level + " - " +
+				// text);
 				plugin_Debug.functions.log(text);
 			}
 		},
@@ -274,6 +221,16 @@ var plugin_Debug = {
 		 */
 		showLog : function() {
 			alert(JSON.stringify(plugin_Debug.logObject));
+		},
+		feedback : {
+			language : function(object) {
+				console.log("Implement!: " + JSON.stringify(object));
+				$.extend(true, plugin_Debug.feedback.language, object);
+			},
+			image : function(object) {
+				console.log("Implement!: " + JSON.stringify(object));
+				$.extend(true, plugin_Debug.feedback.image, object);
+			}
 		}
 	}
 };

@@ -1,6 +1,11 @@
 {
 	"name": "DeviceManager",
 	"shortname": "dm",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	],
+
 	"files": 
 	{
 		"android": "../files/device/android",

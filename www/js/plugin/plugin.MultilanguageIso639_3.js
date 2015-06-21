@@ -92,7 +92,7 @@ var plugin_MultilanguageIso639_3 = {
 			}
 		},
 		string : function(id, context, options) {
-			var text = null;
+			var text = null, toParse;
 			if (!plugin_MultilanguageIso639_3.dictionary) {
 				plugin_MultilanguageIso639_3.loadLanguageIntoDict(plugin_MultilanguageIso639_3.config.defaultLanguage)
 			}
@@ -100,7 +100,9 @@ var plugin_MultilanguageIso639_3 = {
 				text = plugin_MultilanguageIso639_3.dictionary[id];
 			} else {
 				if (plugin_MultilanguageIso639_3.dictionary[context] == undefined) {
-					console.warn("Language: context doesn't exist: " + context);
+					console.warn("Language - Context doesn't exist: " + context);
+					toParse = '{"' + context + '" : {}}';
+					app.debug.feedback.language(JSON.parse(toParse));
 					text = id;
 				} else {
 					text = plugin_MultilanguageIso639_3.dictionary[context][id];
@@ -120,7 +122,11 @@ var plugin_MultilanguageIso639_3 = {
 				}
 				return text;
 			} else {
-				console.warn("Language: " + context + '.' + id + " = undefined");
+				console.warn("Language - " + context + '.' + id + " == undefined");
+				// console.log('"' + id + '" : "TRANSLATION"');
+				toParse = '{"' + context + '" : {"' + id + '" : "TRANSLATION"}}';
+				app.debug.feedback.language(JSON.parse(toParse));
+
 				return id;
 			}
 		},

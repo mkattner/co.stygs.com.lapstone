@@ -113,9 +113,13 @@ var plugin_WebServiceClient = {
 					if (typeof value == "object") {
 						value = encodeURIComponent(JSON.stringify(value));
 					}
-					app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getPath() - set in path: " + key + " = " + encodeURI(value), 20);
+					app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURI(value), 20);
 					data = data.replace('{' + key + '}', encodeURIComponent(value));
 				});
+
+				url += "?" + data;
+				data = '';
+				contentType = "text/plain";
 
 			} // end if
 			else if (dataType.toLowerCase() == "json") {
@@ -145,6 +149,15 @@ var plugin_WebServiceClient = {
 				contentType = "application/json; charset=utf-8";
 			} else if (dataType.toLowerCase() == "form") {
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() case: contentType = application/x-www-form-urlencoded", 60);
+				
+				$.each(parameter, function(key, value) {
+					if (typeof value == "object") {
+						value = encodeURIComponent(JSON.stringify(value));
+					}
+					app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURI(value), 20);
+					data = data.replace('{' + key + '}', encodeURIComponent(value));
+				});
+				
 				contentType = "application/x-www-form-urlencoded; charset=UTF-8";
 			} else {
 				alert("unknown type: " + dataType);

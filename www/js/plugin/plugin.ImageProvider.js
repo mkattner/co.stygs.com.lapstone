@@ -118,10 +118,14 @@ var plugin_ImageProvider = {
 	 */
 	functions : {
 		getUrlById : function(id) {
-			var img;
+			var img, toParse;
 			// alert(id + " = " + plugin_ImageProvider.images[id])
-			if ((img = plugin_ImageProvider.images[id]) == undefined)
+			if ((img = plugin_ImageProvider.images[id]) == undefined) {
+				console.warn("ImageProvider - Undefined image: " + id);
+				toParse = '{"' + id + '":"PATH"}';
+				app.debug.feedback.image(JSON.parse(toParse));
 				img = id;
+			}
 			return img;
 		}
 	}

@@ -1,4 +1,8 @@
 {
-	"name":"Actions",
-	"shortname":"actions"
+	"name": "Actions",
+	"shortname": "actions",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	]
 }

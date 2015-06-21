@@ -71,7 +71,6 @@ var pages = {
 		}
 
 		return dfd.promise();
-
 	},
 
 	verifyPageNames : function() {
@@ -879,7 +878,7 @@ var pages = {
 					$(this).html(app.lang.string(languageArray[1], languageArray[0]));
 				});
 				var html = staticContainer.html();
-				container.find('div[data-role=content]').append(html);
+				container.find('div[data-role=content]').replaceWith(html);
 				// wichtig, dass macht irgend eine sache mit den dialog feldern.
 				pages.callPluginsPageFunctions(container);
 			},

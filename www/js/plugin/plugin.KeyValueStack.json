@@ -1,4 +1,8 @@
 {
-"name":"KeyValueStack",
-"shortname":"pStack"
+	"name": "KeyValueStack",
+	"shortname": "pStack",
+	"dependencies": 
+	[
+		"WebServiceClient"
+	]
 }

@@ -38,6 +38,8 @@ var plugin_LoadExternalScripts = {
 
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 		console.log("TODO - script loading");
+		
+		// styles
 		$.each(plugin_LoadExternalScripts.config.scripts.css, function(key, value) {
 			if (value) {
 				if (key in plugin_LoadExternalScripts.loadedScripts) {
@@ -49,6 +51,8 @@ var plugin_LoadExternalScripts = {
 
 			}
 		});
+		
+		// scripts
 		$.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
 			if (value) {
 				promises.push(globalLoader.AsyncScriptLoader(key));

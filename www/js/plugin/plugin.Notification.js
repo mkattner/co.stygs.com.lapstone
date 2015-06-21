@@ -194,6 +194,8 @@ var plugin_Notification = {
 			switch (notification.type) {
 			case "alert":
 				setTimeout(function() {
+					plugin_Notification.cleanupPopup($('#popupAlert'));
+
 					if (notification.title) {
 						$("#popupAlert div[data-role=header] h1").text(notification.title);
 						$("#popupAlert div[data-role=header] h1").css("display", "block");
@@ -212,6 +214,7 @@ var plugin_Notification = {
 
 					if (typeof notification.text == "object") {
 						$("#popupAlert div.ui-content p").replaceWith(notification.text);
+
 					} else {
 						$("#popupAlert div.ui-content p").html(notification.text);
 					}
@@ -222,6 +225,7 @@ var plugin_Notification = {
 				break;
 			case "dialog":
 				setTimeout(function() {
+					plugin_Notification.cleanupPopup($('#popupDialog'));
 
 					if (notification.title) {
 						$("#popupDialog div[data-role=header] h1").text(notification.title);
@@ -318,57 +322,61 @@ var plugin_Notification = {
 			alert(event.alert);
 		},
 		alert : function(text, title, headline, button, callbackButton, delayInMs) {
-			if (text == undefined)
-				text = false;
-			if (headline == undefined)
-				headline = false;
-			if (title == undefined)
-				title = false;
-			if (button == undefined)
-				button = false;
-			if (callbackButton == undefined)
-				callbackButton = false;
-			if (delayInMs == undefined || delayInMs == null)
-				delayInMs = 100;
-			notification = {
-				"type" : "alert",
-				"text" : text,
-				"title" : title,
-				"headline" : headline,
-				"button" : button,
-				"callback" : callbackButton
-			};
-			plugin_Notification.popupShow(notification, delayInMs);
+			plugin_Notification.functions.close.all().done(function() {
+				if (text == undefined)
+					text = false;
+				if (headline == undefined)
+					headline = false;
+				if (title == undefined)
+					title = false;
+				if (button == undefined)
+					button = false;
+				if (callbackButton == undefined)
+					callbackButton = false;
+				if (delayInMs == undefined || delayInMs == null)
+					delayInMs = 100;
+				notification = {
+					"type" : "alert",
+					"text" : text,
+					"title" : title,
+					"headline" : headline,
+					"button" : button,
+					"callback" : callbackButton
+				};
+				plugin_Notification.popupShow(notification, delayInMs);
+			});
 		},
 		dialog : function(text, title, headline, buttonLeft, buttonRight, callbackButtonLeft, callbackButtonRight, delayInMs) {
-			if (text == undefined || text == null)
-				text = false;
-			if (headline == undefined || headline == null)
-				headline = false;
-			if (title == undefined || title == null)
-				title = false;
-			if (buttonLeft == undefined || buttonLeft == null)
-				buttonLeft = false;
-			if (buttonRight == undefined || buttonRight == null)
-				buttonRight = false;
-			if (callbackButtonLeft == undefined || callbackButtonLeft == null)
-				callbackButtonLeft = false;
-			if (callbackButtonRight == undefined || callbackButtonRight == null)
-				callbackButtonRight = false;
-			if (delayInMs == undefined || delayInMs == null)
-				delayInMs = 100;
-			// alert(text.html());
-			notification = {
-				"type" : "dialog",
-				"text" : text,
-				"title" : title,
-				"headline" : headline,
-				"buttonLeft" : buttonLeft,
-				"buttonRight" : buttonRight,
-				"callbackButtonLeft" : callbackButtonLeft,
-				"callbackButtonRight" : callbackButtonRight
-			};
-			plugin_Notification.popupShow(notification, delayInMs);
+			plugin_Notification.functions.close.all().done(function() {
+				if (text == undefined || text == null)
+					text = false;
+				if (headline == undefined || headline == null)
+					headline = false;
+				if (title == undefined || title == null)
+					title = false;
+				if (buttonLeft == undefined || buttonLeft == null)
+					buttonLeft = false;
+				if (buttonRight == undefined || buttonRight == null)
+					buttonRight = false;
+				if (callbackButtonLeft == undefined || callbackButtonLeft == null)
+					callbackButtonLeft = false;
+				if (callbackButtonRight == undefined || callbackButtonRight == null)
+					callbackButtonRight = false;
+				if (delayInMs == undefined || delayInMs == null)
+					delayInMs = 100;
+				// alert(text.html());
+				notification = {
+					"type" : "dialog",
+					"text" : text,
+					"title" : title,
+					"headline" : headline,
+					"buttonLeft" : buttonLeft,
+					"buttonRight" : buttonRight,
+					"callbackButtonLeft" : callbackButtonLeft,
+					"callbackButtonRight" : callbackButtonRight
+				};
+				plugin_Notification.popupShow(notification, delayInMs);
+			});
 		},
 		close : {
 			alert : function() {
