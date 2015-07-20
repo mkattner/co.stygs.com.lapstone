@@ -88,33 +88,7 @@ var plugin_Debug = {
 	 * @returns {boolean} Succesfull or unsuccessful
 	 */
 	definePluginEvents : function() {
-		if (plugin_Debug.config.debugDevice) {
-			$("body").on("change", "#cbxToggleDebug", function() {
-				if ($(this).prop("checked")) {
-					app.info.set("plugin_Debug.config.doDebugging", true);
-				} else {
-					app.info.set("plugin_Debug.config.doDebugging", false);
-				}
-			});
-			$("body").on("click", "#btnRefresh", function() {
-				location.reload();
-			});
-			$("body").on("click", "#btnShowLog", function() {
-				var text = "";
-				$.each(plugin_Debug.logObject, function(key, value) {
-					text += value + "<br />\n";
-				});
-				app.notify.alert(text, "Log", "Log");
-			});
-			$("body").on("click", "#btnDeleteHtml5Storage", function() {
-				app.store.localStorage.clear();
-				location.reload();
-			});
-			$("body").on("change", "#txtDebugLevel", function() {
-				var level = $('#txtDebugLevel').val();
-				app.info.set("plugin_Debug.config.debugLevel", level);
-			});
-		}
+
 	},
 
 	// called by pages.js
@@ -127,22 +101,7 @@ var plugin_Debug = {
 	 *            {object} jQuery page div
 	 */
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		if (plugin_Debug.config.debugDevice) {
-			app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
-			// show debug panel?
-			if (plugin_Debug.config.debugPanel) {
-				plugin_Debug.appendDebugArea();
-			}
-			// do debuging checkbox
-			if (this.config.doDebugging) {
-				$("#cbxToggleDebug").prop('checked', true);
-			} else {
-				$("#cbxToggleDebug").prop('checked', false);
-			}
-			// debug level
-			$('#txtDebugLevel').val(plugin_Debug.config.debugLevel);
 
-		}
 	},
 	/**
 	 * Called once by pages.js
@@ -160,25 +119,6 @@ var plugin_Debug = {
 	/**
 	 * @private
 	 */
-	appendDebugArea : function(container) {
-		app.debug.alert(this.config.name + ".appendDebugArea()", 5);
-		// get inputs via FormInputDesigner
-		var append = '<div>&nbsp;</div>';
-		append += '<div id="divDebugCheckbox" data-role="fieldcontain" style="position: fixed; z-index:9999;">';
-		append += '<fieldset class="debugGroup" data-role="controlgroup">';
-		append += '<legend>Debug Area:</legend>';
-		append += '<input type="button" name="btnRefresh" id="btnRefresh" class="custom" value="Refresh Page"/>';
-		append += '<input type="button" name="btnShowLog" id="btnShowLog" class="custom" value="Show Log"/>';
-		append += '<input type="checkbox" name="cbxToggleDebug" id="cbxToggleDebug" class="custom" />';
-		append += '<input type="button" name="btnDeleteHtml5Storage" id="btnDeleteHtml5Storage" class="custom" value="Delete Html5 Storage"/>';
-		append += '<p>Debug Level</p>';
-		append += '<input type="text" name="txtDebugLevel" id="txtDebugLevel" />';
-		append += '<label for="cbxToggleDebug">Toggle Debug</label>';
-		append += '</fieldset>';
-		append += '</div>';
-		// alert(append);
-		$('body').append(append);
-	},
 
 	// public functions
 	/**
@@ -227,6 +167,11 @@ var plugin_Debug = {
 				console.log("Implement!: " + JSON.stringify(object));
 				$.extend(true, plugin_Debug.feedback.language, object);
 			},
+
+			languageGetJson : function() {
+				return JSON.stringify($.extend(true, plugin_Debug.feedback.language, plugin_MultilanguageIso639_3.dictionary));
+			},
+
 			image : function(object) {
 				console.log("Implement!: " + JSON.stringify(object));
 				$.extend(true, plugin_Debug.feedback.image, object);

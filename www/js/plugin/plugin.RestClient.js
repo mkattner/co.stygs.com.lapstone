@@ -110,10 +110,13 @@ var plugin_RestClient = {
 		if (parameter != undefined) {
 			$.each(parameter, function(key, value) {
 				if (typeof value == "object") {
-					value = encodeURIComponent(JSON.stringify(value));
+					value = JSON.stringify(value);
+					path = path.replace('{' + key + '}', encodeURIComponent(value));
+				} else {
+					path = path.replace('{' + key + '}', encodeURIComponent(value));
 				}
 				app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getPath() - set in path: " + key + " = " + encodeURIComponent(value), 20);
-				path = path.replace('{' + key + '}', encodeURIComponent(value));
+
 			});
 		}
 

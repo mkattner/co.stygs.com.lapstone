@@ -89,7 +89,7 @@ var plugin_WebServiceClient = {
 		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ", " + async + ")", 14);
 		app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - webservice: " + url + "?" + data, 60);
 
-		var json = null, dfd = null, headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals, newData;
+		var json = null, dfd = null, headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals, newData, encodedValue;
 
 		if (async) {
 			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: webservice is async - create deferred object", 60);
@@ -107,14 +107,44 @@ var plugin_WebServiceClient = {
 		contentType = "application/x-www-form-urlencoded";
 		if (dataType != undefined) {
 			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: dataType != undefined", 60);
+
 			if (dataType.toLowerCase() == "query") {
-				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: contentType = application/x-www-form-urlencoded", 60);
+				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: contentType = text/plain", 60);
 				$.each(parameter, function(key, value) {
 					if (typeof value == "object") {
-						value = encodeURIComponent(JSON.stringify(value));
+						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: value == object", 20);
+
+						if (value instanceof Array) {
+							app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: value == array", 20);
+							encodedValue = "";
+							for (v in value) {
+								encodedValue += "&" + key + "=" + encodeURIComponent(value[v]);
+								app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - array value: " + encodedValue, 60);
+							}
+
+							encodedValue = encodedValue.substring(encodedValue.indexOf('=') + 1);
+							data = data.replace('{' + key + '}', encodedValue);
+							app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodedValue, 20);
+						}
+
+						else {
+							app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: value == undefined object", 20);
+
+							value = JSON.stringify(value);
+							data = data.replace('{' + key + '}', encodeURIComponent(value));
+							app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value), 20);
+
+						}
 					}
-					app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURI(value), 20);
-					data = data.replace('{' + key + '}', encodeURIComponent(value));
+
+					else {
+						app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: value != array", 20);
+
+						data = data.replace('{' + key + '}', encodeURIComponent(value));
+						app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value), 20);
+
+					}
+
 				});
 
 				url += "?" + data;
@@ -122,6 +152,7 @@ var plugin_WebServiceClient = {
 				contentType = "text/plain";
 
 			} // end if
+
 			else if (dataType.toLowerCase() == "json") {
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - case: contentType = application/json; charset=utf-8", 60);
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() - create json object", 60);
@@ -147,19 +178,25 @@ var plugin_WebServiceClient = {
 				}
 				data = JSON.stringify(obj);
 				contentType = "application/json; charset=utf-8";
-			} else if (dataType.toLowerCase() == "form") {
+			}
+
+			else if (dataType.toLowerCase() == "form") {
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.getAjax() case: contentType = application/x-www-form-urlencoded", 60);
-				
+
 				$.each(parameter, function(key, value) {
 					if (typeof value == "object") {
-						value = encodeURIComponent(JSON.stringify(value));
+						value = JSON.stringify(value);
+						data = data.replace('{' + key + '}', encodeURIComponent(value));
+					} else {
+						data = data.replace('{' + key + '}', encodeURIComponent(value));
 					}
-					app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURI(value), 20);
-					data = data.replace('{' + key + '}', encodeURIComponent(value));
+					app.debug.alert("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value), 20);
 				});
-				
+
 				contentType = "application/x-www-form-urlencoded; charset=UTF-8";
-			} else {
+			}
+
+			else {
 				alert("unknown type: " + dataType);
 			}
 		}
