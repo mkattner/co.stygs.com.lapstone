@@ -84,7 +84,7 @@ var plugin_HTML5Storage = {
 
 	setDeepX : function(el, key, value) {
 		app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.setDeepX(' + el + ', ' + key + ', ' + value + ')', 20);
-		keyS = key.split('.');
+		var keyS = key.split('.');
 		if (keyS[0]) {
 			if (keyS.length == 1)
 				el[keyS[0]] = value;
@@ -149,7 +149,7 @@ var plugin_HTML5Storage = {
 	getSpace : function(length) {
 		app.debug.trace('plugin.HTML5Storage.js ~ plugin_HTML5Storage.getSpace()');
 		var string = "";
-		for (i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			string = string + " ";
 		return string;
 	},
@@ -220,6 +220,7 @@ var plugin_HTML5Storage = {
 			},
 			clearPufferedFormValues : function() {
 				app.debug.trace('plugin_HTML5Storage.functions.localStorage.clearPufferedFormValues()');
+				var newkey;
 				$.each(window.localStorage, function(key, value) {
 					if (key.substring(0, app.config.name.length) == app.config.name) {
 						newkey = key.substring(app.config.name.length + 1);
@@ -237,7 +238,36 @@ var plugin_HTML5Storage = {
 			},
 			removeItem : function(key) {
 				app.debug.trace('plugin_HTML5Storage.functions.localStorage.removeItem()');
-				window.localStorage.removeItem(app.config.name + "." + key);
+				var keyPrefix, storagePrefix;
+			
+				if (key.indexOf("*") != -1) {
+
+					app.debug.debug('plugin_HTML5Storage.functions.localStorage.removeItem() - wildcard detected: *');
+
+					keyPrefix = key.substring(0, key.indexOf("*")).toLowerCase();
+
+					$.each(window.localStorage, function(key, value) {
+					
+						storagePrefix = key.substr(app.config.name.length + 1, keyPrefix.length).toLowerCase();
+
+						app.debug.debug('plugin_HTML5Storage.functions.localStorage.removeItem() - ' + storagePrefix + ' == ' + keyPrefix);
+
+						if (storagePrefix == keyPrefix) {
+							app.debug.debug('plugin_HTML5Storage.functions.localStorage.removeItem() - case: ' + storagePrefix + ' == ' + keyPrefix);
+
+							try {
+								window.localStorage.removeItem(key.trim())
+							} catch (err) {
+								alert(err);
+							}
+						}
+					});
+				}
+
+				else {
+					window.localStorage.removeItem(app.config.name + "." + key);
+				}
+
 				return true;
 			},
 			show : function() {
@@ -347,6 +377,6 @@ var plugin_HTML5Storage = {
 			}
 		},
 		ss : this.sessionStorage,
-		
+
 	}
 };

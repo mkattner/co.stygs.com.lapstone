@@ -12,7 +12,8 @@
 			"../css/platform.desktop.css": true,
 			"../css/platform.ios.css": true,
 			"../css/platform.mobile.css": true,
-			"../css/platform.cordova.css": true
+			"../css/platform.cordova.css": true,
+			"../ext/fullcalendar/fullcalendar.min.css": true
 		},
 
 		"javascript": 
@@ -21,6 +22,10 @@
 			"../ext/DATE.js": true,
 			"../ext/URI.js": true,
 			"../ext/Chart/Chart.min.js": true,
+			"../ext/jQueryUiDragAndDrop/jquery-ui.min.js": true,
+			"../ext/jQueryUiTouchPunch/jquery.ui.touch-punch.min.js": true,
+			"../ext/moment/moment.js": true,
+			"../ext/fullcalendar/fullcalendar.min.js": true,
 			"../ext/aerogear.min.js": true,
 			"../ext/jquery.serializejson.min.js": true
 		}
