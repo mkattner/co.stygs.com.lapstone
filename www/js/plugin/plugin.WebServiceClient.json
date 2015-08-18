@@ -1,27 +1,22 @@
 {
 	"name": "WebServiceClient",
 	"shortname": "wsc",
-	"dependencies": 
-	[
-		
-	],
-
 	"defaultWebServiceTimeoutMs": 5000,
 	"defaultWebServiceMethod": "post",
 	"defaultWebServiceType": "json",
 	"useKeepAlive": false,
 	"useServerShuffle": true,
-	"useHeaderToken": true,
+	"useHeaderToken": false,
 	"headerToken": 
 	{
 		"key": "Authorization",
 		"value": "data-html5-themis-token"
 	},
 
-	"defaultServer": "backmeup",
+	"defaultServer": "template",
 	"server": 
 	{
-		"backmeup": 
+		"template": 
 		{
 			"active": true,
 			"pingPath": "",
@@ -47,57 +42,6 @@
 				"scheme": "http",
 				"scheme_specific_part": "://",
 				"host": "themis-dev01.backmeup.at",
-				"port": 8080,
-				"path": ""
-			},
-
-			"second": 
-			{
-				
-			},
-
-			"third": 
-			{
-				
-			},
-
-			"fouth": 
-			{
-				
-			},
-
-			"fifth": 
-			{
-				
-			}
-		},
-
-		"licence": 
-		{
-			"active": true,
-			"pingPath": "REST/ping",
-			"mappings": 
-			{
-				"post": "json",
-				"get": "form",
-				"put": "form",
-				"delete": "form"
-			},
-
-			"template": 
-			{
-				"scheme": "http",
-				"scheme_specific_part": "://",
-				"host": "localhost",
-				"port": 8080,
-				"path": ""
-			},
-
-			"first": 
-			{
-				"scheme": "http",
-				"scheme_specific_part": "://",
-				"host": "localhost",
 				"port": 8080,
 				"path": ""
 			},

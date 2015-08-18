@@ -26,6 +26,7 @@ var app = {
 		apacheCordova : null,
 		jQueryMobile : null
 	},
+
 	addObject : function(name, object) {
 		console.log("Deprecated Function!");
 		app[name] = object;
@@ -84,10 +85,16 @@ function loadConfiguration() {
 	promise = globalLoader.AsyncJsonLoader("../js/lapstone.json");
 
 	promise.done(function(configuration) {
+		//
+		// $.each(configuration, function(k, v) {
+		// app.config[k] = v
+		// });
 
-		$.each(configuration, function(k, v) {
-			app.config[k] = v
-		});
+		$.extend(true, app.config, configuration);
+
+		// show version
+		$('.lapstone-version').text(app.config.version.lapstone);
+		$('.app-version').text(app.config.version.app);
 
 		if (configuration.name === undefined)
 			console.warn("lapstone.json has no 'name' property.");
@@ -162,7 +169,9 @@ function updateFramework() {
 
 	plugin_Informator.loadConfigurationIntoHtml5Storage({
 		"app" : {
-			"config" : app.config
+			"config" : {
+				"version" : app.config.version
+			}
 		}
 	});
 
@@ -368,7 +377,7 @@ var globalLoader = {
 		$.ajax({
 			cache : cacheAjax(),
 			url : url,
-			async : false,
+			async : true,
 			dataType : "text",
 			timeout : globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
@@ -429,10 +438,11 @@ var globalLoader = {
 
 		$.ajax({
 			url : url,
-			async : false,
+			async : true,
 			dataType : "text",
 			timeout : globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
+			// console.log("+++++++ " + JSON.stringify(jqXHR));
 			if (textStatus === "timeout") {
 				startup.log("Timeout while loading: " + url);
 				startup.log("It was attempt " + attempt + " of " + attempts + ".");
@@ -729,7 +739,6 @@ $(document).ready(function() {
 		// alert("init done");
 		setTimeout(function() {
 			initialisationPanel.finish();
-
 			// console.clear();
 		}, 200);
 	}).fail(function() {

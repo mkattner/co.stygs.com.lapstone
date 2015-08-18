@@ -1,8 +1,4 @@
 {
 	"name": "FormInputDesigner",
-	"shortname": "ni",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	]
+	"shortname": "ni"
 }

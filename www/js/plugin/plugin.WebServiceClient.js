@@ -313,14 +313,15 @@ var plugin_WebServiceClient = {
 	},
 
 	functions : {
+
 		getXml : function(uri, data, method, timeout) {
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getXml(" + uri + ", " + data + ", " + method + ", " + type + ")", 20);
+			app.debug.trace("plugin_WebServiceClient.functions.getXml()");
 			var xml = plugin_WebServiceClient.getAjax(uri, data, "xml");
 			return xml;
 		},
 
 		getJson : function(path, data, parameter, method, timeout, async, local, server) {
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getJson(" + path + ", " + data + ", " + JSON.stringify(parameter) + ", " + method + ", " + timeout + ", " + async + ", " + local + ", " + server + ")", 20);
+			app.debug.trace("plugin_WebServiceClient.functions.getJson()");
 			var url = null, dataType = null, json, serverConfig;
 			if (local === true) {
 				app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.getJson() - case: local == true", 20);
@@ -341,13 +342,20 @@ var plugin_WebServiceClient = {
 		// ask first or second or third or fourth or fifth server for the
 		// prefered server
 		askForPreferedServer : function() {
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.askForPreferedServer()", 20);
+			app.debug.trace("plugin_WebServiceClient.functions.askForPreferedServer()");
 			var preferedServer = null;
 
 			plugin_WebServiceClient.config.preferedServer = preferedServer;
 			return success;
 		},
+
+		getDefaultServerName : function() {
+			app.debug.trace("plugin_WebServiceClient.functions.getDefaultServerName()");
+			return plugin_WebServiceClient.config.defaultServer;
+		},
+
 		getServer : function(name, asObject) {
+			app.debug.trace("plugin_WebServiceClient.functions.getServer()");
 			var server = plugin_WebServiceClient.getPreferedServer(name);
 			if (asObject == undefined)
 				asObject = false;
@@ -359,7 +367,9 @@ var plugin_WebServiceClient = {
 			else
 				console.error("Error");
 		},
-		setServer : function(name, url) {
+
+		setServer : function(name, url, async) {
+			app.debug.trace("plugin_WebServiceClient.functions.setServer()");
 			url = URI(url);
 			var scheme = url.scheme(), hostname = url.hostname(), port = url.port(), path = url.path();
 
@@ -384,41 +394,31 @@ var plugin_WebServiceClient = {
 			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.port", port);
 			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.path", path);
 
-			return plugin_WebServiceClient.functions.getServer(name);
+			return this.ping(name, async);
 		},
+
 		keepAliveRequest : function() {
-			app.debug.alert("plugin.WebServiceClient.js ~ plugin_WebServiceClient.functions.keepAliveRequest()", 20);
+			app.debug.trace("plugin_WebServiceClient.functions.keepAliveRequest()");
 			console.error("Deprecated function!")
 		},
-		ping : function(serverName) {
+
+		ping : function(serverName, async) {
+			app.debug.trace("plugin_WebServiceClient.functions.ping()");
 			var path, data, method, timeout, server, url, success = null;
 
 			path = plugin_WebServiceClient.config.server[serverName].pingPath;
-			data = "";
-			method = "GET";
-			timeout = 2000;
 			server = plugin_WebServiceClient.getPreferedServer(serverName);
 			url = server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path + path;
 			// alert(url);
-			try {
-				$.ajax({
-					cache : false,
-					url : url,
-					data : data,
-					async : false,
-					method : method,
-					timeout : timeout,
-					success : function() {
-						success = true;
-					},
-					error : function() {
-						success = false;
-					}
-				});
-			} catch (err) {
-				success = false;
+			if (async) {
+
+				return globalLoader.AsyncJsonLoader(url);
 			}
-			return success;
+
+			else {
+
+				return globalLoader.JsonLoader(url);
+			}
 		}
 	}
 };

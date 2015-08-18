@@ -1,11 +1,6 @@
 {
 	"name": "ImageProvider",
 	"shortname": "img",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"imgdFiles": 
 	{
 		"../files/imgd.themis.json": true

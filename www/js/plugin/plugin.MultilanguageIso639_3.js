@@ -34,9 +34,13 @@ var plugin_MultilanguageIso639_3 = {
 	},
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
-		var dfd = $.Deferred();
-		dfd.resolve();
-		return dfd.promise();
+		var promise;
+
+		promise = globalLoader.AsyncJsonLoader("../files/language/" + plugin_MultilanguageIso639_3.config.defaultLanguage + ".json").done(function(json) {
+			plugin_MultilanguageIso639_3.dictionary = json;
+		});
+
+		return promise;
 	},
 
 	// called after all pages are loaded
@@ -79,6 +83,30 @@ var plugin_MultilanguageIso639_3 = {
 		get : function() {
 			return plugin_MultilanguageIso639_3.config.defaultLanguage;
 		},
+
+		getAvailableLanguages : function() {
+			return plugin_MultilanguageIso639_3.config.availableLanguages;
+		},
+
+		getCurrentLanguage : function() {
+			return plugin_MultilanguageIso639_3.config.defaultLanguage;
+		},
+
+		languageAvailable : function(language) {
+			if (this.getAvailableLanguages().indexOf(language) != -1)
+				return true;
+			else
+				return false;
+		},
+		changeLanguage : function(language) {
+			if (this.languageAvailable(language)) {
+				app.info.set("plugin_MultilanguageIso639_3.config.defaultLanguage", language);
+				return true;
+			} else {
+				return false;
+			}
+		},
+
 		addParameter : function(key, value) {
 			if (!plugin_MultilanguageIso639_3.parameter) {
 				plugin_MultilanguageIso639_3.parameter = {};
@@ -100,7 +128,7 @@ var plugin_MultilanguageIso639_3 = {
 				text = plugin_MultilanguageIso639_3.dictionary[id];
 			} else {
 				if (plugin_MultilanguageIso639_3.dictionary[context] == undefined) {
-					console.warn("Language - Context doesn't exist: " + context);
+					//console.warn("Language - Context doesn't exist: " + context);
 					toParse = '{"' + context + '" : {}}';
 					app.debug.feedback.language(JSON.parse(toParse));
 					text = id;
@@ -122,7 +150,7 @@ var plugin_MultilanguageIso639_3 = {
 				}
 				return text;
 			} else {
-				console.warn("Language - " + context + '.' + id + " == undefined");
+				//console.warn("Language - " + context + '.' + id + " == undefined");
 				// console.log('"' + id + '" : "TRANSLATION"');
 				toParse = '{"' + context + '" : {"' + id + '" : "TRANSLATION"}}';
 				app.debug.feedback.language(JSON.parse(toParse));

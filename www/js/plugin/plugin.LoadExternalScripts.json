@@ -1,11 +1,6 @@
 {
 	"name": "LoadExternalScripts",
 	"shortname": "load",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"scripts": 
 	{
 		"css": 

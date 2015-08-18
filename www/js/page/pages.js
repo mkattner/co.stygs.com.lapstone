@@ -32,6 +32,7 @@ var pages = {
 		startup.addFunction("lapstone is calling the plugins' pages loaded function", pages.callPluginsPagesLoaded, "");
 		startup.addFunction("lapstone is calling the pages' setEvents() function", pages.setEvents, "");
 		startup.addFunction("lapstone is verifying the pages' properties", pages.verifyPages, "");
+		startup.addFunction("lapstone is including external scripts for pages", pages.include, "");
 		startup.addFunction("lapstone is loading the pages", pages.loadPages, "");
 		startup.addFunction("lapstone is verifying the pages' names", pages.verifyPageNames, "");
 		startup.addFunction("lapstone is loading the pages' configuration", pages.loadPageConfig, "");
@@ -39,6 +40,41 @@ var pages = {
 
 		dfd.resolve();
 		return dfd.promise();
+	},
+
+	include : function() {
+		var dfd = $.Deferred(), currentPage, promises = Array(), promiseOfPromises, resolve = true;
+
+		$.each(pages.pageNames, function(key, pageName) {
+			app.debug.debug("pages.include() - processing page: " + pageName);
+			currentPage = window['page_' + pageName];
+			if (currentPage.include_once != undefined) {
+				if (Array.isArray(currentPage.include_once)) {
+					resolve = false;
+					$.each(currentPage.include_once, function(index, includeName) {
+						var url = "../js/page/include/" + includeName;
+						app.debug.debug("pages.include() - including: " + url);
+						promises.push(globalLoader.AsyncScriptLoader(url));
+					});
+
+					promiseOfPromises = $.when.apply($, promises);
+
+					promiseOfPromises.done(function() {
+						app.debug.debug("pages.include() - including done");
+						dfd.resolve();
+					}).fail(function() {
+						app.debug.debug("pages.include() - including: fails");
+						dfd.reject();
+					});
+				}
+			}
+		});
+
+		if (resolve)
+			dfd.resolve();
+
+		return dfd.promise();
+
 	},
 
 	callPluginsPagesLoaded : function() {
@@ -965,29 +1001,59 @@ var pages = {
 				}
 			},
 			pagebeforecreate_createPage : function(event, container) {
-				app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(" + event + ", " + container + ")", 5);
+				app.debug.trace("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage()");
+				app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - pageId: " + container.attr('id'));
+
 				var promise, elements = null, timeout;
+
 				window['page_' + container.attr('id')].events.pagebeforecreate(event, container);
+
+				// rquire
+				if (window['page_' + container.attr('id')].include != undefined) {
+					app.debug.trace("pages.js - page has an include array");
+
+				}
+
+				else {
+					app.debug.trace("pages.js - page has no include array");
+				}
+
+				// require once
+				if (window['page_' + container.attr('id')].include_once != undefined) {
+					app.debug.trace("pages.js - page has an include_once array");
+				}
+
+				else {
+					app.debug.trace("pages.js - page has no include_once array");
+				}
 
 				// preload template
 				if (window['page_' + container.attr('id')].config.template != undefined) {
-					if (typeof window['page_' + container.attr('id')].config.template == "string" && window['page_' + container.attr('id')].config.template.length > 1) {
+					app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - case: template != undefined");
 
-						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - overwrite template", 20);
+					if (typeof window['page_' + container.attr('id')].config.template == "string" && window['page_' + container.attr('id')].config.template.length > 1) {
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - case: typeof template == string");
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - overwrite template");
+
 						app.template.overwrite("#" + container.attr("id"), window['page_' + container.attr('id')].config.template);
 
 						elements = app.template.elements(window['page_' + container.attr('id')].config.template);
 						window['page_' + container.attr('id')].elements = {};
-						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - set elements", 20);
+
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - set elements");
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - html code of page: " + container[0].outerHTML);
+
 						$.each(elements, function(name, selector) {
-							app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - set: " + name, 20);
+							app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - set content from template to: " + "page_" + container.attr('id'));
+							app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - set: " + name, 20);
 							// alert(window['page_' +
 							// container.attr('id')].elements[name]);
 							window['page_' + container.attr('id')].elements[name] = container.find(selector);
 						});
 
 						// alert('page_' + container.attr('id'));
-						// window['page_' + container.attr('id')].elements =
+						// window['page_' +
+						// container.attr('id')].elements =
 						// elements;
 
 					}
@@ -1008,10 +1074,20 @@ var pages = {
 					}, 1200);
 
 					promise.done(function(result) {
-						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(result), 5);
-						window['page_' + container.attr('id')].async.result = result;
+						if (result) {
+							app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(result), 5);
+							window['page_' + container.attr('id')].async.result = result;
+						}
+						
+						else {
+							app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: []");
+							window['page_' + container.attr('id')].async.result = Array() ;
+						}
+						
+						
 						app.debug.alert("pages.js ~ pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()", 5);
 						window['page_' + container.attr('id')].async.done(container);
+
 					});
 
 					promise.fail(function(error) {

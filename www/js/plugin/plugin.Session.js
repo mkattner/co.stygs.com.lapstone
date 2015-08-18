@@ -35,6 +35,8 @@ var plugin_Session = {
 
 	},
 
+	sessions : {},
+
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
@@ -77,7 +79,6 @@ var plugin_Session = {
 	getPrefix : function(prefix) {
 		if (prefix == undefined)
 			prefix = plugin_Session.config.sessionHTML5StoragePrefix;
-		prefix += "_";
 		return prefix;
 	},
 	// public functions
@@ -91,7 +92,7 @@ var plugin_Session = {
 	functions : {
 		loggedIn : function(value) {
 			app.debug.alert("plugin_Session.functions.loggedIn(" + value + ")", 20);
-			var storedValue = app.store.localStorage.get(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey);
+			var storedValue = this.getValue(plugin_Session.config.loginHtml5StorageKey);
 			if (value == undefined) {
 				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined", 20);
 				app.debug.alert("plugin_Session.functions.loggedIn() - return: " + storedValue, 20);
@@ -103,7 +104,7 @@ var plugin_Session = {
 			} else if (typeof value == "boolean") {
 				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: typeof value == boolean", 20);
 				app.debug.alert("plugin_Session.functions.loggedIn() - set loged in to: " + value, 20);
-				app.store.localStorage.set(plugin_Session.config.sessionHTML5StoragePrefix + plugin_Session.config.loginHtml5StorageKey, value);
+				this.setValue(plugin_Session.config.loginHtml5StorageKey, value);
 				if (value == false) {
 					app.debug.alert("plugin_Session.functions.loggedIn() - case: value == false", 20);
 					// app.store.localStorage.clear();
@@ -119,6 +120,7 @@ var plugin_Session = {
 			prefix = plugin_Session.getPrefix(prefix);
 			app.debug.alert("plugin_Session.functions.setValue(" + key + ", " + value + ")", 20);
 			app.store.localStorage.set(prefix + key, value);
+			plugin_Session.sessions[prefix] = true;
 		},
 		getValue : function(key, prefix) {
 			prefix = plugin_Session.getPrefix(prefix);
@@ -139,9 +141,12 @@ var plugin_Session = {
 					}
 				}
 			});
+			plugin_Session.sessions[prefix] = false;
 		},
 		destroyAll : function() {
-			this.destroy();
+			$.each(plugin_Session.sessions, function(sessionName, isLoaded) {
+				plugin_Session.functions.destroy(sessionName);
+			});
 			console.log("TODO - implement");
 		},
 		setObject : function(name, object, prefix) {

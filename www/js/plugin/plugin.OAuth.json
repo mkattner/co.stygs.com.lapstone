@@ -1,11 +1,6 @@
 {
 	"name": "OAuth",
 	"shortname": "oa",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"facebook": 
 	{
 		"error_name": "error_code",

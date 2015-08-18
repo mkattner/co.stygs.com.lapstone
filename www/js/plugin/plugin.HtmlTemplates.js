@@ -32,7 +32,7 @@ var plugin_HtmlTemplates = {
 		return dfd.promise();
 	},
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace("plugin_HtmlTemplates.pluginsLoaded()");
 
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
@@ -92,7 +92,7 @@ var plugin_HtmlTemplates = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_HtmlTemplates.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -103,14 +103,14 @@ var plugin_HtmlTemplates = {
 
 	// called by pages.js
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+		app.debug.trace("plugin_HtmlTemplates.afterHtmlInjectedBeforePageComputing()");
 	},
 	pageSpecificEvents : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+		app.debug.trace("plugin_HtmlTemplates.pageSpecificEvents()");
 	},
 
 	getText : function(templateId, context) {
-		app.debug.alert("plugin_HtmlTemplates.getText(" + templateId + ", " + context + ")", 14);
+		app.debug.trace("plugin_HtmlTemplates.getText()");
 		var text = null, css = null, styleIsActive;
 		if (context != undefined) {
 			text = plugin_HtmlTemplates.templates[context][templateId]['html'];
@@ -132,19 +132,19 @@ var plugin_HtmlTemplates = {
 
 		if (styleIsActive === false) {
 			$("style").append(css);
-			
+
 			if (context != undefined) {
 				plugin_HtmlTemplates.templates[context][templateId]['styleIsActive'] = true;
 			} else {
 				plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = true;
 			}
 		}
-
+		app.debug.debug("plugin_HtmlTemplates.getText() - text: " + text);
 		return text;
 	},
 
 	getElements : function(templateId, context) {
-		app.debug.alert("plugin_HtmlTemplates.getElements(" + templateId + ", " + context + ")", 14);
+		app.debug.trace("plugin_HtmlTemplates.getElements()");
 		var elements;
 		if (context != undefined) {
 			elements = plugin_HtmlTemplates.config.templates[context][templateId]['elements'];
@@ -152,30 +152,40 @@ var plugin_HtmlTemplates = {
 			elements = plugin_HtmlTemplates.config.templates[templateId]['elements'];
 		}
 		if (elements == undefined)
-			return {};
-		else
-			return elements;
+			elements = {};
+
+		app.debug.debug("plugin_HtmlTemplates.getElements() - elements: " + JSON.stringify(elements));
+
+		return elements;
 	},
 
 	functions : {
 		get : function(templateId, context) {
-			app.debug.alert("plugin_HtmlTemplates.functions.get(" + templateId + ", " + context + ")", 20);
+			app.debug.trace("plugin_HtmlTemplates.functions.get()");
+			app.debug.debug("plugin_HtmlTemplates.functions.get() - templateId: " + templateId);
+			app.debug.debug("plugin_HtmlTemplates.functions.get() - context: " + context);
 			return $(plugin_HtmlTemplates.getText(templateId, context));
 		},
 		append : function(selector, templateId, context) {
-			app.debug.alert("plugin_HtmlTemplates.functions.append(" + selector + ", " + templateId + ", " + context + ")", 20);
+			app.debug.trace("plugin_HtmlTemplates.functions.append()");
 			$(selector).append(plugin_HtmlTemplates.functions.get(templateId, context));
 		},
 		prepend : function(selector, templateId, context) {
-			app.debug.alert("plugin_HtmlTemplates.functions.prepend(" + selector + ", " + templateId + ", " + context + ")", 20);
+			app.debug.trace("plugin_HtmlTemplates.functions.prepend()");
 			$(selector).prepend(plugin_HtmlTemplates.functions.get(templateId, context));
 		},
 		overwrite : function(selector, templateId, context) {
-			app.debug.alert("plugin_HtmlTemplates.functions.overwrite(" + selector + ", " + templateId + ", " + context + ")", 20);
+			app.debug.trace("plugin_HtmlTemplates.functions.overwrite()");
+			app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - selector: " + selector);
+			app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - templateId: " + templateId);
+			app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - context: " + context);
 			$(selector).empty();
+			$(selector).attr("data-context", templateId);
 			$(selector).prepend(plugin_HtmlTemplates.functions.get(templateId, context));
+			app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - new html code: " + $(selector)[0].outerHTML);
 		},
 		elements : function(templateId, context) {
+			app.debug.trace("plugin_HtmlTemplates.functions.elements()");
 			return plugin_HtmlTemplates.getElements(templateId, context);
 		}
 	}

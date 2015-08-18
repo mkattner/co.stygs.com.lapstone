@@ -1,8 +1,4 @@
 {
 	"name": "HTML5Storage",
-	"shortname": "store",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	]
+	"shortname": "store"
 }

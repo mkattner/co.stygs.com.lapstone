@@ -1,13 +1,8 @@
 {
 	"name": "KeepAlive",
 	"shortname": "alive",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
-	"useKeepAlive": true,
-	"server": "backmeup",
+	"useKeepAlive": false,
+	"server": "template",
 	"intervalInS": 20,
 	"path": "keepAlive.json",
 	"method": "get",

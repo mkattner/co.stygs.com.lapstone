@@ -1,11 +1,6 @@
 {
 	"name": "Session",
 	"shortname": "sess",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"loginHtml5StorageKey": "session-loggedin",
-	"sessionHTML5StoragePrefix": "sessionPluginValue-"
+	"sessionHTML5StoragePrefix": "globalSession"
 }

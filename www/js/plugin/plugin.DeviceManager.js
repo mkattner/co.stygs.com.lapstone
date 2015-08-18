@@ -17,24 +17,29 @@ var plugin_DeviceManager = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace("plugin_DeviceManager.pluginsLoaded()");
 		var js, css, promiseArray = [], promiseOfPromises, dfd, scriptLoading;
 
+		// load specific scripts
 		if (app.detect.isMobile()) {
 
 			if (app.detect.mobile.google.Android()) {
+
+				$('head').append(this.config.viewport.android);
 				js = this.config.files.android + ".js";
 				css = this.config.files.android + ".css";
 			} else if (app.detect.mobile.apple.iOS()) {
+				$('head').append(this.config.viewport.ios)
 				js = this.config.files.ios + ".js";
 				css = this.config.files.ios + ".css";
 			} else if (app.detect.mobile.microsoft.Windows()) {
+				$('head').append(this.config.viewport.windows)
 				js = this.config.files.windows + ".js";
 				css = this.config.files.windows + ".css";
 			} else {
 				console.error("Unknown device!");
 			}
-			
+
 			scriptLoading = globalLoader.AsyncScriptLoader(js);
 
 			scriptLoading.done(function() {
@@ -64,7 +69,7 @@ var plugin_DeviceManager = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_DeviceManager.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -74,13 +79,13 @@ var plugin_DeviceManager = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_DeviceManager.definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_DeviceManager.afterHtmlInjectedBeforePageComputing()");
 		if (app.dm.current != undefined)
 			app.dm.current.afterHtmlInjectedBeforePageComputing();
 	},
@@ -88,7 +93,7 @@ var plugin_DeviceManager = {
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_DeviceManager.pageSpecificEvents()");
 
 	},
 	// private functions

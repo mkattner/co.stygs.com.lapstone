@@ -143,7 +143,7 @@ var plugin_RestClient = {
 			server = splittedService[0];
 			service = splittedService[1];
 		} else {
-			server = plugin_WebServiceClient.config.defaultServer;
+			server = app.wsc.getDefaultServerName();
 		}
 
 		// get the path wich is defined in wsd file
@@ -179,7 +179,7 @@ var plugin_RestClient = {
 			server = splittedService[0];
 			service = splittedService[1];
 		} else {
-			server = plugin_WebServiceClient.config.defaultServer;
+			server = app.wsc.getDefaultServerName();
 		}
 
 		app.debug.alert("plugin.RestClient.js ~ plugin_RestClient.getSingleJsonAsync() server: " + server + "; service: " + service, 33);
@@ -229,7 +229,7 @@ var plugin_RestClient = {
 				server = splittedService[0];
 				serviceName = splittedService[1];
 			} else {
-				server = plugin_WebServiceClient.config.defaultServer;
+				server = app.wsc.getDefaultServerName();
 			}
 			// set async to false (in each case)
 			async = false;
@@ -274,7 +274,7 @@ var plugin_RestClient = {
 				server = splittedService[0];
 				serviceName = splittedService[1];
 			} else {
-				server = plugin_WebServiceClient.config.defaultServer;
+				server = app.wsc.getDefaultServerName();
 			}
 
 			app.debug.alert("pugin.RestClient.js ~ plugin_RestClient.getMultipleJsonAsync() - get webservice path from wsd file", 20);

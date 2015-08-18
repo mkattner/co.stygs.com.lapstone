@@ -32,7 +32,7 @@ var plugin_HTML5Storage = {
 		return dfd.promise();
 	},
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace("plugin_HTML5Storage.pluginsLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -40,13 +40,14 @@ var plugin_HTML5Storage = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_HTML5Storage.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
 
 	definePluginEvents : function() {
+		app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
 		// data-html5-<storage id>
 		$(document).on("click", "a", function(event) {
 			app.debug.alert("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()", 12);
@@ -56,15 +57,17 @@ var plugin_HTML5Storage = {
 					plugin_HTML5Storage.functions.localStorage.set(key, value);
 				}
 			});
+			app.debug.debug("plugin_HTML5Storage.definePluginEvents() - trigger: storagefilled");
+			$(this).trigger("storagefilled");
 		});
 	},
 
 	// called by pages.js
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+		app.debug.trace("plugin_HTML5Storage.afterHtmlInjectedBeforePageComputing()");
 	},
 	pageSpecificEvents : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+		app.debug.trace("plugin_HTML5Storage.pageSpecificEvents()");
 	},
 
 	// private functions
@@ -106,7 +109,7 @@ var plugin_HTML5Storage = {
 	},
 
 	parseValue : function(value) {
-		app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue(' + value + ')', 20);
+		app.debug.trace('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue()');
 		switch (value) {
 		// is true?
 		case "true":
@@ -142,8 +145,9 @@ var plugin_HTML5Storage = {
 		app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.parseValue() - return: ' + value, 20);
 		return value;
 	},
+
 	getSpace : function(length) {
-		app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.getSpace(' + length + ')', 20);
+		app.debug.trace('plugin.HTML5Storage.js ~ plugin_HTML5Storage.getSpace()');
 		var string = "";
 		for (i = 0; i < length; i++)
 			string = string + " ";
@@ -156,18 +160,18 @@ var plugin_HTML5Storage = {
 
 		localStorage : {
 			set : function(key, val) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.set(' + key + ', ' + val + ')', 1);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.set()');
 				key = key.toLowerCase();
 				window.localStorage.setItem(app.config.name + "." + key, val);
 				return true;
 			},
 			get : function(key) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.get(' + key + ')', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.get()');
 				key = key.toLowerCase();
 				return plugin_HTML5Storage.parseValue(window.localStorage.getItem(app.config.name + "." + key));
 			},
 			clear : function() {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.clear()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.clear()');
 				// window.localStorage.clear();
 				$.each(window.localStorage, function(key, value) {
 					if (key.substring(0, app.config.name.length) == app.config.name) {
@@ -177,7 +181,7 @@ var plugin_HTML5Storage = {
 				return true;
 			},
 			clearHtml5 : function() {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.clearHtml5()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.clearHtml5()');
 				$.each(window.localStorage, function(key, value) {
 					if (key.substr(app.config.name.length + 1, 10) == "data-html5") {
 						try {
@@ -191,15 +195,13 @@ var plugin_HTML5Storage = {
 			},
 
 			pufferFormValues : function(container) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.pufferFormValues()', 3);
-				container.find("input[type=text], input[type=password]").each(
-						function(elementNumber, element) {
-							plugin_HTML5Storage.functions.localStorage.set(plugin_HTML5Storage.functions.pufferedFormValuePrefix + container.attr("id") + "__"
-									+ $(element).attr("id"), $(element).val());
-						});
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.pufferFormValues()');
+				container.find("input[type=text], input[type=password]").each(function(elementNumber, element) {
+					plugin_HTML5Storage.functions.localStorage.set(plugin_HTML5Storage.functions.pufferedFormValuePrefix + container.attr("id") + "__" + $(element).attr("id"), $(element).val());
+				});
 			},
 			getPufferedFormValue : function(container, id) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.getPufferedFormValue()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.getPufferedFormValue()');
 				var containerId;
 				if (typeof container == "object")
 					containerId = container.attr("id");
@@ -208,7 +210,7 @@ var plugin_HTML5Storage = {
 				return plugin_HTML5Storage.functions.localStorage.get(plugin_HTML5Storage.functions.pufferedFormValuePrefix + containerId + "__" + id);
 			},
 			restorePufferedFormValues : function(container) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.restorePufferedFormValues()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.restorePufferedFormValues()');
 				container.find("input[type=text]").each(function(elementNumber, element) {
 					var id, value;
 					id = $(element).attr("id");
@@ -217,7 +219,7 @@ var plugin_HTML5Storage = {
 				});
 			},
 			clearPufferedFormValues : function() {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.clearPufferedFormValues()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.clearPufferedFormValues()');
 				$.each(window.localStorage, function(key, value) {
 					if (key.substring(0, app.config.name.length) == app.config.name) {
 						newkey = key.substring(app.config.name.length + 1);
@@ -234,17 +236,16 @@ var plugin_HTML5Storage = {
 				});
 			},
 			removeItem : function(key) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.removeItem()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.removeItem()');
 				window.localStorage.removeItem(app.config.name + "." + key);
 				return true;
 			},
 			show : function() {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.show()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.show()');
 				var string = '', i = 0;
 				$.each(window.localStorage, function(key, value) {
 					if (key.substring(0, app.config.name.length) == app.config.name) {
-						string += key + "\n" + plugin_HTML5Storage.getSpace(app.config.name.length + 1) + key.substring(app.config.name.length + 1) + " = "
-								+ value + "\n";
+						string += key + "\n" + plugin_HTML5Storage.getSpace(app.config.name.length + 1) + key.substring(app.config.name.length + 1) + " = " + value + "\n";
 						i++;
 					} else {
 						string += key + " = " + value + "\n";
@@ -257,7 +258,7 @@ var plugin_HTML5Storage = {
 				return string;
 			},
 			log : function() {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.log()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.log()');
 				$.each(window.localStorage, function(key, value) {
 					if (key.substring(0, app.config.name.length) == app.config.name) {
 						app.debug.log(key.substring(app.config.name.length + 1) + " = " + value);
@@ -265,11 +266,10 @@ var plugin_HTML5Storage = {
 				});
 			},
 			setObject : function(name, object) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.setObject()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.setObject()');
 				// alert(JSON.stringify(object));
 				name = name.toLowerCase();
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.setObject(' + name + ', ' + JSON.stringify(object) + ')',
-						20);
+				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.setObject(' + name + ', ' + JSON.stringify(object) + ')', 20);
 				$.each(object, function(key, value) {
 					if (typeof value == "object" && value != null) {
 						plugin_HTML5Storage.functions.localStorage.setObject((name + "." + key).trim(), value);
@@ -281,7 +281,7 @@ var plugin_HTML5Storage = {
 				return true;
 			},
 			getObject : function(name) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.getObject()', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.getObject()');
 				name = name.toLowerCase();
 				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.getObject("' + name + '")', 20);
 				var object = {};
@@ -290,8 +290,7 @@ var plugin_HTML5Storage = {
 					if (key.substr(app.config.name.length + 1, name.length).trim() == name.trim()) {
 						// alert(key.substr(app.config.name.length + 1,
 						// name.length).trim() + " = " + value);
-						object = plugin_HTML5Storage.setDeepX(object, key.substr(app.config.name.length + 1), plugin_HTML5Storage.functions.localStorage
-								.get(key.substr(app.config.name.length + 1)));
+						object = plugin_HTML5Storage.setDeepX(object, key.substr(app.config.name.length + 1), plugin_HTML5Storage.functions.localStorage.get(key.substr(app.config.name.length + 1)));
 					}
 				});
 
@@ -303,7 +302,7 @@ var plugin_HTML5Storage = {
 			},
 			removeObject : function(name) {
 				name = name.toLowerCase();
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.removeObject(' + name + ')', 20);
+				app.debug.trace("plugin_HTML5Storage.functions.localStorage.removeObject()");
 				var success = true;
 				$.each(window.localStorage, function(key, value) {
 					if (key.substr(app.config.name.length + 1, name.length) == name.trim()) {
@@ -318,7 +317,7 @@ var plugin_HTML5Storage = {
 				return success;
 			},
 			getList : function(identifier) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.localStorage.getList(' + identifier + ')', 20);
+				app.debug.trace('plugin_HTML5Storage.functions.localStorage.getList()');
 				var list = {};
 				$.each(window.localStorage, function(key, value) {
 					if (key.substr(app.config.name.length + 1, identifier.length) == identifier) {
@@ -330,11 +329,11 @@ var plugin_HTML5Storage = {
 		},
 		sessionStorage : {
 			set : function(key, val) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.sessionStorage.set(' + key + ', ' + val + ')', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.sessionStorage.set()');
 				window.sessionStorage.setItem(key, val);
 			},
 			get : function(key) {
-				app.debug.alert('plugin.HTML5Storage.js ~ plugin_HTML5Storage.functions.sessionStorage.get(' + key + ')', 3);
+				app.debug.trace('plugin_HTML5Storage.functions.sessionStorage.get()');
 				window.sessionStorage.getItem(key);
 			},
 			clear : function() {
@@ -348,5 +347,6 @@ var plugin_HTML5Storage = {
 			}
 		},
 		ss : this.sessionStorage,
+		
 	}
 };

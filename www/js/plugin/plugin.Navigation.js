@@ -85,6 +85,7 @@ var plugin_Navigation = {
 	 */
 	functions : {
 		redirect : function(url, transition, reverse) {
+			app.debug.trace("plugin_Navigation.functions.redirect()");
 			setTimeout(function() {
 				if (transition != undefined)
 					$("body").pagecontainer("change", url, {
@@ -97,27 +98,43 @@ var plugin_Navigation = {
 			}, 50);
 		},
 		back : function(transition) {
+			app.debug.trace("plugin_Navigation.functions.back()");
 			var lastPage, currentPage;
 			if (plugin_Navigation.history.length > 1) {
+				app.debug.debug("plugin_Navigation.functions.back() - application has history");
 				currentPage = plugin_Navigation.history.pop();
+				app.debug.debug("plugin_Navigation.functions.back() - current page: " + JSON.stringify(currentPage));
 				lastPage = plugin_Navigation.history[plugin_Navigation.history.length - 1];
+				app.debug.debug("plugin_Navigation.functions.back() - last page: " + JSON.stringify(lastPage));
 				this.redirect(lastPage.page + ".html", currentPage.transition, true);
 			}
 		},
 		forward : function() {
+			app.debug.trace("plugin_Navigation.functions.forward()");
 			window.history.forward();
 		},
 		reload : function() {
-			location.reload();
+			app.debug.trace("plugin_Navigation.functions.reload()");
+			
+
 		},
 		refresh : function() {
-			location.reload();
+			app.debug.trace("plugin_Navigation.functions.refresh()");
+			$('div[data-role=page]').remove();
+			jQuery.mobile.changePage(window.location.href, {
+		        allowSamePageTransition: true,
+		        transition: 'none',
+		        reloadPage: true
+		    });
+			
 		},
 		redirectAndReload : function(url) {
+			app.debug.trace("plugin_Navigation.functions.redirectAndReload()");
 			$.mobile.ajaxEnabled = false;
 			window.location.replace(url);
 		},
 		normalizeUrl : function(uri) {
+			app.debug.trace("plugin_Navigation.functions.normalizeUrl()");
 			var uri = URI(uri);
 			if (uri.protocol() === "")
 				uri.protocol('http');

@@ -36,7 +36,7 @@ var plugin_HelperFunctions = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace("plugin_HelperFunctions.pluginsLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -46,7 +46,7 @@ var plugin_HelperFunctions = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_HelperFunctions.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -56,20 +56,20 @@ var plugin_HelperFunctions = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_HelperFunctions.definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_HelperFunctions.afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_HelperFunctions.pageSpecificEvents()");
 
 	},
 	// private functions
@@ -84,10 +84,31 @@ var plugin_HelperFunctions = {
 	 */
 	functions : {
 		validate : {
-			firstname : function(firstname) {
-				app.debug.alert("plugin_HelperFunctions.functions.validate.firstname(" + firstname + ")", 20);
+			regex : function(value, regex) {
+				app.debug.trace("plugin_HelperFunctions.functions.validate.regex()");
 
-				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.firstname, "g");
+				var success;
+				success = false;
+				regex = new RegExp(regex, "g");
+
+				app.debug.debug("plugin_HelperFunctions.functions.validate.regex() - regex: " + regex);
+
+				if (value == undefined)
+					success = false;
+				else if (regex.test(value)) {
+					success = true;
+				}
+				return success;
+			},
+			firstname : function(firstname) {
+				app.debug.trace("plugin_HelperFunctions.functions.validate.firstname()");
+
+				var success, regex;
+				success = false;
+				regex = new RegExp(plugin_HelperFunctions.config.validate.firstname, "g");
+
+				app.debug.debug("plugin_HelperFunctions.functions.validate.firstname() - regex: " + regex);
+
 				if (firstname == undefined)
 					success = false;
 				else if (regex.test(firstname)) {
@@ -96,9 +117,14 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			lastname : function(lastname) {
-				app.debug.alert("plugin_HelperFunctions.functions.validate.lastname(" + lastname + ")", 20);
+				app.debug.trace("plugin_HelperFunctions.functions.validate.lastname()");
 
-				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.lastname, "g");
+				var success, regex;
+				success = false;
+				regex = new RegExp(plugin_HelperFunctions.config.validate.lastname, "g");
+
+				app.debug.debug("plugin_HelperFunctions.functions.validate.lastname() - regex: " + regex);
+
 				if (lastname == undefined)
 					success = false;
 				else if (regex.test(lastname)) {
@@ -107,9 +133,14 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			username : function(username) {
-				app.debug.alert("plugin_HelperFunctions.functions.validate.username(" + username + ")", 20);
+				app.debug.trace("plugin_HelperFunctions.functions.validate.username()");
 
-				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.username, "g");
+				var success, regex;
+				success = false;
+				regex = new RegExp(plugin_HelperFunctions.config.validate.username, "g");
+
+				app.debug.debug("plugin_HelperFunctions.functions.validate.username() - regex: " + regex);
+
 				if (username == undefined)
 					success = false;
 				else if (regex.test(username)) {
@@ -118,9 +149,14 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			email : function(email) {
-				app.debug.alert("plugin_HelperFunctions.functions.validate.email(" + email + ")", 20);
+				app.debug.trace("plugin_HelperFunctions.functions.validate.email()");
 
-				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.email, "g");
+				var success, regex;
+				success = false;
+				regex = new RegExp(plugin_HelperFunctions.config.validate.email, "g");
+
+				app.debug.debug("plugin_HelperFunctions.functions.validate.email() - regex: " + regex);
+
 				if (email == undefined)
 					success = false;
 				else if (regex.test(email)) {
@@ -129,9 +165,14 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			website : function(website) {
-				app.debug.alert("plugin_HelperFunctions.functions.validate.website(" + website + ")", 20);
+				app.debug.trace("plugin_HelperFunctions.functions.validate.website()");
 
-				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.website, "g");
+				var success, regex;
+				success = false;
+				regex = new RegExp(plugin_HelperFunctions.config.validate.website, "g");
+
+				app.debug.debug("plugin_HelperFunctions.functions.validate.website() - regex: " + regex);
+
 				if (website == undefined)
 					success = false;
 				else if (regex.test(website)) {
@@ -140,9 +181,14 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			password : function(password) {
-				app.debug.alert("plugin_HelperFunctions.functions.validate.password(" + password + ")", 20);
+				app.debug.trace("plugin_HelperFunctions.functions.validate.password()");
 
-				var success = false, regex = new RegExp(plugin_HelperFunctions.config.validate.password, "g");
+				var success, regex;
+				success = false;
+				regex = new RegExp(plugin_HelperFunctions.config.validate.password, "g");
+
+				app.debug.debug("plugin_HelperFunctions.functions.validate.password() - regex: " + regex);
+
 				if (password == undefined)
 					success = false;
 				else if (regex.test(password)) {
@@ -151,6 +197,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			equal : function(s1, s2) {
+				app.debug.trace("plugin_HelperFunctions.functions.validate.equal()");
 				var success = false;
 				if (s1 == s2) {
 					success = true;
@@ -160,11 +207,13 @@ var plugin_HelperFunctions = {
 		},
 		random : {
 			integer : function(digits) {
+				app.debug.trace("plugin_HelperFunctions.functions.random.integer()");
 				return Math.floor((Math.random() * digits) + 1);
 			}
 		},
 		jQM : {
 			enhance : function(object) {
+				app.debug.trace("plugin_HelperFunctions.functions.jQM.enhance()");
 				// http://stackoverflow.com/questions/14550396/jquery-mobile-markup-enhancement-of-dynamically-added-content
 
 				object.find('[data-role=listview]').listview().listview('refresh');
@@ -181,7 +230,7 @@ var plugin_HelperFunctions = {
 		},
 		navigation : {
 			redirect : function(url, transition) {
-				console.log("Deprecated Function! Use: ")
+				console.log("Deprecated Function! Use: app.nav...")
 				setTimeout(function() {
 					if (transition != undefined)
 						$.mobile.changePage(url, {
@@ -212,7 +261,7 @@ var plugin_HelperFunctions = {
 		},
 		object : {
 			setDeep : function(el, key, value) {
-				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.setDeep(" + el + ", " + key + ", " + value + ")", 20);
+				app.debug.trace("plugin_HelperFunctions.functions.object.setDeep()");
 				key = key.split('.');
 				var i = 0, n = key.length;
 				for (; i < n - 1; ++i) {
@@ -222,20 +271,18 @@ var plugin_HelperFunctions = {
 			},
 
 			setDeepBase64Key : function(el, key, value) {
-				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.setDeepBase64Key(" + el + ", " + key + ", " + value + ")",
-						20);
+				app.debug.trace("plugin_HelperFunctions.functions.object.setDeepBase64Key()");
 				key = key.split('.');
 				var i = 0, n = key.length;
 				for (; i < n - 1; ++i) {
 					el = el[atob(key[i])];
 				}
-				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.setDeepBase64Key - " + el[atob(key[i])] + " = " + value,
-						20);
+				app.debug.debug("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.setDeepBase64Key - " + el[atob(key[i])] + " = " + value, 20);
 				el[atob(key[i])] = value;
 			},
 
 			getDeep : function(el, key) {
-				app.debug.alert("plugin_HelperFunctions.js ~ plugin_HelperFunctions.functions.object.getDeep(" + el + ", " + key + ")", 20);
+				app.debug.trace("plugin_HelperFunctions.functions.object.getDeep()");
 				key = key.split('.');
 				var i = 0, n = key.length;
 				for (; i < n; ++i) {
@@ -246,6 +293,7 @@ var plugin_HelperFunctions = {
 		},
 		form : {
 			serialize : function(container) {
+				app.debug.trace("plugin_HelperFunctions.functions.form.serialize()");
 				var returnObject = {};
 				container.find("input").each(function(key, HTMLInputElement) {
 					// alert($(HTMLInputElement).html());

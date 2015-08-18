@@ -1,11 +1,6 @@
 {
 	"name": "WebServiceError",
 	"shortname": "wse",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"wseFiles": 
 	{
 		"../files/wse/wse.http.json": true,

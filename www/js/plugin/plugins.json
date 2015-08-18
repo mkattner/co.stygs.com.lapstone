@@ -1,6 +1,6 @@
 {
 	"Actions": true,
-	"Backmeup": true,
+	"Backmeup": false,
 	"Debug": true,
 	"Detector": true,
 	"DeviceManager": true,
@@ -23,6 +23,7 @@
 	"OAuth": true,
 	"RestClient": true,
 	"Session": true,
+	"Skin": true,
 	"WebServiceClient": true,
 	"WebServiceError": true
 }

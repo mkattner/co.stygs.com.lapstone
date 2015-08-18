@@ -117,8 +117,8 @@ var plugin_ImageProvider = {
 	 * 
 	 */
 	functions : {
-		getUrlById : function(id) {
-			var img, toParse;
+		getUrlById : function(id, cont) {
+			var img, toParse, lastSlash;
 			// alert(id + " = " + plugin_ImageProvider.images[id])
 			if ((img = plugin_ImageProvider.images[id]) == undefined) {
 				console.warn("ImageProvider - Undefined image: " + id);
@@ -127,6 +127,33 @@ var plugin_ImageProvider = {
 				img = id;
 			}
 			return img;
+		},
+		getUrlByIdForSkin : function(id, context) {
+			var imageUrl = null, toParse;
+
+			if (context == undefined) {
+				imageUrl = plugin_ImageProvider.images[id];
+			} else {
+				if (plugin_ImageProvider.images[context] == undefined) {
+					console.warn("Image - context doesn't exist: " + context);
+					toParse = '{"' + context + '" : {}}';
+					app.debug.feedback.image(JSON.parse(toParse));
+					imageUrl = id;
+				} else {
+					imageUrl = plugin_ImageProvider.images[context][id];
+				}
+			}
+			if (imageUrl != undefined) {
+
+				return imageUrl.substring(0, imageUrl.lastIndexOf("/")) + "/" + plugin_Skin.config.defaultSkin + imageUrl.substring(imageUrl.lastIndexOf("/"), imageUrl.length);
+			} else {
+				console.warn("Image - " + context + '.' + id + " == undefined");
+				// console.log('"' + id + '" : "TRANSLATION"');
+				toParse = '{"' + context + '" : {"' + id + '" : "URL"}}';
+				app.debug.feedback.image(JSON.parse(toParse));
+
+				return id;
+			}
 		}
 	}
 };

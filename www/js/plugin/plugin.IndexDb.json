@@ -1,8 +1,4 @@
 {
 	"name": "IndexDb",
-	"shortname": "idb",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	]
+	"shortname": "idb"
 }

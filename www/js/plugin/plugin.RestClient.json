@@ -1,11 +1,6 @@
 {
 	"name": "RestClient",
 	"shortname": "rc",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"useKeepAlive": true,
 	"wsdFiles": 
 	{

@@ -1,10 +1,5 @@
 {
 	"name": "Detector",
 	"shortname": "detect",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"addCssClassesToBodyTag": true
 }

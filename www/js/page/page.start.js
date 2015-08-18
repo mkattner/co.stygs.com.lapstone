@@ -157,11 +157,11 @@ var page_start = {
 				// alert(app.info.firstUse());
 				if (app.info.firstUse() === true) {
 					app.info.firstUse(false);
-					app.help.navigation.redirect(app.config.startPage_firstStart, "slideup");
+					app.nav.redirect(app.config.startPage_firstStart, "slideup");
 				} else if (app.sess.loggedIn()) {
-					app.help.navigation.redirect(app.config.startPage_loggedIn, "slideup");
+					app.nav.redirect(app.config.startPage_loggedIn, "slideup");
 				} else {
-					app.help.navigation.redirect(app.config.startPage, "slideup");
+					app.nav.redirect(app.config.startPage, "slideup");
 				}
 			}, 1000);
 		}

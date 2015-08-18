@@ -17,11 +17,11 @@ var plugin_WebServiceError = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace("plugin_WebServiceError.pluginsLoaded()");
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
 		if (plugin_WebServiceError.config.errorKeys == undefined) {
-			console.error("No errorKeys Array in plugin.WebServiceError.json");
+			app.debug.error("No errorKeys Array in plugin.WebServiceError.json");
 			dfd.reject();
 		}
 
@@ -48,7 +48,7 @@ var plugin_WebServiceError = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_WebServiceError.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -58,25 +58,25 @@ var plugin_WebServiceError = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_WebServiceError.definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_WebServiceError.afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_WebServiceError.pageSpecificEvents()");
 
 	},
 	// private functions
 	loadDefinitionFileAsync : function(path) {
-		app.debug.alert("pugin.WebServiceError.js ~ plugin_WebServiceError.loadDefinitionFileAsync(" + path + ")", 20);
+		app.debug.trace("plugin_WebServiceError.loadDefinitionFileAsync(" + path + ")", 20);
 		var dfd = $.Deferred(), promise;
 		promise = globalLoader.AsyncJsonLoader(path);
 
@@ -95,11 +95,11 @@ var plugin_WebServiceError = {
 	},
 
 	loadDefinitionFile : function(path) {
-		app.debug.alert("pugin.WebServiceError.js ~ plugin_WebServiceError.loadDefinitionFile(" + path + ")", 20);
+		app.debug.trace("plugin_WebServiceError.loadDefinitionFile()");
+		app.debug.debug("Load definition file: " + path);
 		var json = globalLoader.JsonLoader(path);
-		app.debug.alert("pugin.WebServiceError.js ~ plugin_WebServiceError.loadDefinitionFile() - add each webservice definition", 20);
 		$.each(json, function(name, values) {
-			app.debug.alert("pugin.WebServiceError.js ~ plugin_WebServiceError.loadDefinitionFile() - add: " + name, 20);
+			app.debug.debug("Add definition: " + name, 20);
 			plugin_WebServiceError.config.wse[name] = values;
 		});
 	},
@@ -111,7 +111,7 @@ var plugin_WebServiceError = {
 		},
 
 		getExceptionConfig : function(exception) {
-			app.debug.alert("plugin.WebServiceError.js ~ plugin_WebServiceError.functions.getExceptionConfig()", 60);
+			app.debug.trace("plugin_WebServiceError.functions.getExceptionConfig()");
 
 			var errorName = null;
 

@@ -1,11 +1,6 @@
 {
 	"name": "Notification",
 	"shortname": "notify",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"enablePushNotifications": false,
 	"pushConfig": 
 	{

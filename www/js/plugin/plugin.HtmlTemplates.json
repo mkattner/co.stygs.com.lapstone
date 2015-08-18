@@ -1,11 +1,6 @@
 {
 	"name": "HtmlTemplates",
 	"shortname": "template",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	],
-
 	"templates": 
 	{
 		"JQueryMobilePageStructure": 

@@ -38,7 +38,7 @@ var plugin_LoadExternalScripts = {
 
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 		console.log("TODO - script loading");
-		
+
 		// styles
 		$.each(plugin_LoadExternalScripts.config.scripts.css, function(key, value) {
 			if (value) {
@@ -51,7 +51,7 @@ var plugin_LoadExternalScripts = {
 
 			}
 		});
-		
+
 		// scripts
 		$.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
 			if (value) {
@@ -95,16 +95,36 @@ var plugin_LoadExternalScripts = {
 	// called by user
 	functions : {
 		css : function(url) {
-			app.debug.alert("plugin_LoadExternalScripts.functions.css(" + url + ")", 20);
+			app.debug.trace("plugin_LoadExternalScripts.functions.css()");
+			var promise;
+			if (url in plugin_LoadExternalScripts.loadedScripts) {
+				app.debug.debug("plugin_LoadExternalScripts.functions.css() - css already loaded: " + url);
+
+				return $.Deferred().resolve();
+			}
+
+			else {
+				app.debug.debug("plugin_LoadExternalScripts.functions.css() - load css: " + url);
+				promise = globalLoader.AsyncStyleLoader(url);
+
+				promise.done(function() {
+					app.debug.debug("plugin_LoadExternalScripts.functions.css() - css loading done: " + url);
+					app.debug.debug("plugin_LoadExternalScripts.functions.css() - add url to loadedScripts array");
+					plugin_LoadExternalScripts.loadedScripts[url] = true;
+				});
+				
+				return promise;
+			}
+
+		},
+		javascript : function(url) {
+			app.debug.trace("plugin_LoadExternalScripts.functions.javascript()");
 			if (url in plugin_LoadExternalScripts.loadedScripts) {
 				;// do nothing already loaded
 			} else {
-				globalLoader.AsyncStyleLoader(url);
+				globalLoader.AsyncScriptLoader(url);
 				plugin_LoadExternalScripts.loadedScripts[url] = true;
 			}
-		},
-		javascript : function(url) {
-			app.debug.alert("plugin_LoadExternalScripts.functions.javascript(" + url + ")", 20);
 		}
 	}
 };

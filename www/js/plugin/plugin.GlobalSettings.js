@@ -20,7 +20,7 @@
 //plugin_GlobalSettings
 /**
  * Plugin:
-
+ * 
  * 
  * @version 1.0
  * @namespace plugin_GlobalSettings
@@ -34,7 +34,7 @@ var plugin_GlobalSettings = {
 
 	},
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()");
 		// load settings from html5 storage
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -43,30 +43,33 @@ var plugin_GlobalSettings = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_GlobalSettings.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
 
 	definePluginEvents : function() {
+		app.debug.trace("plugin_GlobalSettings.definePluginEvents()");
 	},
 
 	// called by pages.js
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+		app.debug.trace("plugin_GlobalSettings.afterHtmlInjectedBeforePageComputing()");
 	},
 	pageSpecificEvents : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+		app.debug.trace("plugin_GlobalSettings.pageSpecificEvents()");
 	},
 	/**
 	 * @namespace plugin_GlobalSettings.functions
 	 */
 	functions : {
 		get : function(key) {
+			app.debug.trace("plugin_GlobalSettings.functions.get()");
 			return plugin_GlobalSettings.config['key'];
 		},
 		set : function(key, val) {
+			app.debug.trace("plugin_GlobalSettings.functions.set()");
 			plugin_GlobalSettings.config['key'] = val;
 		}
 	}

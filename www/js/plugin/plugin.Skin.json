@@ -1,0 +1,44 @@
+{
+	"name": "Skin",
+	"shortname": "skin",
+	"useSkinPlugin": false,
+	"defaultSkin": "modern",
+	"skins": 
+	{
+		"icon": 
+		[
+			"../css/skin/icon/fonts.css",
+			"../css/skin/icon/global.css",
+			"../css/skin/icon/platform.android.css",
+			"../css/skin/icon/platform.desktop.css",
+			"../css/skin/icon/platform.ios.css",
+			"../css/skin/icon/platform.mobile.css",
+			"../css/skin/icon/platform.cordova.css",
+			"../css/skin/icon/platform.windows.css"
+		],
+
+		"modern": 
+		[
+			"../css/skin/modern/fonts.css",
+			"../css/skin/modern/global.css",
+			"../css/skin/modern/platform.android.css",
+			"../css/skin/modern/platform.desktop.css",
+			"../css/skin/modern/platform.ios.css",
+			"../css/skin/modern/platform.mobile.css",
+			"../css/skin/modern/platform.cordova.css",
+			"../css/skin/modern/platform.windows.css"
+		],
+
+		"text": 
+		[
+			"../css/skin/text/fonts.css",
+			"../css/skin/text/global.css",
+			"../css/skin/text/platform.android.css",
+			"../css/skin/text/platform.desktop.css",
+			"../css/skin/text/platform.ios.css",
+			"../css/skin/text/platform.mobile.css",
+			"../css/skin/text/platform.cordova.css",
+			"../css/skin/text/platform.windows.css"
+		]
+	}
+}

@@ -62,8 +62,12 @@ var plugin_Debug = {
 	 * @protected
 	 */
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace("plugin_Debug.pluginsLoaded()");
 		var dfd = $.Deferred();
+
+		// add dev language to language array
+		plugin_MultilanguageIso639_3.config.availableLanguages.push("dev");
+
 		dfd.resolve();
 		return dfd.promise();
 	},
@@ -75,7 +79,7 @@ var plugin_Debug = {
 	 * @protected
 	 */
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_Debug.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -88,7 +92,7 @@ var plugin_Debug = {
 	 * @returns {boolean} Succesfull or unsuccessful
 	 */
 	definePluginEvents : function() {
-
+		app.debug.trace("plugin_Debug.definePluginEvents()");
 	},
 
 	// called by pages.js
@@ -101,7 +105,68 @@ var plugin_Debug = {
 	 *            {object} jQuery page div
 	 */
 	afterHtmlInjectedBeforePageComputing : function(container) {
+		app.debug.trace("plugin_Debug.pagesLoaded()");
+		if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
+			var debugDiv, select;
 
+			debugDiv = app.ni.element.div({
+				id : "divDebug",
+				attributes : {
+					"data-enhance" : "false"
+				},
+				styles : {
+					"position" : "fixed",
+					"z-index" : "1050",
+					"top" : "0px",
+					"left" : "0px",
+					"padding" : "5px",
+					"min-width" : "150px",
+					"min-height" : "50px",
+					"background-color" : "rgba(200, 200, 200, 0.7)"
+				}
+			});
+
+			select = app.ni.select.single({
+				id : "selConsoleLevel",
+				label : true,
+				labelText : "console level",
+				container : true
+			});
+
+			$.each(plugin_Debug.config.debugLevels, function(levelName, ratingValue) {
+				select.find("select").append(app.ni.select.option({
+					text : levelName,
+					value : levelName,
+					selected : (plugin_Debug.config.consoleLevel == levelName) ? true : false
+				}));
+			});
+
+			debugDiv.append(select);
+
+			select = app.ni.select.single({
+				id : "selLogLevel",
+				label : true,
+				labelText : "log level",
+				container : true
+			});
+
+			$.each(plugin_Debug.config.debugLevels, function(levelName, ratingValue) {
+				select.find("select").append(app.ni.select.option({
+					text : levelName,
+					value : levelName,
+					selected : (plugin_Debug.config.logLevel == levelName) ? true : false
+				}));
+			});
+
+			debugDiv.append(select);
+
+			debugDiv.append(app.ni.button.button({
+				id : "btnClose",
+				value : "close"
+			}))
+
+			container.append(debugDiv);
+		}
 	},
 	/**
 	 * Called once by pages.js
@@ -111,8 +176,21 @@ var plugin_Debug = {
 	 *            {object} jQuery page div
 	 */
 	pageSpecificEvents : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+		app.debug.trace("plugin_Debug.pageSpecificEvents()");
 
+		if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
+			$(document).on('change', '#selConsoleLevel', function() {
+				app.info.set("plugin_Debug.config.consoleLevel", $('#selConsoleLevel option:selected').val());
+			});
+
+			$(document).on('change', '#selLogLevel', function() {
+				app.info.set("plugin_Debug.config.logLevel", $('#selLogLevel option:selected').val());
+			});
+
+			$(document).on('click', '#btnClose', function() {
+				$('#divDebug').slideUp();
+			})
+		}
 	},
 
 	// private functions
@@ -126,6 +204,25 @@ var plugin_Debug = {
 	 * 
 	 */
 	functions : {
+		// debug functions
+		trace : function(output) {
+			this.log(output, "TRACE");
+		},
+		debug : function(output) {
+			this.log(output, "DEBUG");
+		},
+		info : function(output) {
+			this.log(output, "INFO");
+		},
+		warn : function(output) {
+			this.log(output, "WARN");
+		},
+		error : function(output) {
+			this.log(output, "ERROR");
+		},
+		fatal : function(output) {
+			this.log(output, "FATAL");
+		},
 		/**
 		 * Alert if the configured debug level is smaller then the current debug
 		 * level.
@@ -136,46 +233,59 @@ var plugin_Debug = {
 		 *            level Current debug level.
 		 */
 		alert : function(text, level) {
-			// console.log(text);
-			if (plugin_Debug.config.doDebugging && (level >= plugin_Debug.config.debugLevel)) {
-				alert("DebugLevel: " + level + "\n" + text);
-			}
-			if (plugin_Debug.config.logDebug && (level >= plugin_Debug.config.logDebugLevel)) {
-				// plugin_Debug.functions.log("DebugLevel: " + level + " - " +
-				// text);
-				plugin_Debug.functions.log(text);
-			}
+			plugin_Debug.functions.log(text, "DEBUG");
 		},
-		/**
-		 * Add line to log object.
-		 * 
-		 * @param {string}
-		 *            text text to log
-		 */
-		log : function(text) {
-			// Date.now()
-			plugin_Debug.logObject.push(" - " + text);
+		log : function(output, level) {
+
+			// log to object
+			if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.logLevel]) {
+				plugin_Debug.logObject.push(output);
+			}
+			// log to console
+
+			// alert(output + level);
+			if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.consoleLevel]) {
+				console.log(level + ": " + output);
+			}
+			// log to webservice
 		},
+
 		/**
 		 * Shows the log object in an alert window
 		 */
 		showLog : function() {
+			console.warn("Deprecated function!!");
 			alert(JSON.stringify(plugin_Debug.logObject));
 		},
 		feedback : {
+
 			language : function(object) {
-				console.log("Implement!: " + JSON.stringify(object));
+				app.debug.trace("plugin_Debug.functions.feedback.language()");
+				app.debug.warn("Unimplemented language: " + JSON.stringify(object));
 				$.extend(true, plugin_Debug.feedback.language, object);
 			},
 
 			languageGetJson : function() {
+				app.debug.trace("plugin_Debug.functions.feedback.languageGetJson()");
 				return JSON.stringify($.extend(true, plugin_Debug.feedback.language, plugin_MultilanguageIso639_3.dictionary));
 			},
 
 			image : function(object) {
-				console.log("Implement!: " + JSON.stringify(object));
+				app.debug.trace("plugin_Debug.functions.feedback.image()");
+				app.debug.warn("Unimplemented image: " + JSON.stringify(object));
 				$.extend(true, plugin_Debug.feedback.image, object);
+			},
+			imageGetJson : function() {
+				app.debug.trace("plugin_Debug.functions.feedback.languageGetJson()");
+				return JSON.stringify($.extend(true, plugin_Debug.feedback.image, plugin_ImageProvider.images));
 			}
 		}
-	}
+	},
+/**
+ * Add line to log object.
+ * 
+ * @param {string}
+ *            text text to log
+ */
+
 };

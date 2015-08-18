@@ -1,8 +1,4 @@
 {
 	"name": "Navigation",
-	"shortname": "nav",
-	"dependencies": 
-	[
-		"WebServiceClient"
-	]
+	"shortname": "nav"
 }
