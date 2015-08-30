@@ -38,8 +38,9 @@ var plugin_FormInputDesigner = {
 		app.debug.trace("plugin_FormInputDesigner.pluginsLoaded()");
 		var dfd = $.Deferred();
 
-		if (plugin_Skin) {
+		if (plugins.functions.pluginLoaded("Skin")) {
 			if (plugin_Skin.config.useSkinPlugin) {
+				app.debug.trace("plugin_FormInputDesigner.pluginsLoaded() - case: Skin plugin is active");
 				plugin_FormInputDesigner.classes = [ plugin_Skin.config.defaultSkin ];
 			}
 		}
@@ -100,7 +101,7 @@ var plugin_FormInputDesigner = {
 
 		if (options.href != undefined)
 			attributes += ' href="' + options.href + '"';
-		
+
 		if (options.onclick != undefined)
 			attributes += ' onclick="' + options.onclick + '"';
 
