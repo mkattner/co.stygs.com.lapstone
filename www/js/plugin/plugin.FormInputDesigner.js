@@ -69,61 +69,55 @@ var plugin_FormInputDesigner = {
 		app.debug.trace("plugin_FormInputDesigner.pageSpecificEvents()");
 	},
 
-	/*
-	 * options:{ "id":"", "mini":true, "placeholder":"text", "value":"value",
-	 * "label":true, "labelText":"text", "disabled":false, "container":true,
-	 * "classes":[], "attibutes":{ "data-html5-*":"value", "":"" } }
-	 */
+	
 
-	// private functions
 	getAttributes : function(options) {
 		app.debug.trace("plugin_FormInputDesigner.getAttributes()");
 
 		var attributes, styles;
 
 		styles = '';
-		// alert(JSON.stringify(plugin_FormInputDesigner.classes));
 		options.classes = options.classes.concat(plugin_FormInputDesigner.classes);
 
 		attributes = 'class="' + plugin_FormInputDesigner.getClasses(options) + '"';
 
-		if (options.placeholder != undefined)
+		if (options.hasOwnProperty("placeholder"))
 			attributes += ' placeholder="' + options.placeholder + '"';
 
-		if (options.id != undefined)
+		if (options.hasOwnProperty("id"))
 			attributes += ' id="' + options.id + '"';
 
-		if (options.name != undefined)
+		if (options.hasOwnProperty("name"))
 			attributes += ' name="' + options.name + '"';
 
-		if (options.value != undefined)
+		if (options.hasOwnProperty("value"))
 			attributes += ' value="' + options.value + '"';
 
-		if (options.href != undefined)
+		if (options.hasOwnProperty("href"))
 			attributes += ' href="' + options.href + '"';
 
-		if (options.onclick != undefined)
+		if (options.hasOwnProperty("onclick"))
 			attributes += ' onclick="' + options.onclick + '"';
 
-		if (options.src != undefined)
+		if (options.hasOwnProperty("src"))
 			attributes += ' src="' + options.src + '"';
 
-		if (options.disabled === true)
+		if (options.hasOwnProperty("disabled"))
 			attributes += ' disabled="disabled"';
 
-		if (options.checked === true)
+		if (options.hasOwnProperty("checked"))
 			attributes += ' checked="checked"';
 
-		if (options.selected === true)
+		if (options.hasOwnProperty("selected"))
 			attributes += ' selected="selected"';
 
-		if (options.attributes != undefined) {
+		if (options.hasOwnProperty("attributes")) {
 			$.each(options.attributes, function(key, value) {
 				attributes += ' ' + key + '="' + value + '"';
 			});
 		}
 
-		if (options.styles != undefined) {
+		if (options.hasOwnProperty("styles")) {
 			$.each(options.styles, function(key, value) {
 				styles += ' ' + key + ':' + value + ';';
 			});
