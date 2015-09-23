@@ -39,7 +39,7 @@ var plugin_Informator = {
 		var dfd = $.Deferred();
 		// load the plugins' configuartion into html5 storage
 		if (this.config.useHtml5Storage && this.config.savePluginConfig) {
-			app.debug.alert("plugin.Informator.js ~ plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage", 20);
+			app.debug.alert("plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage");
 			var global = {};
 			$.each(plugins.pluginNames, function(key, value) {
 				if (global["plugin_" + value] == undefined)
@@ -113,10 +113,10 @@ var plugin_Informator = {
 	},
 
 	loadConfigurationIntoHtml5Storage : function(configurationObject, start) {
-		app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage()", 20);
-		app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - if property is in html5 storage then use this value",
+		app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage()");
+		app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - if property is in html5 storage then use this value",
 				20);
-		app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - else use property from json file", 20);
+		app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - else use property from json file");
 
 		if (!configurationObject || configurationObject == undefined)
 			return;
@@ -125,28 +125,28 @@ var plugin_Informator = {
 			start = '';
 
 		$.each(configurationObject, function(key, value) {
-			app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - compute  key/value pair", 30);
+			app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - compute  key/value pair");
 
 			var currentKey;
 
 			if (typeof value != "object") {
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - case: value != object", 30);
+				app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: value != object");
 
 				currentKey = plugin_Informator.configurationPrefix + start + "." + key;
 
 				if (app.store.localStorage.get(currentKey) === null) {
-					app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey
-							+ "' doesn't exists in html5 storage", 30);
+					app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey
+							+ "' doesn't exists in html5 storage");
 
 					app.store.localStorage.set(currentKey, value);
 				} else {
-					app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey
-							+ "' exists in html5 storage", 30);
+					app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey
+							+ "' exists in html5 storage");
 					plugin_Informator.loadValueIntoObject(currentKey);
 				}
 			} else {
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - case: value == object", 30);
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.loadConfigurationIntoHtml5Storage() - go recursive into object", 30);
+				app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: value == object");
+				app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - go recursive into object");
 				plugin_Informator.loadConfigurationIntoHtml5Storage(value, start + "." + key);
 			}
 		});
@@ -154,18 +154,18 @@ var plugin_Informator = {
 	},
 
 	loadValueIntoObject : function(locator) {
-		app.debug.alert('plugin.Informator.js ~ plugin_Informator.loadValueIntoObject(' + locator + ')', 20);
+		app.debug.alert('plugin_Informator.loadValueIntoObject(' + locator + ')');
 		var propertyLocation = locator.substring(plugin_Informator.configurationPrefix.length + 1), value = app.store.localStorage.get(locator);
 		if (propertyLocation.indexOf("..") < 0)
 			app.help.object.setDeep(window, propertyLocation, value);
 		else
-			app.debug.alert('plugin.Informator.js ~ plugin_Informator.loadValueIntoObject() - ".." detected', 20);
+			app.debug.alert('plugin_Informator.loadValueIntoObject() - ".." detected');
 	},
 
 	functions : {
 		// auch direkt die datei ���ndern
 		set : function(key, value) {
-			app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.set(" + key + ", " + value + ")", 50);
+			app.debug.alert("plugin_Informator.functions.set(" + key + ", " + value + ")");
 
 			if (plugin_Informator.config.useHtml5Storage) {
 				app.store.localStorage.set(plugin_Informator.configurationPrefix + "." + key, value);
@@ -175,28 +175,28 @@ var plugin_Informator = {
 		},
 
 		firstUse : function(value) {
-			app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.firstUse(" + value + ")", 20);
+			app.debug.alert("plugin_Informator.functions.firstUse(" + value + ")");
 			if (value == undefined) {
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.firstUse(" + value + ") - case: value == undefined", 20);
+				app.debug.alert("plugin_Informator.functions.firstUse(" + value + ") - case: value == undefined");
 				app.debug.alert(
-						"plugin.Informator.js ~ plugin_Informator.functions.firstUse() - return: " + app.store.localStorage.get("informator-first-use"), 20);
+						"plugin_Informator.functions.firstUse() - return: " + app.store.localStorage.get("informator-first-use"));
 				if (app.store.localStorage.get("informator-first-use") === null) {
 					return true;
 				} else {
 					return false;
 				}
 			} else if (typeof value == "boolean") {
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.firstUse(" + value + ") - case: typeof value == boolean", 20);
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.firstUse() - set firstUse to: " + value, 20);
+				app.debug.alert("plugin_Informator.functions.firstUse(" + value + ") - case: typeof value == boolean");
+				app.debug.alert("plugin_Informator.functions.firstUse() - set firstUse to: " + value);
 				app.store.localStorage.set("informator-first-use", value);
 				if (value == false) {
-					app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.firstUse() - case: value == false", 20);
+					app.debug.alert("plugin_Informator.functions.firstUse() - case: value == false");
 					// app.store.localStorage.clear();
 				}
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.firstUse() - return: " + value, 20);
+				app.debug.alert("plugin_Informator.functions.firstUse() - return: " + value);
 				return value;
 			} else {
-				app.debug.alert("plugin.Informator.js ~ plugin_Informator.functions.firstUse() - return: null", 20);
+				app.debug.alert("plugin_Informator.functions.firstUse() - return: null");
 				return null;
 			}
 		}

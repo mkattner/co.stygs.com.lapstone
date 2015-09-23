@@ -86,7 +86,7 @@ var plugin_DeviceManager = {
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
 		app.debug.trace("plugin_DeviceManager.afterHtmlInjectedBeforePageComputing()");
-		if (app.dm.current != undefined)
+		if (app.dm.hasOwnProperty("current"))
 			app.dm.current.afterHtmlInjectedBeforePageComputing();
 	},
 	// called once

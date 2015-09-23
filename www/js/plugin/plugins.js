@@ -236,6 +236,19 @@ var plugins = {
 		dfd.resolve();
 		return dfd.promise();
 	},
+
+	functions : {
+		pluginLoaded : function(pluginName) {
+			if (plugins.config.hasOwnProperty(pluginName)) {
+				return plugins.config[pluginName];
+			}
+
+			else {
+				return false;
+			}
+		},
+
+	}
 };
 
 // constructor
