@@ -1,6 +1,11 @@
 {
 	"name": "Informator",
 	"shortname": "info",
+	"excludedPlugins": 
+	[
+		"Debug"
+	],
+
 	"useHtml5Storage": true,
 	"savePluginConfig": true,
 	"savePageConfig": false

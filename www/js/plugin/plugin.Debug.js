@@ -237,17 +237,19 @@ var plugin_Debug = {
 		},
 		log : function(output, level) {
 
-			// log to object
-			if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.logLevel]) {
-				plugin_Debug.logObject.push(output);
-			}
-			// log to console
+			if (plugin_Debug.config.debugDevice) {
+				// log to object
+				if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.logLevel]) {
+					plugin_Debug.logObject.push(output);
+				}
+				// log to console
 
-			// alert(output + level);
-			if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.consoleLevel]) {
-				console.log(level + ": " + output);
+				// alert(output + level);
+				if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.consoleLevel]) {
+					console.log(level + ": " + output);
+				}
+				// log to webservice
 			}
-			// log to webservice
 		},
 
 		/**
@@ -278,6 +280,10 @@ var plugin_Debug = {
 			imageGetJson : function() {
 				app.debug.trace("plugin_Debug.functions.feedback.languageGetJson()");
 				return JSON.stringify($.extend(true, plugin_Debug.feedback.image, plugin_ImageProvider.images));
+			},
+			wsdGetJson : function() {
+				app.debug.trace("plugin_Debug.functions.feedback.wsdGetJson()");
+				return JSON.stringify(plugin_RestClient.config.webservices);
 			}
 		}
 	},

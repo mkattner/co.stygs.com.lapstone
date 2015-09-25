@@ -739,7 +739,7 @@ $(document).ready(function() {
 		// alert("init done");
 		setTimeout(function() {
 			initialisationPanel.finish();
-			// console.clear();
+			$(document).trigger("lapstone");
 		}, 200);
 	}).fail(function() {
 		if (confirm("App loading failed. Confirm to reload the app."))

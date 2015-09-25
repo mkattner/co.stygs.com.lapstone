@@ -1,7 +1,10 @@
 {
-	"template":{
-		"url":"string url",
-		"method":"string method",
-		"timeout":"int timeout"
+	"template": 
+	{
+		"url": "string url",
+		"method": "string method",
+		"timeout": "int timeout",
+		"cashable": false,
+		"cashInS": 0
 	}
 }

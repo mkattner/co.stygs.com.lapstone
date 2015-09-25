@@ -3,6 +3,6 @@
 	"shortname": "img",
 	"imgdFiles": 
 	{
-		"../files/imgd.themis.json": true
+		"../files/imgd/imgd.template.json": true
 	}
 }

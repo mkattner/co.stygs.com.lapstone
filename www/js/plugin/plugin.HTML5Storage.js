@@ -26,6 +26,11 @@
  */
 var plugin_HTML5Storage = {
 	config : null,
+
+	type : {
+		array : "fdasfda3"
+	},
+
 	constructor : function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -82,19 +87,101 @@ var plugin_HTML5Storage = {
 		return el[key[i]] = value;
 	},
 
-	setDeepX : function(el, key, value) {
-		app.debug.alert('plugin_HTML5Storage.setDeepX(' + el + ', ' + key + ', ' + value + ')');
-		var keyS = key.split('.');
-		if (keyS[0]) {
-			if (keyS.length == 1)
-				el[keyS[0]] = value;
+	setDeepX : function(object, key, value) {
+		app.debug.debug('plugin_HTML5Storage.setDeepX(' + JSON.stringify(object) + ', ' + key + ', ' + value + ')');
+		var keyArray = key.split('.'), currentKey, arrayIndex, objectIndex;
+
+		currentKey = keyArray[0];
+
+		if (currentKey) {
+			app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth >0");
+
+			// it's an array
+			if (currentKey.startsWith("_t_array_")) {
+				app.debug.debug("plugin_HTML5Storage.setDeepX() - case: object is an array");
+
+				arrayIndex = (currentKey.substring("_t_array_".length));
+
+				app.debug.debug("plugin_HTML5Storage.setDeepX() - array index: " + arrayIndex);
+
+				if (!Array.isArray(object)) {
+					app.debug.debug("plugin_HTML5Storage.setDeepX() - array is not defined - define empty array");
+					object = [];
+				}
+
+				if (keyArray.length == 1) {
+					app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth 1; push value to array: " + value);
+					object.push(value)
+				}
+
+				else {
+
+					if (keyArray[1].startsWith("_t_object_")) {
+						app.debug.debug("plugin_HTML5Storage.setDeepX() - next element is an object; so push empty object");
+						if (!object[arrayIndex])
+							object.push({});
+					}
+
+					else if (keyArray[1].startsWith("_t_array_")) {
+
+						app.debug.debug("plugin_HTML5Storage.setDeepX() - next element is an array; so push empty array; next key: " + keyArray[1]);
+						if (!object[arrayIndex])
+							object.push([]);
+					}
+
+					app.debug.debug("plugin_HTML5Storage.setDeepX() - call recursively for nested array");
+					object[currentKey] = this.setDeepX(object[arrayIndex], key.substr(currentKey.length + 1), value);
+				}
+
+			}
+
+			// it's an object
+			else if (currentKey.startsWith("_t_object_")) {
+				app.debug.debug("plugin_HTML5Storage.setDeepX() - case: object is an object");
+
+				objectIndex = (currentKey.substring("_t_object_".length));
+
+				if (keyArray.length == 1) {
+					app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth 1; so add the value: " + value + " to key: " + currentKey);
+					object[objectIndex] = value;
+				}
+
+				else {
+					if (!object[objectIndex]) {
+						app.debug.debug("plugin_HTML5Storage.setDeepX() - case: object key is not defined - define empty object: " + currentKey);
+
+						object[objectIndex] = {};
+					}
+
+					app.debug.debug("plugin_HTML5Storage.setDeepX() - call recursively for nested object");
+					object[objectIndex] = this.setDeepX(object[objectIndex], key.substr(currentKey.length + 1), value);
+				}
+			}
+
+			// it's a value
+			else if (keyArray.length == 1) {
+				app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth 1; so add the value: " + value + " to key: " + currentKey);
+
+				app.debug.debug("plugin_HTML5Storage.setDeepX() - value type == value");
+
+				object[currentKey] = value;
+			}
+
+			// it's the root object
 			else {
-				if (el[keyS[0]] == undefined)
-					el[keyS[0]] = {};
-				el[keyS[0]] = this.setDeepX(el[keyS[0]], key.substr(keyS[0].length + 1), value);
+				app.debug.debug("plugin_HTML5Storage.setDeepX() - case: root element");
+
+				if (!object[currentKey]) {
+					app.debug.debug("plugin_HTML5Storage.setDeepX() - case: object key is not defined - define empty object: " + currentKey);
+
+					object[currentKey] = {};
+				}
+
+				app.debug.debug("plugin_HTML5Storage.setDeepX() - call recursively for nested object");
+				object[currentKey] = this.setDeepX(object[currentKey], key.substr(currentKey.length + 1), value);
 			}
 		}
-		return el;
+		return object;
 	},
 
 	getDeep : function(el, key) {
@@ -113,35 +200,50 @@ var plugin_HTML5Storage = {
 		switch (value) {
 		// is true?
 		case "true":
+
 			app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == true');
 			value = true;
 			break;
+
 		// is false?
 		case "false":
+
 			app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == false');
 			value = false;
 			break;
+
 		// is null?
 		case "null":
+
 			app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == null');
 			value = null;
 			break;
+
 		default:
 			app.debug.alert('plugin_HTML5Storage.parseValue() - case: default');
+
 			if (/^(\+|\-){0,1}([0-9])+$/.test(value)) {
+
 				app.debug.alert('plugin_HTML5Storage.parseValue() - case: typeof value == integer');
 				value = parseInt(value);
-				if (/^(\+|\-){0,1}([0-9])+(\.){1}([0-9])+$/.test(value)) {
-					app.debug.alert('plugin_HTML5Storage.parseValue() - case: typeof value == float');
-					value = parseFloat(value);
-				}
-			} else {
+			}
+
+			else if (/^(\+|\-){0,1}([0-9])+(\.){1}([0-9])+$/.test(value)) {
+
+				app.debug.alert('plugin_HTML5Storage.parseValue() - case: typeof value == float');
+				value = parseFloat(value);
+			}
+
+			else {
+
 				app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == ???');
+
 			}
 			// is float?
 
 			break;
 		}
+
 		app.debug.alert('plugin_HTML5Storage.parseValue() - return: ' + value);
 		return value;
 	},
@@ -297,30 +399,58 @@ var plugin_HTML5Storage = {
 			},
 			setObject : function(name, object) {
 				app.debug.trace('plugin_HTML5Storage.functions.localStorage.setObject()');
-				// alert(JSON.stringify(object));
+				app.debug.debug('plugin_HTML5Storage.functions.localStorage.setObject(' + name + ', ' + JSON.stringify(object) + ')');
+
 				name = name.toLowerCase();
-				app.debug.alert('plugin_HTML5Storage.functions.localStorage.setObject(' + name + ', ' + JSON.stringify(object) + ')');
+
 				$.each(object, function(key, value) {
+
+					app.debug.debug("plugin_HTML5Storage.functions.localStorage.setObject() - element: " + key + " = " + value);
+
+					if (Array.isArray(object)) {
+						key = "_t_array_" + key;
+					}
+
+					else if ($.isPlainObject(object)) {
+						key = "_t_object_" + key;
+					}
+
 					if (typeof value == "object" && value != null) {
+						app.debug.debug("plugin_HTML5Storage.functions.localStorage.setObject() - nested object");
 						plugin_HTML5Storage.functions.localStorage.setObject((name + "." + key).trim(), value);
-					} else {
+					}
+
+					else {
 						plugin_HTML5Storage.functions.localStorage.set((name + "." + key).trim(), value);
 					}
 				});
 				// app.store.localStorage.show();
 				return true;
 			},
+
 			getObject : function(name) {
 				app.debug.trace('plugin_HTML5Storage.functions.localStorage.getObject()');
-				name = name.toLowerCase();
-				app.debug.alert('plugin_HTML5Storage.functions.localStorage.getObject("' + name + '")');
-				var object = {};
-				$.each(window.localStorage, function(key, value) {
+				app.debug.debug('plugin_HTML5Storage.functions.localStorage.getObject("' + name + '")');
 
-					if (key.substr(app.config.name.length + 1, name.length).trim() == name.trim()) {
-						// alert(key.substr(app.config.name.length + 1,
-						// name.length).trim() + " = " + value);
-						object = plugin_HTML5Storage.setDeepX(object, key.substr(app.config.name.length + 1), plugin_HTML5Storage.functions.localStorage.get(key.substr(app.config.name.length + 1)));
+				name = name.toLowerCase();
+
+				var object = {}, compNameOfLocalStorage;
+				$.each(window.localStorage, function(key, value) {
+					var storageKey, storageValue, compNameOfLocalStorage;
+					app.debug.debug("plugin_HTML5Storage.functions.localStorage.getObject() - element: " + key + " = " + value);
+
+					compNameOfLocalStorage = key.substr(app.config.name.length + 1, name.length).trim();
+
+					if (compNameOfLocalStorage == name.trim()) {
+						app.debug.debug("plugin_HTML5Storage.functions.localStorage.getObject() - found part of object: " + compNameOfLocalStorage);
+
+						storageKey = key.substr(app.config.name.length + 1);
+						app.debug.debug("plugin_HTML5Storage.functions.localStorage.getObject() - storage key: " + storageKey);
+
+						storageValue = plugin_HTML5Storage.functions.localStorage.get(key.substr(app.config.name.length + 1));
+						app.debug.debug("plugin_HTML5Storage.functions.localStorage.getObject() - storage value: " + storageValue);
+
+						object = plugin_HTML5Storage.setDeepX(object, storageKey, storageValue);
 					}
 				});
 

@@ -1086,6 +1086,8 @@ var pages = {
 
 						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()");
 						window['page_' + container.attr('id')].async.done(container);
+						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - enchant page");
+						app.help.jQM.enhance(container);
 
 					});
 

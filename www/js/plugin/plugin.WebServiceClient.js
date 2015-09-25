@@ -405,6 +405,9 @@ var plugin_WebServiceClient = {
 			console.error("Deprecated function!")
 		},
 
+		
+		
+		
 		ping : function(serverName, async) {
 			app.debug.trace("plugin_WebServiceClient.functions.ping()");
 			var path, data, method, timeout, server, url, success = null;

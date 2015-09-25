@@ -4,14 +4,25 @@
 <meta charset="utf-8">
 <title>QUnit Tests</title>
 <script type="text/javascript" src="../ext/jQuery/jquery.min.js"></script>
-<script type="text/javascript" src="../js/javascriptLoader.js"></script>
-<link rel="stylesheet" href="qunit-1.14.0.css">
+<script type="text/javascript" src="../js/lapstone.js"></script>
+<link rel="stylesheet" href="qunit-1.19.0.css">
 </head>
 <body>
-<div id="qunit"></div>
-<div id="qunit-fixture"></div>
-<script src="qunit-1.14.0.js"></script>
-<script src="test-plugins.js"></script>
-<script src="test-pages.js"></script>
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+
+	<script type="text/javascript">
+		$(document).on("lapstone", function() {
+
+			plugin_Debug.config.debugDevice = false;
+			
+			globalLoader.AsyncScriptLoader("qunit-1.19.0.js");
+			globalLoader.AsyncScriptLoader("plugin.HTML5Storage.test.js");
+			globalLoader.AsyncScriptLoader("plugin.RestClient.test.js");
+			globalLoader.AsyncScriptLoader("test-plugins.js");
+			
+		});
+	</script>
+
 </body>
 </html>

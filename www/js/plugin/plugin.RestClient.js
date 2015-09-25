@@ -136,6 +136,7 @@ var plugin_RestClient = {
 
 	getSingleJson : function(service, parameter, async) {
 		app.debug.debug("plugin_RestClient.getSingleJson() - get a single json object; async = false");
+		app.debug.info("plugin_RestClient - call: " + service);
 		var server, path, json, splittedService, wsd;
 		app.debug.debug("plugin_RestClient.getSingleJson() - get server name");
 		if (service.indexOf('.') != -1) {
@@ -154,6 +155,7 @@ var plugin_RestClient = {
 
 		else {
 			app.debug.error("plugin_RestClient.getSingleJson() - service not defined: " + service);
+			return null;
 		}
 
 		// set async to false (in each case)
@@ -177,6 +179,8 @@ var plugin_RestClient = {
 	},
 	getSingleJsonAsync : function(service, parameter, async) {
 		app.debug.debug("plugin_RestClient.getSingleJsonAsync() - get a single json object; async = true;");
+		app.debug.info("plugin_RestClient - call: " + service);
+
 		// the deferred object for the caller
 		var dfd = $.Deferred(), server, path, promise, splittedService, wsd;
 
@@ -199,6 +203,7 @@ var plugin_RestClient = {
 
 		else {
 			app.debug.error("plugin_RestClient.getSingleJsonAsync() - service not defined: " + service);
+			return dfd.reject();
 		}
 
 		// replace the parameters in path string
@@ -236,6 +241,7 @@ var plugin_RestClient = {
 		app.debug.debug("plugin_RestClient.getMultipleJson() - generate ajax call for each webservice");
 		$.each(service, function(key, call) {
 			var serviceName = call[0], parameter = call[1], server, path, json, splittedService, wsd;
+			app.debug.info("plugin_RestClient - call: " + serviceName);
 
 			app.debug.debug("plugin_RestClient.getMultipleJson() - get server name");
 			if (serviceName.indexOf('.') != -1) {
@@ -256,6 +262,7 @@ var plugin_RestClient = {
 
 			else {
 				app.debug.error("plugin_RestClient.getMultipleJson() - service not defined: " + serviceName);
+				return null;
 			}
 
 			app.debug.debug("plugin_RestClient.getMultipleJson() - replace parameters in path");
@@ -288,6 +295,7 @@ var plugin_RestClient = {
 		$.each(service, function(key, call) {
 			app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - generate single async ajax call");
 			var serviceName = call[0], parameter = call[1], server, path, promise, wsd;
+			app.debug.info("plugin_RestClient - call: " + serviceName);
 
 			app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get server name");
 			if (serviceName.indexOf('.') != -1) {
@@ -307,6 +315,7 @@ var plugin_RestClient = {
 
 			else {
 				app.debug.error("plugin_RestClient.getMultipleJsonAsync() - service not defined: " + serviceName);
+				return dfd.reject();
 			}
 
 			app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - replace parameters in path");
@@ -350,6 +359,7 @@ var plugin_RestClient = {
 			app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - reject deferred object");
 			dfd.reject(error);
 		});
+
 		app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - return: deferred promise");
 		return dfd.promise();
 	},
@@ -357,20 +367,40 @@ var plugin_RestClient = {
 	functions : {
 		getWsd : function(serviceName) {
 			app.debug.trace("plugin_RestClient.functions.getWsd()");
-			return plugin_RestClient.config.webservices[serviceName];
+			return plugin_RestClient.config.webservices[serviceName] || null;
 		},
 
-		addWebserviceDefinition : function(name, path, method, timeout, cachetime, local) {
-			app.debug.debug("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition(" + name + ", " + path + ", " + method + ", " + timeout + ", " + cachetime + ", " + local + ")");
-			plugin_RestClient.config.webservices[name] = {
-				"url" : path,
-				"method" : method,
-				"timeout" : timeout,
-				"cachetime" : cachetime,
-				"local" : local
-			};
+		addWsd : function(name, url, method, timeout, cashable, cashInS, local) {
+			app.debug.trace("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition()");
+
+			if (typeof url == "object") {
+				plugin_RestClient.config.webservices[name] = url;
+			}
+
+			else {
+				plugin_RestClient.config.webservices[name] = {
+					"url" : url,
+					"method" : method,
+					"timeout" : timeout,
+					"cashable" : cashable,
+					"cashInS" : cashInS,
+					"local" : local
+				};
+			}
+
 			return true;
 		},
+
+		deleteWsd : function(name) {
+			delete plugin_RestClient.config.webservices[name];
+			return true;
+		},
+
+		addWebserviceDefinition : function(name, url, method, timeout, cashable, cashInS, local) {
+			console.error("Depecated function!! use app.rc.addWsd(name, url, method, timeout, cashable, cashInS, local)")
+
+		},
+
 		addWebserviceDefinitionFile : function(path) {
 			app.debug.debug("plugin_RestClient.functions.addWebserviceDefinitionFile(" + path + ")");
 			plugin_RestClient.loadDefinitionFile(path);
@@ -379,9 +409,10 @@ var plugin_RestClient = {
 			app.debug.debug("plugin_RestClient.functions.getJson(" + service + ", " + parameter + ", " + async + ")");
 			var json, i, promise;
 			if (plugins.config.KeepAlive === true && app.alive.isAlive() === true) {
+
 				if (typeof service == "object" && (parameter == false || parameter == undefined)) {
 					app.debug.debug("plugin_RestClient.functions.getJson() - case: get multible json objects; async = false");
-					for (i = 0; i < attempts; i++) {
+					for (i = 0; i < async; i++) {
 						app.debug.debug("plugin_RestClient.functions.getJson() - AJAX attempt " + i + " of " + attempts);
 						json = plugin_RestClient.getMultipleJson(service, parameter, async);
 						if (json != null)

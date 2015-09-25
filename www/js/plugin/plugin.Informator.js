@@ -42,10 +42,15 @@ var plugin_Informator = {
 			app.debug.alert("plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage");
 			var global = {};
 			$.each(plugins.pluginNames, function(key, value) {
-				if (global["plugin_" + value] == undefined)
-					global["plugin_" + value] = {};
-				global["plugin_" + value]['config'] = window['plugin_' + value]['config'];
+				if (plugin_Informator.config.excludedPlugins.indexOf(value) == -1) {
+
+					if (global["plugin_" + value] == undefined)
+						global["plugin_" + value] = {};
+
+					global["plugin_" + value]['config'] = window['plugin_' + value]['config'];
+				}
 			});
+
 			this.loadConfigurationIntoHtml5Storage(global);
 		}
 
@@ -114,8 +119,7 @@ var plugin_Informator = {
 
 	loadConfigurationIntoHtml5Storage : function(configurationObject, start) {
 		app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage()");
-		app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - if property is in html5 storage then use this value",
-				20);
+		app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - if property is in html5 storage then use this value", 20);
 		app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - else use property from json file");
 
 		if (!configurationObject || configurationObject == undefined)
@@ -135,13 +139,11 @@ var plugin_Informator = {
 				currentKey = plugin_Informator.configurationPrefix + start + "." + key;
 
 				if (app.store.localStorage.get(currentKey) === null) {
-					app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey
-							+ "' doesn't exists in html5 storage");
+					app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' doesn't exists in html5 storage");
 
 					app.store.localStorage.set(currentKey, value);
 				} else {
-					app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey
-							+ "' exists in html5 storage");
+					app.debug.alert("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' exists in html5 storage");
 					plugin_Informator.loadValueIntoObject(currentKey);
 				}
 			} else {
@@ -178,8 +180,7 @@ var plugin_Informator = {
 			app.debug.alert("plugin_Informator.functions.firstUse(" + value + ")");
 			if (value == undefined) {
 				app.debug.alert("plugin_Informator.functions.firstUse(" + value + ") - case: value == undefined");
-				app.debug.alert(
-						"plugin_Informator.functions.firstUse() - return: " + app.store.localStorage.get("informator-first-use"));
+				app.debug.alert("plugin_Informator.functions.firstUse() - return: " + app.store.localStorage.get("informator-first-use"));
 				if (app.store.localStorage.get("informator-first-use") === null) {
 					return true;
 				} else {

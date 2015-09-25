@@ -239,11 +239,14 @@ var plugins = {
 
 	functions : {
 		pluginLoaded : function(pluginName) {
+			app.debug.trace("plugins.functions.pluginLoaded()");
 			if (plugins.config.hasOwnProperty(pluginName)) {
-				return plugins.config[pluginName];
+				app.debug.debug("plugins.functions.pluginLoaded() - true: " + pluginName);
+				return true;
 			}
 
 			else {
+				app.debug.debug("plugins.functions.pluginLoaded() - false: " + pluginName);
 				return false;
 			}
 		},
