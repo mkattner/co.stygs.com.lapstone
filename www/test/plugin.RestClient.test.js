@@ -1,6 +1,28 @@
+/**
+ * Copyright (c) 2015 martin.kattner@stygs.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 QUnit.module("plugin_RestClient");
 
-QUnit.test("Add a webservice definition file with parameter.", function() {
+QUnit.test("Add a webservice definition file with parameter.", function(assert) {
 	var testObject = {
 		url : "files/ws.simpleObject.json",
 		method : "get",
@@ -13,10 +35,10 @@ QUnit.test("Add a webservice definition file with parameter.", function() {
 	ok(app.rc.addWsd("myLocalWebservice", testObject.url, testObject.method, testObject.timeout, testObject.cashable, testObject.cashInS, testObject.local), "app.rc.addWsd()");
 	deepEqual(app.rc.getWsd("myLocalWebservice"), testObject, "app.rc.getWsd()");
 	ok(app.rc.deleteWsd("myLocalWebservice"), "app.rc.deleteWsd()");
-	equal(app.rc.getWsd("myLocalWebservice"), null, "app.rc.deleteWsd()")
+	equal(app.rc.getWsd("myLocalWebservice"), null, "app.rc.getWsd()")
 });
 
-QUnit.test("Add a webservice definition file as object.", function() {
+QUnit.test("Add a webservice definition file as object.", function(assert) {
 	var testObject = {
 		url : "files/ws.simpleObject.json",
 		method : "get",
@@ -29,186 +51,272 @@ QUnit.test("Add a webservice definition file as object.", function() {
 	ok(app.rc.addWsd("myLocalWebservice", testObject), "Add webservice definition as object.");
 	deepEqual(app.rc.getWsd("myLocalWebservice"), testObject, "app.rc.getWsd()");
 	ok(app.rc.deleteWsd("myLocalWebservice"), "app.rc.deleteWsd()");
-	equal(app.rc.getWsd("myLocalWebservice"), null, "app.rc.deleteWsd()")
+	equal(app.rc.getWsd("myLocalWebservice"), null, "app.rc.getWsd()")
 
 });
 
-QUnit.skip("Get multible local json objects; async = false", function() {
-	var simpleObjectWs = {
-		url : "files/ws.simpleObject.json",
-		method : "get",
-		timeout : 500,
-		cashable : false,
-		cashInS : null,
-		local : true
-	}, simpleArrayWs = {
-		url : "files/ws.simpleArray.json",
-		method : "get",
-		timeout : 500,
-		cashable : false,
-		cashInS : null,
-		local : true
-	}, nestedObjectWs = {
-		url : "files/ws.simpleObject.json",
-		method : "get",
-		timeout : 500,
-		cashable : false,
-		cashInS : null,
-		local : true
-	}, nestedArrayWs = {
-		url : "files/ws.simpleArray.json",
-		method : "get",
-		timeout : 500,
-		cashable : false,
-		cashInS : null,
-		local : true
-	};
+// single JSON
+QUnit.test("Get single local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	deepEqual(app.rc.getJson("simpleObject"), data.simpleObject, 'app.rc.getJson("simpleObject")');
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+});
 
-	ok(app.rc.addWsd("simpleObject", simpleObjectWs), "app.rc.addWsd()");
-	ok(app.rc.addWsd("simpleArray", simpleArrayWs), "app.rc.addWsd()");
-	ok(app.rc.addWsd("nestedObject", nestedObjectWs), "app.rc.addWsd()");
-	ok(app.rc.addWsd("nestedArray", nestedArrayWs), "app.rc.addWsd()");
+QUnit.test("Get single local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	deepEqual(app.rc.getJson("simpleObject", null), data.simpleObject, 'app.rc.getJson("simpleObject", null)');
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+});
 
-	deepEqual(app.rc.getJson(), "");
+QUnit.test("Get single local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	deepEqual(app.rc.getJson("simpleObject", {}), data.simpleObject, 'app.rc.getJson("simpleObject", {})');
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+});
+
+QUnit.test("Get single local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	deepEqual(app.rc.getJson("simpleObject", {}, false), data.simpleObject, 'app.rc.getJson("simpleObject", {}, false)');
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+});
+
+QUnit.test("Get single local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	deepEqual(app.rc.getJson("simpleObject", {}, false, 0), data.simpleObject, 'app.rc.getJson("simpleObject", {}, false, 0)');
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+});
+
+QUnit.test("Get single local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	deepEqual(app.rc.getJson("simpleObject", {}, false, 1), data.simpleObject, 'app.rc.getJson("simpleObject", {}, false, 1)');
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+});
+
+// multiple JSON
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject" ], [ "simpleArray" ] ]), {
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject" ], [ "simpleArray" ] ])');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
 
 });
 
-QUnit.skip("Get multible local json objects; async = true", function() {
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice1", "files/webservice1.json", "get", 500, null, true), "Add a webservice definition (webservice1)");
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice2", "files/webservice2.json", "get", 500, null, true), "Add a webservice definition (webservice2)");
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice3", "files/webservice3.json", "get", 500, null, true), "Add a webservice definition (webservice3)");
-	stop();
-	var promise = plugin_RestClient.functions.getJson([ [ 'webservice1' ], [ 'webservice2', {} ], [ 'webservice3', null ] ], true);
-	promise.done(function(jsonObject) {
-		deepEqual(jsonObject, {
-			"webservice1" : {
-				"name" : "webservice1",
-				"success" : true
-			},
-			"webservice2" : {
-				"name" : "webservice2",
-				"success" : true
-			},
-			"webservice3" : {
-				"name" : "webservice3",
-				"success" : true
-			}
-		}, "Success: plugin_RestClient.functions.getJson([['webservice', {parameter}], ['', {}], ...], async); async =  true");
-	});
-	promise.fail(function(failObject) {
-		ok(false, "Failed: plugin_RestClient.functions.getJson([['webservice', {parameter}], ['', {}], ...], async); async =  true");
-	});
-	promise.always(function() {
-		ok(true, "Finish: plugin_RestClient.functions.getJson([['webservice', {parameter}], ['', {}], ...], async); async =  true")
-		start();
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject", null ], [ "simpleArray", null ] ]), {
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject", null ], [ "simpleArray", null ] ])');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+
+});
+
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ]), {
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ])');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+
+});
+
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false), {
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false)');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+
+});
+
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false, 0), {
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false, 0)');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+
+});
+
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false, 1), app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false), 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false, 1)');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+
+});
+
+QUnit.test("Get multible local json objects; async = false", function(assert) {
+
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("nestedObject", data.nestedObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("nestedArray", data.nestedArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ], [ "nestedObject", {} ], [ "nestedArray", {} ] ], false), {
+		"nestedArray" : data.nestedArray,
+		"nestedObject" : data.nestedObject,
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ], [ "nestedObject", {} ], [ "nestedArray", {} ] ], false)');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("nestedObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("nestedArray"), "app.rc.deleteWsd()");
+
+});
+
+// single JSON async
+QUnit.test("Get single local json object; async = true", function(assert) {
+	var done = assert.async();
+
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+
+	app.rc.getJson("simpleObject", {}, true).done(function(result) {
+		deepEqual(result, data.simpleObject, 'app.rc.getJson("simpleObject", {}, true)');
+		ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+		done();
 	});
 
 });
 
-QUnit.skip("Test fail: Get multible local json objects; async = true", function() {
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice1", "files/webservice1.json", "get", 500, null, true), "Add a webservice definition (webservice1)");
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice2", "files/webservice2.json", "get", 500, null, true), "Add a webservice definition (webservice2)");
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice4", "files/webservice4.json", "get", 500, null, true), "Add a webservice definition (webservice4)");
-	stop();
-	var promise = plugin_RestClient.functions.getJson([ [ 'webservice1' ], [ 'webservice2', {} ], [ 'webservice4', null ] ], true);
-	promise.done(function(jsonObject) {
-		ok(false, "Success: plugin_RestClient.functions.getJson([['webservice', {parameter}], ['', {}], ...], async); async =  true");
-	});
-	promise.fail(function(failObject) {
-		deepEqual(failObject, {
-			"call" : {
-				"async" : true,
-				"data" : "",
-				"mehtod" : "get",
-				"timeout" : 500,
-				"type" : "json",
-				"url" : "files/webservice4.json"
-			},
-			"jqXHR" : {
-				"readyState" : 0,
-				"status" : 0,
-				"statusText" : "error"
-			}
-		}, "Failed: plugin_RestClient.functions.getJson([['webservice', {parameter}], ['', {}], ...], async); async =  true");
-	});
-	promise.always(function() {
-		ok(true, "Finish: plugin_RestClient.functions.getJson([['webservice', {parameter}], ['', {}], ...], async); async =  true")
-		start();
+QUnit.test("Get single local json object; async = true", function(assert) {
+	var done = assert.async();
+
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+
+	app.rc.getJson("simpleObject", {}, true, 0).done(function(result) {
+		deepEqual(result, data.simpleObject, 'app.rc.getJson("simpleObject", {}, true, 0)');
+		ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+		done();
 	});
 
 });
 
-QUnit.skip("Get a single local json object; async = false", function() {
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice1", "files/webservice1.json", "get", 500, null, true), "Add a webservice definition (webservice1)");
-	deepEqual(plugin_RestClient.functions.getJson("webservice1"), {
-		"name" : "webservice1",
-		"success" : true
-	}, "Call plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = undefined");
-	deepEqual(plugin_RestClient.functions.getJson("webservice1", null), {
-		"name" : "webservice1",
-		"success" : true
-	}, "Call plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null");
-	deepEqual(plugin_RestClient.functions.getJson("webservice1", {}), {
-		"name" : "webservice1",
-		"success" : true
-	}, "Call plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = {}");
-	deepEqual(plugin_RestClient.functions.getJson("webservice1", null, false), {
-		"name" : "webservice1",
-		"success" : true
-	}, "Call plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null & async = false");
-	deepEqual(plugin_RestClient.functions.getJson("webservice1", null, null), {
-		"name" : "webservice1",
-		"success" : true
-	}, "Call plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null & async = null");
+QUnit.test("Get single local json object; async = true", function(assert) {
+	var done = assert.async();
+
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+
+	app.rc.getJson("simpleObject", {}, true, 1).done(function(result) {
+		deepEqual(result, data.simpleObject, 'app.rc.getJson("simpleObject", {}, true, 1)');
+		ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+		done();
+	});
+
 });
 
-QUnit.skip("Get a single local json object; async = true", function() {
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice2", "files/webservice2.json", "get", 500, null, true), "Add a webservice definition (webservice2)");
-	var promise = plugin_RestClient.functions.getJson("webservice2", null, true);
-	stop();
-	promise.done(function(json) {
-		deepEqual(json, {
-			"name" : "webservice2",
-			"success" : true
-		}, "Success: plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null");
+// multiple JSON async
+QUnit.test("Get multiple local json object; async = true", function(assert) {
+	var done = assert.async();
+
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], true).done(function(result) {
+
+		deepEqual(result, {
+			"simpleArray" : data.simpleArray,
+			"simpleObject" : data.simpleObject
+		}, 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false)');
+
+		ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+		done();
 	});
-	promise.fail(function(jqXHR) {
-		ok(false, "Failed: plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null");
-	});
-	promise.always(function() {
-		ok(true, "Finish: plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null")
-		start();
-	});
+
 });
 
-QUnit.skip("Test fail: Get a single local json object; async = true", function() {
-	ok(plugin_RestClient.functions.addWebserviceDefinition("webservice4", "files/webservice4.json", "get", 500, null, true), "Add a webservice definition (webservice4)");
-	var promise = plugin_RestClient.functions.getJson("webservice4", null, true);
-	stop();
-	promise.done(function(json) {
-		ok(false, "Success: plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null");
+QUnit.test("Get multiple local json object; async = true", function(assert) {
+	var done = assert.async();
 
-	});
-	promise.fail(function(jqXHR) {
-		deepEqual(jqXHR, {
-			"call" : {
-				"async" : true,
-				"data" : "",
-				"mehtod" : "get",
-				"timeout" : 500,
-				"type" : "json",
-				"url" : "files/webservice4.json"
-			},
-			"jqXHR" : {
-				"readyState" : 0,
-				"status" : 0,
-				"statusText" : "error"
-			}
-		}, "Failed: plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null");
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
 
+	app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], true, 0).done(function(result) {
+
+		deepEqual(result, {
+			"simpleArray" : data.simpleArray,
+			"simpleObject" : data.simpleObject
+		}, 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false, 0)');
+
+		ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+		done();
 	});
-	promise.always(function() {
-		ok(true, "Finish: plugin_RestClient.functions.getJson(webservice, parameter, async): parameter object = null")
-		start();
+
+});
+
+QUnit.test("Get multiple local json object; async = true", function(assert) {
+	var done = assert.async();
+
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], true, 1).done(function(result) {
+
+		deepEqual(result, {
+			"simpleArray" : data.simpleArray,
+			"simpleObject" : data.simpleObject
+		}, 'app.rc.getJson([ [ "simpleObject", {} ], [ "simpleArray", {} ] ], false, 1)');
+
+		ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+		done();
 	});
+
+});
+
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject" ], [ "simpleArray" ] ], false), {
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject" ], [ "simpleArray" ] ], false)');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+
+});
+
+QUnit.test("Get multiple local json object; async = false", function(assert) {
+	ok(app.rc.addWsd("simpleObject", data.simpleObjectWs), "app.rc.addWsd()");
+	ok(app.rc.addWsd("simpleArray", data.simpleArrayWs), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "simpleObject", null ], [ "simpleArray", null ] ], false), {
+		"simpleArray" : data.simpleArray,
+		"simpleObject" : data.simpleObject
+	}, 'app.rc.getJson([ [ "simpleObject", null ], [ "simpleArray", null ] ], false)');
+
+	ok(app.rc.deleteWsd("simpleObject"), "app.rc.deleteWsd()");
+	ok(app.rc.deleteWsd("simpleArray"), "app.rc.deleteWsd()");
+
 });

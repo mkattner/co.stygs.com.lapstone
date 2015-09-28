@@ -1,4 +1,88 @@
 {
-	"name":"webservice3",
-	"success":true
+	"string": "string",
+	"int": 10,
+	"null": null,
+	"boolean": true,
+	"array": 
+	[
+		"string",
+		10,
+		null,
+		true,
+		12.51,
+		{
+			"string": "string",
+			"int": 10,
+			"null": null,
+			"boolean": true
+		},
+
+		[
+			"string",
+			10,
+			null,
+			true,
+			12.51
+		]
+	],
+
+	"object": 
+	{
+		"string": "string",
+		"int": 10,
+		"null": null,
+		"boolean": true,
+		"array": 
+		[
+			"string",
+			10,
+			null,
+			true,
+			12.51,
+			{
+				"string": "string",
+				"int": 10,
+				"null": null,
+				"boolean": true
+			},
+
+			[
+				"string",
+				10,
+				null,
+				true,
+				12.51
+			]
+		],
+
+		"object": 
+		{
+			"string": "string",
+			"int": 10,
+			"null": null,
+			"boolean": true,
+			"array": 
+			[
+				"string",
+				10,
+				null,
+				true,
+				12.51,
+				{
+					"string": "string",
+					"int": 10,
+					"null": null,
+					"boolean": true
+				},
+
+				[
+					"string",
+					10,
+					null,
+					true,
+					12.51
+				]
+			]
+		}
+	}
 }

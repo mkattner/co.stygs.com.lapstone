@@ -1,6 +1,5 @@
 {
 	"Actions": true,
-	"Backmeup": false,
 	"Debug": true,
 	"Detector": true,
 	"DeviceManager": true,

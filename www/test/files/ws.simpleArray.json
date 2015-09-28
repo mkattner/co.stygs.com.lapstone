@@ -1,4 +1,8 @@
-{
-	"name":"webservice1",
-	"success":true
-}
+[
+	1,
+	2,
+	true,
+	false,
+	null,
+	"string"
+]
