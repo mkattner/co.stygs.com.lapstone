@@ -150,7 +150,7 @@ var plugin_Navigation = {
 		},
 		normalizeUrl : function(uri) {
 			app.debug.trace("plugin_Navigation.functions.normalizeUrl()");
-			var uri = URI(uri);
+			uri = URI(uri);
 			if (uri.protocol() === "")
 				uri.protocol('http');
 			return uri.toString();

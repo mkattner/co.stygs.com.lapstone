@@ -8,10 +8,11 @@
 		"TRACE": 1,
 		"DEBUG": 2,
 		"INFO": 3,
-		"WARN": 4,
-		"ERROR": 5,
-		"FATAL": 6,
-		"OFF": 7
+		"APP": 4,
+		"WARN": 5,
+		"ERROR": 6,
+		"FATAL": 7,
+		"OFF": 8
 	},
 
 	"consoleLevel": "ALL",

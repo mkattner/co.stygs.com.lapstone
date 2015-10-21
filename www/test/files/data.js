@@ -82,32 +82,32 @@ var data = {
 		url : "files/ws.simpleObject.json",
 		method : "get",
 		timeout : 500,
-		cashable : false,
-		cashInS : null,
+		cacheable : false,
+		cacheInMs : null,
 		local : true
 	},
 	simpleArrayWs : {
 		url : "files/ws.simpleArray.json",
 		method : "get",
 		timeout : 500,
-		cashable : false,
-		cashInS : null,
+		cacheable : false,
+		cacheInMs : null,
 		local : true
 	},
 	nestedObjectWs : {
 		url : "files/ws.nestedObject.json",
 		method : "get",
 		timeout : 500,
-		cashable : false,
-		cashInS : null,
+		cacheable : false,
+		cacheInMs : null,
 		local : true
 	},
 	nestedArrayWs : {
 		url : "files/ws.nestedArray.json",
 		method : "get",
 		timeout : 500,
-		cashable : false,
-		cashInS : null,
+		cacheable : false,
+		cacheInMs : null,
 		local : true
 	}
 }

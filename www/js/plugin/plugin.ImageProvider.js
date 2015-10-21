@@ -114,7 +114,7 @@ var plugin_ImageProvider = {
 	 */
 	functions : {
 		getUrlById : function(id, cont) {
-			var img, toParse, lastSlash;
+			var img, toParse;
 			// alert(id + " = " + plugin_ImageProvider.images[id])
 			if ((img = plugin_ImageProvider.images[id]) == undefined) {
 				console.warn("ImageProvider - Undefined image: " + id);

@@ -24,7 +24,22 @@ var plugin_WebServiceError = {
 	config : null,
 	// called by plugins.js
 	constructor : function() {
-		var dfd = $.Deferred();
+		var dfd = $.Deferred(), hash, length, _char;
+
+		String.prototype.hashCode = function() {
+			hash = 0;
+			length = this.length;
+
+			if (length == 0)
+				return hash;
+			for (i = 0; i < length; i++) {
+				_char = this.charCodeAt(i);
+				hash = ((hash << 5) - hash) + _char;
+				hash = hash & hash; // Convert to 32bit integer
+			}
+			return hash;
+		}
+
 		dfd.resolve();
 		return dfd.promise();
 
@@ -164,7 +179,10 @@ var plugin_WebServiceError = {
 					app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - " + key + " == " + errorName);
 					if (key == errorName) {
 						app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: error found");
-						return plugin_WebServiceError.config.wse[key];
+						return {
+							"id" : Math.abs(key.hashCode()),
+							"wse" : plugin_WebServiceError.config.wse[key]
+						};
 					}
 				}
 			}

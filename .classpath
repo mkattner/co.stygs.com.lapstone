@@ -14,5 +14,7 @@
 	<classpathentry kind="lib" path="javalib/jackson-databind-2.6.0.jar"/>
 	<classpathentry kind="lib" path="javalib/jackson-annotations-2.6.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="javalib/jackson-annotations-2.6.0.jar"/>
+	<classpathentry kind="lib" path="javalib/jlessc-1.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="javalib/jlessc-1.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

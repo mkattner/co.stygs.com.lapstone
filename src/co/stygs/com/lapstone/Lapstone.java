@@ -13,7 +13,7 @@ public class Lapstone {
 
 	// public static String workingDirectory = System.getProperty("user.dir");
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		Compressor.logger.addHandler(new ConsoleHandler());
 		Compressor.logger.setLevel(Level.ALL);
 

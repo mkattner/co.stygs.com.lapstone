@@ -110,7 +110,17 @@ var plugin_FormInputDesigner = {
 			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: src");
 			attributes += ' src="' + options.src + '"';
 		}
+		
+		if (options.hasOwnProperty("alt")) {
+			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: alt");
+			attributes += ' alt="' + options.alt + '"';
+		}
 
+		if (options.hasOwnProperty("title")) {
+			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: title");
+			attributes += ' title="' + options.title + '"';
+		}
+		
 		if (options.hasOwnProperty("disabled")) {
 			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: disabled");
 			if (options.disabled)

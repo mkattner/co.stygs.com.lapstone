@@ -5,211 +5,392 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
 
 import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
+import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
 import co.stygs.com.lapstone.objects.LapstoneJson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inet.lib.less.Less;
 
 public class Release {
-	// ************************************************************************
-	//
-	//
-	// ************************************************************************
-	public static Boolean ReleaseLapstone(Map<String, String> argMap) {
-		System.out.println("Running method RELEASE()");
-		try {
-			// initialize directories
-			File rootPath = new File(argMap.get("path"));
-			File www = new File(rootPath, "www");
-			File www_debug = new File(rootPath, "www_debug");
+    // ************************************************************************
+    //
+    //
+    // ************************************************************************
+    public static Boolean ReleaseLapstone(Map<String, String> argMap)
+	    throws Exception {
 
-			// ********************************************************************
-			// debug output
+	System.out.println();
+	System.out.println("Running method RELEASE()");
+	try {
+	    // initialize directories
+	    File rootPath = new File(argMap.get("path"));
+	    File www = new File(rootPath, "www");
+	    File www_debug = new File(rootPath, "www_debug");
 
-			System.out.println("root path: " + rootPath.getAbsolutePath());
-			System.out.println("path to www: " + www.getAbsolutePath());
-			System.out.println("path to www_debug"
-					+ www_debug.getAbsolutePath());
+	    // ********************************************************************
+	    // debug output
 
-			// ********************************************************************
-			// update app version
+	    System.out.println("root path: " + rootPath.getAbsolutePath());
+	    System.out.println("path to www: " + www.getAbsolutePath());
+	    System.out.println("path to www_debug: "
+		    + www_debug.getAbsolutePath());
 
-			ObjectMapper objectMapper = new ObjectMapper();
-			File configuration = new File(www_debug, "js/lapstone.json");
-			LapstoneJson lapstoneJson = objectMapper.readValue(configuration,
-					LapstoneJson.class);
-			String appVersion = (String) lapstoneJson.version.get("app");
-			Integer buildVersion = Integer
-					.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
-			buildVersion++;
-			String newVersion = ((String) lapstoneJson.version.get("app"))
-					.substring(0, ((String) lapstoneJson.version.get("app"))
-							.lastIndexOf(".") + 1)
-					+ buildVersion.toString();
-			lapstoneJson.version.put("app", newVersion);
-			objectMapper.writeValue(configuration, lapstoneJson);
+	    // ********************************************************************
+	    // update app version
 
-			// ********************************************************************
-			// copy www_debug to www
+	    ObjectMapper objectMapper = new ObjectMapper();
+	    File configuration = new File(www_debug, "js/lapstone.json");
+	    LapstoneJson lapstoneJson = objectMapper.readValue(configuration,
+		    LapstoneJson.class);
+	    String appVersion = (String) lapstoneJson.version.get("app");
+	    Integer buildVersion = Integer
+		    .parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
+	    buildVersion++;
+	    String newVersion = ((String) lapstoneJson.version.get("app"))
+		    .substring(0, ((String) lapstoneJson.version.get("app"))
+			    .lastIndexOf(".") + 1)
+		    + buildVersion.toString();
+	    lapstoneJson.version.put("app", newVersion);
+	    objectMapper.writeValue(configuration, lapstoneJson);
 
-			FileUtils.deleteDirectory(www);
-			FileUtils.copyDirectory(www_debug, www, true);
+	    System.out.println();
+	    System.out.println("Updating app version from " + appVersion
+		    + " to " + newVersion);
 
-			FileUtils.deleteQuietly(new File(www, "tools"));
+	    // ********************************************************************
+	    // copy www_debug to www
 
-			// ********************************************************************
-			// set cordova configuration
+	    FileUtils.deleteDirectory(www);
+	    FileUtils.copyDirectory(www_debug, www, true);
 
-			configuration = new File(www, "js/lapstone.json");
-			lapstoneJson = objectMapper.readValue(configuration,
-					LapstoneJson.class);
+	    FileUtils.deleteQuietly(new File(www, "tools"));
 
-			lapstoneJson.min = true;
+	    // ********************************************************************
+	    // set cordova configuration
 
-			objectMapper.writeValue(configuration, lapstoneJson);
+	    configuration = new File(www, "js/lapstone.json");
+	    lapstoneJson = objectMapper.readValue(configuration,
+		    LapstoneJson.class);
 
-			// ********************************************************************
-			// create single plugin file
+	    lapstoneJson.min = true;
 
-			String allPluginsContent = "";
-			// create map and copy just the used pages
-			for (File file : new File(www, "js/plugin").listFiles()) {
-				System.out.println("Processing: " + file.getName());
-				String currentFileContent = FileUtils.readFileToString(file);
+	    objectMapper.writeValue(configuration, lapstoneJson);
+	    
 
-				if (file.getName().startsWith(".")) {
-					currentFileContent = "";
-				}
+	    // ********************************************************************
+	    // create single plugin file
 
-				else if (file.getName().equals("plugins.js")) {
-				}
+	    Release.createSinglePluginFile(www);
 
-				else if (file.getName().equals("plugins.json")) {
-					currentFileContent = "var config_json = "
-							+ currentFileContent;
-				}
+	    // ********************************************************************
+	    // create single page file
 
-				else if (file.getName().endsWith("js")) {
-					String jsIdentifyer = file.getName().substring(
-							file.getName().indexOf(".") + 1,
-							file.getName().indexOf(".",
-									file.getName().indexOf(".") + 1));
-					System.out.println("Identifiyer: " + jsIdentifyer);
-				}
+	    Release.createSinglePageFile(www);
 
-				else if (file.getName().endsWith("json")) {
-					String jsIdentifyer = file.getName().substring(
-							file.getName().indexOf(".") + 1,
-							file.getName().indexOf(".",
-									file.getName().indexOf(".") + 1));
-					System.out.println("Identifiyer: " + jsIdentifyer);
-					currentFileContent = "var config_" + jsIdentifyer + "="
-							+ currentFileContent;
+	    // ********************************************************************
 
-				}
+	    // ********************************************************************
+	    // lapstone compression
 
-				// delete processed file
-				file.delete();
+	    Compressor.LapstoneCompression(new File(www,
+		    "js/plugin/all.plugin.js").getAbsolutePath());
 
-				if (!currentFileContent.endsWith(";"))
-					currentFileContent += ";";
+	    // ********************************************************************
+	    // minify plugins
 
-				allPluginsContent += currentFileContent;
-			}
+	    Release.compressSinglePluginFile(www);
 
-			FileUtils.write(new File(www, "js/plugin/all.plugin.js"),
-					allPluginsContent);
+	    // ********************************************************************
+	    // minify pages
 
-			// ********************************************************************
-			// create single page file
+	    Release.compressSinglePageFile(www);
 
-			String allPagesContent = "";
-			// create map and copy just the used pages
-			for (File file : new File(www, "js/page").listFiles()) {
-				System.out.println("Processing: " + file.getName());
-				String currentFileContent;
+	    // ********************************************************************
+	    // compile less
+	    System.out.println("Compile all the .less files ending with TODO");
+	    for (File lessFile : FileUtils.listFiles(www, new IOFileFilter() {
 
-				if (!file.isDirectory()) {
-
-					currentFileContent = FileUtils.readFileToString(file);
-
-					if (file.getName().startsWith(".")) {
-						currentFileContent = "";
-					}
-
-					else if (file.getName().equals("pages.js")) {
-					}
-
-					else if (file.getName().equals("pages.json")) {
-						currentFileContent = "var config_json = "
-								+ currentFileContent;
-					}
-
-					else if (file.getName().endsWith("js")) {
-						String jsIdentifyer = file.getName().substring(
-								file.getName().indexOf(".") + 1,
-								file.getName().indexOf(".",
-										file.getName().indexOf(".") + 1));
-						System.out.println("Identifiyer: " + jsIdentifyer);
-					}
-
-					else if (file.getName().endsWith("json")) {
-						String jsIdentifyer = file.getName().substring(
-								file.getName().indexOf(".") + 1,
-								file.getName().indexOf(".",
-										file.getName().indexOf(".") + 1));
-						System.out.println("Identifiyer: " + jsIdentifyer);
-						currentFileContent = "var config_" + jsIdentifyer + "="
-								+ currentFileContent;
-
-					}
-
-					// delete processed file
-					file.delete();
-
-					if (!currentFileContent.endsWith(";"))
-						currentFileContent += ";";
-
-					allPagesContent += currentFileContent;
-				}
-			}
-
-			FileUtils.write(new File(www, "js/page/all.page.js"),
-					allPagesContent);
-
-			// ********************************************************************
-
-			// ********************************************************************
-			// minify plugins
-
-			JavascriptCompressorOptions o = new JavascriptCompressorOptions();
-
-			File allPlugins = new File(www, "js/plugin/all.plugin.js");
-			File allPluginsMin = new File(www, "js/plugin/all.plugin.min.js");
-
-			Compressor.compressJavaScript(allPlugins.getAbsolutePath(),
-					allPluginsMin.getAbsolutePath(), o);
-
-			allPlugins.delete();
-
-			// ********************************************************************
-			// minify pages
-
-			File allPages = new File(www, "js/page/all.page.js");
-			File allPagesMin = new File(www, "js/page/all.page.min.js");
-
-			Compressor.compressJavaScript(allPages.getAbsolutePath(),
-					allPagesMin.getAbsolutePath(), o);
-
-			allPages.delete();
-
+		@Override
+		public boolean accept(File file) {
+		    if (file.getName().endsWith(".less.css"))
 			return true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+		    return false;
 		}
+
+		@Override
+		public boolean accept(File dir, String name) {
+		    // TODO Auto-generated method stub
+		    return false;
+		}
+
+	    }, DirectoryFileFilter.DIRECTORY)) {
+		File cssFromLessFile = new File(lessFile.getAbsolutePath()
+			.replace(".less", ""));
+
+		System.out.println("computing less: "
+			+ lessFile.getAbsolutePath());
+		System.out.println("write less to css: "
+			+ cssFromLessFile.getAbsolutePath());
+
+		Less.compile(lessFile, false);
+
+	    }
+
+	    // delete the less files
+	    System.out.println("Delete the less files.");
+	    for (File lessFile : FileUtils.listFiles(www, new IOFileFilter() {
+
+		@Override
+		public boolean accept(File file) {
+		    if (file.getName().endsWith(".less"))
+			return true;
+		    return false;
+		}
+
+		@Override
+		public boolean accept(File dir, String name) {
+		    // TODO Auto-generated method stub
+		    return false;
+		}
+
+	    }, DirectoryFileFilter.DIRECTORY)) {
+		System.out
+			.println("Delete less: " + lessFile.getAbsolutePath());
+		FileUtils.deleteQuietly(lessFile);
+	    }
+
+	    // ********************************************************************
+	    // minify css
+	    System.out.println("Minify all css files.");
+
+	    StylesheetCompressorOptions c = new StylesheetCompressorOptions();
+	    for (File cssFile : FileUtils.listFiles(www, new IOFileFilter() {
+
+		@Override
+		public boolean accept(File file) {
+		    if (file.getName().endsWith(".css"))
+			return true;
+		    return false;
+		}
+
+		@Override
+		public boolean accept(File dir, String name) {
+		    // TODO Auto-generated method stub
+		    return false;
+		}
+
+	    }, DirectoryFileFilter.DIRECTORY)) {
+		System.out
+			.println("Compress css: " + cssFile.getAbsolutePath());
+		Compressor.compressStylesheet(cssFile.getAbsolutePath(),
+			cssFile.getAbsolutePath(), c);
+	    }
+
+	    return true;
+
+	} catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	    return false;
+	}
+    }
+
+    private static void createSinglePluginFile(File www) throws Exception {
+	String allPluginsContent = "";
+	// create map and copy just the used pages
+	System.out.println();
+	System.out
+		.println("Create all.plugin.js file. Copy just used plugins.");
+
+	for (File file : new File(www, "js/plugin").listFiles()) {
+	    System.out.println();
+	    System.out.println("Processing: " + file.getName());
+	    String currentFileContent = FileUtils.readFileToString(file);
+
+	    if (file.getName().startsWith(".")) {
+		currentFileContent = "";
+	    }
+
+	    else if (file.getName().equals("plugins.js")) {
+	    }
+
+	    else if (file.getName().equals("plugins.json")) {
+		currentFileContent = "var config_json = " + currentFileContent;
+	    }
+
+	    else if (file.getName().endsWith("js")) {
+		String jsIdentifyer = file.getName().substring(
+			file.getName().indexOf(".") + 1,
+			file.getName().indexOf(".",
+				file.getName().indexOf(".") + 1));
+		System.out.println("Identifiyer: " + jsIdentifyer);
+
+		// Minify the js file
+
+		try {
+
+		    Compressor.compressJavaScript(file.getAbsolutePath(),
+			    file.getAbsolutePath(),
+			    new JavascriptCompressorOptions());
+
+		}
+
+		catch (Exception e) {
+		    throw new CompressorException(e);
+		}
+
+		currentFileContent = FileUtils.readFileToString(file);
+	    }
+
+	    else if (file.getName().endsWith("json")) {
+		String jsIdentifyer = file.getName().substring(
+			file.getName().indexOf(".") + 1,
+			file.getName().indexOf(".",
+				file.getName().indexOf(".") + 1));
+		System.out.println("Identifiyer: " + jsIdentifyer);
+		currentFileContent = "var config_" + jsIdentifyer + "="
+			+ currentFileContent;
+
+	    }
+
+	    // delete processed file
+	    file.delete();
+
+	    if (!currentFileContent.endsWith(";"))
+		currentFileContent += ";";
+
+	    allPluginsContent += currentFileContent;
 	}
 
+	FileUtils.write(new File(www, "js/plugin/all.plugin.js"),
+		allPluginsContent);
+    }
+
+    private static void createSinglePageFile(File www) throws Exception {
+	String allPagesContent = "";
+	// create map and copy just the used pages
+	System.out.println();
+	System.out.println("Create all.pages.js file. Copy just used pages.");
+
+	for (File file : new File(www, "js/page").listFiles()) {
+	    System.out.println();
+	    System.out.println("Processing: " + file.getName());
+	    String currentFileContent;
+
+	    if (!file.isDirectory()) {
+
+		currentFileContent = FileUtils.readFileToString(file);
+
+		if (file.getName().startsWith(".")) {
+		    currentFileContent = "";
+		}
+
+		else if (file.getName().equals("pages.js")) {
+		}
+
+		else if (file.getName().equals("pages.json")) {
+		    currentFileContent = "var config_json = "
+			    + currentFileContent;
+		}
+
+		else if (file.getName().endsWith("js")) {
+		    String jsIdentifyer = file.getName().substring(
+			    file.getName().indexOf(".") + 1,
+			    file.getName().indexOf(".",
+				    file.getName().indexOf(".") + 1));
+		    System.out.println("Identifiyer: " + jsIdentifyer);
+
+		    // Minify the js file
+
+		    try {
+
+			Compressor.compressJavaScript(file.getAbsolutePath(),
+				file.getAbsolutePath(),
+				new JavascriptCompressorOptions());
+
+		    }
+
+		    catch (Exception e) {
+			throw new CompressorException(e);
+		    }
+
+		    currentFileContent = FileUtils.readFileToString(file);
+
+		}
+
+		else if (file.getName().endsWith("json")) {
+		    String jsIdentifyer = file.getName().substring(
+			    file.getName().indexOf(".") + 1,
+			    file.getName().indexOf(".",
+				    file.getName().indexOf(".") + 1));
+		    System.out.println("Identifiyer: " + jsIdentifyer);
+		    currentFileContent = "var config_" + jsIdentifyer + "="
+			    + currentFileContent;
+
+		}
+
+		// delete processed file
+		file.delete();
+
+		if (!currentFileContent.endsWith(";"))
+		    currentFileContent += ";";
+
+		allPagesContent += currentFileContent;
+	    }
+	}
+
+	FileUtils.write(new File(www, "js/page/all.page.js"), allPagesContent);
+    }
+
+    private static void compressSinglePluginFile(File www) throws Exception {
+	JavascriptCompressorOptions o = new JavascriptCompressorOptions(false);
+
+	File allPlugins = new File(www, "js/plugin/all.plugin.js");
+	File allPluginsMin = new File(www, "js/plugin/all.plugin.min.js");
+
+	System.out.println();
+	System.out
+		.println("Minify js/plugin/all.plugin.js to js/plugin/all.plugin.min.js");
+
+	try {
+
+	    Compressor.compressJavaScript(allPlugins.getAbsolutePath(),
+		    allPluginsMin.getAbsolutePath(), o);
+
+	}
+
+	catch (Exception e) {
+	    throw new CompressorException(e);
+	}
+
+	// allPlugins.delete();
+    }
+
+    private static void compressSinglePageFile(File www) throws Exception {
+	JavascriptCompressorOptions o = new JavascriptCompressorOptions(false);
+
+	File allPages = new File(www, "js/page/all.page.js");
+	File allPagesMin = new File(www, "js/page/all.page.min.js");
+
+	System.out.println();
+	System.out
+		.println("Minify js/plugin/all.page.js to js/plugin/all.page.min.js");
+
+	try {
+
+	    Compressor.compressJavaScript(allPages.getAbsolutePath(),
+		    allPagesMin.getAbsolutePath(), o);
+
+	}
+
+	catch (Exception e) {
+	    throw new CompressorException(e);
+	}
+
+	// allPages.delete();
+    }
 }

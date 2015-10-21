@@ -24,7 +24,8 @@ var plugin_HTML5Storage = {
 	config : null,
 
 	type : {
-		array : "fdasfda3"
+		object : "_t_pojo_",
+		array : "_t_array_"
 	},
 
 	constructor : function() {
@@ -93,10 +94,10 @@ var plugin_HTML5Storage = {
 			app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth >0");
 
 			// it's an array
-			if (currentKey.startsWith("_t_array_")) {
+			if (currentKey.startsWith(plugin_HTML5Storage.type.array)) {
 				app.debug.debug("plugin_HTML5Storage.setDeepX() - case: object is an array");
 
-				arrayIndex = (currentKey.substring("_t_array_".length));
+				arrayIndex = (currentKey.substring(plugin_HTML5Storage.type.array.length));
 
 				app.debug.debug("plugin_HTML5Storage.setDeepX() - array index: " + arrayIndex);
 
@@ -112,13 +113,13 @@ var plugin_HTML5Storage = {
 
 				else {
 
-					if (keyArray[1].startsWith("_t_object_")) {
+					if (keyArray[1].startsWith(plugin_HTML5Storage.type.object)) {
 						app.debug.debug("plugin_HTML5Storage.setDeepX() - next element is an object; so push empty object");
 						if (!object[arrayIndex])
 							object.push({});
 					}
 
-					else if (keyArray[1].startsWith("_t_array_")) {
+					else if (keyArray[1].startsWith(plugin_HTML5Storage.type.array)) {
 
 						app.debug.debug("plugin_HTML5Storage.setDeepX() - next element is an array; so push empty array; next key: " + keyArray[1]);
 						if (!object[arrayIndex])
@@ -132,10 +133,10 @@ var plugin_HTML5Storage = {
 			}
 
 			// it's an object
-			else if (currentKey.startsWith("_t_object_")) {
+			else if (currentKey.startsWith(plugin_HTML5Storage.type.object)) {
 				app.debug.debug("plugin_HTML5Storage.setDeepX() - case: object is an object");
 
-				objectIndex = (currentKey.substring("_t_object_".length));
+				objectIndex = (currentKey.substring(plugin_HTML5Storage.type.object.length));
 
 				if (keyArray.length == 1) {
 					app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth 1; so add the value: " + value + " to key: " + currentKey);
@@ -246,8 +247,8 @@ var plugin_HTML5Storage = {
 
 	getSpace : function(length) {
 		app.debug.trace('plugin_HTML5Storage.getSpace()');
-		var string = "";
-		for (var i = 0; i < length; i++)
+		var string = "", i;
+		for (i = 0; i < length; i++)
 			string = string + " ";
 		return string;
 	},
@@ -404,11 +405,11 @@ var plugin_HTML5Storage = {
 					app.debug.debug("plugin_HTML5Storage.functions.localStorage.setObject() - element: " + key + " = " + value);
 
 					if (Array.isArray(object)) {
-						key = "_t_array_" + key;
+						key = plugin_HTML5Storage.type.array + key;
 					}
 
 					else if ($.isPlainObject(object)) {
-						key = "_t_object_" + key;
+						key = plugin_HTML5Storage.type.object + key;
 					}
 
 					if (typeof value == "object" && value != null) {
@@ -430,7 +431,7 @@ var plugin_HTML5Storage = {
 
 				name = name.toLowerCase();
 
-				var object = {}, compNameOfLocalStorage;
+				var object = {};
 				$.each(window.localStorage, function(key, value) {
 					var storageKey, storageValue, compNameOfLocalStorage;
 					app.debug.debug("plugin_HTML5Storage.functions.localStorage.getObject() - element: " + key + " = " + value);

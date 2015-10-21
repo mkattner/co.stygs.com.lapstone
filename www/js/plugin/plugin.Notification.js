@@ -138,7 +138,7 @@ var plugin_Notification = {
 
 		$(document).on("click", "#btn-dialog-right", function() {
 			$("#popupDialog").one("popupafterclose", function(event, ui) {
-				
+
 				if (plugin_Notification.callbackFunctionBtnRight) {
 					plugin_Notification.callbackFunctionBtnRight($("#popupDialog"));
 					plugin_Notification.callbackFunctionBtnRight = null;
@@ -400,43 +400,43 @@ var plugin_Notification = {
 			alert : function() {
 				var dfd = $.Deferred();
 				if ($("#popupAlert").parent().hasClass("ui-popup-active")) {
-					
+
 					$("#popupAlert").on("popupafterclose", function(event, ui) {
 						$("#popupAlert").off("popupafterclose");
 						dfd.resolve();
 					});
-					
+
 					$("#popupAlert").popup("close");
-					
+
 					plugin_Notification.cleanupPopup($("#popupAlert"));
-					
-				} 
-				
+
+				}
+
 				else {
 					dfd.resolve();
 				}
-				
+
 				return dfd.promise();
 			},
 			dialog : function() {
 				var dfd = $.Deferred();
 				if ($("#popupDialog").parent().hasClass("ui-popup-active")) {
-					
+
 					$("#popupDialog").on("popupafterclose", function(event, ui) {
 						$("#popupDialog").off("popupafterclose");
 						dfd.resolve();
 					});
-					
+
 					$("#popupDialog").popup("close");
-					
+
 					plugin_Notification.cleanupPopup($("#popupDialog"));
-					
-				} 
-				
+
+				}
+
 				else {
 					dfd.resolve();
 				}
-				
+
 				return dfd.promise();
 			},
 			all : function() {
@@ -489,7 +489,10 @@ var plugin_Notification = {
 				}
 			},
 			bubbleDiv : function(show, text, headline, appendTo) {
-				var object = show;
+				var object, loader;
+
+				object = show;
+
 				if ($.isPlainObject(show)) {
 					appendTo = object.appendTo;
 					headline = object.headline;
@@ -497,7 +500,7 @@ var plugin_Notification = {
 					show = object.show;
 				}
 				if (show) {
-					var loader = app.template.get("app-loader-bubbleDiv");
+					loader = app.template.get("app-loader-bubbleDiv");
 					if (text != undefined) {
 						loader.find("p").text(text);
 					}

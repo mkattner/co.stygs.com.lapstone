@@ -35,7 +35,7 @@ var plugin_Session = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()", 11);
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -45,7 +45,7 @@ var plugin_Session = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -55,20 +55,20 @@ var plugin_Session = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()", 11);
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
 
 	},
 	// private functions
@@ -87,45 +87,45 @@ var plugin_Session = {
 	 */
 	functions : {
 		loggedIn : function(value) {
-			app.debug.alert("plugin_Session.functions.loggedIn(" + value + ")", 20);
+			app.debug.trace("plugin_Session.functions.loggedIn(" + value + ")");
 			var storedValue = this.getValue(plugin_Session.config.loginHtml5StorageKey);
 			if (value == undefined) {
-				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined", 20);
-				app.debug.alert("plugin_Session.functions.loggedIn() - return: " + storedValue, 20);
+				app.debug.debug("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined");
+				app.debug.debug("plugin_Session.functions.loggedIn() - return: " + storedValue);
 				if (storedValue === null || storedValue === false) {
 					return false;
 				} else {
 					return true;
 				}
 			} else if (typeof value == "boolean") {
-				app.debug.alert("plugin_Session.functions.loggedIn(" + value + ") - case: typeof value == boolean", 20);
-				app.debug.alert("plugin_Session.functions.loggedIn() - set loged in to: " + value, 20);
+				app.debug.debug("plugin_Session.functions.loggedIn(" + value + ") - case: typeof value == boolean");
+				app.debug.debug("plugin_Session.functions.loggedIn() - set loged in to: " + value);
 				this.setValue(plugin_Session.config.loginHtml5StorageKey, value);
 				if (value == false) {
-					app.debug.alert("plugin_Session.functions.loggedIn() - case: value == false", 20);
+					app.debug.trace("plugin_Session.functions.loggedIn() - case: value == false");
 					// app.store.localStorage.clear();
 				}
-				app.debug.alert("plugin_Session.functions.loggedIn() - return: " + value, 20);
+				app.debug.trace("plugin_Session.functions.loggedIn() - return: " + value);
 				return value;
 			} else {
-				app.debug.alert("plugin_Session.functions.loggedIn() - return: null", 20);
+				app.debug.trace("plugin_Session.functions.loggedIn() - return: null");
 				return null;
 			}
 		},
 		setValue : function(key, value, prefix) {
 			prefix = plugin_Session.getPrefix(prefix);
-			app.debug.alert("plugin_Session.functions.setValue(" + key + ", " + value + ")", 20);
+			app.debug.trace("plugin_Session.functions.setValue(" + key + ", " + value + ")");
 			app.store.localStorage.set(prefix + key, value);
 			plugin_Session.sessions[prefix] = true;
 		},
 		getValue : function(key, prefix) {
 			prefix = plugin_Session.getPrefix(prefix);
-			app.debug.alert("plugin_Session.functions.getValue(" + key + ")", 20);
+			app.debug.trace("plugin_Session.functions.getValue(" + key + ")");
 			return app.store.localStorage.get(prefix + key);
 		},
 		destroy : function(prefix) {
 			prefix = plugin_Session.getPrefix(prefix);
-			app.debug.alert("plugin_Session.functions.destroy()", 20);
+			app.debug.trace("plugin_Session.functions.destroy()");
 			$.each(window.localStorage, function(key, value) {
 				if (key.substring(0, app.config.name.length) == app.config.name) {
 					var newkey, comp1, comp2;
@@ -139,18 +139,21 @@ var plugin_Session = {
 			});
 			plugin_Session.sessions[prefix] = false;
 		},
+		
 		destroyAll : function() {
 			$.each(plugin_Session.sessions, function(sessionName, isLoaded) {
 				plugin_Session.functions.destroy(sessionName);
 			});
 			console.log("TODO - implement");
 		},
+		
 		setObject : function(name, object, prefix) {
 			prefix = plugin_Session.getPrefix(prefix);
 			name = prefix + name;
 			name = name.split(".").join("-");
 			app.store.localStorage.setObject(prefix + name, object);
 		},
+		
 		getObject : function(name, prefix) {
 			prefix = plugin_Session.getPrefix(prefix);
 			name = prefix + name;

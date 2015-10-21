@@ -72,21 +72,9 @@ public class Deploy {
 		    File destination = new File(pathname.getAbsolutePath()
 			    .replace(www.getAbsolutePath(),
 				    www_debug.getAbsolutePath()));
-
-		    if (destination.isDirectory()) {
-			if (pathname.getName().equals("test")) {
-			    return false;
-			}
-
-			else if (pathname.getName().equals("documentation")) {
-			    return false;
-			}
-
-			else {
-			    return true;
-			}
-		    }
-
+		    
+		    if (destination.isDirectory())
+			return true;
 		    else if (!destination.exists()) {
 			return true;
 		    }
@@ -95,6 +83,14 @@ public class Deploy {
 		}
 	    }, true);
 
+	    // delete the documentation folder (because its not up to date)
+	    FileUtils.deleteQuietly(new File(www_debug, "js/documentation"));
+
+	    
+	    // delete the test folder (because it has no use)
+	    FileUtils.deleteQuietly(new File(www_debug, "test"));
+
+	    
 	    // ********************************************************************
 	    // copy plugins (*.js files and *.json files if they do not exist)
 	    FileUtils.copyDirectory(new File(www, "js/plugin"), new File(

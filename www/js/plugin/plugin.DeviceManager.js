@@ -33,7 +33,7 @@ var plugin_DeviceManager = {
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
 		app.debug.trace("plugin_DeviceManager.pluginsLoaded()");
-		var js, css, promiseArray = [], promiseOfPromises, dfd, scriptLoading;
+		var js, css, promiseArray = [], dfd, scriptLoading;
 
 		// load specific scripts
 		if (app.detect.isMobile()) {

@@ -1,0 +1,23 @@
+How to use the lapstone java application:
+
+Basic usage:
+call: java -jar lapstone.jar
+
+*) Page operations:
+   Modify your pages in the lapstone project.
+
+   Obligate parameters:
+   -function=page
+
+*) Deploy/Create a lapstone project:
+   Extend your apache cordova project with the lapstone framework.
+
+   Obligate parameters:
+   -function=deploy
+   
+*) Release a lapstone project:
+   Create a new build of your app for release.
+   
+   Obligate parameters:
+   -function=release
+   

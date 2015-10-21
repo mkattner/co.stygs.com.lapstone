@@ -33,11 +33,13 @@ var plugin_Informator = {
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
 
-		var dfd = $.Deferred();
+		var dfd, global;
+
+		dfd = $.Deferred();
 		// load the plugins' configuartion into html5 storage
 		if (this.config.useHtml5Storage && this.config.savePluginConfig) {
 			app.debug.alert("plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage");
-			var global = {};
+			global = {};
 			$.each(plugins.pluginNames, function(key, value) {
 				if (plugin_Informator.config.excludedPlugins.indexOf(value) == -1) {
 
@@ -57,7 +59,7 @@ var plugin_Informator = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
-		var dfd = $.Deferred();
+		var dfd = $.Deferred(), global;
 
 		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
 
@@ -65,8 +67,8 @@ var plugin_Informator = {
 
 		// load the pages' configuartion into html5 storage
 		if (this.config.useHtml5Storage && this.config.savePageConfig) {
-			var global = {};
-			alert("xxxxxxxx");
+			global = {};
+			//alert("xxxxxxxx");
 			$.each(pages.pageNames, function(key, value) {
 				if (global["page_" + value] == undefined)
 					global["page_" + value] = {};

@@ -50,16 +50,18 @@ var plugin_LoadExternalScripts = {
 
 		// scripts ordered
 		app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered scripts");
-		promises.push(plugin_LoadExternalScripts.loadScriptsAsync(plugin_LoadExternalScripts.config.scripts.javascriptOrdered.slice()));
+		if (plugin_LoadExternalScripts.config.scripts.javascriptOrdered)
+			promises.push(plugin_LoadExternalScripts.loadScriptsAsync(plugin_LoadExternalScripts.config.scripts.javascriptOrdered.slice()));
 
 		// scripts unordered
 		app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered scripts");
-		$.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
-			if (value) {
-				promises.push(globalLoader.AsyncScriptLoader(key));
-				plugin_LoadExternalScripts.loadedScripts[key] = true;
-			}
-		});
+		if (plugin_LoadExternalScripts.config.scripts.javascript)
+			$.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
+				if (value) {
+					promises.push(globalLoader.AsyncScriptLoader(key));
+					plugin_LoadExternalScripts.loadedScripts[key] = true;
+				}
+			});
 
 		promiseOfPromises = $.when.apply($, promises);
 
@@ -69,7 +71,7 @@ var plugin_LoadExternalScripts = {
 
 		promiseOfPromises.fail(function() {
 			dfd.reject();
-		})
+		});
 
 		return dfd.promise();
 	},
@@ -109,11 +111,11 @@ var plugin_LoadExternalScripts = {
 			if (scriptArray.length) {
 				app.debug.debug("plugin_LoadExternalScripts.loadSingleScriptAsync() - case: script array not empty; call again");
 				promise = plugin_LoadExternalScripts.loadScriptsAsync(scriptArray);
-				
+
 				promise.done(function() {
 					dfd.resolve();
 				});
-				
+
 				promise.fail(function() {
 					dfd.reject();
 				});

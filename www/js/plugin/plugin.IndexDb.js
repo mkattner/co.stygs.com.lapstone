@@ -49,7 +49,7 @@ var plugin_IndexDb = {
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
 		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
-		var dfd = $.Deferred(), request;
+		var dfd = $.Deferred();
 
 		dfd.resolve();
 		return dfd.promise();
