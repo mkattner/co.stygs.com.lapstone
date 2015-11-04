@@ -28,7 +28,7 @@ var plugin_jQueryExtend = {
 		return dfd.promise();
 	},
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()");
 
 		var dfd = $.Deferred();
 
@@ -69,7 +69,7 @@ var plugin_jQueryExtend = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -80,10 +80,10 @@ var plugin_jQueryExtend = {
 
 	// called by pages.js
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+		app.debug.trace("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
 	},
 	pageSpecificEvents : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+		app.debug.trace("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
 	},
 
 	functions : {}

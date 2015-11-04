@@ -17,16 +17,7 @@ public class Deploy {
     //
     // ************************************************************************
     public static Boolean DeployLapstone(Map<String, String> argMap) {
-	if (argMap.get("path") == null) {
-	    System.out.println("Missing parameter: -path");
-	    Lapstone.PrintHelp();
-	    return false;
-	}
-	if (argMap.get("lapstone") == null) {
-	    System.out.println("Missing parameter: -lapstone");
-	    Lapstone.PrintHelp();
-	    return false;
-	}
+
 	try {
 	    File appPath = new File(argMap.get("path"));
 	    File lapstonePath = new File(argMap.get("lapstone"));
@@ -72,7 +63,7 @@ public class Deploy {
 		    File destination = new File(pathname.getAbsolutePath()
 			    .replace(www.getAbsolutePath(),
 				    www_debug.getAbsolutePath()));
-		    
+
 		    if (destination.isDirectory())
 			return true;
 		    else if (!destination.exists()) {
@@ -86,11 +77,9 @@ public class Deploy {
 	    // delete the documentation folder (because its not up to date)
 	    FileUtils.deleteQuietly(new File(www_debug, "js/documentation"));
 
-	    
 	    // delete the test folder (because it has no use)
 	    FileUtils.deleteQuietly(new File(www_debug, "test"));
 
-	    
 	    // ********************************************************************
 	    // copy plugins (*.js files and *.json files if they do not exist)
 	    FileUtils.copyDirectory(new File(www, "js/plugin"), new File(
@@ -147,6 +136,8 @@ public class Deploy {
 	    // copy lapstone.jar
 	    FileUtils.copyFile(new File(lapstonePath, "lapstone.jar"),
 		    new File(appPath, "lapstone.jar"), true);
+	    FileUtils.copyFile(new File(lapstonePath, "lapstone.txt"),
+		    new File(appPath, "lapstone.txt"), true);
 
 	    return true;
 	} catch (IOException e) {

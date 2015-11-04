@@ -36,7 +36,7 @@ var plugin_Navigation = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -46,7 +46,7 @@ var plugin_Navigation = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -56,7 +56,7 @@ var plugin_Navigation = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 		$("body").on("pagecontainerbeforetransition", function(event, ui) {
 			if (plugin_Navigation.history.length > 0) {
@@ -78,14 +78,14 @@ var plugin_Navigation = {
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 	},
 	// private functions

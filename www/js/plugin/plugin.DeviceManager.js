@@ -32,7 +32,7 @@ var plugin_DeviceManager = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.trace("plugin_DeviceManager.pluginsLoaded()");
+		app.debug.trace("plugin_DeviceManager.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 		var js, css, promiseArray = [], dfd, scriptLoading;
 
 		// load specific scripts
@@ -43,15 +43,21 @@ var plugin_DeviceManager = {
 				$('head').append(this.config.viewport.android);
 				js = this.config.files.android + ".js";
 				css = this.config.files.android + ".css";
-			} else if (app.detect.mobile.apple.iOS()) {
+			} 
+			
+			else if (app.detect.mobile.apple.iOS()) {
 				$('head').append(this.config.viewport.ios)
 				js = this.config.files.ios + ".js";
 				css = this.config.files.ios + ".css";
-			} else if (app.detect.mobile.microsoft.Windows()) {
+			} 
+			
+			else if (app.detect.mobile.microsoft.Windows()) {
 				$('head').append(this.config.viewport.windows)
 				js = this.config.files.windows + ".js";
 				css = this.config.files.windows + ".css";
-			} else {
+			} 
+			
+			else {
 				console.error("Unknown device!");
 			}
 
@@ -84,7 +90,7 @@ var plugin_DeviceManager = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.trace("plugin_DeviceManager.pagesLoaded()");
+		app.debug.trace("plugin_DeviceManager.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -94,13 +100,13 @@ var plugin_DeviceManager = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.trace("plugin_DeviceManager.definePluginEvents()");
+		app.debug.trace("plugin_DeviceManager.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.trace("plugin_DeviceManager.afterHtmlInjectedBeforePageComputing()");
+		app.debug.trace("plugin_DeviceManager.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 		if (app.dm.hasOwnProperty("current"))
 			app.dm.current.afterHtmlInjectedBeforePageComputing();
 	},

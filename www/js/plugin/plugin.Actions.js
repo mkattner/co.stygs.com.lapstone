@@ -31,7 +31,7 @@ var plugin_Actions = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.trace("plugin_Actions.pluginsLoaded()");
+		app.debug.trace("plugin_Actions.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 
 		return globalLoader.AsyncScriptLoader('../files/actions.js');
 	},
@@ -39,7 +39,7 @@ var plugin_Actions = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.trace("plugin_Actions.pagesLoaded()");
+		app.debug.trace("plugin_Actions.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -49,20 +49,20 @@ var plugin_Actions = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.trace("plugin_Actions.definePluginEvents()");
+		app.debug.trace("plugin_Actions.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.trace("plugin_Actions.afterHtmlInjectedBeforePageComputing()");
+		app.debug.trace("plugin_Actions.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.trace("plugin_Actions.pageSpecificEvents()");
+		app.debug.trace("plugin_Actions.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// private functions

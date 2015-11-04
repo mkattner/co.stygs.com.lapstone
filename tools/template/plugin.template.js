@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-var plugin_TEMPLATE__ = {
+var plugin_##template = {
 	config : null,
 	// called by plugins.js
 	constructor : function() {
@@ -32,7 +32,7 @@ var plugin_TEMPLATE__ = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace("plugin_##template.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -42,7 +42,7 @@ var plugin_TEMPLATE__ = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_##template.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -52,20 +52,20 @@ var plugin_TEMPLATE__ = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_##template.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_##template.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_##template.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// private functions
@@ -73,9 +73,9 @@ var plugin_TEMPLATE__ = {
 	// public functions
 	// called by user
 	/**
-	 * Public functions for plugin_TEMPLATE__
+	 * Public functions for plugin_##template
 	 * 
-	 * @namespace plugin_TEMPLATE__.functions
+	 * @namespace plugin_##template.functions
 	 * 
 	 */
 	functions : {

@@ -30,19 +30,33 @@ var plugin_LoadExternalScripts = {
 		return dfd.promise();
 	},
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()", 11);
 
-		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
+		var dfd = $.Deferred(), promises = Array(), promiseOfPromises, url;
+
+		// styles ordered
+		app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered styles");
 		console.log("TODO - script loading");
 
-		// styles
+		// styles unordered
+		app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered styles");
 		$.each(plugin_LoadExternalScripts.config.scripts.css, function(key, value) {
 			if (value) {
 				if (key in plugin_LoadExternalScripts.loadedScripts) {
 					;// do nothing already loaded
 				} else {
-					promises.push(globalLoader.AsyncStyleLoader(key));
-					plugin_LoadExternalScripts.loadedScripts[key] = true;
+					if (app.config.min) {
+						url = key.substring(0, key.lastIndexOf(".")) + "." + app.config.version.app + ".css";
+						promises.push(globalLoader.AsyncStyleLoader(url));
+						plugin_LoadExternalScripts.loadedScripts[url] = true;
+					}
+
+					else {
+						url = key;
+						promises.push(globalLoader.AsyncStyleLoader(url));
+						plugin_LoadExternalScripts.loadedScripts[url] = true;
+					}
+
 				}
 
 			}
@@ -78,7 +92,7 @@ var plugin_LoadExternalScripts = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -89,11 +103,11 @@ var plugin_LoadExternalScripts = {
 	// called by pages.js
 	// called for each page
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+		app.debug.trace("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
 	},
 	// called once
 	pageSpecificEvents : function() {
-		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+		app.debug.trace("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
 	},
 
 	loadScriptsAsync : function(scriptArray) {
@@ -158,6 +172,7 @@ var plugin_LoadExternalScripts = {
 			}
 
 		},
+
 		javascript : function(url) {
 			app.debug.trace("plugin_LoadExternalScripts.functions.javascript()");
 			if (url in plugin_LoadExternalScripts.loadedScripts) {

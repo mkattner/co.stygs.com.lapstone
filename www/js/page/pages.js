@@ -23,6 +23,7 @@
 var pages = {
 	config : null,
 	pageNames : [],
+	includeOnce : [],
 	refreshInterval : null,
 
 	// history of pages
@@ -52,13 +53,32 @@ var pages = {
 		$.each(pages.pageNames, function(key, pageName) {
 			app.debug.debug("pages.include() - processing page: " + pageName);
 			currentPage = window['page_' + pageName];
+
 			if (currentPage.include_once != undefined) {
+
 				if (Array.isArray(currentPage.include_once)) {
 					resolve = false;
+
 					$.each(currentPage.include_once, function(index, includeName) {
-						var url = "../js/page/include/" + includeName;
-						app.debug.debug("pages.include() - including: " + url);
-						promises.push(globalLoader.AsyncScriptLoader(url));
+						var url;
+
+						if (pages.includeOnce.indexOf(includeName) === -1) {
+
+							if (app.config.min) {
+								url = "../js/page/include/" + includeName.substring(0, includeName.lastIndexOf(".")) + "." + app.config.version.app + ".js";
+								app.debug.debug("pages.include() - including: " + url);
+								promises.push(globalLoader.AsyncScriptLoader(url));
+							}
+
+							else {
+								url = "../js/page/include/" + includeName;
+								app.debug.debug("pages.include() - including: " + url);
+								promises.push(globalLoader.AsyncScriptLoader(url));
+							}
+
+						}
+
+						pages.includeOnce.push(includeName);
 					});
 
 					promiseOfPromises = $.when.apply($, promises);
@@ -328,7 +348,7 @@ var pages = {
 		var dfd = $.Deferred();
 
 		$.each(plugins.pluginNames, function(key, value) {
-			app.debug.alert("try to call: plugin_" + value + ".pageSpecificEvents()", 6);
+			app.debug.debug("try to call: plugin_" + value + ".pageSpecificEvents()", 6);
 			window['plugin_' + value].pageSpecificEvents();
 		});
 
@@ -359,255 +379,255 @@ var pages = {
 		// pagecontainer
 		// $(document).on("pagecontainerbeforechange", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerbeforehide", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerbeforeload", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerbeforeshow", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerbeforetransition", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerchange", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerchangefailed", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainercreate", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerhide", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerhide", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerload", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pageloadfailed", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerloadfailed", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainerremove", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainershow", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecontainertransition", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// // page
 		// $(document).on("pagebeforecreate", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 		//
 		// $(document).on("pagecreate", function(event, ui) {
 		// var prev, to;
-		// app.debug.alert("pages.setEvents() - Event: " + event.type
+		// app.debug.debug("pages.setEvents() - Event: " + event.type
 		// + " on: " + event.target);
-		// app.debug.alert("pages.setEvents() - properties of ui
+		// app.debug.debug("pages.setEvents() - properties of ui
 		// object: " + Object.keys(ui).toString());
 		// prev = (typeof ui.prevPage == 'object') ? ((ui.prevPage.jquery) ?
 		// ui.prevPage.attr("id") : ui.prevPage) : ui.prevPage;
-		// app.debug.alert("pages.setEvents() - prevPage: " + prev);
+		// app.debug.debug("pages.setEvents() - prevPage: " + prev);
 		// to = (typeof ui.toPage == 'object') ? ((ui.toPage.jquery) ?
 		// ui.toPage.attr("id") : ui.toPage) : ui.toPage;
-		// app.debug.alert("pages.setEvents() - toPage: " + to);
+		// app.debug.debug("pages.setEvents() - toPage: " + to);
 		// });
 
 		// old
@@ -620,7 +640,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagebeforechange', '.app-page', function(event) {
-			app.debug.alert("pages.js jQuery mobile event: pagebeforechange for: " + $(this).attr('id'));
+			app.debug.trace("pages.js jQuery mobile event: pagebeforechange for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforechange");
 		});
 
@@ -628,7 +648,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagebeforecreate', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'));
 
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforecreate");
 			// ---
@@ -650,7 +670,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagebeforehide', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagebeforehide for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagebeforehide for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforehide");
 		});
 
@@ -658,7 +678,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagebeforeload', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagebeforeload for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagebeforeload for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforeload");
 		});
 
@@ -666,7 +686,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagebeforeshow', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagebeforeshow for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagebeforeshow for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforeshow");
 		});
 
@@ -674,7 +694,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagechange', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagechange for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagechange for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagechange");
 		});
 
@@ -682,7 +702,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagechangefailed', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagechangefailed for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagechangefailed for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagechangefailed");
 		});
 
@@ -690,7 +710,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagecreate', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagecreate for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagecreate for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagecreate");
 		});
 
@@ -698,7 +718,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pagehide', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pagehide for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pagehide for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pagehide");
 		});
 
@@ -706,7 +726,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pageinit', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pageinit for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pageinit for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pageinit");
 		});
 
@@ -714,7 +734,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pageload', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pageload for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pageload for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pageload");
 		});
 
@@ -722,7 +742,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pageloadfailed', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pageloadfailed for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pageloadfailed for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pageloadfailed");
 		});
 
@@ -730,7 +750,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pageremove', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pageremove for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pageremove for: " + $(this).attr('id'));
 			pages.eventFunctions.pageTypeSelector(event, $(this), "pageremove");
 		});
 
@@ -738,7 +758,7 @@ var pages = {
 		 * 
 		 */
 		$(document).on('pageshow', '.app-page', function(event) {
-			app.debug.alert("jQuery mobile event: pageshow for: " + $(this).attr('id'));
+			app.debug.trace("jQuery mobile event: pageshow for: " + $(this).attr('id'));
 
 			pages.history.push($(this).attr('id'));
 
@@ -753,18 +773,18 @@ var pages = {
 	// a function for each event
 	eventFunctions : {
 		pageTypeSelector : function(event, container, eventName) {
-			app.debug.alert("plugin.eventFunctions.pageTypeSelector(" + event + ", " + container + ", " + eventName + ")");
-			app.debug.alert("PageId: " + container.attr('id'));
+			app.debug.trace("plugin.eventFunctions.pageTypeSelector(" + event + ", " + container + ", " + eventName + ")");
+			app.debug.debug("PageId: " + container.attr('id'));
 
 			// alert(container.attr('data-type'));
 			if (container.attr('data-type') == "static") {
 				// case 1: page is static
-				app.debug.alert("case: page type is static");
+				app.debug.debug("case: page type is static");
 				pages.eventFunctions.everyPage[eventName](event, container);
 				pages.eventFunctions.staticPage[eventName](event, container);
 			} else if (container.attr('data-type') == "static-inline") {
 				// case 2: page is inline-static
-				app.debug.alert("case: page type is inline-static");
+				app.debug.debug("case: page type is inline-static");
 				var staticContainer = container.clone();
 
 				if (container.attr('data-global') === "true") {
@@ -775,12 +795,12 @@ var pages = {
 				pages.eventFunctions.staticInlinePage[eventName](event, container, staticContainer);
 			} else if (window['page_' + container.attr('id')] == undefined) {
 				// case 3: page ist not defined in pages.json
-				app.debug.alert("case: page ist not defined in pages.json");
+				app.debug.debug("case: page ist not defined in pages.json");
 				alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + container.attr('id') + "; Please have a look to your pages.json file.");
 				app.help.navigation.redirect("index.html");
 			} else {
 				// case 4: page is a common lapstone page
-				app.debug.alert("case: page is a common lapstone page");
+				app.debug.debug("case: page is a common lapstone page");
 				if (window["page_" + container.attr('id')].config.isGlobalPage == true)
 					globalPage[eventName](event, container);
 				else if (window["page_" + container.attr('id')].config.isGlobalPage == undefined)
@@ -794,124 +814,124 @@ var pages = {
 		everyPage : {
 			pagebeforechange : function(event, container) {
 				// <!--
-				app.debug.alert("plugin.eventFunctions.everyPage.pagebeforechange(" + event + ", " + container + ")");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagebeforechange(" + event + ", " + container + ")");
 				// -->
 			},
 			pagebeforecreate : function(event, container) {
 				// <!--
-				app.debug.alert("plugin.eventFunctions.everyPage.pagebeforecreate(" + event + ", " + container + ")");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagebeforecreate(" + event + ", " + container + ")");
 				// -->
 			},
 			pagebeforehide : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pagebeforehide(" + event + ", " + container + ")");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagebeforehide(" + event + ", " + container + ")");
 
-				app.debug.alert("plugin.eventFunctions.everyPage.pagehide: clear refresh interval");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagehide: clear refresh interval");
 				/*
 				 */
 			},
 			pagebeforeload : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pagebeforeload(" + event + ", " + container + ")");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeload(" + event + ", " + container + ")");
 			},
 			pagebeforeshow : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pagebeforeshow(" + event + ", " + container + ")");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeshow(" + event + ", " + container + ")");
 
-				app.debug.alert("plugin.eventFunctions.everyPage.pagebeforeshow: check refresh interval");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeshow: check refresh interval");
 
 			},
 			pagechange : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pagechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pagechange(" + event + ", " + container + ")");
 			},
 			pagechangefailed : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pagechangefailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pagechangefailed(" + event + ", " + container + ")");
 			},
 			pagecreate : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pagecreate(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pagecreate(" + event + ", " + container + ")");
 			},
 			pagehide : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pagehide(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pagehide(" + event + ", " + container + ")");
 
-				app.debug.alert("plugin.eventFunctions.everyPage.pagehide: clear page specific event delegates");
+				app.debug.debug("plugin.eventFunctions.everyPage.pagehide: clear page specific event delegates");
 				$("#" + container.attr("id")).off();
 				$(document).off("#" + container.attr("id"));
 
-				app.debug.alert("remove page from DOM: " + container.attr('id'));
+				app.debug.debug("remove page from DOM: " + container.attr('id'));
 				container.remove();
 
 			},
 			pageinit : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pageinit(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pageinit(" + event + ", " + container + ")");
 			},
 			pageload : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pageload(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pageload(" + event + ", " + container + ")");
 			},
 			pageloadfailed : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pageloadfailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pageloadfailed(" + event + ", " + container + ")");
 			},
 			pageremove : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pageremove(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pageremove(" + event + ", " + container + ")");
 			},
 			pageshow : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.everyPage.pageshow(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.everyPage.pageshow(" + event + ", " + container + ")");
 			}
 		},
 
 		staticPage : {
 			pagebeforechange : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagebeforechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagebeforechange(" + event + ", " + container + ")");
 			},
 			pagebeforecreate : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagebeforecreate(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagebeforecreate(" + event + ", " + container + ")");
 
-				app.debug.alert("do language string replacement");
+				app.debug.debug("do language string replacement");
 				container.find("[data-language]").each(function(index, element) {
 					var languageArray = $(this).attr('data-language').split(".");
 					$(this).html(app.lang.string(languageArray[1], languageArray[0]));
 				});
 			},
 			pagebeforehide : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagebeforehide(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagebeforehide(" + event + ", " + container + ")");
 			},
 			pagebeforeload : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagebeforeload(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagebeforeload(" + event + ", " + container + ")");
 			},
 			pagebeforeshow : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagechange(" + event + ", " + container + ")");
 			},
 			pagechange : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagechange(" + event + ", " + container + ")");
 			},
 			pagechangefailed : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagechangefailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagechangefailed(" + event + ", " + container + ")");
 			},
 			pagecreate : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagecreate(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagecreate(" + event + ", " + container + ")");
 			},
 			pagehide : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pagehide(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pagehide(" + event + ", " + container + ")");
 			},
 			pageinit : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pageinit(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pageinit(" + event + ", " + container + ")");
 			},
 			pageload : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pageload(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pageload(" + event + ", " + container + ")");
 			},
 			pageloadfailed : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pageloadfailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pageloadfailed(" + event + ", " + container + ")");
 			},
 			pageremove : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pageremove(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pageremove(" + event + ", " + container + ")");
 			},
 			pageshow : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.staticPage.pageshow(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticPage.pageshow(" + event + ", " + container + ")");
 			}
 		},
 		staticInlinePage : {
 			pagebeforechange : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagebeforechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforechange(" + event + ", " + container + ")");
 			},
 			pagebeforecreate : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagebeforecreate(" + event + ", " + container + ")");
-				app.debug.alert("do language string replacement");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforecreate(" + event + ", " + container + ")");
+				app.debug.debug("do language string replacement");
 
 				staticContainer.find("[data-language]").each(function(index, element) {
 					var languageArray = $(this).attr('data-language').split(".");
@@ -923,50 +943,50 @@ var pages = {
 				pages.callPluginsPageFunctions(container);
 			},
 			pagebeforehide : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagebeforehide(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforehide(" + event + ", " + container + ")");
 			},
 			pagebeforeload : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagebeforeload(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforeload(" + event + ", " + container + ")");
 			},
 			pagebeforeshow : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")");
 
 			},
 			pagechange : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")");
 			},
 			pagechangefailed : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagechangefailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagechangefailed(" + event + ", " + container + ")");
 			},
 			pagecreate : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagecreate(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagecreate(" + event + ", " + container + ")");
 			},
 			pagehide : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pagehide(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pagehide(" + event + ", " + container + ")");
 			},
 			pageinit : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pageinit(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pageinit(" + event + ", " + container + ")");
 			},
 			pageload : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pageload(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pageload(" + event + ", " + container + ")");
 			},
 			pageloadfailed : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pageloadfailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pageloadfailed(" + event + ", " + container + ")");
 			},
 			pageremove : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pageremove(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pageremove(" + event + ", " + container + ")");
 			},
 			pageshow : function(event, container, staticContainer) {
-				app.debug.alert("plugin.eventFunctions.staticInlinePage.pageshow(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.staticInlinePage.pageshow(" + event + ", " + container + ")");
 			}
 		},
 		lapstonePage : {
 			pagebeforechange : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagebeforechange(event, container);
 			},
 			pagebeforecreate : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + container + ")");
 
 				if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
 					app.notify.add.alert(app.lang.string("login obligate text", "lapstone"), false, app.lang.string("login obligate headline", "lapstone"), app.lang.string("login obligate confirm", "lapstone"));
@@ -974,33 +994,33 @@ var pages = {
 					app.help.navigation.redirect(app.config.startPage, "slidefade");
 
 				} else if (plugins.config.KeepAlive === true) {
-					app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive");
+					app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive");
 
 					if (window['page_' + container.attr('id')].config.useKeepAlive != undefined) {
-						app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json");
+						app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json");
 
 						if (window['page_' + container.attr('id')].config.useKeepAlive) {
-							app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE");
+							app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE");
 							if (app.alive.isAlive() === true) {
-								app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: server isAlive");
+								app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: server isAlive");
 
 								pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 							} else {
-								app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server");
-								app.debug.alert("Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.", 60);
+								app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server");
+								app.debug.debug("Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.", 60);
 								app.alive.badConnectionHandler();
 							}
 						} else {
-							app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file");
+							app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file");
 							pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 						}
 					} else {
-						app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page does not require keepAlive");
-						app.debug.alert("No useKeepAlive entry in your page_" + container.attr('id') + ".json. Please add it.", 60);
+						app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page does not require keepAlive");
+						app.debug.debug("No useKeepAlive entry in your page_" + container.attr('id') + ".json. Please add it.", 60);
 						pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 					}
 				} else {
-					app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: WebServiceClient does not require keepAlive");
+					app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: WebServiceClient does not require keepAlive");
 					pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, container);
 				}
 			},
@@ -1008,11 +1028,16 @@ var pages = {
 				app.debug.trace("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage()");
 				app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - pageId: " + container.attr('id'));
 
-				var promise, elements = null, timeout;
+				var promiseOfAsyncPageLoading, elements = null, timeout, dfdPageCreation;
+
+				dfdPageCreation = $.Deferred();
 
 				window['page_' + container.attr('id')].events.pagebeforecreate(event, container);
 
-				// rquire
+				/**
+				 * Include files from the inlcude array. Every time when the
+				 * page is called.
+				 */
 				if (window['page_' + container.attr('id')].include != undefined) {
 					app.debug.trace("pages.js - page has an include array");
 
@@ -1022,16 +1047,9 @@ var pages = {
 					app.debug.trace("pages.js - page has no include array");
 				}
 
-				// require once
-				if (window['page_' + container.attr('id')].include_once != undefined) {
-					app.debug.trace("pages.js - page has an include_once array");
-				}
-
-				else {
-					app.debug.trace("pages.js - page has no include_once array");
-				}
-
-				// preload template
+				/**
+				 * Preload the page template.
+				 */
 				if (window['page_' + container.attr('id')].config.template != undefined) {
 					app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - case: template != undefined");
 
@@ -1063,69 +1081,86 @@ var pages = {
 					}
 				}
 
-				// async or not async
+				app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - create the page");
 				if (window['page_' + container.attr('id')].config.asyncLoading === true) {
-					app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - page IS async");
+					app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - page IS async");
 
 					window['page_' + container.attr('id')].async.elements = window['page_' + container.attr('id')].elements;
 
-					app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.creator()");
-					promise = window['page_' + container.attr('id')].async.creator(container);
+					app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.creator()");
+					promiseOfAsyncPageLoading = window['page_' + container.attr('id')].async.creator(container);
 
 					timeout = window.setTimeout(function() {
-						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - show loader");
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - show loader");
 						app.notify.loader.bubbleDiv(true, app.lang.string("text", "pageloading"), app.lang.string("headline", "pageloading"));
-					}, 1200);
+					}, 300);
 
-					promise.done(function(result) {
+					promiseOfAsyncPageLoading.done(function(result) {
 						if (result) {
-							app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(result));
+							app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(result));
 							window['page_' + container.attr('id')].async.result = result;
 						}
 
 						else {
-							app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: []");
+							app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: []");
 							window['page_' + container.attr('id')].async.result = Array();
 						}
 
-						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()");
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()");
+						
+						
+						dfdPageCreation.resolve(container);
+						
 						window['page_' + container.attr('id')].async.done(container);
-						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - enchant page");
-						app.help.jQM.enhance(container);
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - enchant page");
+						
+						
+						
 
 					});
 
-					promise.fail(function(error) {
-						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(error));
+					promiseOfAsyncPageLoading.fail(function(error) {
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(error));
 						window['page_' + container.attr('id')].async.result = error;
-						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.fail()");
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.fail()");
 						window['page_' + container.attr('id')].async.fail(container);
 					});
 
-					promise.always(function() {
+					promiseOfAsyncPageLoading.always(function() {
 						window.clearTimeout(timeout);
 						app.notify.loader.remove();
-						app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.always()");
+						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.always()");
 						window['page_' + container.attr('id')].async.always(container);
 					});
 
-				} else {
-					app.debug.alert("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - page IS NOT async");
-
-					window['page_' + container.attr('id')].creator(container);
 				}
 
-				window['page_' + container.attr('id')].setEvents(container);
-				// call plugins' page functions
-				app.debug.alert('Call: pages.callPluginsPageFunctions()');
-				pages.callPluginsPageFunctions(container);
-				app.debug.alert('add data- HTML Attributes');
-				$.each(window['page_' + container.attr('id')].config, function(key, value) {
-					container.attr("data-" + key, value);
+				else {
+					app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - page IS NOT async");
+
+					window['page_' + container.attr('id')].creator(container);
+					
+					dfdPageCreation.resolve(container);
+				}
+
+				dfdPageCreation.done(function(container) {
+					window['page_' + container.attr('id')].setEvents(container);
+					
+					
+					// call plugins' page functions
+					app.debug.debug('Call: pages.callPluginsPageFunctions()');
+					pages.callPluginsPageFunctions(container);
+					app.debug.debug('add data- HTML Attributes');
+					
+					$.each(window['page_' + container.attr('id')].config, function(key, value) {
+						container.attr("data-" + key, value);
+					});
+					app.help.jQM.enhance(container);
 				});
+
 			},
 			pagebeforehide : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagebeforehide(event, container);
 
 				if (pages.refreshInterval != null) {
@@ -1134,15 +1169,15 @@ var pages = {
 				}
 			},
 			pagebeforeload : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagebeforeload(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforeload(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagebeforeload(event, container);
 			},
 			pagebeforeshow : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagebeforeshow(event, container);
 
 				if (window['page_' + container.attr('id')].config.contentRefresh == true) {
-					app.debug.alert("plugin.eventFunctions.everyPage.pagebeforeshow: set refresh interval every " + window['page_' + container.attr('id')].config.contentRefreshInterval + " ms");
+					app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeshow: set refresh interval every " + window['page_' + container.attr('id')].config.contentRefreshInterval + " ms");
 
 					pages.refreshInterval = window.setInterval(function() {
 						// $().empty();
@@ -1156,39 +1191,39 @@ var pages = {
 				}
 			},
 			pagechange : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagechange(event, container);
 			},
 			pagechangefailed : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagechangefailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechangefailed(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagechangefailed(event, container);
 			},
 			pagecreate : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagecreate(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagecreate(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagecreate(event, container);
 			},
 			pagehide : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pagehide(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagehide(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pagehide(event, container);
 			},
 			pageinit : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pageinit(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pageinit(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pageinit(event, container);
 			},
 			pageload : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pageload(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pageload(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pageload(event, container);
 			},
 			pageloadfailed : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pageloadfailed(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pageloadfailed(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pageloadfailed(event, container);
 			},
 			pageremove : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pageremove(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pageremove(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pageremove(event, container);
 			},
 			pageshow : function(event, container) {
-				app.debug.alert("plugin.eventFunctions.lapstonePage.pageshow(" + event + ", " + container + ")");
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pageshow(" + event + ", " + container + ")");
 				window['page_' + container.attr('id')].events.pageshow(event, container);
 				if (navigator.splashscreen != undefined)
 					navigator.splashscreen.hide();

@@ -35,13 +35,34 @@ var plugin_HtmlTemplates = {
 
 		$.each(plugin_HtmlTemplates.config.templates, function(key, template) {
 			if (template.url != undefined) {
-				promises.push(globalLoader.AsyncTextLoader(template.url));
-				promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
-			} else {
+
+				if (app.config.min) {
+					promises.push(globalLoader.AsyncTextLoader(template.url));
+					promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + "." + app.config.version.app + ".css"));
+				}
+
+				else {
+					promises.push(globalLoader.AsyncTextLoader(template.url));
+					promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
+				}
+
+			}
+
+			else {
+				app.debug.debug("plugin_HtmlTemplates.pluginsLoaded() - step into context");
 				$.each(plugin_HtmlTemplates.config.templates[key], function(key, template) {
 					if (template.url != undefined) {
-						promises.push(globalLoader.AsyncTextLoader(template.url));
-						promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
+
+						if (app.config.min) {
+							promises.push(globalLoader.AsyncTextLoader(template.url));
+							promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + "." + app.config.version.app + ".css"));
+						}
+
+						else {
+							promises.push(globalLoader.AsyncTextLoader(template.url));
+							promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
+						}
+
 					}
 
 				});

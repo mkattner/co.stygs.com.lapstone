@@ -1,69 +1,156 @@
 package co.stygs.com.lapstone;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
+import org.apache.commons.io.FileUtils;
+
 public class Lapstone {
 
-	public Lapstone() {
-		// TODO Auto-generated constructor stub
+    public Lapstone() {
+	// TODO Auto-generated constructor stub
+    }
+
+    // public static String workingDirectory = System.getProperty("user.dir");
+
+    public static void main(String[] args) throws Exception {
+	Compressor.logger.addHandler(new ConsoleHandler());
+	Compressor.logger.setLevel(Level.ALL);
+
+	System.out.println("Running LAPSTONE with parameters:");
+	Map<String, String> argMap = new HashMap<String, String>();
+	for (String arg : args) {
+	    System.out.println(arg);
 	}
 
-	// public static String workingDirectory = System.getProperty("user.dir");
-
-	public static void main(String[] args) throws Exception {
-		Compressor.logger.addHandler(new ConsoleHandler());
-		Compressor.logger.setLevel(Level.ALL);
-
-		System.out.println("Running LAPSTONE with parameters:");
-		Map<String, String> argMap = new HashMap<String, String>();
-		for (String arg : args) {
-			System.out.println(arg);
-		}
-
-		// prepare parameters
-		for (String arg : args) {
-			argMap.put(arg.split("=")[0].substring(1), arg.split("=")[1]);
-		}
-
-		if (argMap.get("function") == null) {
-			System.out.println("Missing parameter: function");
-			PrintHelp();
-		} else {
-
-			switch (argMap.get("function")) {
-			case "deploy":
-				if (!Deploy.DeployLapstone(argMap))
-					PrintHelp();
-				break;
-			case "release":
-				if (!Release.ReleaseLapstone(argMap))
-					PrintHelp();
-				break;
-			case "page":
-				if (!Page.PageLapstone(argMap))
-					PrintHelp();
-				break;
-			default:
-				System.out.println("Unknown function: "
-						+ argMap.get("function"));
-				PrintHelp();
-			}
-		}
+	// prepare parameters
+	for (String arg : args) {
+	    argMap.put(arg.split("=")[0].substring(1).trim(), arg.split("=")[1].trim());
 	}
 
-	public static void PrintHelp() {
-		System.out.println("Help for lapstone.jar:");
-		System.out.println("DEPLOY");
-		System.out
-				.println("java -jar lapstone.jar -function=deploy -path=/Users/martinkattner/stygs/app.extern.gtn.dakora/app.extern.gtn.dakora -lapstone=/Users/martinkattner/stygs/co.stygs.com.lapstone");
-		System.out.println("RELEASE");
-		System.out.println("RELEASE");
-		System.out.println("PAGE:");
-		System.out
-				.println("java -jar lapstone.jar -function=page -path=/Users/martinkattner/stygs/app.extern.gtn.dakora/app.extern.gtn.dakora -lapstone=/Users/martinkattner/stygs/co.stygs.com.lapstone -name=configuration -modus=new");
+	if (argMap.get("function") == null) {
+	    System.out.println("Missing parameter: function");
+	    PrintHelp();
 	}
 
+	else {
+
+	    switch (argMap.get("function")) {
+	    case "deploy":
+
+		if (argMap.get("path") == null) {
+		    System.out.println("Missing parameter: -path");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("lapstone") == null) {
+		    System.out.println("Missing parameter: -lapstone");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (!Deploy.DeployLapstone(argMap)) {
+		    PrintHelp();
+		}
+
+		break;
+
+	    case "release":
+		if (argMap.get("path") == null) {
+		    System.out.println("Missing parameter: -path");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (!Release.ReleaseLapstone(argMap)) {
+		    PrintHelp();
+		}
+
+		break;
+
+	    case "page":
+		if (argMap.get("path") == null) {
+		    System.out.println("Missing parameter: -path");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("modus") == null) {
+		    System.out.println("Missing parameter: -modus");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("lapstone") == null) {
+		    System.out.println("Missing parameter: -lapstone");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("name") == null) {
+		    System.out.println("Missing parameter: -name");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (!Page.PageLapstone(argMap)) {
+		    PrintHelp();
+		}
+
+		break;
+
+	    case "plugin":
+
+		if (argMap.get("path") == null) {
+		    System.out.println("Missing parameter: -path");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("modus") == null) {
+		    System.out.println("Missing parameter: -modus");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("lapstone") == null) {
+		    System.out.println("Missing parameter: -lapstone");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("name") == null) {
+		    System.out.println("Missing parameter: -name");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (!Plugin.LapstonePlugin(argMap)) {
+		    PrintHelp();
+		}
+
+		break;
+
+	    default:
+		System.out.println("Unknown function: " + argMap.get("function"));
+		PrintHelp();
+	    }
+	}
+    }
+
+    public static void PrintHelp() {
+	System.out.println();
+	System.out.println("HELP - HELP - HELP - HELP - HELP - HELP - HELP");
+	System.out.println("Printing: ./lapstone.txt");
+	System.out.println();
+
+	try {
+	    List<String> lines = FileUtils.readLines(new File("lapstone.txt"));
+
+	    for (String line : lines) {
+		System.out.println(line);
+	    }
+
+	}
+
+	catch (IOException e) {
+	    System.out.println("FATAL - ERROR - ERROR - ERROR - ERROR - ERROR");
+	    e.printStackTrace();
+	}
+    }
 }

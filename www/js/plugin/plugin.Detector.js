@@ -37,8 +37,8 @@ var plugin_Detector = {
 		var dfd = $.Deferred();
 
 		plugin_Detector.functions.classes.generate();
-		app.debug.alert("Css Classes in body Tag: " + plugin_Detector.functions.classes.classNames(), 60);
-		app.debug.alert(navigator.userAgent, 60);
+		app.debug.debug("Css Classes in body Tag: " + plugin_Detector.functions.classes.classNames(), 60);
+		app.debug.debug(navigator.userAgent, 60);
 
 		dfd.resolve();
 		return dfd.promise();
@@ -76,9 +76,6 @@ var plugin_Detector = {
 		$.when(dfdCordovaDeviceReady).then(plugin_Detector.cordovaLoaded);
 		$.when(dfdJQueryMobileInit).then(plugin_Detector.jQueryMobileLoaded);
 
-		// app.debug.alert("Fatal exception!\n\n" + JSON.stringify(err, null,
-		// 4), 50);
-		// app.debug.log(JSON.stringify(err, null, 4));
 	},
 	// called by pages.js
 	// called for each page after createPage();

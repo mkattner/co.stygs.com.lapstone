@@ -52,10 +52,10 @@ var plugin_HTML5Storage = {
 		app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
 		// data-html5-<storage id>
 		$(document).on("click", "a", function(event) {
-			app.debug.alert("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()", 12);
+			app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");
 			$.each($(this).attrs(), function(key, value) {
 				if (key.substring(0, 11).trim().toLowerCase() == "data-html5-") {
-					app.debug.alert("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + key + " = " + value, 60);
+					app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + key + " = " + value);
 					plugin_HTML5Storage.functions.localStorage.set(key, value);
 				}
 			});
@@ -75,7 +75,7 @@ var plugin_HTML5Storage = {
 	// private functions
 	setDeep : function(el, key, value) {
 		console.warn("Fuction is deprecated. Use: app.help.object.setDeep");
-		app.debug.alert('plugin_HTML5Storage.setDeep(' + el + ', ' + key + ', ' + value + ')');
+		app.debug.trace("plugin_HTML5Storage.setDeep(" + app.debug.arguments + ")");
 		key = key.split('.');
 		var i = 0, n = key.length;
 		for (; i < n - 1; ++i) {
@@ -85,7 +85,7 @@ var plugin_HTML5Storage = {
 	},
 
 	setDeepX : function(object, key, value) {
-		app.debug.debug('plugin_HTML5Storage.setDeepX(' + JSON.stringify(object) + ', ' + key + ', ' + value + ')');
+		app.debug.trace("plugin_HTML5Storage.setDeepX(" + app.debug.arguments + ")");
 		var keyArray = key.split('.'), currentKey, arrayIndex, objectIndex;
 
 		currentKey = keyArray[0];
@@ -183,7 +183,7 @@ var plugin_HTML5Storage = {
 
 	getDeep : function(el, key) {
 		console.warn("Fuction is deprecated. Use: app.help.object.getDeep");
-		app.debug.alert('plugin_HTML5Storage.getDeep(' + el + ', ' + key + ')');
+		app.debug.debug('plugin_HTML5Storage.getDeep(' + el + ', ' + key + ')');
 		key = key.split('.');
 		var i = 0, n = key.length;
 		for (; i < n; ++i) {
@@ -198,42 +198,42 @@ var plugin_HTML5Storage = {
 		// is true?
 		case "true":
 
-			app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == true');
+			app.debug.debug('plugin_HTML5Storage.parseValue() - case: value == true');
 			value = true;
 			break;
 
 		// is false?
 		case "false":
 
-			app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == false');
+			app.debug.debug('plugin_HTML5Storage.parseValue() - case: value == false');
 			value = false;
 			break;
 
 		// is null?
 		case "null":
 
-			app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == null');
+			app.debug.debug('plugin_HTML5Storage.parseValue() - case: value == null');
 			value = null;
 			break;
 
 		default:
-			app.debug.alert('plugin_HTML5Storage.parseValue() - case: default');
+			app.debug.debug('plugin_HTML5Storage.parseValue() - case: default');
 
 			if (/^(\+|\-){0,1}([0-9])+$/.test(value)) {
 
-				app.debug.alert('plugin_HTML5Storage.parseValue() - case: typeof value == integer');
+				app.debug.debug('plugin_HTML5Storage.parseValue() - case: typeof value == integer');
 				value = parseInt(value);
 			}
 
 			else if (/^(\+|\-){0,1}([0-9])+(\.){1}([0-9])+$/.test(value)) {
 
-				app.debug.alert('plugin_HTML5Storage.parseValue() - case: typeof value == float');
+				app.debug.debug('plugin_HTML5Storage.parseValue() - case: typeof value == float');
 				value = parseFloat(value);
 			}
 
 			else {
 
-				app.debug.alert('plugin_HTML5Storage.parseValue() - case: value == ???');
+				app.debug.debug('plugin_HTML5Storage.parseValue() - case: value == ???');
 
 			}
 			// is float?
@@ -241,7 +241,7 @@ var plugin_HTML5Storage = {
 			break;
 		}
 
-		app.debug.alert('plugin_HTML5Storage.parseValue() - return: ' + value);
+		app.debug.debug('plugin_HTML5Storage.parseValue() - return: ' + value);
 		return value;
 	},
 

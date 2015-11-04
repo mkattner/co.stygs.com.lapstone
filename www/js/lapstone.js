@@ -38,7 +38,7 @@ function loadPlugins() {
 	var dfd = $.Deferred(), url, promise;
 
 	if (app.config.min) {
-		url = "../js/plugin/all.plugin.min.js";
+		url = "../js/plugin/all.plugin.min." + app.config.version.app + ".js";
 	} else {
 		url = "../js/plugin/plugins.js";
 	}
@@ -61,7 +61,7 @@ function loadPages() {
 	var dfd = $.Deferred(), url, promise;
 
 	if (app.config.min) {
-		url = "../js/page/all.page.min.js";
+		url = "../js/page/all.page.min." + app.config.version.app + ".js";
 	} else {
 		url = "../js/page/pages.js";
 	}
@@ -438,6 +438,7 @@ var globalLoader = {
 			attempts = globalLoader.globalAttempts;
 
 		$.ajax({
+			cache : cacheAjax(),
 			url : url,
 			async : true,
 			dataType : "text",

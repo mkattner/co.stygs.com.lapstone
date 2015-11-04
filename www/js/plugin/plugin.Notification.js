@@ -37,7 +37,7 @@ var plugin_Notification = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -47,11 +47,11 @@ var plugin_Notification = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		window.setTimeout(function() {
 			if (plugin_Notification.config.enablePushNotifications && app.config.apacheCordova && app.sess.loggedIn() == true) {
-				app.debug.alert("plugin_Notification.pagesLoaded() register device on licence and push server", 20);
+				app.debug.debug("plugin_Notification.pagesLoaded() register device on licence and push server");
 				// alert("its time to register the device")
 				// alert("device uuid: " + device.uuid);
 				if (window.device) {
@@ -62,27 +62,27 @@ var plugin_Notification = {
 
 					promise.done(function(resultObject) {
 						if (window.push != undefined) {
-							app.debug.alert("plugin_Notification.pagesLoaded() register device on aerogear push server", 20);
+							app.debug.debug("plugin_Notification.pagesLoaded() register device on aerogear push server");
 							plugin_Notification.config.pushConfig.alias = device.uuid;
 							push.register(plugin_Notification.functions.push_onNotification, function() {
-								app.debug.alert("plugin_Notification.pagesLoaded() success: device is registered on push server", 20);
+								app.debug.debug("plugin_Notification.pagesLoaded() success: device is registered on push server");
 							}, function(error) {
-								app.debug.alert("plugin_Notification.pagesLoaded() error: device is not registered on push server", 20);
-								app.debug.alert("plugin_Notification.pagesLoaded() error: " + error, 20);
+								app.debug.debug("plugin_Notification.pagesLoaded() error: device is not registered on push server");
+								app.debug.debug("plugin_Notification.pagesLoaded() error: " + error);
 							}, plugin_Notification.config.pushConfig);
 						} else {
-							app.debug.alert("plugin_Notification.pagesLoaded() cordova push plugin not installed", 20);
+							app.debug.debug("plugin_Notification.pagesLoaded() cordova push plugin not installed");
 						}
 					});
 
 					promise.fail(function(errorObject) {
-						app.debug.alert("plugin_Notification.pagesLoaded() not able to register device on licence server", 20);
+						app.debug.debug("plugin_Notification.pagesLoaded() not able to register device on licence server");
 					});
 				} else {
-					app.debug.alert("plugin_Notification.pagesLoaded() cordova device plugin not installed", 20);
+					app.debug.debug("plugin_Notification.pagesLoaded() cordova device plugin not installed");
 				}
 			} else {
-				app.debug.alert("plugin_Notification.pagesLoaded() do not register device on licence and push server", 20);
+				app.debug.debug("plugin_Notification.pagesLoaded() do not register device on licence and push server");
 			}
 		}, 5000);
 
@@ -93,7 +93,7 @@ var plugin_Notification = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 		$(document).on('pageshow', function(event) {
 			if (!plugin_Notification.notifications) {
@@ -158,7 +158,7 @@ var plugin_Notification = {
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
 
 		// alert('insert popups');
 		// alert($("body #popupDialog").length);
@@ -174,7 +174,7 @@ var plugin_Notification = {
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 	},
 	cleanupPopup : function(popup) {

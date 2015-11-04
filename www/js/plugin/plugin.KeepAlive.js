@@ -33,15 +33,15 @@ var plugin_KeepAlive = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()");
-		app.debug.alert("plugin_KeepAlive.pluginsLoaded() - try first keep alive");
+		app.debug.trace(this.config.name + ".pluginsLoaded()");
+		app.debug.debug("plugin_KeepAlive.pluginsLoaded() - try first keep alive");
 		var dfd = $.Deferred();
 
 		if (plugin_KeepAlive.config.useKeepAlive) {
-			app.debug.alert("plugin_KeepAlive.pluginsLoaded() case: plugin_KeepAlive.config.useKeepAlive == true");
-			app.debug.alert("plugin_KeepAlive.pluginsLoaded() call: plugin_KeepAlive.keepAliveRequest() to make a first keepAlive request");
+			app.debug.debug("plugin_KeepAlive.pluginsLoaded() case: plugin_KeepAlive.config.useKeepAlive == true");
+			app.debug.debug("plugin_KeepAlive.pluginsLoaded() call: plugin_KeepAlive.keepAliveRequest() to make a first keepAlive request");
 			plugin_KeepAlive.keepAliveRequest();
-			app.debug.alert("plugin_KeepAlive.pluginsLoaded() initialize the keepAlive interval: plugin_KeepAlive.interval ");
+			app.debug.debug("plugin_KeepAlive.pluginsLoaded() initialize the keepAlive interval: plugin_KeepAlive.interval ");
 			plugin_KeepAlive.interval = window.setInterval("plugin_KeepAlive.keepAliveRequest()", plugin_KeepAlive.config.intervalInS * 1000);
 		}
 
@@ -53,7 +53,7 @@ var plugin_KeepAlive = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()");
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -63,25 +63,25 @@ var plugin_KeepAlive = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()");
+		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
+		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()");
+		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 	},
 	// private functionsstartTime : 0.0,
 	eventTriggering : function() {
-		app.debug.alert("plugin_KeepAlive.eventTriggering()");
+		app.debug.trace("plugin_KeepAlive.eventTriggering()");
 		if (!plugin_KeepAlive.config.isAlive) {
 			$("[data-role=page]").trigger("connectionisdead");
 		} else if (plugin_KeepAlive.config.isAlive) {
@@ -90,7 +90,7 @@ var plugin_KeepAlive = {
 	},
 
 	ajaxSuccess : function(data, textStatus, jqXHR) {
-		app.debug.alert("plugin_KeepAlive.ajaxSuccess()");
+		app.debug.trace("plugin_KeepAlive.ajaxSuccess()");
 		var wsDuration = Date.now() - plugin_KeepAlive.startTime;
 		if (wsDuration >= plugin_KeepAlive.config.maximumResponseTime) {
 			app.info.set("plugin_KeepAlive.config.lastDuration", wsDuration);
@@ -103,26 +103,26 @@ var plugin_KeepAlive = {
 			app.info.set("plugin_KeepAlive.config.error.code", 0);
 			app.info.set("plugin_KeepAlive.config.error.text", "No error");
 		}
-		app.debug.alert("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.lastDuration = " + app.store.localStorage.get("config.plugin_KeepAlive.config.lastDuration"));
-		app.debug.alert("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.isAlive = " + app.store.localStorage.get("config.plugin_KeepAlive.config.isAlive"));
-		app.debug.alert("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.error.code = " + app.store.localStorage.get("config.plugin_KeepAlive.config.error.code"));
-		app.debug.alert("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.error.text = " + app.store.localStorage.get("config.plugin_KeepAlive.config.error.text"));
+		app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.lastDuration = " + app.store.localStorage.get("config.plugin_KeepAlive.config.lastDuration"));
+		app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.isAlive = " + app.store.localStorage.get("config.plugin_KeepAlive.config.isAlive"));
+		app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.error.code = " + app.store.localStorage.get("config.plugin_KeepAlive.config.error.code"));
+		app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.error.text = " + app.store.localStorage.get("config.plugin_KeepAlive.config.error.text"));
 		plugin_KeepAlive.eventTriggering();
 	},
 
 	ajaxError : function(jqXHR, textStatus, errorThrown) {
-		app.debug.alert("plugin_KeepAlive.ajaxError()");
+		app.debug.trace("plugin_KeepAlive.ajaxError()");
 		var wsDuration = Date.now() - plugin_KeepAlive.startTime;
 		app.info.set("plugin_KeepAlive.config.lastDuration", wsDuration);
 		app.info.set("plugin_KeepAlive.config.isAlive", false);
 		app.info.set("plugin_KeepAlive.config.error.code", 1);
 		app.info.set("plugin_KeepAlive.config.error.text", "Webservice Error: ");
-		app.debug.alert("plugin_KeepAlive.ajaxSuccess() - KeepAlive request failed.\nReason: " + plugin_KeepAlive.config.error.text + "\nTime: " + wsDuration + "\n\n" + JSON.stringify(errorThrown, null, 4), 60);
+		app.debug.debug("plugin_KeepAlive.ajaxSuccess() - KeepAlive request failed.\nReason: " + plugin_KeepAlive.config.error.text + "\nTime: " + wsDuration + "\n\n" + JSON.stringify(errorThrown, null, 4), 60);
 		plugin_KeepAlive.eventTriggering();
 	},
 
 	ajax : function(url, data, type, method, timeout) {
-		app.debug.alert("plugin.KeepAlive.js plugin_KeepAlive.ajax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ")");
+		app.debug.trace("plugin.KeepAlive.js plugin_KeepAlive.ajax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ")");
 		try {
 			$.ajax({
 				cache : false,
@@ -146,7 +146,7 @@ var plugin_KeepAlive = {
 	 * 0 OK; 1 Webservice failed; 2 Timeout Error
 	 */
 	keepAliveRequest : function() {
-		app.debug.alert("plugin_KeepAlive.keepAliveRequest()");
+		app.debug.trace("plugin_KeepAlive.keepAliveRequest()");
 
 		var path, data, method, timeout, server, url, wsDuration;
 

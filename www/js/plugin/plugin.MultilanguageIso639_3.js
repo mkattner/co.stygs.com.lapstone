@@ -30,7 +30,7 @@ var plugin_MultilanguageIso639_3 = {
 		return dfd.promise();
 	},
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()", 11);
 		var promise;
 
 		promise = globalLoader.AsyncJsonLoader("../files/language/" + plugin_MultilanguageIso639_3.config.defaultLanguage + ".json").done(function(json) {
@@ -42,7 +42,7 @@ var plugin_MultilanguageIso639_3 = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -53,10 +53,10 @@ var plugin_MultilanguageIso639_3 = {
 
 	// called by pages.js
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
+		app.debug.trace("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
 	},
 	pageSpecificEvents : function(container) {
-		app.debug.alert("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
+		app.debug.trace("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
 	},
 
 	// private functions
@@ -67,7 +67,7 @@ var plugin_MultilanguageIso639_3 = {
 			url : langUri,
 			async : false,
 			success : function(json) {
-				app.debug.alert("Langugae successfully loaded: " + language, 3);
+				app.debug.debug("Langugae successfully loaded: " + language, 3);
 				plugin_MultilanguageIso639_3.dictionary = json;
 			},
 			error : function(jqXHR, textStatus, errorThrown) {

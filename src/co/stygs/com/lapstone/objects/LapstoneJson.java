@@ -17,6 +17,4 @@ public class LapstoneJson {
     public String startPage_loggedIn;
     public String badConnectionPage;
 
-    
-    
 }

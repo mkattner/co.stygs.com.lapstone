@@ -52,7 +52,7 @@ var plugin_ImageProvider = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
-		app.debug.alert(this.config.name + ".pluginsLoaded()", 11);
+		app.debug.trace(this.config.name + ".pluginsLoaded()");
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
 		$.each(plugin_ImageProvider.config.imgdFiles, function(path, loadFile) {
@@ -76,7 +76,7 @@ var plugin_ImageProvider = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_" + this.config.name + ".pagesLoaded()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -86,20 +86,20 @@ var plugin_ImageProvider = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
-		app.debug.alert("plugin_" + this.config.name + ".definePluginEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function(container) {
-		app.debug.alert("plugin_" + this.config.name + ".pageSpecificEvents()", 11);
+		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 	},
 	// private functions
@@ -113,6 +113,25 @@ var plugin_ImageProvider = {
 	 * 
 	 */
 	functions : {
+		addDefinitionFile : function(path) {
+			return plugin_ImageProvider.loadDefinitionFile(path);
+		},
+
+		addDefinition : function(imageId, imagePath, context) {
+			
+			if (context) {
+				if (!$.isPlainObject(plugin_ImageProvider.images[context]))
+					plugin_ImageProvider.images[context] = {};
+
+				plugin_ImageProvider.images[context][imageId] = imagePath;
+
+			}
+
+			else {
+				plugin_ImageProvider.images[imageId] = imagePath;
+			}
+		},
+
 		getUrlById : function(id, cont) {
 			var img, toParse;
 			// alert(id + " = " + plugin_ImageProvider.images[id])
@@ -124,12 +143,15 @@ var plugin_ImageProvider = {
 			}
 			return img;
 		},
+
 		getUrlByIdForSkin : function(id, context) {
 			var imageUrl = null, toParse;
 
 			if (context == undefined) {
 				imageUrl = plugin_ImageProvider.images[id];
-			} else {
+			}
+
+			else {
 				if (plugin_ImageProvider.images[context] == undefined) {
 					console.warn("Image - context doesn't exist: " + context);
 					toParse = '{"' + context + '" : {}}';
@@ -139,10 +161,13 @@ var plugin_ImageProvider = {
 					imageUrl = plugin_ImageProvider.images[context][id];
 				}
 			}
+
 			if (imageUrl != undefined) {
 
 				return imageUrl.substring(0, imageUrl.lastIndexOf("/")) + "/" + plugin_Skin.config.defaultSkin + imageUrl.substring(imageUrl.lastIndexOf("/"), imageUrl.length);
-			} else {
+			}
+
+			else {
 				console.warn("Image - " + context + '.' + id + " == undefined");
 				// console.log('"' + id + '" : "TRANSLATION"');
 				toParse = '{"' + context + '" : {"' + id + '" : "URL"}}';

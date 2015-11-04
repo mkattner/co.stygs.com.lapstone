@@ -19,35 +19,29 @@ import com.yahoo.platform.yui.compressor.YUICompressor;
 
 public class Compressor {
 
-    public static Logger logger = Logger.getLogger(YUICompressor.class
-	    .getName());
+    public static Logger logger = Logger.getLogger(YUICompressor.class.getName());
 
     private static class YuiCompressorErrorReporter implements ErrorReporter {
 	@Override
-	public void warning(String message, String sourceName, int line,
-		String lineSource, int lineOffset) {
+	public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
 	    if (line < 0) {
 		logger.log(Level.WARNING, message);
 	    } else {
-		logger.log(Level.WARNING, line + ':' + lineOffset + ':'
-			+ message);
+		logger.log(Level.WARNING, line + ':' + lineOffset + ':' + message);
 	    }
 	}
 
 	@Override
-	public void error(String message, String sourceName, int line,
-		String lineSource, int lineOffset) {
+	public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
 	    if (line < 0) {
 		logger.log(Level.SEVERE, message);
 	    } else {
-		logger.log(Level.SEVERE, line + ":" + lineOffset + ":"
-			+ message);
+		logger.log(Level.SEVERE, line + ":" + lineOffset + ":" + message);
 	    }
 	}
 
 	@Override
-	public EvaluatorException runtimeError(String message,
-		String sourceName, int line, String lineSource, int lineOffset) {
+	public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
 	    error(message, sourceName, line, lineSource, lineOffset);
 	    return new EvaluatorException(message);
 	}
@@ -73,30 +67,25 @@ public class Compressor {
 	public String charset = "UTF-8";
     }
 
-    public static class lapstoneCompressorOptions {
-	public String charset = "UTF-8";
-    }
-
-    public static void compressJavaScript(String inputFilename,
-	    String outputFilename, JavascriptCompressorOptions o)
-	    throws Exception {
+    public static void compressJavaScript(String inputFilename, String outputFilename, JavascriptCompressorOptions o) throws Exception {
 
 	Reader in = null;
 	Writer out = null;
 
 	try {
-	    in = new InputStreamReader(new FileInputStream(inputFilename),
-		    o.charset);
+	    
+	    System.out.println();
+	    System.out.println("Compress js: " + inputFilename);
+	    System.out.println("  Rename to: " + outputFilename);
 
-	    JavaScriptCompressor compressor = new JavaScriptCompressor(in,
-		    new YuiCompressorErrorReporter());
+	    in = new InputStreamReader(new FileInputStream(inputFilename), o.charset);
+
+	    JavaScriptCompressor compressor = new JavaScriptCompressor(in, new YuiCompressorErrorReporter());
 	    in.close();
 	    in = null;
 
-	    out = new OutputStreamWriter(new FileOutputStream(outputFilename),
-		    o.charset);
-	    compressor.compress(out, o.lineBreakPos, o.munge, o.verbose,
-		    o.preserveAllSemiColons, o.disableOptimizations);
+	    out = new OutputStreamWriter(new FileOutputStream(outputFilename), o.charset);
+	    compressor.compress(out, o.lineBreakPos, o.munge, o.verbose, o.preserveAllSemiColons, o.disableOptimizations);
 	}
 
 	finally {
@@ -105,24 +94,20 @@ public class Compressor {
 	}
     }
 
-    public static void compressStylesheet(String inputFilename,
-	    String outputFilename, StylesheetCompressorOptions o)
-	    throws Exception {
+    public static void compressStylesheet(String inputFilename, String outputFilename, StylesheetCompressorOptions o) throws Exception {
 
 	Reader in = null;
 	Writer out = null;
 
 	try {
-	    in = new InputStreamReader(new FileInputStream(inputFilename),
-		    o.charset);
+	    in = new InputStreamReader(new FileInputStream(inputFilename), o.charset);
 
 	    CssCompressor compressor = new CssCompressor(in);
 
 	    in.close();
 	    in = null;
 
-	    out = new OutputStreamWriter(new FileOutputStream(outputFilename),
-		    o.charset);
+	    out = new OutputStreamWriter(new FileOutputStream(outputFilename), o.charset);
 	    compressor.compress(out, 0);
 	}
 
@@ -132,7 +117,4 @@ public class Compressor {
 	}
     }
 
-    public static void LapstoneCompression(String inputFilename) {
-
-    }
 }

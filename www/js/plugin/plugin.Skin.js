@@ -37,8 +37,19 @@ var plugin_Skin = {
 		if (plugin_Skin.config.useSkinPlugin) {
 			// load the skin's css files
 			$.each(plugin_Skin.config.skins[plugin_Skin.config.defaultSkin], function(index, cssFileUrl) {
-				app.debug.debug("plugin_Skin.pluginsLoaded() - Load css: " + cssFileUrl);
-				promises.push(app.load.css(cssFileUrl));
+				var url;
+
+				if (app.config.min) {
+					url = cssFileUrl.substring(0, cssFileUrl.lastIndexOf(".")) + "." + app.config.version.app + ".css";
+					app.debug.debug("plugin_Skin.pluginsLoaded() - Load css: " + url);
+					promises.push(app.load.css(url));
+				}
+
+				else {
+					url = cssFileUrl;
+					app.debug.debug("plugin_Skin.pluginsLoaded() - Load css: " + url);
+					promises.push(app.load.css(url));
+				}
 			});
 
 			promiseOfPromises = $.when.apply($, promises);
@@ -61,7 +72,7 @@ var plugin_Skin = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
-		app.debug.alert("plugin_Skin.pagesLoaded()", 11);
+		app.debug.trace("plugin_Skin.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
