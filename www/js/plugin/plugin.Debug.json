@@ -1,7 +1,7 @@
 {
 	"name": "Debug",
 	"shortname": "debug",
-	"debugDevice": false,
+	"debugDevice": true,
 	"debugLevels": 
 	{
 		"ALL": 0,
@@ -15,6 +15,6 @@
 		"OFF": 8
 	},
 
-	"consoleLevel": "ALL",
-	"logLevel": "ALL"
+	"consoleLevel": "INFO",
+	"logLevel": "OFF"
 }

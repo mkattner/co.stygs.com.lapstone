@@ -333,7 +333,7 @@ QUnit.test("Cache a webservice manually.", function(assert) {
 		cacheInMs : 500,
 		local : true
 	}
-	
+
 	done = assert.async();
 
 	app.rc.addWsd("myLocalWebservice", webservice);
@@ -349,5 +349,118 @@ QUnit.test("Cache a webservice manually.", function(assert) {
 
 		done();
 	}, 500);
+
+});
+
+QUnit.test("Get multiple local cached json objects. async = false", function(assert) {
+	var done;
+
+	done = assert.async();
+
+	ok(app.rc.addWsd("cacheableWs250", data.cacheableWs250), "app.rc.addWsd()");
+	ok(app.rc.addWsd("cacheableWs500", data.cacheableWs500), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson([ [ "cacheableWs250", null ], [ "cacheableWs500", null ] ], false), {
+		"cacheableWs250" : data.nestedObject,
+		"cacheableWs500" : data.nestedObject
+	}, 'app.rc.getJson([ [ "cacheableWs250", null ], [ "cacheableWs500", null ] ], false)');
+
+	deepEqual(app.rc.getJson([ [ "cacheableWs250", null ], [ "cacheableWs500", null ] ], false), {
+		"cacheableWs250" : data.nestedObject,
+		"cacheableWs500" : data.nestedObject
+	}, 'app.rc.getJson([ [ "cacheableWs250", null ], [ "cacheableWs500", null ] ], false)');
+
+	assert.deepEqual(app.rc.cacheJson("cacheableWs250", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs250", null)');
+	assert.deepEqual(app.rc.cacheJson("cacheableWs500", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs500", null)');
+
+	setTimeout(function() {
+		assert.notDeepEqual(app.rc.cacheJson("cacheableWs250", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs250", null)');
+		assert.deepEqual(app.rc.cacheJson("cacheableWs500", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs500", null)');
+
+		ok(app.rc.deleteWsd("cacheableWs250"), "app.rc.deleteWsd()");
+		ok(app.rc.deleteWsd("cacheableWs500"), "app.rc.deleteWsd()");
+
+		app.rc.removeCache("cacheableWs250");
+		app.rc.removeCache("cacheableWs500");
+
+		done();
+	}, 250);
+
+});
+
+QUnit.test("Get multiple local cached json objects. async = true", function(assert) {
+	var done;
+
+	done = assert.async();
+
+	ok(app.rc.addWsd("cacheableWs250", data.cacheableWs250), "app.rc.addWsd()");
+	ok(app.rc.addWsd("cacheableWs500", data.cacheableWs500), "app.rc.addWsd()");
+
+	app.rc.getJson([ [ "cacheableWs250", null ], [ "cacheableWs500", null ] ], true).done(function(result) {
+
+		assert.deepEqual(result['cacheableWs250'], data.nestedObject, 'validate result');
+		assert.deepEqual(result['cacheableWs500'], data.nestedObject, 'validate result');
+
+		assert.deepEqual(app.rc.cacheJson("cacheableWs250", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs250", null)');
+		assert.deepEqual(app.rc.cacheJson("cacheableWs500", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs500", null)');
+
+		setTimeout(function() {
+			assert.notDeepEqual(app.rc.cacheJson("cacheableWs250", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs250", null)');
+			assert.deepEqual(app.rc.cacheJson("cacheableWs500", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs500", null)');
+
+			ok(app.rc.deleteWsd("cacheableWs250"), "app.rc.deleteWsd()");
+			ok(app.rc.deleteWsd("cacheableWs500"), "app.rc.deleteWsd()");
+
+			app.rc.removeCache("cacheableWs250");
+			app.rc.removeCache("cacheableWs500");
+
+			done();
+		}, 250);
+	});
+
+});
+
+QUnit.test("Get a single local cached json object. async = true", function(assert) {
+	var done;
+
+	done = assert.async();
+
+	ok(app.rc.addWsd("cacheableWs250", data.cacheableWs250), "app.rc.addWsd()");
+
+	app.rc.getJson("cacheableWs250", null, true).done(function(result) {
+
+		assert.deepEqual(result, data.nestedObject, 'validate result');
+
+		assert.deepEqual(app.rc.cacheJson("cacheableWs250", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs250", null)');
+
+		setTimeout(function() {
+			assert.notDeepEqual(app.rc.cacheJson("cacheableWs250", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs250", null)');
+
+			ok(app.rc.deleteWsd("cacheableWs250"), "app.rc.deleteWsd()");
+
+			app.rc.removeCache("cacheableWs250");
+			done();
+		}, 250);
+	});
+
+});
+
+QUnit.test("Get a single local cached json object. async = false", function(assert) {
+	var done;
+
+	done = assert.async();
+
+	ok(app.rc.addWsd("cacheableWs250", data.cacheableWs250), "app.rc.addWsd()");
+
+	deepEqual(app.rc.getJson("cacheableWs250", null, false), data.nestedObject, 'app.rc.getJson("cacheableWs250", null, false)');
+
+	setTimeout(function() {
+		assert.deepEqual(app.rc.cacheJson("cacheableWs250", null), data.nestedObject, 'app.rc.cacheJson("cacheableWs250", null)');
+
+		ok(app.rc.deleteWsd("cacheableWs250"), "app.rc.deleteWsd()");
+
+		app.rc.removeCache("cacheableWs250");
+		done();
+	}, 100);
 
 });

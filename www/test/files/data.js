@@ -65,7 +65,7 @@ var data = {
 			}
 		}
 	},
-	
+
 	nestedArray : [ 1, 2, 3, [ 4.1, 4.2, 4.3, true, false, null ], 5, [ 6.1, 6.2, 6.3, 6.4 ], 7, 8, [ 9.1, 9.2, [ "9.3.1", "9.3.2" ] ], 10, [ 10.1, 10.2 ], [ 11.1, 11.2, 11.3 ] ],
 
 	simpleObject : {
@@ -75,7 +75,7 @@ var data = {
 		"boolean" : true,
 		"double" : 12.51
 	},
-	
+
 	simpleArray : [ 1, 2, true, false, null, "string" ],
 
 	simpleObjectWs : {
@@ -86,6 +86,7 @@ var data = {
 		cacheInMs : null,
 		local : true
 	},
+
 	simpleArrayWs : {
 		url : "files/ws.simpleArray.json",
 		method : "get",
@@ -94,6 +95,7 @@ var data = {
 		cacheInMs : null,
 		local : true
 	},
+
 	nestedObjectWs : {
 		url : "files/ws.nestedObject.json",
 		method : "get",
@@ -102,12 +104,31 @@ var data = {
 		cacheInMs : null,
 		local : true
 	},
+
 	nestedArrayWs : {
 		url : "files/ws.nestedArray.json",
 		method : "get",
 		timeout : 500,
 		cacheable : false,
 		cacheInMs : null,
+		local : true
+	},
+
+	cacheableWs250 : {
+		url : "files/ws.nestedObject.json",
+		method : "get",
+		timeout : 250,
+		cacheable : true,
+		cacheInMs : 250,
+		local : true
+	},
+	
+	cacheableWs500 : {
+		url : "files/ws.nestedObject.json",
+		method : "get",
+		timeout : 250,
+		cacheable : true,
+		cacheInMs : 500,
 		local : true
 	}
 }

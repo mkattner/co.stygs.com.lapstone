@@ -205,7 +205,10 @@ var plugin_Debug = {
 			var returnValue = "";
 
 			$.each(argumentsToPrint, function(index, argument) {
-				returnValue += argument + ", ";
+				if ($.isPlainObject(argument))
+					returnValue += JSON.stringify(argument) + ", ";
+				else
+					returnValue += argument + ", ";
 			});
 
 			return returnValue.substring(0, returnValue.length - 2);

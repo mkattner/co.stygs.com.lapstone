@@ -1107,15 +1107,13 @@ var pages = {
 						}
 
 						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()");
-						
-						
-						dfdPageCreation.resolve(container);
-						
+
+						window['page_' + container.attr('id')].setEvents(container);
+
 						window['page_' + container.attr('id')].async.done(container);
 						app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - enchant page");
-						
-						
-						
+
+						dfdPageCreation.resolve(container);
 
 					});
 
@@ -1138,24 +1136,25 @@ var pages = {
 				else {
 					app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - page IS NOT async");
 
+					window['page_' + container.attr('id')].setEvents(container);
+
 					window['page_' + container.attr('id')].creator(container);
-					
+
 					dfdPageCreation.resolve(container);
 				}
 
 				dfdPageCreation.done(function(container) {
-					window['page_' + container.attr('id')].setEvents(container);
-					
-					
-					// call plugins' page functions
-					app.debug.debug('Call: pages.callPluginsPageFunctions()');
-					pages.callPluginsPageFunctions(container);
-					app.debug.debug('add data- HTML Attributes');
-					
-					$.each(window['page_' + container.attr('id')].config, function(key, value) {
-						container.attr("data-" + key, value);
-					});
+
 					app.help.jQM.enhance(container);
+				});
+
+				// call plugins' page functions
+				app.debug.debug('Call: pages.callPluginsPageFunctions()');
+				pages.callPluginsPageFunctions(container);
+				app.debug.debug('add data- HTML Attributes');
+
+				$.each(window['page_' + container.attr('id')].config, function(key, value) {
+					container.attr("data-" + key, value);
 				});
 
 			},

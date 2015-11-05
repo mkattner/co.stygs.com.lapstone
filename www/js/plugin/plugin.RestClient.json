@@ -13,7 +13,9 @@
 		{
 			"url": "string url",
 			"method": "string method",
-			"timeout": "int timeout"
+			"timeout": "int timeout",
+			"cacheable": false,
+			"cacheInMs": 0
 		}
 	}
 }
