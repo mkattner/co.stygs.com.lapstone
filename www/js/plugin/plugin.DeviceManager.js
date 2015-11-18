@@ -41,22 +41,49 @@ var plugin_DeviceManager = {
 			if (app.detect.mobile.google.Android()) {
 
 				$('head').append(this.config.viewport.android);
-				js = this.config.files.android + ".js";
-				css = this.config.files.android + ".css";
-			} 
-			
+
+				if (app.config.min) {
+					js = this.config.files.android + ".js";
+					css = this.config.files.android + "." + app.config.version.app + ".css";
+				}
+
+				else {
+					js = this.config.files.android + ".js";
+					css = this.config.files.android + ".css";
+				}
+
+			}
+
 			else if (app.detect.mobile.apple.iOS()) {
 				$('head').append(this.config.viewport.ios)
-				js = this.config.files.ios + ".js";
-				css = this.config.files.ios + ".css";
-			} 
-			
+
+				if (app.config.min) {
+					js = this.config.files.ios + ".js";
+					css = this.config.files.ios + "." + app.config.version.app + ".css";
+				}
+
+				else {
+					js = this.config.files.ios + ".js";
+					css = this.config.files.ios + ".css";
+				}
+
+			}
+
 			else if (app.detect.mobile.microsoft.Windows()) {
 				$('head').append(this.config.viewport.windows)
-				js = this.config.files.windows + ".js";
-				css = this.config.files.windows + ".css";
-			} 
-			
+
+				if (app.config.min) {
+					js = this.config.files.windows + ".js";
+					css = this.config.files.windows + "." + app.config.version.app + ".css";
+				}
+
+				else {
+					js = this.config.files.windows + ".js";
+					css = this.config.files.windows + ".css";
+				}
+
+			}
+
 			else {
 				console.error("Unknown device!");
 			}

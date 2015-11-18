@@ -98,7 +98,7 @@ public class Release {
 
 		@Override
 		public boolean accept(File file) {
-		    if (file.getName().endsWith(".less.css"))
+		    if (file.getName().endsWith(".css.less"))
 			return true;
 		    return false;
 		}
@@ -112,10 +112,11 @@ public class Release {
 	    }, DirectoryFileFilter.DIRECTORY)) {
 		File cssFromLessFile = new File(lessFile.getAbsolutePath().replace(".less", ""));
 
-		System.out.println("computing less: " + lessFile.getAbsolutePath());
-		System.out.println("write less to css: " + cssFromLessFile.getAbsolutePath());
+		System.out.println("computing less file: " + lessFile.getAbsolutePath());
+		System.out.println("       write to css: " + cssFromLessFile.getAbsolutePath());
+		System.out.println();
 
-		Less.compile(lessFile, false);
+		FileUtils.write(cssFromLessFile, Less.compile(lessFile, false));
 
 	    }
 
@@ -192,54 +193,58 @@ public class Release {
 	for (File file : new File(www, "js/plugin").listFiles()) {
 	    System.out.println();
 	    System.out.println("Processing: " + file.getName());
-	    String currentFileContent = FileUtils.readFileToString(file);
+	    String currentFileContent;
 
-	    if (file.getName().startsWith(".")) {
-		currentFileContent = "";
-	    }
-
-	    else if (file.getName().equals("plugins.js")) {
-	    }
-
-	    else if (file.getName().equals("plugins.json")) {
-		currentFileContent = "var config_json = " + currentFileContent;
-	    }
-
-	    else if (file.getName().endsWith("js")) {
-		String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
-		System.out.println("Identifiyer: " + jsIdentifyer);
-
-		// Minify the js file
-
-		try {
-
-		    Compressor.compressJavaScript(file.getAbsolutePath(), file.getAbsolutePath(), new JavascriptCompressorOptions());
-
-		}
-
-		catch (Exception e) {
-		    throw new CompressorException(e);
-		}
+	    if (!file.isDirectory()) {
 
 		currentFileContent = FileUtils.readFileToString(file);
+
+		if (file.getName().startsWith(".")) {
+		    currentFileContent = "";
+		}
+
+		else if (file.getName().equals("plugins.js")) {
+		}
+
+		else if (file.getName().equals("plugins.json")) {
+		    currentFileContent = "var config_json = " + currentFileContent;
+		}
+
+		else if (file.getName().endsWith("js")) {
+		    String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
+		    System.out.println("Identifiyer: " + jsIdentifyer);
+
+		    // Minify the js file
+
+		    try {
+
+			Compressor.compressJavaScript(file.getAbsolutePath(), file.getAbsolutePath(), new JavascriptCompressorOptions());
+
+		    }
+
+		    catch (Exception e) {
+			throw new CompressorException(e);
+		    }
+
+		    currentFileContent = FileUtils.readFileToString(file);
+		}
+
+		else if (file.getName().endsWith("json")) {
+		    String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
+		    System.out.println("Identifiyer: " + jsIdentifyer);
+		    currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
+
+		}
+
+		// delete processed file
+		file.delete();
+
+		if (!currentFileContent.endsWith(";"))
+		    currentFileContent += ";";
+
+		allPluginsContent += currentFileContent;
 	    }
-
-	    else if (file.getName().endsWith("json")) {
-		String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
-		System.out.println("Identifiyer: " + jsIdentifyer);
-		currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
-
-	    }
-
-	    // delete processed file
-	    file.delete();
-
-	    if (!currentFileContent.endsWith(";"))
-		currentFileContent += ";";
-
-	    allPluginsContent += currentFileContent;
 	}
-
 	FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent);
     }
 

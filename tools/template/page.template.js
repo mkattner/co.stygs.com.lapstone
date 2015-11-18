@@ -22,7 +22,9 @@
 
 var page_##template = {
 	config : null,
+	
 	include: null,
+	
 	include_once: null,
 
 	elements : null,

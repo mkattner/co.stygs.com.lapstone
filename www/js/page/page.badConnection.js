@@ -20,6 +20,12 @@
 var page_badConnection = {
 	config : null,
 
+	include : null,
+
+	include_once : null,
+
+	elements : null,
+
 	constructor : function() {
 		app.debug.alert("page_" + this.config.name + ".constructor()", 10);
 		var dfd = $.Deferred();
@@ -46,6 +52,43 @@ var page_badConnection = {
 
 	},
 
+	async : {
+		promise : null,
+
+		result : null,
+
+		elements : null,
+
+		creator : function(container) {
+			app.debug.trace("page_##template.async.creator()");
+			var dfd = $.Deferred();
+			dfd.resolve();
+			return dfd.promise();
+		},
+
+		call : function(container) {
+			app.debug.trace("page_##template.async.call()");
+			return app.rc.getJson();
+		},
+
+		done : function(container) {
+			app.debug.trace("page_##template.async.done()");
+		},
+
+		fail : function(container) {
+			app.debug.trace("page_##template.async.fail()");
+			alert("WS fails: " + JSON.stringify(this.result));
+		},
+
+		always : function(container) {
+			app.debug.trace("page_##template.async.always()");
+		},
+
+		abort : function(container) {
+			app.debug.trace("page_##template.async.abort()");
+		}
+	},
+
 	// set the jquery events
 	setEvents : function(container) {
 		app.debug.alert("page_" + this.config.name + ".setEvents()", 10);
@@ -53,6 +96,8 @@ var page_badConnection = {
 			app.help.navigation.back();
 		});
 	},
+
+	functions : {},
 
 	events : {
 

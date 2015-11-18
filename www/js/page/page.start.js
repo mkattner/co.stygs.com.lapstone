@@ -73,6 +73,8 @@ var page_start = {
 
 	},
 
+	functions : {},
+
 	events : {
 
 		// Triggered twice during the page change cyle: First prior to any page

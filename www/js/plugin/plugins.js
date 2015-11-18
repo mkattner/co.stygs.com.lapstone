@@ -73,8 +73,10 @@ var plugins = {
 
 		$.each(plugins.config, function(pluginName, loaded) {
 			if (plugins.config.Debug && loaded) {
-				if (!window['plugin_' + pluginName].priv)
-					console.warn("The plugin " + pluginName + " has no priv object.");
+				;
+				// if (!window['plugin_' + pluginName].priv)
+				// console.warn("The plugin " + pluginName + " has no priv
+				// object.");
 			}
 		});
 
