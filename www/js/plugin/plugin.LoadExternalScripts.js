@@ -57,8 +57,7 @@ var plugin_LoadExternalScripts = {
 
       }
     });
-    
-    
+
     // less unordered
     app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered less styles");
     $.each(plugin_LoadExternalScripts.config.scripts.less, function(key, value) {
@@ -82,10 +81,6 @@ var plugin_LoadExternalScripts = {
 
       }
     });
-    
-    
-    
-    
 
     // scripts ordered
     app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered scripts");
@@ -117,6 +112,9 @@ var plugin_LoadExternalScripts = {
   pagesLoaded: function() {
     app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
     var dfd = $.Deferred();
+
+    if (!app.config.min) { return app.load.javascript("../ext/less/less.min.js"); }
+
     dfd.resolve();
     return dfd.promise();
   },
@@ -196,13 +194,46 @@ var plugin_LoadExternalScripts = {
 
     },
 
+    less: function(url) {
+      app.debug.trace("plugin_LoadExternalScripts.functions.less()");
+      var promise;
+      if (url in plugin_LoadExternalScripts.loadedScripts) {
+        app.debug.debug("plugin_LoadExternalScripts.functions.less() - less already loaded: " + url);
+
+        return $.Deferred().resolve();
+      }
+
+      else {
+        app.debug.debug("plugin_LoadExternalScripts.functions.less() - load css: " + url);
+        promise = globalLoader.AsyncLessLoader(url);
+
+        promise.done(function() {
+          app.debug.debug("plugin_LoadExternalScripts.functions.less() - css loading done: " + url);
+          app.debug.debug("plugin_LoadExternalScripts.functions.less() - add url to loadedScripts array");
+          plugin_LoadExternalScripts.loadedScripts[url] = true;
+        });
+
+        return promise;
+      }
+    },
+
     javascript: function(url) {
       app.debug.trace("plugin_LoadExternalScripts.functions.javascript()");
+      var promise;
       if (url in plugin_LoadExternalScripts.loadedScripts) {
-        ;// do nothing already loaded
+        app.debug.debug("plugin_LoadExternalScripts.functions.javascript() - javascript already loaded: " + url);
+
+        return $.Deferred().resolve();
       } else {
-        globalLoader.AsyncScriptLoader(url);
-        plugin_LoadExternalScripts.loadedScripts[url] = true;
+        promise = globalLoader.AsyncScriptLoader(url);
+
+        promise.done(function() {
+          app.debug.debug("plugin_LoadExternalScripts.functions.javascript() - javascript loading done: " + url);
+          app.debug.debug("plugin_LoadExternalScripts.functions.javascript() - add url to loadedScripts array");
+          plugin_LoadExternalScripts.loadedScripts[url] = true;
+        });
+
+        return promise;
       }
     }
   }

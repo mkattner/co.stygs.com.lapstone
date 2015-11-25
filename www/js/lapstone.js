@@ -484,9 +484,9 @@ var globalLoader = {
           dfd.reject(textStatus);
         }
       } else {
-        if ($("style")[0] == undefined) $('head').append("<style></style>");
+        if ($("style#lapstoneStyles")[0] == undefined) $('head').append($("<style>").attr("id", "lapstoneStyles"));
 
-        $("style").before('<link rel="stylesheet/less" type="text/css" href="' + url + '">');
+        $("style#lapstoneStyles").before('<link rel="stylesheet/less" type="text/css" href="' + url + '">');
         dfd.resolve(data);
       }
     }).fail(function(jqXHR, textStatus, errorThrown) {

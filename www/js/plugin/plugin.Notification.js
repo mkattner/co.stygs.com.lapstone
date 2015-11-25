@@ -115,7 +115,7 @@ var plugin_Notification = {
           plugin_Notification.callbackFunction = null;
         }
 
-        plugin_Notification.functions.close.all().done(plugin_Notification.popupShow);
+        plugin_Notification.functions.destroy.all().done(plugin_Notification.popupShow);
       });
 
       $("#popupAlert").popup("close");
@@ -134,7 +134,7 @@ var plugin_Notification = {
           plugin_Notification.callbackFunctionBtnLeft = null;
         }
 
-        plugin_Notification.functions.close.all().done(plugin_Notification.popupShow);
+        plugin_Notification.functions.destroy.all().done(plugin_Notification.popupShow);
       });
 
       $("#popupDialog").popup("close");
@@ -152,7 +152,7 @@ var plugin_Notification = {
           plugin_Notification.callbackFunctionBtnRight = null;
         }
 
-        plugin_Notification.functions.close.all().done(plugin_Notification.popupShow);
+        plugin_Notification.functions.destroy.all().done(plugin_Notification.popupShow);
       });
 
       $("#popupDialog").popup("close");
@@ -233,7 +233,7 @@ var plugin_Notification = {
 
           $("#popupAlert").popup("open");
         }, notification.delayInMs);
-        plugin_Notification.callbackFunction = notification.callback;
+        plugin_Notification.callbackFunction = notification.callbackButton;
         break;
 
       case "dialog":
@@ -362,6 +362,7 @@ var plugin_Notification = {
       }
 
       else {
+        app.debug.deprecated("Please use an object as argument.")
         notification = {
           "text": text,
           "title": title,
@@ -387,6 +388,7 @@ var plugin_Notification = {
       }
 
       else {
+        app.debug.deprecated("Please use an object as argument.")
         notification = {
           "text": text,
           "title": title,
@@ -405,7 +407,7 @@ var plugin_Notification = {
     },
 
     show: function(notification) {
-      plugin_Notification.functions.close.all().done(function() {
+      plugin_Notification.functions.destroy.all().done(function() {
 
         if (notification.delayInMs == undefined || notification.delayInMs == null) notification.delayInMs = 100;
         // alert(text.html());
@@ -414,11 +416,7 @@ var plugin_Notification = {
       });
     },
 
-    /**
-     * 
-     */
-    close: {
-
+    destroy: {
       /**
        * 
        */
@@ -478,9 +476,106 @@ var plugin_Notification = {
        */
       all: function() {
         var dfd = $.Deferred();
+        $.when(app.notify.destroy.alert(), app.notify.destroy.dialog()).done(function() {
+          dfd.resolve()
+        });
+        return dfd.promise();
+      }
+    },
+
+    /**
+     * 
+     */
+    close: {
+
+      /**
+       * 
+       */
+      alert: function() {
+        var dfd = $.Deferred();
+        if ($("#popupAlert").parent().hasClass("ui-popup-active")) {
+
+          $("#popupAlert").on("popupafterclose", function(event, ui) {
+            $("#popupAlert").off("popupafterclose");
+            dfd.resolve();
+          });
+
+          $("#popupAlert").popup("close");
+
+        }
+
+        else {
+          dfd.resolve();
+        }
+
+        return dfd.promise();
+      },
+
+      /**
+       * 
+       */
+      dialog: function() {
+        var dfd = $.Deferred();
+        if ($("#popupDialog").parent().hasClass("ui-popup-active")) {
+
+          $("#popupDialog").on("popupafterclose", function(event, ui) {
+            $("#popupDialog").off("popupafterclose");
+            dfd.resolve();
+          });
+
+          $("#popupDialog").popup("close");
+
+        }
+
+        else {
+          dfd.resolve();
+        }
+
+        return dfd.promise();
+      },
+
+      /**
+       * 
+       */
+      all: function() {
+        var dfd = $.Deferred();
         $.when(app.notify.close.alert(), app.notify.close.dialog()).done(function() {
           dfd.resolve()
         });
+        return dfd.promise();
+      }
+    },
+
+    open: {
+      /**
+       * 
+       */
+      alert: function() {
+        var dfd = $.Deferred();
+
+        $("#popupAlert").on("popupafteropen", function(event, ui) {
+          $("#popupAlert").off("popupafteropen");
+          dfd.resolve();
+        });
+
+        $("#popupAlert").popup("open");
+
+        return dfd.promise();
+      },
+
+      /**
+       * 
+       */
+      dialog: function() {
+        var dfd = $.Deferred();
+
+        $("#popupDialog").on("popupafteropen", function(event, ui) {
+          $("#popupDialog").off("popupafteropen");
+          dfd.resolve();
+        });
+
+        $("#popupDialog").popup("open");
+
         return dfd.promise();
       }
     },
@@ -537,29 +632,54 @@ var plugin_Notification = {
        * 
        */
       bubbleDiv: function(show, text, headline, appendTo) {
-        var object, loader;
-
-        object = show;
+        var object, loader, timeout;
 
         if ($.isPlainObject(show)) {
-          appendTo = object.appendTo;
-          headline = object.headline;
-          text = object.text;
-          show = object.show;
-        }
-        if (show) {
-          loader = app.template.get("app-loader-bubbleDiv");
-          if (text != undefined) {
-            loader.find("p").text(text);
-          }
-          if (headline != undefined) {
-            loader.find("h1").text(headline)
-          }
-          if (appendTo)
-            appendTo.append(loader);
-          else
-            $("div[data-role=content]").append(loader);
+          object = show;
+
         } else {
+          app.debug.deprecated("Please use an object as argument.");
+          object = {
+            "appendTo": appendTo,
+            "headline": headline,
+            "text": text,
+            "show": show
+          };
+        }
+
+        if (object.show) {
+
+          loader = app.template.get("app-loader-bubbleDiv");
+          if (object.text != undefined) {
+            loader.find("p").text(object.text);
+          }
+
+          if (object.headline != undefined) {
+            loader.find("h1").text(object.headline)
+          }
+
+          if (object.timeout) {
+            return timeout = window.setTimeout(function() {
+
+              if (object.appendTo)
+                object.appendTo.append(loader);
+              else
+                $("div[data-role=content]").append(loader);
+
+            }, object.timeout);
+
+          }
+
+          else {
+            if (object.appendTo)
+              object.appendTo.append(loader);
+            else
+              $("div[data-role=content]").append(loader);
+          }
+
+        }
+
+        else {
           plugin_Notification.functions.loader.remove();
         }
       },
