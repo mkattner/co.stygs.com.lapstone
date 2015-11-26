@@ -362,7 +362,7 @@ var plugin_Notification = {
       }
 
       else {
-        app.debug.deprecated("Please use an object as argument.")
+        app.debug.deprecated("Please use an object as argument.");
         notification = {
           "text": text,
           "title": title,
@@ -635,6 +635,7 @@ var plugin_Notification = {
         var object, loader, timeout;
 
         if ($.isPlainObject(show)) {
+        	app.debug.deprecated("Please use an object as argument.");
           object = show;
 
         } else {
