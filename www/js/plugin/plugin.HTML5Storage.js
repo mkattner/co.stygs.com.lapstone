@@ -52,7 +52,11 @@ var plugin_HTML5Storage = {
 		app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
 		// data-html5-<storage id>
 		$(document).on("click", "a", function(event) {
+		  
 			app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");
+			
+			//event.preventDefault();
+			
 			$.each($(this).attrs(), function(key, value) {
 				if (key.substring(0, 11).trim().toLowerCase() == "data-html5-") {
 					app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + key + " = " + value);

@@ -22,6 +22,11 @@
 		"exception"
 	],
 
+	"strictErrorKeys": 
+	[
+		"error"
+	],
+
 	"wse": 
 	{
 		"Template WebServiceErrorDefinition": 
