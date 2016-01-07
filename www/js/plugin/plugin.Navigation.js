@@ -59,6 +59,8 @@ var plugin_Navigation = {
 		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 		$("body").on("pagecontainerbeforetransition", function(event, ui) {
+		  app.debug.event(event);
+		  
 			if (plugin_Navigation.history.length > 0) {
 				if (plugin_Navigation.history[plugin_Navigation.history.length - 1].page != ui.toPage.attr("id")) {
 					plugin_Navigation.history.push({

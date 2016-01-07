@@ -20,20 +20,7 @@ var plugin_WebServiceError = {
   config: null,
   // called by plugins.js
   constructor: function() {
-    var dfd = $.Deferred(), hash, length, _char;
-
-    String.prototype.hashCode = function() {
-      hash = 0;
-      length = this.length;
-
-      if (length == 0) return hash;
-      for (i = 0; i < length; i++) {
-        _char = this.charCodeAt(i);
-        hash = ((hash << 5) - hash) + _char;
-        hash = hash & hash; // Convert to 32bit integer
-      }
-      return hash;
-    }
+    var dfd = $.Deferred();
 
     dfd.resolve();
     return dfd.promise();

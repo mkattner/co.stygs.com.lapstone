@@ -172,14 +172,20 @@ var plugin_Debug = {
 
     if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
       $(document).on('change', '#selConsoleLevel', function() {
+        app.debug.event(event);
+
         app.info.set("plugin_Debug.config.consoleLevel", $('#selConsoleLevel option:selected').val());
       });
 
       $(document).on('change', '#selLogLevel', function() {
+        app.debug.event(event);
+
         app.info.set("plugin_Debug.config.logLevel", $('#selLogLevel option:selected').val());
       });
 
       $(document).on('click', '#btnClose', function() {
+        app.debug.event(event);
+
         $('#divDebug').slideUp();
       })
     }
@@ -223,6 +229,12 @@ var plugin_Debug = {
     info: function(output) {
       // log debug output
       this.log(output, "INFO");
+    },
+
+    event: function(event) {
+      // log debug output
+      eventinger = event;
+      this.log("Type: " + event.type + " Target: " + event.target, "EVENT");
     },
 
     app: function(output) {
@@ -276,6 +288,15 @@ var plugin_Debug = {
       }
     },
 
+    validate: function(object) {
+      if (!object) {
+        plugin_Debug.functions.fatal();
+        throw new Error("Validation problem. Please look at the stacktrace.");
+      }
+    },
+
+    
+    
     alert: function(text, level) {
       console.warn("Dep. " + text);
     },

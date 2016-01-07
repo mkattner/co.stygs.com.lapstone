@@ -134,7 +134,7 @@ var plugin_Informator = {
 
     if (!configurationObject || configurationObject == undefined) return;
 
-    if (start == undefined) start = '';
+    if (start == undefined) start = "";
 
     $.each(configurationObject, function(key, value) {
       app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - compute  key/value pair");
@@ -149,7 +149,16 @@ var plugin_Informator = {
         if (app.store.localStorage.get(currentKey) === null) {
           app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' doesn't exists in html5 storage");
 
-          app.store.localStorage.set(currentKey, value);
+          app.debug.validate(plugin_Informator.config.firstLevelReservedNames);
+          if (plugin_Informator.config.firstLevelReservedNames.indexOf(key) != -1) {
+            app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' but it's in reserved list");
+           // alert();
+          }
+
+          else {
+            app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' write in html5 storage");
+            app.store.localStorage.set(currentKey, value);
+          }
         } else {
           app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' exists in html5 storage");
           plugin_Informator.loadValueIntoObject(currentKey);

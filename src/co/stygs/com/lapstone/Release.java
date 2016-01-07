@@ -151,8 +151,11 @@ public class Release {
 
 		@Override
 		public boolean accept(File file) {
-		    if (file.getName().endsWith(".css"))
+		    if (file.getName().endsWith(".css")) {
+			if (file.getName().equals("lapstone.css"))
+			    return false;
 			return true;
+		    }
 		    return false;
 		}
 

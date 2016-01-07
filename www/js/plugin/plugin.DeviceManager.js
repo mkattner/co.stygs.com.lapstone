@@ -92,12 +92,12 @@ var plugin_DeviceManager = {
 
 			scriptLoading.done(function() {
 				if (app[plugin_DeviceManager.config.shortname].current == undefined)
-					console.loc("app." + plugin_DeviceManager.config.shortname + ".current is undefined");
+					console.log("app." + plugin_DeviceManager.config.shortname + ".current is undefined");
 				else {
 					if (app[plugin_DeviceManager.config.shortname].current.constructor == undefined)
-						console.loc("app." + plugin_DeviceManager.config.shortname + ".current.constructor is undefined");
+						console.log("app." + plugin_DeviceManager.config.shortname + ".current.constructor is undefined");
 					if (app[plugin_DeviceManager.config.shortname].current.afterHtmlInjectedBeforePageComputing == undefined)
-						console.loc("app." + plugin_DeviceManager.config.shortname + ".current.afterHtmlInjectedBeforePageComputing is undefined");
+						console.log("app." + plugin_DeviceManager.config.shortname + ".current.afterHtmlInjectedBeforePageComputing is undefined");
 				}
 				app[plugin_DeviceManager.config.shortname]['current'].constructor();
 

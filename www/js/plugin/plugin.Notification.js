@@ -95,6 +95,8 @@ var plugin_Notification = {
      * 
      */
     $(document).on('pageshow', function(event) {
+      app.debug.event(event);
+
       if (!plugin_Notification.notifications) {
         plugin_Notification.notifications = app.store.localStorage.getObject("popup_notifications");
       }
@@ -104,18 +106,21 @@ var plugin_Notification = {
     });
 
     /**
-     * @listens click on #btn-alert
+     * @listens click on #popupAlert #btn-alert
      */
-    $(document).on("click", "#btn-alert", function() {
+    $(document).on("click", "#popupAlert #btn-alert", function(event) {
+      app.debug.event(event);
 
       $("#popupAlert").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
 
-        if (plugin_Notification.callbackFunction) {
-          plugin_Notification.callbackFunction($("#popupAlert"));
-          plugin_Notification.callbackFunction = null;
+        var callback = $(this).find("#btn-alert").data("callback");
+
+        if (callback) {
+          callback($("#popupAlert"));
         }
 
-        plugin_Notification.functions.destroy.all().done(plugin_Notification.popupShow);
+        plugin_Notification.functions.destroy.alert().done(plugin_Notification.popupShow);
       });
 
       $("#popupAlert").popup("close");
@@ -123,39 +128,111 @@ var plugin_Notification = {
     });
 
     /**
-     * @listens click on #btn-dialog-left
+     * @listens click on #popupDialog #btn-dialog-left
      */
-    $(document).on("click", "#btn-dialog-left", function() {
+    $(document).on("click", "#popupDialog #btn-dialog-left", function(event) {
+      app.debug.event(event);
 
       $("#popupDialog").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
 
-        if (plugin_Notification.callbackFunctionBtnLeft) {
-          plugin_Notification.callbackFunctionBtnLeft($("#popupDialog"));
-          plugin_Notification.callbackFunctionBtnLeft = null;
+        var callback = $(this).find("#btn-dialog-left").data("callback");
+
+        if (callback) {
+          callback($("#popupDialog"));
         }
 
-        plugin_Notification.functions.destroy.all().done(plugin_Notification.popupShow);
+        plugin_Notification.functions.destroy.dialog().done(plugin_Notification.popupShow);
       });
 
       $("#popupDialog").popup("close");
     });
 
     /**
-     * @listens click on #btn-dialog-right
+     * @listens click on #popupDialog #btn-dialog-right
      */
-    $(document).on("click", "#btn-dialog-right", function() {
+    $(document).on("click", "#popupDialog #btn-dialog-right", function(event) {
+      app.debug.event(event);
 
       $("#popupDialog").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
 
-        if (plugin_Notification.callbackFunctionBtnRight) {
-          plugin_Notification.callbackFunctionBtnRight($("#popupDialog"));
-          plugin_Notification.callbackFunctionBtnRight = null;
+        var callback = $(this).find("#btn-dialog-right").data("callback");
+
+        if (callback) {
+          callback($("#popupDialog"));
         }
 
-        plugin_Notification.functions.destroy.all().done(plugin_Notification.popupShow);
+        plugin_Notification.functions.destroy.dialog().done(plugin_Notification.popupShow);
       });
 
       $("#popupDialog").popup("close");
+
+    });
+
+    /**
+     * @listens click on #popupTrialog #btn-trialog-right
+     */
+    $(document).on("click", "#popupTrialog #btn-trialog-left", function(event) {
+      app.debug.event(event);
+
+      $("#popupTrialog").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
+
+        var callback = $(this).find("#btn-trialog-left").data("callback");
+
+        if (callback) {
+          callback($("#popupTrialog"));
+        }
+
+        plugin_Notification.functions.destroy.trialog().done(plugin_Notification.popupShow);
+      });
+
+      $("#popupTrialog").popup("close");
+
+    });
+
+    /**
+     * @listens click on #popupTrialog #btn-trialog-right
+     */
+    $(document).on("click", "#popupTrialog #btn-trialog-center", function(event) {
+      app.debug.event(event);
+
+      $("#popupTrialog").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
+
+        var callback = $(this).find("#btn-trialog-center").data("callback");
+
+        if (callback) {
+          callback($("#popupTrialog"));
+        }
+
+        plugin_Notification.functions.destroy.trialog().done(plugin_Notification.popupShow);
+      });
+
+      $("#popupTrialog").popup("close");
+
+    });
+
+    /**
+     * @listens click on #popupTrialog #btn-trialog-right
+     */
+    $(document).on("click", "#popupTrialog #btn-trialog-right", function(event) {
+      app.debug.event(event);
+
+      $("#popupTrialog").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
+
+        var callback = $(this).find("#btn-trialog-right").data("callback");
+
+        if (callback) {
+          callback($("#popupTrialog"));
+        }
+
+        plugin_Notification.functions.destroy.trialog().done(plugin_Notification.popupShow);
+      });
+
+      $("#popupTrialog").popup("close");
 
     });
 
@@ -167,17 +244,6 @@ var plugin_Notification = {
   // called for each page after createPage();
   afterHtmlInjectedBeforePageComputing: function(container) {
     app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
-
-    // alert('insert popups');
-    // alert($("body #popupDialog").length);
-    // $("body #popupDialog").remove();
-    // $("body #popupAlert").remove();
-    // if (($("body #popupDialog").length == 0))
-    // app.template.append("#" + $(container).attr("id"),
-    // "JQueryMobilePopupDialog");
-    // if (($("body #popupAlert").length == 0))
-    // app.template.append("#" + $(container).attr("id"),
-    // "JQueryMobilePopupAlert");
 
   },
   // called once
@@ -195,92 +261,164 @@ var plugin_Notification = {
       switch (notification.type) {
 
       case "alert":
-        setTimeout(function() {
-          app.template.append("[data-role=page]", "JQueryMobilePopupAlert");
+        plugin_Notification.functions.destroy.alert().done(function() {
+          setTimeout(function() {
+            app.template.append("[data-role=page]", "JQueryMobilePopupAlert");
 
-          $("#popupAlert").popup();
+            $("#popupAlert").one("popupafteropen", function(event, ui) {
+              app.debug.event(event);
 
-          if (notification.width) $("#popupAlert-popup").css("width", notification.width);
+              $("#popupAlert #btn-alert").data("callback", notification.callbackButton);
+            });
 
-          if (notification.title) {
-            $("#popupAlert div[data-role=header] h1").text(notification.title);
-            $("#popupAlert div[data-role=header] h1").css("display", "block");
-          }
+            $("#popupAlert").popup();
 
-          else {
-            $("#popupAlert div[data-role=header] h1").css("display", "none");
-          }
+            if (notification.width) $("#popupAlert-popup").css("width", notification.width);
 
-          if (notification.headline) {
-            $("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
-            $("#popupAlert div.ui-content h3.ui-title").css("display", "block");
-          }
+            if (notification.title) {
+              $("#popupAlert div[data-role=header] h1").text(notification.title);
+              $("#popupAlert div[data-role=header] h1").css("display", "block");
+            }
 
-          else {
-            $("#popupAlert div.ui-content h3.ui-title").css("display", "none");
-          }
+            else {
+              $("#popupAlert div[data-role=header] h1").css("display", "none");
+            }
 
-          $("#popupAlert #btn-alert").text(notification.button);
+            if (notification.headline) {
+              $("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
+              $("#popupAlert div.ui-content h3.ui-title").css("display", "block");
+            }
 
-          if (typeof notification.text == "object") {
-            $("#popupAlert div.ui-content p").replaceWith(notification.text);
+            else {
+              $("#popupAlert div.ui-content h3.ui-title").css("display", "none");
+            }
 
-          }
+            $("#popupAlert #btn-alert").text(notification.button);
 
-          else {
-            $("#popupAlert div.ui-content p").html(notification.text);
-          }
+            if (typeof notification.text == "object") {
+              $("#popupAlert div.ui-content p").replaceWith(notification.text);
 
-          $("#popupAlert").popup("open");
-        }, notification.delayInMs);
-        plugin_Notification.callbackFunction = notification.callbackButton;
+            }
+
+            else {
+              $("#popupAlert div.ui-content p").html(notification.text);
+            }
+
+            $("#popupAlert").popup("open");
+
+          }, notification.delayInMs);
+        });
+
         break;
 
       case "dialog":
+        plugin_Notification.functions.destroy.dialog().done(function() {
+          setTimeout(function() {
+            app.template.append("[data-role=page]", "JQueryMobilePopupDialog");
 
-        setTimeout(function() {
-          app.template.append("[data-role=page]", "JQueryMobilePopupDialog");
+            $("#popupDialog").one("popupafteropen", function(event, ui) {
+              app.debug.event(event);
 
-          $("#popupDialog").popup();
+              $("#popupDialog #btn-dialog-left").data("callback", notification.callbackButtonLeft);
+              $("#popupDialog #btn-dialog-right").data("callback", notification.callbackButtonRight);
+            });
 
-          if (notification.width) $("#popupDialog-popup").css("width", notification.width);
+            $("#popupDialog").popup();
 
-          if (notification.title) {
-            $("#popupDialog div[data-role=header] h1").text(notification.title);
-            $("#popupDialog div[data-role=header] h1").css("display", "block");
-          }
+            if (notification.width) $("#popupDialog-popup").css("width", notification.width);
 
-          else {
-            $("#popupDialog div[data-role=header] h1").css("display", "none");
-          }
+            if (notification.title) {
+              $("#popupDialog div[data-role=header] h1").text(notification.title);
+              $("#popupDialog div[data-role=header] h1").css("display", "block");
+            }
 
-          if (notification.headline) {
-            $("#popupDialog div.ui-content h3.ui-title").text(notification.headline);
-            $("#popupDialog div.ui-content h3.ui-title").css("display", "block");
-          }
+            else {
+              $("#popupDialog div[data-role=header] h1").css("display", "none");
+            }
 
-          else {
-            $("#popupDialog div.ui-content h3.ui-title").css("display", "none");
-          }
+            if (notification.headline) {
+              $("#popupDialog div.ui-content h3.ui-title").text(notification.headline);
+              $("#popupDialog div.ui-content h3.ui-title").css("display", "block");
+            }
 
-          $("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
-          $("#popupDialog #btn-dialog-right").text(notification.buttonRight);
+            else {
+              $("#popupDialog div.ui-content h3.ui-title").css("display", "none");
+            }
 
-          if (typeof notification.text == "object") {
-            $("#popupDialog div.ui-content p").replaceWith(notification.text);
-          }
+            $("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
+            $("#popupDialog #btn-dialog-right").text(notification.buttonRight);
 
-          else {
-            $("#popupDialog div.ui-content p").html(notification.text);
-          }
-          $("#popupDialog").popup("open");
-          // $("#popupDialog").popup("reposition");
-        }, notification.delayInMs);
-        plugin_Notification.callbackFunctionBtnLeft = notification.callbackButtonLeft;
-        plugin_Notification.callbackFunctionBtnRight = notification.callbackButtonRight;
+            if (typeof notification.text == "object") {
+              $("#popupDialog div.ui-content p").replaceWith(notification.text);
+            }
+
+            else {
+              $("#popupDialog div.ui-content p").html(notification.text);
+            }
+            
+            $("#popupDialog").popup("open");
+
+          }, notification.delayInMs);
+        });
+
         break;
+
+      case "trialog":
+        plugin_Notification.functions.destroy.trialog().done(function() {
+          setTimeout(function() {
+            app.template.append("[data-role=page]", "JQueryMobilePopupTrialog");
+
+            $("#popupTrialog").one("popupafteropen", function(event, ui) {
+              app.debug.event(event);
+
+              $("#popupTrialog #btn-trialog-left").data("callback", notification.callbackButtonLeft);
+              $("#popupTrialog #btn-trialog-center").data("callback", notification.callbackButtonCenter);
+              $("#popupTrialog #btn-trialog-right").data("callback", notification.callbackButtonRight);
+            });
+
+            $("#popupTrialog").popup();
+
+            if (notification.width) $("#popupTrialog-popup").css("width", notification.width);
+
+            if (notification.title) {
+              $("#popupTrialog div[data-role=header] h1").text(notification.title);
+              $("#popupTrialog div[data-role=header] h1").css("display", "block");
+            }
+
+            else {
+              $("#popupTrialog div[data-role=header] h1").css("display", "none");
+            }
+
+            if (notification.headline) {
+              $("#popupTrialog div.ui-content h3.ui-title").text(notification.headline);
+              $("#popupTrialog div.ui-content h3.ui-title").css("display", "block");
+            }
+
+            else {
+              $("#popupTrialog div.ui-content h3.ui-title").css("display", "none");
+            }
+
+            $("#popupTrialog #btn-trialog-left").text(notification.buttonLeft);
+            $("#popupTrialog #btn-trialog-center").text(notification.buttonCenter);
+            $("#popupTrialog #btn-trialog-right").text(notification.buttonRight);
+
+            if (typeof notification.text == "object") {
+              $("#popupTrialog div.ui-content p").replaceWith(notification.text);
+            }
+
+            else {
+              $("#popupTrialog div.ui-content p").html(notification.text);
+            }
+            
+            $("#popupTrialog").popup("open");
+
+          }, notification.delayInMs);
+        });
+
+        break;
+
       default:
-        alert("error in popupShow();");
+        app.debug.error("error in popupShow();");
         break;
       }
 
@@ -406,8 +544,21 @@ var plugin_Notification = {
       plugin_Notification.functions.show(notification);
     },
 
+    trialog: function(notification) {
+
+      if (!$.isPlainObject(notification)) {
+        app.debug.deprecated("Please use an object as argument.");
+        return null;
+      }
+
+      notification.type = "trialog";
+
+      plugin_Notification.functions.show(notification);
+    },
+
     show: function(notification) {
-      plugin_Notification.functions.destroy.all().done(function() {
+      app.debug.info("plugin_Notification.functions.show() - open popup: " + JSON.stringify(notification));
+      plugin_Notification.functions.close.all().done(function() {
 
         if (notification.delayInMs == undefined || notification.delayInMs == null) notification.delayInMs = 100;
         // alert(text.html());
@@ -416,15 +567,20 @@ var plugin_Notification = {
       });
     },
 
+    /**
+     * popup destroy functions
+     */
     destroy: {
       /**
-       * 
+       * destroy alert
        */
       alert: function() {
         var dfd = $.Deferred();
         if ($("#popupAlert").parent().hasClass("ui-popup-active")) {
 
           $("#popupAlert").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
             $("#popupAlert").off("popupafterclose");
             $('#popupAlert').popup("destroy");
             $('#popupAlert').remove();
@@ -445,13 +601,15 @@ var plugin_Notification = {
       },
 
       /**
-       * 
+       * destroy dialog
        */
       dialog: function() {
         var dfd = $.Deferred();
         if ($("#popupDialog").parent().hasClass("ui-popup-active")) {
 
           $("#popupDialog").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
             $("#popupDialog").off("popupafterclose");
             $('#popupDialog').popup("destroy");
             $('#popupDialog').remove();
@@ -472,11 +630,40 @@ var plugin_Notification = {
       },
 
       /**
+       * destroy trialog
+       */
+      trialog: function() {
+        var dfd = $.Deferred();
+        if ($("#popupTrialog").parent().hasClass("ui-popup-active")) {
+
+          $("#popupTrialog").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
+            $("#popupTrialog").off("popupafterclose");
+            $('#popupTrialog').popup("destroy");
+            $('#popupTrialog').remove();
+            dfd.resolve();
+          });
+
+          $("#popupTrialog").popup("close");
+
+        }
+
+        else {
+          $('#popupTrialog').popup("destroy");
+          $('#popupTrialog').remove();
+          dfd.resolve();
+        }
+
+        return dfd.promise();
+      },
+
+      /**
        * 
        */
       all: function() {
         var dfd = $.Deferred();
-        $.when(app.notify.destroy.alert(), app.notify.destroy.dialog()).done(function() {
+        $.when(app.notify.destroy.alert(), app.notify.destroy.dialog(), app.notify.destroy.trialog()).done(function() {
           dfd.resolve()
         });
         return dfd.promise();
@@ -484,18 +671,20 @@ var plugin_Notification = {
     },
 
     /**
-     * 
+     * popup close funtions
      */
     close: {
 
       /**
-       * 
+       * close alert
        */
       alert: function() {
         var dfd = $.Deferred();
         if ($("#popupAlert").parent().hasClass("ui-popup-active")) {
 
           $("#popupAlert").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
             $("#popupAlert").off("popupafterclose");
             dfd.resolve();
           });
@@ -512,13 +701,15 @@ var plugin_Notification = {
       },
 
       /**
-       * 
+       * close dialog
        */
       dialog: function() {
         var dfd = $.Deferred();
         if ($("#popupDialog").parent().hasClass("ui-popup-active")) {
 
           $("#popupDialog").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
             $("#popupDialog").off("popupafterclose");
             dfd.resolve();
           });
@@ -535,25 +726,55 @@ var plugin_Notification = {
       },
 
       /**
-       * 
+       * close trialog
+       */
+      trialog: function() {
+        var dfd = $.Deferred();
+        if ($("#popupTrialog").parent().hasClass("ui-popup-active")) {
+
+          $("#popupTrialog").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
+            $("#popupTrialog").off("popupafterclose");
+            dfd.resolve();
+          });
+
+          $("#popupTrialog").popup("close");
+
+        }
+
+        else {
+          dfd.resolve();
+        }
+
+        return dfd.promise();
+      },
+
+      /**
+       * close all
        */
       all: function() {
         var dfd = $.Deferred();
-        $.when(app.notify.close.alert(), app.notify.close.dialog()).done(function() {
+        $.when(app.notify.close.alert(), app.notify.close.dialog(), app.notify.close.trialog()).done(function() {
           dfd.resolve()
         });
         return dfd.promise();
       }
     },
 
+    /**
+     * popup open functions
+     */
     open: {
       /**
-       * 
+       * open alert
        */
       alert: function() {
         var dfd = $.Deferred();
 
         $("#popupAlert").on("popupafteropen", function(event, ui) {
+          app.debug.event(event);
+
           $("#popupAlert").off("popupafteropen");
           dfd.resolve();
         });
@@ -564,17 +785,37 @@ var plugin_Notification = {
       },
 
       /**
-       * 
+       * open dialog
        */
       dialog: function() {
         var dfd = $.Deferred();
 
         $("#popupDialog").on("popupafteropen", function(event, ui) {
+          app.debug.event(event);
+
           $("#popupDialog").off("popupafteropen");
           dfd.resolve();
         });
 
         $("#popupDialog").popup("open");
+
+        return dfd.promise();
+      },
+
+      /**
+       * open trialog
+       */
+      trialog: function() {
+        var dfd = $.Deferred();
+
+        $("#popupTrialog").on("popupafteropen", function(event, ui) {
+          app.debug.event(event);
+
+          $("#popupTrialog").off("popupafteropen");
+          dfd.resolve();
+        });
+
+        $("#popupTrialog").popup("open");
 
         return dfd.promise();
       }
@@ -635,7 +876,7 @@ var plugin_Notification = {
         var object, loader, timeout;
 
         if ($.isPlainObject(show)) {
-        	app.debug.deprecated("Please use an object as argument.");
+          app.debug.deprecated("Please use an object as argument.");
           object = show;
 
         } else {

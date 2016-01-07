@@ -18,7 +18,7 @@
 
 var plugin_RestClient = {
   config: null,
-  cachedWebserviceIndentifyer: "_t_cachedWebservice",
+  cachedWebserviceIndentifyer: "_t_cachedWebservice_",
 
   constructor: function() {
     var dfd = $.Deferred();
@@ -545,15 +545,23 @@ var plugin_RestClient = {
     },
 
     removeCache: function(serviceName, parameter) {
-      app.store.localStorage.removeObject("_t_ws_" + serviceName);
+      app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
+      app.store.localStorage.removeObject(plugin_RestClient.cachedWebserviceIndentifyer + serviceName);
+      return true;
+    },
+
+    clearCache: function(serviceName, parameter) {
+      app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
+      app.store.localStorage.removeItem(plugin_RestClient.cachedWebserviceIndentifyer + "*");
       return true;
     },
 
     cacheJson: function(serviceName, parameter, data) {
       app.debug.trace("plugin_RestClient.functions.cacheJson(" + app.debug.arguments(arguments) + ")");
-      var cachedWs, wsd;
+      var cachedWs, wsd, uniqueWsIdentifyer;
 
       wsd = app.rc.getWsd(serviceName);
+      uniqueWsIdentifyer = (serviceName + JSON.stringify(parameter)).hashCode();
 
       if (wsd.cacheable) {
         app.debug.debug("plugin_RestClient.functions.cacheJson() - case: webservice is cacheable");
@@ -568,16 +576,22 @@ var plugin_RestClient = {
             data: JSON.stringify(data)
           };
 
-          app.store.localStorage.setObject("_t_ws_" + serviceName, cachedWs);
+          app.store.localStorage.setObject(plugin_RestClient.cachedWebserviceIndentifyer + uniqueWsIdentifyer, cachedWs);
 
           return true;
         }
 
         // restore from local storage
-        else if ((cachedWs = app.store.localStorage.getObject("_t_ws_" + serviceName))) {
+        else if ((cachedWs = app.store.localStorage.getObject(plugin_RestClient.cachedWebserviceIndentifyer + uniqueWsIdentifyer))) {
           app.debug.debug("plugin_RestClient.functions.cacheJson() - case: restore from local storage");
 
-          if (JSON.stringify(parameter) !== JSON.stringify(cachedWs.parameter)) {
+          app.debug.debug("plugin_RestClient.functions.cacheJson() - parameter:        " + JSON.stringify(parameter));
+          app.debug.debug("plugin_RestClient.functions.cacheJson() - cached parameter: " + JSON.stringify(cachedWs.parameter));
+
+          app.debug.debug("plugin_RestClient.functions.cacheJson() - valid until: " + (cachedWs.cachetimestamp + wsd.cacheInMs));
+          app.debug.debug("plugin_RestClient.functions.cacheJson() - now:         " + Date.now());
+
+          if (!_.isEqual(parameter, cachedWs.parameter)) {
             app.debug.debug("plugin_RestClient.functions.cacheJson() - case: parameter not equal");
             return false;
           }
@@ -588,7 +602,9 @@ var plugin_RestClient = {
           }
 
           else {
+
             app.debug.debug("plugin_RestClient.functions.cacheJson() - case: return data");
+            app.debug.debug("plugin_RestClient.functions.cacheJson() - data: " + cachedWs.data);
             return JSON.parse(cachedWs.data);
           }
         }

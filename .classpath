@@ -8,7 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="javalib/commons-io-2.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="javalib/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="javalib/yuicompressor-2.4.8.jar"/>
 	<classpathentry kind="lib" path="javalib/jackson-core-2.6.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="javalib/jackson-core-2.6.0.jar"/>
 	<classpathentry kind="lib" path="javalib/jackson-databind-2.6.0.jar"/>
@@ -16,5 +15,8 @@
 	<classpathentry kind="lib" path="javalib/jackson-annotations-2.6.0.jar"/>
 	<classpathentry kind="lib" path="javalib/jlessc-1.1-javadoc.jar"/>
 	<classpathentry kind="lib" path="javalib/jlessc-1.1.jar"/>
+	<classpathentry kind="lib" path="javalib/org.eclipse.jgit-4.1.1.201511131810-r-javadoc.jar"/>
+	<classpathentry kind="lib" path="javalib/org.eclipse.jgit-4.1.1.201511131810-r.jar"/>
+	<classpathentry kind="lib" path="javalib/yuicompressor-2.4.8.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

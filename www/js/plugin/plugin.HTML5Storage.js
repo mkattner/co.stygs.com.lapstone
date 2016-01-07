@@ -52,16 +52,26 @@ var plugin_HTML5Storage = {
 		app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
 		// data-html5-<storage id>
 		$(document).on("click", "a", function(event) {
+		  app.debug.event(event);
 		  
 			app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");
 			
 			//event.preventDefault();
 			
-			$.each($(this).attrs(), function(key, value) {
-				if (key.substring(0, 11).trim().toLowerCase() == "data-html5-") {
-					app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + key + " = " + value);
-					plugin_HTML5Storage.functions.localStorage.set(key, value);
+			$.each($(this).attrs(), function(attributeName, attributeValue) {
+			  
+			  
+				if (attributeName.substring(0, 11).trim().toLowerCase() == "data-html5-") {
+				  app.debug.deprecated("data-html5- attribute to persist element attributes is deprecated. Use: data-app-")
+					app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + attributeName + " = " + attributeValue);
+					plugin_HTML5Storage.functions.localStorage.set(attributeName, attributeValue);
 				}
+				
+				else if (attributeName.substring(0, 9).trim().toLowerCase() == "data-app-") {
+          app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + attributeName + " = " + attributeValue);
+          plugin_HTML5Storage.functions.localStorage.set(attributeName, attributeValue);
+        }
+				
 			});
 			app.debug.debug("plugin_HTML5Storage.definePluginEvents() - trigger: storagefilled");
 			$(this).trigger("storagefilled");

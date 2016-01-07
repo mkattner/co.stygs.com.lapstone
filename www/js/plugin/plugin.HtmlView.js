@@ -68,6 +68,8 @@ var plugin_HtmlView = {
 		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 		$(document).on("pagecontainerbeforetransition", function(event, ui) {
+		  app.debug.event(event);
+		  
 			//alert("pagecontainerbeforetransition");
 			var pageId, context, text;
 			pageId = ui.toPage.attr('id');

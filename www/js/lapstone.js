@@ -30,6 +30,18 @@ var app = {
   }
 };
 
+function initialisation() {
+  var dfd;
+
+  dfd = $.Deferred();
+
+  initialisationPanel.start();
+  extendJsAndJquery();
+
+  dfd.resolve();
+  return dfd.promise();
+}
+
 function loadPlugins() {
   var dfd = $.Deferred(), url, promise;
 
@@ -430,9 +442,11 @@ var globalLoader = {
           dfd.reject(textStatus);
         }
       } else {
+
         if ($("style")[0] == undefined) $('head').append("<style></style>");
 
         $("style").before('<link rel="stylesheet" type="text/css" href="' + url + '">');
+
         dfd.resolve(data);
       }
     }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -655,7 +669,7 @@ var initialisationPanel = {
 
 var startupDefinition = [{
   "status": "lapstone starts initialisation",
-  "function": initialisationPanel.start,
+  "function": initialisation(),
   "parameter": "",
   "result": "",
   "image": "start"
@@ -771,16 +785,30 @@ $(document).ready(function() {
   inititalisationPromise.done(function() {
     // alert("init done");
     setTimeout(function() {
+
       initialisationPanel.finish();
+
+      // trigger the lapstone initialisation event
       $(document).trigger("lapstone");
+
       console.log("Lapstone started in " + ((Date.now() - startupDuration) / 1000) + "seconds");
     }, 200);
-  }).fail(function() {
-    if (confirm("App loading failed. Confirm to reload the app."))
+  });
+
+  inititalisationPromise.fail(function() {
+
+    throw new Error("Initialisation problem. Please look at the stacktrace.");
+
+    if (confirm("App initialisation failed. Confirm to reload the app.")) {
       location.reload();
-    else
-      alert("App loading failed. Close the app and restart again");
-  }).always(function() {
+    }
+
+    else {
+      alert("App initialisation failed. Close the app and restart again");
+    }
+  });
+
+  inititalisationPromise.always(function() {
     // alert();
     app.info.set("app.config.version.update", false);
   });
@@ -792,4 +820,23 @@ function handleOpenURL(url) {
   setTimeout(function() {
     alert(url);
   }, 0);
+}
+
+/**
+ * some functions
+ */
+function extendJsAndJquery() {
+  String.prototype.hashCode = function() {
+    var hash, length, _char;
+    hash = 0;
+    length = this.length;
+
+    if (length == 0) return hash;
+    for (i = 0; i < length; i++) {
+      _char = this.charCodeAt(i);
+      hash = ((hash << 5) - hash) + _char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+  }
 }

@@ -53,6 +53,11 @@
 			"url": "../template/JQueryMobilePopupDialog.html"
 		},
 
+		"JQueryMobilePopupTrialog": 
+		{
+			"url": "../template/JQueryMobilePopupTrialog.html"
+		},
+
 		"JQueryMobilePopupAlert": 
 		{
 			"url": "../template/JQueryMobilePopupAlert.html"
