@@ -83,29 +83,31 @@ var plugin_LoadExternalScripts = {
     /**
      * less unordered
      */
-    app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered less styles");
+    promises.slice(-1).pop().done(function() {
+      app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered less styles");
 
-    app.debug.validate(plugin_LoadExternalScripts.config.scripts.less);
-    $.each(plugin_LoadExternalScripts.config.scripts.less, function(key, value) {
-      if (value) {
-        if (key in plugin_LoadExternalScripts.loadedScripts) {
-          ;// do nothing already loaded
-        } else {
-          if (app.config.min) {
-            url = key.substring(0, key.lastIndexOf(".")) + "." + app.config.version.app + ".css";
-            promises.push(globalLoader.AsyncStyleLoader(url));
-            plugin_LoadExternalScripts.loadedScripts[url] = true;
-          }
+      app.debug.validate(plugin_LoadExternalScripts.config.scripts.less);
+      $.each(plugin_LoadExternalScripts.config.scripts.less, function(key, value) {
+        if (value) {
+          if (key in plugin_LoadExternalScripts.loadedScripts) {
+            ;// do nothing already loaded
+          } else {
+            if (app.config.min) {
+              url = key.substring(0, key.lastIndexOf(".")) + "." + app.config.version.app + ".css";
+              promises.push(globalLoader.AsyncStyleLoader(url));
+              plugin_LoadExternalScripts.loadedScripts[url] = true;
+            }
 
-          else {
-            url = key + ".less";
-            promises.push(globalLoader.AsyncLessLoader(url));
-            plugin_LoadExternalScripts.loadedScripts[url] = true;
+            else {
+              url = key + ".less";
+              promises.push(globalLoader.AsyncLessLoader(url));
+              plugin_LoadExternalScripts.loadedScripts[url] = true;
+            }
+
           }
 
         }
-
-      }
+      });
     });
 
     /**

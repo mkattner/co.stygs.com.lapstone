@@ -1,0 +1,32 @@
+#LAPSTONE {
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	background: url('../img/background.jpg') no-repeat fixed center top/cover transparent;
+	text-align: center;
+	z-index: 1000;
+}
+
+#LAPSTONE>div#lapstone-content {
+	position: relative;
+	top: 15%;
+}
+
+#LAPSTONE>div#lapstone-content>.lapstone-status {
+	display: none;
+}
+
+#LAPSTONE>div#lapstone-progress {
+	position: absolute;
+	width: 100%;
+	bottom: 10px;
+}
+
+/* 64x64px .png image */
+#LAPSTONE>div#lapstone-progress>.lapstone-startup-image {
+	background: transparent;
+	height:45px;
+	margin:10px;
+}

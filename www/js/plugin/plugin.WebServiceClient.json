@@ -4,7 +4,6 @@
 	"defaultWebServiceTimeoutMs": 5000,
 	"defaultWebServiceMethod": "post",
 	"defaultWebServiceType": "json",
-	"useKeepAlive": false,
 	"useServerShuffle": true,
 	"useHeaderToken": false,
 	"headerToken": 

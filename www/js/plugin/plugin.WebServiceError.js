@@ -172,6 +172,7 @@ var plugin_WebServiceError = {
 
       if ($.isPlainObject(webserviceResult)) {
         app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: isPlainObject == true");
+        app.debug.validate(plugin_WebServiceError.config.strictErrorKeys);
         for (key in plugin_WebServiceError.config.strictErrorKeys) {
           // $.each(plugin_WebServiceError.config.strictErrorKeys,
           // function(index, errorKey) {

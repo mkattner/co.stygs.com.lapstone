@@ -1071,11 +1071,11 @@ var pages = {
 
             app.notify.loader.bubbleDiv({
               show: true,
-              text: app.lang.string("text", "pageloading"),
-              headline: app.lang.string("headline", "pageloading")
+              text: app.lang.string("page: " + container.attr('id') + " - text", "pageloading"),
+              headline: app.lang.string("page: " + container.attr('id') + " - headline", "pageloading")
             });
 
-          }, 300);
+          }, 200);
 
           promiseOfAsyncPageLoading.done(function(result) {
             if (result) {

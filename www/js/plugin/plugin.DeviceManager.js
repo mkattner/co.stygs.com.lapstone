@@ -36,6 +36,7 @@ var plugin_DeviceManager = {
 		var js, css, promiseArray = [], dfd, scriptLoading;
 
 		// load specific scripts
+		app.debug.validate(plugin_DeviceManager.config.viewport);
 		if (app.detect.isMobile()) {
 
 			if (app.detect.mobile.google.Android()) {
