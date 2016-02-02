@@ -26,6 +26,7 @@ var plugin_Notification = {
   // called by plugins.js
   constructor: function() {
     var dfd = $.Deferred();
+
     dfd.resolve();
     return dfd.promise();
 
@@ -239,6 +240,13 @@ var plugin_Notification = {
     $(document).on("popupbeforeposition", "div[data-role=popup]", function(event, ui) {
       $(this).popup().trigger("create");
     });
+
+//    $(document).on("focusin", "#popupTrialog", function(event) {
+//      console.log("focusin")
+//      event.preventDefault();
+//      event.stopPropagation();
+//      event.stopImmediatePropagation()
+//    });
   },
   // called by pages.js
   // called for each page after createPage();
@@ -271,40 +279,43 @@ var plugin_Notification = {
               $("#popupAlert #btn-alert").data("callback", notification.callbackButton);
             });
 
+            $("#popupAlert").one("popupcreate", function(event, ui) {
+
+              if (notification.width) $("#popupAlert-popup").css("width", notification.width);
+
+              if (notification.title) {
+                $("#popupAlert div[data-role=header] h1").text(notification.title);
+                $("#popupAlert div[data-role=header] h1").css("display", "block");
+              }
+
+              else {
+                $("#popupAlert div[data-role=header] h1").css("display", "none");
+              }
+
+              if (notification.headline) {
+                $("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
+                $("#popupAlert div.ui-content h3.ui-title").css("display", "block");
+              }
+
+              else {
+                $("#popupAlert div.ui-content h3.ui-title").css("display", "none");
+              }
+
+              $("#popupAlert #btn-alert").text(notification.button);
+
+              if (typeof notification.text == "object") {
+                $("#popupAlert div.ui-content p").replaceWith(notification.text);
+
+              }
+
+              else {
+                $("#popupAlert div.ui-content p").html(notification.text);
+              }
+
+              $("#popupAlert").popup("open");
+            });
+
             $("#popupAlert").popup();
-
-            if (notification.width) $("#popupAlert-popup").css("width", notification.width);
-
-            if (notification.title) {
-              $("#popupAlert div[data-role=header] h1").text(notification.title);
-              $("#popupAlert div[data-role=header] h1").css("display", "block");
-            }
-
-            else {
-              $("#popupAlert div[data-role=header] h1").css("display", "none");
-            }
-
-            if (notification.headline) {
-              $("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
-              $("#popupAlert div.ui-content h3.ui-title").css("display", "block");
-            }
-
-            else {
-              $("#popupAlert div.ui-content h3.ui-title").css("display", "none");
-            }
-
-            $("#popupAlert #btn-alert").text(notification.button);
-
-            if (typeof notification.text == "object") {
-              $("#popupAlert div.ui-content p").replaceWith(notification.text);
-
-            }
-
-            else {
-              $("#popupAlert div.ui-content p").html(notification.text);
-            }
-
-            $("#popupAlert").popup("open");
 
           }, notification.delayInMs);
         });
@@ -323,40 +334,42 @@ var plugin_Notification = {
               $("#popupDialog #btn-dialog-right").data("callback", notification.callbackButtonRight);
             });
 
+            $("#popupDialog").one("popupcreate", function(event, ui) {
+              if (notification.width) $("#popupDialog-popup").css("width", notification.width);
+
+              if (notification.title) {
+                $("#popupDialog div[data-role=header] h1").text(notification.title);
+                $("#popupDialog div[data-role=header] h1").css("display", "block");
+              }
+
+              else {
+                $("#popupDialog div[data-role=header] h1").css("display", "none");
+              }
+
+              if (notification.headline) {
+                $("#popupDialog div.ui-content h3.ui-title").text(notification.headline);
+                $("#popupDialog div.ui-content h3.ui-title").css("display", "block");
+              }
+
+              else {
+                $("#popupDialog div.ui-content h3.ui-title").css("display", "none");
+              }
+
+              $("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
+              $("#popupDialog #btn-dialog-right").text(notification.buttonRight);
+
+              if (typeof notification.text == "object") {
+                $("#popupDialog div.ui-content p").replaceWith(notification.text);
+              }
+
+              else {
+                $("#popupDialog div.ui-content p").html(notification.text);
+              }
+
+              $("#popupDialog").popup("open");
+            });
+
             $("#popupDialog").popup();
-
-            if (notification.width) $("#popupDialog-popup").css("width", notification.width);
-
-            if (notification.title) {
-              $("#popupDialog div[data-role=header] h1").text(notification.title);
-              $("#popupDialog div[data-role=header] h1").css("display", "block");
-            }
-
-            else {
-              $("#popupDialog div[data-role=header] h1").css("display", "none");
-            }
-
-            if (notification.headline) {
-              $("#popupDialog div.ui-content h3.ui-title").text(notification.headline);
-              $("#popupDialog div.ui-content h3.ui-title").css("display", "block");
-            }
-
-            else {
-              $("#popupDialog div.ui-content h3.ui-title").css("display", "none");
-            }
-
-            $("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
-            $("#popupDialog #btn-dialog-right").text(notification.buttonRight);
-
-            if (typeof notification.text == "object") {
-              $("#popupDialog div.ui-content p").replaceWith(notification.text);
-            }
-
-            else {
-              $("#popupDialog div.ui-content p").html(notification.text);
-            }
-            
-            $("#popupDialog").popup("open");
 
           }, notification.delayInMs);
         });
@@ -376,41 +389,43 @@ var plugin_Notification = {
               $("#popupTrialog #btn-trialog-right").data("callback", notification.callbackButtonRight);
             });
 
+            $("#popupTrialog").one("popupcreate", function(event, ui) {
+              if (notification.width) $("#popupTrialog-popup").css("width", notification.width);
+
+              if (notification.title) {
+                $("#popupTrialog div[data-role=header] h1").text(notification.title);
+                $("#popupTrialog div[data-role=header] h1").css("display", "block");
+              }
+
+              else {
+                $("#popupTrialog div[data-role=header] h1").css("display", "none");
+              }
+
+              if (notification.headline) {
+                $("#popupTrialog div.ui-content h3.ui-title").text(notification.headline);
+                $("#popupTrialog div.ui-content h3.ui-title").css("display", "block");
+              }
+
+              else {
+                $("#popupTrialog div.ui-content h3.ui-title").css("display", "none");
+              }
+
+              $("#popupTrialog #btn-trialog-left").text(notification.buttonLeft);
+              $("#popupTrialog #btn-trialog-center").text(notification.buttonCenter);
+              $("#popupTrialog #btn-trialog-right").text(notification.buttonRight);
+
+              if (typeof notification.text == "object") {
+                $("#popupTrialog div.ui-content p").replaceWith(notification.text);
+              }
+
+              else {
+                $("#popupTrialog div.ui-content p").html(notification.text);
+              }
+
+              $("#popupTrialog").popup("open");
+            });
+
             $("#popupTrialog").popup();
-
-            if (notification.width) $("#popupTrialog-popup").css("width", notification.width);
-
-            if (notification.title) {
-              $("#popupTrialog div[data-role=header] h1").text(notification.title);
-              $("#popupTrialog div[data-role=header] h1").css("display", "block");
-            }
-
-            else {
-              $("#popupTrialog div[data-role=header] h1").css("display", "none");
-            }
-
-            if (notification.headline) {
-              $("#popupTrialog div.ui-content h3.ui-title").text(notification.headline);
-              $("#popupTrialog div.ui-content h3.ui-title").css("display", "block");
-            }
-
-            else {
-              $("#popupTrialog div.ui-content h3.ui-title").css("display", "none");
-            }
-
-            $("#popupTrialog #btn-trialog-left").text(notification.buttonLeft);
-            $("#popupTrialog #btn-trialog-center").text(notification.buttonCenter);
-            $("#popupTrialog #btn-trialog-right").text(notification.buttonRight);
-
-            if (typeof notification.text == "object") {
-              $("#popupTrialog div.ui-content p").replaceWith(notification.text);
-            }
-
-            else {
-              $("#popupTrialog div.ui-content p").html(notification.text);
-            }
-            
-            $("#popupTrialog").popup("open");
 
           }, notification.delayInMs);
         });
@@ -490,7 +505,8 @@ var plugin_Notification = {
     },
 
     /**
-     * 
+     * alert({ text: "", title: "", headline: "", button: "", callbackButton:
+     * function(popup) { }, delayInMs: 0, width: "50%" })
      */
     alert: function(text, title, headline, button, callbackButton, delayInMs) {
       var notification;
@@ -517,7 +533,9 @@ var plugin_Notification = {
     },
 
     /**
-     * 
+     * dialog( { text: "", title: "", headline: "", buttonLeft: "", buttonRight:
+     * "", callbackButtonLeft: function(popup) { }, callbackButtonRight:
+     * function(popup) { }, delayInMs: 0, width: "50%" });
      */
     dialog: function(text, title, headline, buttonLeft, buttonRight, callbackButtonLeft, callbackButtonRight, delayInMs) {
       var notification;
@@ -544,6 +562,9 @@ var plugin_Notification = {
       plugin_Notification.functions.show(notification);
     },
 
+    /**
+     * trialog
+     */
     trialog: function(notification) {
 
       if (!$.isPlainObject(notification)) {
@@ -876,7 +897,6 @@ var plugin_Notification = {
         var object, loader, timeout;
 
         if ($.isPlainObject(show)) {
-          app.debug.deprecated("Please use an object as argument.");
           object = show;
 
         } else {

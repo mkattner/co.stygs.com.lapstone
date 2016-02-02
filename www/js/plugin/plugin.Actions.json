@@ -1,4 +1,7 @@
 {
-	"name": "Actions",
-	"shortname": "actions"
+	"name":"Actions",
+	"shortname":"actions",
+	"actionFiles":[
+		"../files/actions/actions.js"
+	]
 }

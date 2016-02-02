@@ -152,7 +152,7 @@ var plugin_Informator = {
           app.debug.validate(plugin_Informator.config.firstLevelReservedNames);
           if (plugin_Informator.config.firstLevelReservedNames.indexOf(key) != -1) {
             app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' but it's in reserved list");
-           // alert();
+            // alert();
           }
 
           else {
@@ -188,7 +188,13 @@ var plugin_Informator = {
       app.debug.trace("plugin_Informator.functions.set(" + app.debug.arguments(arguments) + ")");
 
       if (plugin_Informator.config.useHtml5Storage) {
-        app.store.localStorage.set(plugin_Informator.configurationPrefix + "." + key, value);
+        if (typeof value === "object") {
+          app.store.localStorage.setObject(plugin_Informator.configurationPrefix + "." + key, value);
+        }
+
+        else {
+          app.store.localStorage.set(plugin_Informator.configurationPrefix + "." + key, value);
+        }
       }
       // change property
       app.help.object.setDeep(window, key, value);

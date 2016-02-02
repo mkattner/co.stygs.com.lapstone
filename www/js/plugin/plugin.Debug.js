@@ -44,6 +44,11 @@ var plugin_Debug = {
    */
   constructor: function() {
     var dfd = $.Deferred();
+
+    // validate config file
+    plugin_Debug.functions.validate(plugin_Debug.config.consoleLevel, "object");
+    plugin_Debug.functions.validate(plugin_Debug.config.logLevel, "object");
+
     dfd.resolve();
     return dfd.promise();
   },
@@ -118,44 +123,59 @@ var plugin_Debug = {
         }
       });
 
-      select = app.ni.select.single({
-        id: "selConsoleLevel",
-        label: true,
-        labelText: "console level",
-        container: true
-      });
+      /**
+       * console level
+       */
+      select = $("<div>").addClass("ui-field-contain").append($("<label>").attr({
+        "for": "selConsoleLevel"
+      }).text("console level")).append($("<select>").attr({
+        "id": "selConsoleLevel",
+        "multiple": "multiple",
+        "data-native-menu": "false"
+      }));
 
       $.each(plugin_Debug.config.debugLevels, function(levelName, ratingValue) {
-        select.find("select").append(app.ni.select.option({
-          text: levelName,
-          value: levelName,
-          selected: (plugin_Debug.config.consoleLevel == levelName) ? true : false
-        }));
+
+        select.find("select").append($("<option>").attr({
+          value: levelName
+        }).prop({
+          "selected": (plugin_Debug.config.consoleLevel.indexOf(levelName) > -1) ? true : false
+        }).text(levelName));
+
       });
 
       debugDiv.append(select);
 
-      select = app.ni.select.single({
-        id: "selLogLevel",
-        label: true,
-        labelText: "log level",
-        container: true
-      });
+      /**
+       * log level
+       */
+      select = $("<div>").addClass("ui-field-contain").append($("<label>").attr({
+        "for": "selLogLevel"
+      }).text("log level")).append($("<select>").attr({
+        "id": "selLogLevel",
+        "multiple": "multiple",
+        "data-native-menu": "false"
+      }));
 
       $.each(plugin_Debug.config.debugLevels, function(levelName, ratingValue) {
-        select.find("select").append(app.ni.select.option({
-          text: levelName,
-          value: levelName,
-          selected: (plugin_Debug.config.logLevel == levelName) ? true : false
-        }));
+
+        select.find("select").append($("<option>").attr({
+          value: levelName
+        }).prop({
+          "selected": (plugin_Debug.config.logLevel.indexOf(levelName) > -1) ? true : false
+        }).text(levelName));
+
       });
 
       debugDiv.append(select);
 
+      /**
+       * close button
+       */
       debugDiv.append(app.ni.button.button({
         id: "btnClose",
         value: "close"
-      }))
+      }));
 
       container.append(debugDiv);
     }
@@ -174,19 +194,25 @@ var plugin_Debug = {
       $(document).on('change', '#selConsoleLevel', function() {
         app.debug.event(event);
 
-        app.info.set("plugin_Debug.config.consoleLevel", $('#selConsoleLevel option:selected').val());
+        app.info.set("plugin_Debug.config.consoleLevel", $("#selConsoleLevel").val() || ["OFF"]);
       });
 
       $(document).on('change', '#selLogLevel', function() {
         app.debug.event(event);
 
-        app.info.set("plugin_Debug.config.logLevel", $('#selLogLevel option:selected').val());
+        app.info.set("plugin_Debug.config.logLevel", $("#selLogLevel").val() || ["OFF"]);
       });
 
       $(document).on('click', '#btnClose', function() {
         app.debug.event(event);
 
-        $('#divDebug').slideUp();
+        $('#divDebug').hide();
+
+        // $('#divDebug').animate({
+        // "height": "0px"
+        // }, {
+        // "duration": 200
+        // });
       })
     }
   },
@@ -226,6 +252,11 @@ var plugin_Debug = {
       this.log(output, "DEBUG");
     },
 
+    todo: function(output) {
+      // log debug output
+      this.log(output, "TODO", true);
+    },
+
     info: function(output) {
       // log debug output
       this.log(output, "INFO");
@@ -249,30 +280,12 @@ var plugin_Debug = {
 
     error: function(output) {
       // log debug output
-      this.log(output, "ERROR");
-
-      // print stack trace
-      try {
-        console.error("Error trace:");
-      }
-
-      catch (e) {
-        ;
-      }
+      this.log(output, "ERROR", true);
     },
 
     fatal: function(output) {
       // log debug output
-      this.log(output, "FATAL");
-
-      // print stack trace
-      try {
-        console.error("Error trace:");
-      }
-
-      catch (e) {
-        ;
-      }
+      this.log(output, "FATAL", true);
     },
 
     deprecated: function(text) {
@@ -288,32 +301,53 @@ var plugin_Debug = {
       }
     },
 
-    validate: function(object) {
-      if (!object) {
-        plugin_Debug.functions.fatal();
-        throw new Error("Validation problem. Please look at the stacktrace.");
+    validate: function(object, type) {
+      if (type) {
+        if (!(typeof object === type)) {
+          plugin_Debug.functions.fatal();
+          throw new Error("Validation problem. Please look at the stacktrace.");
+        }
+      }
+
+      else {
+        if (!object) {
+          plugin_Debug.functions.fatal();
+          throw new Error("Validation problem. Please look at the stacktrace.");
+        }
       }
     },
 
-    
-    
     alert: function(text, level) {
       console.warn("Dep. " + text);
     },
 
-    log: function(output, level) {
+    /**
+     * log
+     */
+    log: function(output, level, trace) {
 
       if (plugin_Debug.config.debugDevice) {
+
         // log to object
-        if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.logLevel]) {
+        if (plugin_Debug.config.logLevel.indexOf(level) > -1) {
           plugin_Debug.logObject.push(output);
         }
-        // log to console
 
-        // alert(output + level);
-        if (plugin_Debug.config.debugLevels[level] >= plugin_Debug.config.debugLevels[plugin_Debug.config.consoleLevel]) {
+        // log to console
+        if (plugin_Debug.config.consoleLevel.indexOf(level) > -1) {
           console.log(level + ": " + output);
+          if (trace) {
+            // print stack trace
+            try {
+              console.error("Trace:");
+            }
+
+            catch (e) {
+              ;
+            }
+          }
         }
+
         // log to webservice
       }
     },

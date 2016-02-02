@@ -68,6 +68,9 @@ var plugin_RestClient = {
     app.debug.trace("plugin_RestClient.pageSpecificEvents()");
   },
 
+  /**
+   * 
+   */
   loadDefinitionFileAsync: function(path) {
     app.debug.trace("plugin_RestClient.loadDefinitionFile()");
     var dfd = $.Deferred(), promise;
@@ -87,6 +90,9 @@ var plugin_RestClient = {
     return dfd.promise();
   },
 
+  /**
+   * 
+   */
   loadDefinitionFile: function(path) {
     app.debug.trace("plugin_RestClient.loadDefinitionFile()");
     var json = globalLoader.JsonLoader(path);
@@ -97,11 +103,50 @@ var plugin_RestClient = {
     });
   },
 
-  getPath: function(parameter, path) {
-    app.debug.trace("plugin_RestClient.getPath()");
-    app.debug.debug("plugin_RestClient.getPath() - parameter: " + JSON.stringify(parameter));
+  /**
+   * 
+   */
+  getData: function(parameter, path) {
+    app.debug.trace("plugin_RestClient.getData(" + app.debug.arguments(arguments) + ")");
 
-    var data = path.split('?')[1];
+    var data;
+
+    data = path.split('?')[1];
+    path = path.split('?')[0];
+
+    if (parameter != undefined) {
+      $.each(parameter, function(key, value) {
+        if (typeof value == "object") {
+          value = JSON.stringify(value);
+          data = data.replace('{' + key + '}', encodeURIComponent(value));
+        } else {
+          data = data.replace('{' + key + '}', encodeURIComponent(value));
+        }
+        app.debug.debug("plugin_RestClient.getData() - set in path: " + key + " = " + encodeURIComponent(value));
+
+      });
+    }
+
+    if (data == undefined) {
+      data = "";
+    }
+
+    app.debug.debug("plugin_RestClient.getData() - path: " + path);
+    app.debug.debug("plugin_RestClient.getData() - data: " + data);
+    app.debug.debug("plugin_RestClient.getData() - parameter: " + JSON.stringify(parameter));
+
+    return [path, data];
+  },
+
+  /**
+   * 
+   */
+  getPath: function(parameter, path) {
+    app.debug.trace("plugin_RestClient.getPath(" + app.debug.arguments(arguments) + ")");
+
+    var data;
+
+    data = path.split('?')[1];
     path = path.split('?')[0];
 
     if (parameter != undefined) {
@@ -117,13 +162,45 @@ var plugin_RestClient = {
       });
     }
 
-    if (data == undefined) data = ""
+    if (data == undefined) {
+      data = "";
+    }
 
     app.debug.debug("plugin_RestClient.getPath() - path: " + path);
     app.debug.debug("plugin_RestClient.getPath() - data: " + data);
     app.debug.debug("plugin_RestClient.getPath() - parameter: " + JSON.stringify(parameter));
 
     return [path, data];
+  },
+
+  /**
+   * 
+   */
+  getServer: function(service) {
+    var splittedService, server;
+
+    if (service.indexOf('.') != -1) {
+      splittedService = service.split(".");
+      server = splittedService[0];
+    }
+
+    else {
+      server = app.wsc.getDefaultServerName();
+    }
+
+    return server;
+  },
+
+  /**
+   * 
+   */
+  getService: function(service) {
+    if (service.indexOf('.') != -1) {
+      splittedService = service.split(".");
+      service = splittedService[1];
+    }
+
+    return service;
   },
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -140,6 +217,7 @@ var plugin_RestClient = {
     wsEventTrigger = $.Deferred();
 
     app.debug.debug("plugin_RestClient.getSingleJson() - get server name");
+    app.debug.todo("use getServer() and getService()");
     if (service.indexOf('.') != -1) {
       splittedService = service.split(".");
       server = splittedService[0];
@@ -214,6 +292,7 @@ var plugin_RestClient = {
     wsEventTrigger = $.Deferred();
 
     app.debug.debug("plugin_RestClient.getSingleJsonAsync() - get server name");
+    app.debug.todo("use getServer() and getService()");
     if (service.indexOf('.') != -1) {
       splittedService = service.split(".");
       server = splittedService[0];
@@ -308,6 +387,7 @@ var plugin_RestClient = {
       wsEventTrigger = $.Deferred();
 
       app.debug.debug("plugin_RestClient.getMultipleJson() - get server name");
+      app.debug.todo("use getServer() and getService()");
       if (serviceName.indexOf('.') != -1) {
         splittedService = serviceName.split(".");
         server = splittedService[0];
@@ -389,6 +469,7 @@ var plugin_RestClient = {
       wsEventTrigger = $.Deferred();
 
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get server name");
+      app.debug.todo("use getServer() and getService()");
       if (serviceName.indexOf('.') != -1) {
         splittedService = serviceName.split(".");
         server = splittedService[0];
@@ -399,7 +480,7 @@ var plugin_RestClient = {
 
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get webservice path from wsd file");
 
-      wsd = plugin_RestClient.config.webservices[serviceName]
+      wsd = plugin_RestClient.config.webservices[serviceName];
       if (wsd) {
         path = wsd.url;
       }
@@ -436,8 +517,7 @@ var plugin_RestClient = {
       // case: webservice request
       else {
         app.debug.info("plugin_RestClient - CALL: " + serviceName);
-        promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async, plugin_RestClient.config.webservices[serviceName].local,
-                server);
+        promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async, plugin_RestClient.config.webservices[serviceName].local, server);
 
         promiseArray.push(promise);
         webserviceNamesArray.push(serviceName);
@@ -502,11 +582,18 @@ var plugin_RestClient = {
   },
 
   functions: {
+
+    /**
+     * 
+     */
     getWsd: function(serviceName) {
       app.debug.trace("plugin_RestClient.functions.getWsd(" + app.debug.arguments(arguments) + ")");
       return plugin_RestClient.config.webservices[serviceName] || null;
     },
 
+    /**
+     * 
+     */
     addWsd: function(name, url, method, timeout, cacheable, cacheInMs, local) {
       app.debug.trace("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition(" + app.debug.arguments(arguments) + ")");
 
@@ -528,36 +615,55 @@ var plugin_RestClient = {
       return true;
     },
 
+    /**
+     * 
+     */
     deleteWsd: function(name) {
       app.debug.trace("plugin_RestClient.functions.deleteWsd(" + app.debug.arguments(arguments) + ")");
       delete plugin_RestClient.config.webservices[name];
       return true;
     },
 
+    /**
+     * 
+     */
     addWebserviceDefinition: function(name, url, method, timeout, cacheable, cacheInMs, local) {
       console.error("Depecated function!! use app.rc.addWsd(name, url, method, timeout, cacheable, cacheInMs, local)")
 
     },
 
+    /**
+     * 
+     */
     addWebserviceDefinitionFile: function(path) {
       app.debug.debug("plugin_RestClient.functions.addWebserviceDefinitionFile(" + app.debug.arguments(arguments) + ")");
       plugin_RestClient.loadDefinitionFile(path);
     },
 
+    /**
+     * 
+     */
     removeCache: function(serviceName, parameter) {
       app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
       app.store.localStorage.removeObject(plugin_RestClient.cachedWebserviceIndentifyer + serviceName);
       return true;
     },
 
+    /**
+     * 
+     */
     clearCache: function(serviceName, parameter) {
       app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
       app.store.localStorage.removeItem(plugin_RestClient.cachedWebserviceIndentifyer + "*");
       return true;
     },
 
+    /**
+     * 
+     */
     cacheJson: function(serviceName, parameter, data) {
       app.debug.trace("plugin_RestClient.functions.cacheJson(" + app.debug.arguments(arguments) + ")");
+      app.debug.validate(_);
       var cachedWs, wsd, uniqueWsIdentifyer;
 
       wsd = app.rc.getWsd(serviceName);
@@ -622,8 +728,32 @@ var plugin_RestClient = {
       return null;
     },
 
+    /**
+     * 
+     */
+    getFullUrl: function(service, parameter) {
+      app.debug.trace("plugin_RestClient.functions.getFullUrl(" + app.debug.arguments(arguments) + ")");
+
+      var processedServerName, processedServiceName, processedPath, processedData, wsd, serverUrl, url;
+
+      processedServerName = plugin_RestClient.getServer(service);
+      processedServiceName = plugin_RestClient.getService(service);
+
+      wsd = plugin_RestClient.config.webservices[processedServiceName];
+      processedPath = plugin_RestClient.getPath(parameter, wsd.url);
+      processedData = plugin_RestClient.getData(parameter, wsd.url);
+
+      serverUrl = plugin_WebServiceClient.functions.getServer(processedServerName);
+
+      return serverUrl + processedPath[0] + "?" + processedData[1];
+
+    },
+
+    /**
+     * 
+     */
     getJson: function(service, parameter, async, attempts, dfd) {
-      app.debug.debug("plugin_RestClient.functions.getJson(" + app.debug.arguments(arguments) + ")");
+      app.debug.trace("plugin_RestClient.functions.getJson(" + app.debug.arguments(arguments) + ")");
       var json, i, promise;
 
       if (plugins.config.KeepAlive === true && app.alive.isAlive() === true) {

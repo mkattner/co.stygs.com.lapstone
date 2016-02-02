@@ -308,12 +308,18 @@ var plugin_WebServiceClient = {
 
   functions: {
 
+    /**
+     * 
+     */
     getXml: function(uri, data, method, timeout) {
       app.debug.trace("plugin_WebServiceClient.functions.getXml()");
       var xml = plugin_WebServiceClient.getAjax(uri, data, "xml");
       return xml;
     },
 
+    /**
+     * 
+     */
     getJson: function(path, data, parameter, method, timeout, async, local, server) {
       app.debug.trace("plugin_WebServiceClient.functions.getJson()");
       var url = null, dataType = null, json, serverConfig;
@@ -335,6 +341,9 @@ var plugin_WebServiceClient = {
 
     // ask first or second or third or fourth or fifth server for the
     // prefered server
+    /**
+     * 
+     */
     askForPreferedServer: function() {
       app.debug.trace("plugin_WebServiceClient.functions.askForPreferedServer()");
       var preferedServer = null;
@@ -343,11 +352,17 @@ var plugin_WebServiceClient = {
       return success;
     },
 
+    /**
+     * 
+     */
     getDefaultServerName: function() {
       app.debug.trace("plugin_WebServiceClient.functions.getDefaultServerName()");
       return plugin_WebServiceClient.config.defaultServer;
     },
 
+    /**
+     * 
+     */
     getServer: function(name, asObject) {
       app.debug.trace("plugin_WebServiceClient.functions.getServer()");
 
@@ -374,6 +389,9 @@ var plugin_WebServiceClient = {
       }
     },
 
+    /**
+     * 
+     */
     setServer: function(name, url, async) {
       app.debug.trace("plugin_WebServiceClient.functions.setServer()");
 
@@ -424,11 +442,17 @@ var plugin_WebServiceClient = {
       return this.ping(name, async);
     },
 
+    /**
+     * 
+     */
     keepAliveRequest: function() {
       app.debug.trace("plugin_WebServiceClient.functions.keepAliveRequest()");
       console.error("Deprecated function!")
     },
 
+    /**
+     * 
+     */
     ping: function(serverName, async) {
       app.debug.trace("plugin_WebServiceClient.functions.ping()");
       var path, server, url;

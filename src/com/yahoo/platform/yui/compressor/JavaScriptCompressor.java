@@ -889,7 +889,8 @@ public class JavaScriptCompressor {
 
 		} else if (mode == CHECKING_SYMBOL_TREE) {
 
-		    if ((offset < 2 || (getToken(-2).getType() != Token.DOT && getToken(-2).getType() != Token.GET && getToken(-2).getType() != Token.SET)) && getToken(0).getType() != Token.OBJECTLIT) {
+		    if ((offset < 2 || (getToken(-2).getType() != Token.DOT && getToken(-2).getType() != Token.GET && getToken(-2).getType() != Token.SET))
+			    && getToken(0).getType() != Token.OBJECTLIT) {
 
 			identifier = getIdentifier(symbol, currentScope);
 
@@ -1170,9 +1171,9 @@ public class JavaScriptCompressor {
 
 			    token = consumeToken();
 
-			    if (token.getValue().equals("trace") || token.getValue().equals("debug") || token.getValue().equals("info") || token.getValue().equals("event")
-				    || token.getValue().equals("app") || token.getValue().equals("warn") || token.getValue().equals("error") || token.getValue().equals("fatal")
-				    || token.getValue().equals("deprecated") || token.getValue().equals("alert") || token.getValue().equals("validate")) {
+			    if (token.getValue().equals("trace") || token.getValue().equals("debug") || token.getValue().equals("todo") || token.getValue().equals("info")
+				    || token.getValue().equals("event") || token.getValue().equals("app") || token.getValue().equals("warn") || token.getValue().equals("error")
+				    || token.getValue().equals("fatal") || token.getValue().equals("deprecated") || token.getValue().equals("alert") || token.getValue().equals("validate")) {
 
 				output += token.getValue();
 
@@ -1200,7 +1201,7 @@ public class JavaScriptCompressor {
 				}
 
 				System.out.println("Remove code: " + output);
-				
+
 				break;
 			    } else {
 				token = getToken(-5);

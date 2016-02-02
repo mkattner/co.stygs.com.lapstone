@@ -31,14 +31,18 @@ var app = {
 };
 
 function initialisation() {
-  var dfd;
+  var dfd, promise;
 
   dfd = $.Deferred();
 
-  initialisationPanel.start();
-  extendJsAndJquery();
+  promise = initialisationPanel.start();
 
-  dfd.resolve();
+  promise.done(function() {
+    extendJsAndJquery();
+
+    dfd.resolve();
+  });
+
   return dfd.promise();
 }
 
@@ -669,7 +673,7 @@ var initialisationPanel = {
 
 var startupDefinition = [{
   "status": "lapstone starts initialisation",
-  "function": initialisation(),
+  "function": initialisation,
   "parameter": "",
   "result": "",
   "image": "start"
@@ -720,6 +724,7 @@ var startupDefinition = [{
 var startup = {
   currentPosition: 0,
   dfd: $.Deferred(),
+  timestamp: Date.now(),
   promise: null,
   images: {},
 
@@ -744,7 +749,7 @@ var startup = {
     startup.currentPosition++;
 
     if (startupDefinition.length > startup.currentPosition) {
-      startup.log(startup.currentPosition + ": " + startupDefinition[startup.currentPosition]['status']);
+      startup.log(startup.currentPosition + ": " + ((Date.now() - startup.timestamp) / 1000).toFixed(3) + "s: " + startupDefinition[startup.currentPosition]['status']);
       initialisationPanel.changeStatus(startupDefinition[startup.currentPosition]['status']);
 
       // delay startup for a smoother user experience
@@ -778,8 +783,6 @@ var startup = {
 $(document).ready(function() {
   var inititalisationPromise, startupDuration;
 
-  startupDuration = Date.now();
-
   inititalisationPromise = startup.initFramework();
 
   inititalisationPromise.done(function() {
@@ -791,7 +794,7 @@ $(document).ready(function() {
       // trigger the lapstone initialisation event
       $(document).trigger("lapstone");
 
-      console.log("Lapstone started in " + ((Date.now() - startupDuration) / 1000) + "seconds");
+      console.log("Lapstone started in " + ((Date.now() - startup.timestamp) / 1000) + "seconds");
     }, 200);
   });
 
