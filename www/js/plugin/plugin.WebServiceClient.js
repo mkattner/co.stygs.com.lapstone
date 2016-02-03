@@ -461,7 +461,7 @@ var plugin_WebServiceClient = {
       server = plugin_WebServiceClient.getPreferedServer(serverName);
       url = server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path + path;
 
-      if (async) {
+      if (async === true) {
 
         return globalLoader.AsyncJsonLoader(url);
       }

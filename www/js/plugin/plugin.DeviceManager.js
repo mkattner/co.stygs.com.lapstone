@@ -41,46 +41,46 @@ var plugin_DeviceManager = {
 
 			if (app.detect.mobile.google.Android()) {
 
-				$('head').append(this.config.viewport.android);
+				$('head').append(plugin_DeviceManager.config.viewport.android);
 
 				if (app.config.min) {
-					js = this.config.files.android + ".js";
-					css = this.config.files.android + "." + app.config.version.app + ".css";
+					js = plugin_DeviceManager.config.files.android + ".js";
+					css = plugin_DeviceManager.config.files.android + "." + app.config.version.app + ".css";
 				}
 
 				else {
-					js = this.config.files.android + ".js";
-					css = this.config.files.android + ".css";
+					js = plugin_DeviceManager.config.files.android + ".js";
+					css = plugin_DeviceManager.config.files.android + ".css";
 				}
 
 			}
 
 			else if (app.detect.mobile.apple.iOS()) {
-				$('head').append(this.config.viewport.ios)
+				$('head').append(plugin_DeviceManager.config.viewport.ios)
 
 				if (app.config.min) {
-					js = this.config.files.ios + ".js";
-					css = this.config.files.ios + "." + app.config.version.app + ".css";
+					js = plugin_DeviceManager.config.files.ios + ".js";
+					css = plugin_DeviceManager.config.files.ios + "." + app.config.version.app + ".css";
 				}
 
 				else {
-					js = this.config.files.ios + ".js";
-					css = this.config.files.ios + ".css";
+					js = plugin_DeviceManager.config.files.ios + ".js";
+					css = plugin_DeviceManager.config.files.ios + ".css";
 				}
 
 			}
 
 			else if (app.detect.mobile.microsoft.Windows()) {
-				$('head').append(this.config.viewport.windows)
+				$('head').append(plugin_DeviceManager.config.viewport.windows)
 
 				if (app.config.min) {
-					js = this.config.files.windows + ".js";
-					css = this.config.files.windows + "." + app.config.version.app + ".css";
+					js = plugin_DeviceManager.config.files.windows + ".js";
+					css = plugin_DeviceManager.config.files.windows + "." + app.config.version.app + ".css";
 				}
 
 				else {
-					js = this.config.files.windows + ".js";
-					css = this.config.files.windows + ".css";
+					js = plugin_DeviceManager.config.files.windows + ".js";
+					css = plugin_DeviceManager.config.files.windows + ".css";
 				}
 
 			}

@@ -18,9 +18,9 @@
 
 var plugin_Session = {
   config: null,
-  sessionRegistryIdentifyer: "sessionRegistry",
-  glabalSessionIdentifyer: "globalSession",
-  sessionIndentifyer: "_t_lapstoneSession_",
+  sessionRegistryIdentifyer: "sessionregistry",
+  glabalSessionIdentifyer: "globalsession",
+  sessionIndentifyer: "_t_lapstonesession_",
   // called by plugins.js
   constructor: function() {
     var dfd = $.Deferred();
@@ -69,6 +69,9 @@ var plugin_Session = {
 
   },
 
+  /**
+   * 
+   */
   sessions: function(sessionName, active) {
     var sessionRegistry;
 

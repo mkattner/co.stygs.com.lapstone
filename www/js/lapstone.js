@@ -16,6 +16,18 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * global error handling
+ */
+window.onerror = function(message, fileURL, lineNumber, columnNumber, errorObject) {
+
+  console.log("Global ERROR:");
+  console.log("Message: " + message);
+  console.log("File: " + fileURL);
+  console.log("Line: " + lineNumber + " Column: " + columnNumber);
+
+};
+
 var app = {
   config: {
     // name : "app",
@@ -25,8 +37,76 @@ var app = {
   },
 
   addObject: function(name, object) {
-    console.log("Deprecated Function!");
+    console.error("Deprecated Function!");
     app[name] = object;
+  },
+
+  aboutListener: function(event, element) {
+    var clicks;
+
+    if (!element.data("clicks")) {
+      element.data("clicks", []);
+    }
+
+    clicks = element.data("clicks");
+
+    clicks.unshift(Date.now());
+
+    if ((clicks[0] - clicks[6]) < 2000) {
+
+      clicks = [];
+      app.about();
+    }
+
+    clicks = clicks.slice(0, 7);
+
+    // alert(clicks);
+  },
+
+  about: function() {
+    app.debug.validate(plugin_Notification);
+
+    var content;
+
+    $("html").off("vclick");
+
+    content = $("<ul>");
+
+    content.append($("<li>").append($("<p>").text("App version: ").append($("<strong>").text(app.config.version.app))));
+    content.append($("<li>").append($("<p>").text("Lapstone version: ").append($("<strong>").text(app.config.version.lapstone))));
+    content.append($("<li>").append($("<p>").text("Lapstone release version: ").append($("<strong>").text(app.config.min))));
+
+    content.append($("<li>").append($("<p>").text("jQuery version: ").append($("<strong>").text($.fn.jquery))));
+    content.append($("<li>").append($("<p>").text("jQuery mobile version: ").append($("<strong>").text($.mobile.version))));
+    content.append($("<li>").append($("<p>").text("Use apache cordova: ").append($("<strong>").text(app.config.apacheCordova))));
+
+    // HTML Meta
+    content.append($("<li>").append($("<p>").text("User Agent: ").append($("<strong>").text(navigator.userAgent))));
+    content.append($("<li>").append($("<p>").text("HTML Viewport: ").append($("<strong>").text($("meta[name=viewport]").attr("content")))));
+    // Page
+    content.append($("<li>").append($("<p>").text("Current Page: ").append($("<strong>").text($("div[data-role=page]").attr("id")))));
+    // App
+    content.append($("<li>").append($("<p>").text("Startup Time: ").append($("<strong>").text(app.config.startup + " seconds"))));
+
+    app.notify.dialog({
+      text: content,
+      title: "About the app.",
+      headline: "Use this data when you report a bug.",
+      buttonLeft: "Report a Bug",
+      buttonRight: "Close",
+      callbackButtonLeft: function(popup) {
+        $("html").on("vclick", function(event) {
+          app.aboutListener(event, $(this));
+        });
+      },
+      callbackButtonRight: function(popup) {
+        $("html").on("vclick", function(event) {
+          app.aboutListener(event, $(this));
+        });
+      },
+      delayInMs: 0,
+      width: "80%"
+    })
   }
 };
 
@@ -282,7 +362,7 @@ var globalLoader = {
   },
 
   JsonLoader: function(url, attempts, attempt) {
-    console.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
+    console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
     var json = null;
     $.ajax({
       cache: cacheAjax(),
@@ -343,7 +423,7 @@ var globalLoader = {
   },
 
   ScriptLoader: function(url, attempts, attempt) {
-    console.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
+    console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
     $.ajax({
       cache: cacheAjax(),
       url: url,
@@ -400,7 +480,7 @@ var globalLoader = {
   },
 
   TextLoader: function(url, attempts, attempt) {
-    console.warn("Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
+    console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
     var text = null;
     $.ajax({
       cache: cacheAjax(),
@@ -794,7 +874,17 @@ $(document).ready(function() {
       // trigger the lapstone initialisation event
       $(document).trigger("lapstone");
 
-      console.log("Lapstone started in " + ((Date.now() - startup.timestamp) / 1000) + "seconds");
+      app.config['startup'] = ((Date.now() - startup.timestamp) / 1000);
+
+      console.log("Lapstone started in " + app.config.startup + "seconds");
+
+      /**
+       * show app.about() when you click 7 times in 4 secconds
+       */
+      $("html").on("vclick", function(event) {
+        app.aboutListener(event, $(this));
+
+      });
     }, 200);
   });
 
@@ -829,6 +919,8 @@ function handleOpenURL(url) {
  * some functions
  */
 function extendJsAndJquery() {
+  
+  // useful hashCode function
   String.prototype.hashCode = function() {
     var hash, length, _char;
     hash = 0;
@@ -841,5 +933,13 @@ function extendJsAndJquery() {
       hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
+  }
+
+  // some android versions don't support startsWith
+  if (typeof String.prototype.startsWith != 'function') {
+    // see below for better implementation!
+    String.prototype.startsWith = function(str) {
+      return this.indexOf(str) === 0;
+    };
   }
 }
