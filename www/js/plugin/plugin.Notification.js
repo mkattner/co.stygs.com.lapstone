@@ -241,12 +241,12 @@ var plugin_Notification = {
       $(this).popup().trigger("create");
     });
 
-//    $(document).on("focusin", "#popupTrialog", function(event) {
-//      console.log("focusin")
-//      event.preventDefault();
-//      event.stopPropagation();
-//      event.stopImmediatePropagation()
-//    });
+    // $(document).on("focusin", "#popupTrialog", function(event) {
+    // console.log("focusin")
+    // event.preventDefault();
+    // event.stopPropagation();
+    // event.stopImmediatePropagation()
+    // });
   },
   // called by pages.js
   // called for each page after createPage();
@@ -280,6 +280,8 @@ var plugin_Notification = {
             });
 
             $("#popupAlert").one("popupcreate", function(event, ui) {
+
+              if (notification.id) $("#popupAlert").addClass("app-popup-id-" + notification.id.trim());
 
               if (notification.width) $("#popupAlert-popup").css("width", notification.width);
 
@@ -335,6 +337,9 @@ var plugin_Notification = {
             });
 
             $("#popupDialog").one("popupcreate", function(event, ui) {
+
+              if (notification.id) $("#popupDialog").addClass("app-popup-id-" + notification.id.trim());
+
               if (notification.width) $("#popupDialog-popup").css("width", notification.width);
 
               if (notification.title) {
@@ -390,6 +395,9 @@ var plugin_Notification = {
             });
 
             $("#popupTrialog").one("popupcreate", function(event, ui) {
+
+              if (notification.id) $("#popupTrialog").addClass("app-popup-id-" + notification.id.trim());
+
               if (notification.width) $("#popupTrialog-popup").css("width", notification.width);
 
               if (notification.title) {
@@ -505,8 +513,8 @@ var plugin_Notification = {
     },
 
     /**
-     * alert({ text: "", title: "", headline: "", button: "", callbackButton:
-     * function(popup) { }, delayInMs: 0, width: "50%" })
+     * alert({ id:"", text: "", title: "", headline: "", button: "",
+     * callbackButton: function(popup) { }, delayInMs: 0, width: "50%" })
      */
     alert: function(text, title, headline, button, callbackButton, delayInMs) {
       var notification;
@@ -533,9 +541,9 @@ var plugin_Notification = {
     },
 
     /**
-     * dialog( { text: "", title: "", headline: "", buttonLeft: "", buttonRight:
-     * "", callbackButtonLeft: function(popup) { }, callbackButtonRight:
-     * function(popup) { }, delayInMs: 0, width: "50%" });
+     * dialog( { id:"", text: "", title: "", headline: "", buttonLeft: "",
+     * buttonRight: "", callbackButtonLeft: function(popup) { },
+     * callbackButtonRight: function(popup) { }, delayInMs: 0, width: "50%" });
      */
     dialog: function(text, title, headline, buttonLeft, buttonRight, callbackButtonLeft, callbackButtonRight, delayInMs) {
       var notification;
@@ -563,7 +571,10 @@ var plugin_Notification = {
     },
 
     /**
-     * trialog
+     * trialog trialog( { id:"", text: "", title: "", headline: "", buttonLeft:
+     * "", buttonCenter: "", buttonRight: "", callbackButtonLeft:
+     * function(popup) { }, callbackButtonCenter: function(popup) { },
+     * callbackButtonRight: function(popup) { }, delayInMs: 0, width: "50%" });
      */
     trialog: function(notification) {
 
