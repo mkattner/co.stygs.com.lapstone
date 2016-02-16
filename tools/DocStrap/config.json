@@ -1,0 +1,18 @@
+{
+	"templates":{
+		"systemName":"Lapstone",
+		"footer":"Lapstone",
+		"copyright":"Martin Kattner",
+		"includeDate":false,
+		"navType":"vertical",
+		"theme":"paper",
+		"linenums":true,
+		"collapseSymbols":true,
+		"inverseNav":false,
+		"outputSourceFiles":true,
+		"outputSourcePath":".",
+		"dateFormat":"X",
+		"syntaxTheme":"defult",
+		"sort":"longname"
+	}
+}

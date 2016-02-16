@@ -1,0 +1,14 @@
+{
+	"updateRegistry":[
+		{
+			"startWithVersion":"0.0.0",
+			"stopWithVersion":"0.0.0",
+			"updateScript":"",
+			"description":""
+		},
+		{
+			
+		}
+		
+	]
+}

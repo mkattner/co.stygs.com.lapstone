@@ -1,36 +1,23 @@
 {
-	"name": "LoadExternalScripts",
-	"shortname": "load",
-	"scripts": 
-	{
-		"css": 
-		{
-			"../ext/jQueryMobile/jquery.mobile.min.css": true,
-			"../ext/fullcalendar/fullcalendar.min.css": true
+	"name":"LoadExternalScripts",
+	"shortname":"load",
+	"scripts":{
+		"style":{
+			"../ext/jQueryMobile/jquery.mobile.min.css":true,
+			"../ext/fullcalendar/fullcalendar.min.css":true,
+			"../css/fonts.css.less":true
 		},
-
-		"cssOrdered": 
-		[
-			
+		"styleOrdered":[
+			"../css/global.css.less"
 		],
-
-		"less": 
-		{
-			"../css/fonts.css": true,
-			"../css/global.css": true
+		"javascript":{
+			"../ext/MD5.js":true,
+			"../ext/DATE.js":true,
+			"../ext/URI/URI.js":true,
+			"../ext/Chart/Chart.min.js":true,
+			"../ext/underscore/underscore-min.js":true
 		},
-
-		"javascript": 
-		{
-			"../ext/MD5.js": true,
-			"../ext/DATE.js": true,
-			"../ext/URI/URI.js": true,
-			"../ext/Chart/Chart.min.js": true,
-			"../ext/underscore/underscore-min.js": true
-		},
-
-		"javascriptOrdered": 
-		[
+		"javascriptOrdered":[
 			"../ext/jquery.serializejson.min.js",
 			"../ext/aerogear/aerogear.min.js",
 			"../ext/fullcalendar/fullcalendar.min.js",
@@ -38,5 +25,6 @@
 			"../ext/jQueryUiTouchPunch/jquery.ui.touch-punch.min.js",
 			"../ext/jQueryUiDragAndDrop/jquery-ui.min.js"
 		]
+		
 	}
 }

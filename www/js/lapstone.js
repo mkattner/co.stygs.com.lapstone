@@ -1,19 +1,14 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -28,6 +23,11 @@ window.onerror = function(message, fileURL, lineNumber, columnNumber, errorObjec
 
 };
 
+/**
+ * App namespace
+ * 
+ * @namespace app
+ */
 var app = {
   config: {
     // name : "app",
@@ -39,75 +39,8 @@ var app = {
   addObject: function(name, object) {
     console.error("Deprecated Function!");
     app[name] = object;
-  },
-
-  aboutListener: function(event, element) {
-    var clicks;
-
-    if (!element.data("clicks")) {
-      element.data("clicks", []);
-    }
-
-    clicks = element.data("clicks");
-
-    clicks.unshift(Date.now());
-
-    if ((clicks[0] - clicks[6]) < 2000) {
-
-      clicks = [];
-      app.about();
-    }
-
-    clicks = clicks.slice(0, 7);
-
-    // alert(clicks);
-  },
-
-  about: function() {
-    app.debug.validate(plugin_Notification);
-
-    var content;
-
-    $("html").off("vclick");
-
-    content = $("<ul>");
-
-    content.append($("<li>").append($("<p>").text("App version: ").append($("<strong>").text(app.config.version.app))));
-    content.append($("<li>").append($("<p>").text("Lapstone version: ").append($("<strong>").text(app.config.version.lapstone))));
-    content.append($("<li>").append($("<p>").text("Lapstone release version: ").append($("<strong>").text(app.config.min))));
-
-    content.append($("<li>").append($("<p>").text("jQuery version: ").append($("<strong>").text($.fn.jquery))));
-    content.append($("<li>").append($("<p>").text("jQuery mobile version: ").append($("<strong>").text($.mobile.version))));
-    content.append($("<li>").append($("<p>").text("Use apache cordova: ").append($("<strong>").text(app.config.apacheCordova))));
-
-    // HTML Meta
-    content.append($("<li>").append($("<p>").text("User Agent: ").append($("<strong>").text(navigator.userAgent))));
-    content.append($("<li>").append($("<p>").text("HTML Viewport: ").append($("<strong>").text($("meta[name=viewport]").attr("content")))));
-    // Page
-    content.append($("<li>").append($("<p>").text("Current Page: ").append($("<strong>").text($("div[data-role=page]").attr("id")))));
-    // App
-    content.append($("<li>").append($("<p>").text("Startup Time: ").append($("<strong>").text(app.config.startup + " seconds"))));
-
-    app.notify.dialog({
-      text: content,
-      title: "About the app.",
-      headline: "Use this data when you report a bug.",
-      buttonLeft: "Report a Bug",
-      buttonRight: "Close",
-      callbackButtonLeft: function(popup) {
-        $("html").on("vclick", function(event) {
-          app.aboutListener(event, $(this));
-        });
-      },
-      callbackButtonRight: function(popup) {
-        $("html").on("vclick", function(event) {
-          app.aboutListener(event, $(this));
-        });
-      },
-      delayInMs: 0,
-      width: "80%"
-    })
   }
+
 };
 
 function initialisation() {
@@ -212,21 +145,12 @@ function loadConfiguration() {
     if (configuration.startPage_loggedIn === undefined) console.warn("lapstone.json has no 'startPage_loggedIn' property.");
 
     if (configuration.badConnectionPage === undefined) console.warn("lapstone.json has no 'badConnectionPage' property.");
-    var lapstone_split = app.config.version.lapstone.split('.', 3), lapstone_int = "", currentKey, currentInt;
 
-    for (currentKey in lapstone_split) {
-      currentInt = lapstone_split[currentKey];
-      lapstone_int += Math.pow(10, parseInt(4 - currentInt.toString().length)).toString().substring(1).toString() + currentInt;
-    }
-    app.config.version['lapstone_int'] = parseInt(lapstone_int);
+    // transform app/lapstone version to an integer value
+    app.config.version['lapstone_int'] = app.config.version.lapstone.toIntegerVersion();
+    app.config.version['app_int'] = app.config.version.app.toIntegerVersion();
 
-    var app_split = app.config.version.app.split('.', 3), app_int = "", currentKey, currentInt;
-    for (currentKey in app_split) {
-      currentInt = app_split[currentKey];
-      app_int += Math.pow(10, parseInt(4 - currentInt.toString().length)).toString().substring(1).toString() + currentInt;
-    }
-    app.config.version['app_int'] = parseInt(app_int);
-
+    // preset the title of the app
     $('title').text(app.config.title);
 
     dfd.resolve();
@@ -275,12 +199,23 @@ function updateFramework() {
     app.info.set("app.config.version.lapstone", currentLapstoneVersion);
     app.info.set("app.config.version.app_int", currentAppVersion_int);
     app.info.set("app.config.version.lapstone_int", currentLapstoneVersion_int);
+
+    // do the update before reloading
+    globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(response) {
+      dfd.resolve();
+    }).fail(function() {
+      dfd.resolve();
+    });
+
     // reload
 
     location.reload();
   }
 
-  dfd.resolve();
+  else {
+    dfd.resolve();
+  }
+
   return dfd.promise();
 }
 
@@ -878,13 +813,6 @@ $(document).ready(function() {
 
       console.log("Lapstone started in " + app.config.startup + "seconds");
 
-      /**
-       * show app.about() when you click 7 times in 4 secconds
-       */
-      $("html").on("vclick", function(event) {
-        app.aboutListener(event, $(this));
-
-      });
     }, 200);
   });
 
@@ -919,7 +847,7 @@ function handleOpenURL(url) {
  * some functions
  */
 function extendJsAndJquery() {
-  
+
   // useful hashCode function
   String.prototype.hashCode = function() {
     var hash, length, _char;
@@ -941,5 +869,30 @@ function extendJsAndJquery() {
     String.prototype.startsWith = function(str) {
       return this.indexOf(str) === 0;
     };
+  }
+
+  if (typeof String.prototype.endsWith != 'function') {
+    String.prototype.endsWith = function(suffix) {
+      return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+  }
+
+  String.prototype.toIntegerVersion = function(delimiter) {
+    var splittedString, integerVersion;
+
+    integerVersion = 0;
+    if (delimiter) {
+      splittedString = this.split(delimiter).reverse();
+    }
+
+    else {
+      splittedString = this.split(".").reverse();
+    }
+
+    $.each(splittedString, function(index, value) {
+      integerVersion += Math.pow(10000, index) * parseInt(value);
+    });
+
+    return integerVersion;
   }
 }

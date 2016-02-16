@@ -1,21 +1,21 @@
-/**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+/*
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * Plugin to call an cache pre defined websevices.
+ * 
+ * @namespace plugin_RestClient
+ */
 var plugin_RestClient = {
   config: null,
   cachedWebserviceIndentifyer: "_t_cachedWebservice_",
@@ -195,6 +195,8 @@ var plugin_RestClient = {
    * 
    */
   getService: function(service) {
+    var splittedService;
+
     if (service.indexOf('.') != -1) {
       splittedService = service.split(".");
       service = splittedService[1];
@@ -382,16 +384,16 @@ var plugin_RestClient = {
 
     $.each(paramService, function(key, call) {
 
-      var serviceName = call[0], parameter = call[1], server, path, json, splittedService, wsd, cachedJson, wsEventTrigger;
+      var webServiceName = call[0], parameter = call[1], server, path, json, splittedService, wsd, cachedJson, wsEventTrigger;
 
       wsEventTrigger = $.Deferred();
 
       app.debug.debug("plugin_RestClient.getMultipleJson() - get server name");
       app.debug.todo("use getServer() and getService()");
-      if (serviceName.indexOf('.') != -1) {
-        splittedService = serviceName.split(".");
+      if (webServiceName.indexOf('.') != -1) {
+        splittedService = webServiceName.split(".");
         server = splittedService[0];
-        serviceName = splittedService[1];
+        webServiceName = splittedService[1];
       } else {
         server = app.wsc.getDefaultServerName();
       }
@@ -399,13 +401,13 @@ var plugin_RestClient = {
       async = false;
 
       app.debug.debug("plugin_RestClient.getMultipleJson() - get webservice path from wsd file");
-      wsd = plugin_RestClient.config.webservices[serviceName]
+      wsd = plugin_RestClient.config.webservices[webServiceName]
       if (wsd) {
         path = wsd.url;
       }
 
       else {
-        app.debug.error("plugin_RestClient.getMultipleJson() - service not defined: " + serviceName);
+        app.debug.error("plugin_RestClient.getMultipleJson() - service not defined: " + webServiceName);
         return null;
       }
 
@@ -413,21 +415,21 @@ var plugin_RestClient = {
       path = plugin_RestClient.getPath(parameter, path);
 
       // event triggering
-      app.debug.info("plugin_RestClient - TRIGGER EVENT: " + serviceName);
-      $(document).trigger(serviceName, [wsEventTrigger.promise(), parameter]);
+      app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
+      $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
 
-      if ((json = plugin_RestClient.functions.cacheJson(serviceName, parameter)) && plugin_RestClient.config.webservices[serviceName].cacheable) {
-        app.debug.info("plugin_RestClient - CACHED: " + serviceName);
+      if ((json = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
+        app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
 
       }
 
       // case: webservice request
       else {
         app.debug.debug("plugin_RestClient.getMultipleJson() -  ask for the json file");
-        app.debug.info("plugin_RestClient - CALL: " + serviceName);
-        json = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async, plugin_RestClient.config.webservices[serviceName].local, server);
+        app.debug.info("plugin_RestClient - CALL: " + webServiceName);
+        json = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[webServiceName].method, plugin_RestClient.config.webservices[webServiceName].timeout, async, plugin_RestClient.config.webservices[webServiceName].local, server);
 
-        app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + serviceName);
+        app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
         wsEventTrigger.resolve(json);
 
       }
@@ -443,9 +445,9 @@ var plugin_RestClient = {
         }
       }
 
-      plugin_RestClient.functions.cacheJson(serviceName, parameter, json);
+      plugin_RestClient.functions.cacheJson(webServiceName, parameter, json);
       app.debug.debug("plugin_RestClient.getMultipleJson() - add result to resultObject");
-      jsonObject[serviceName] = json;
+      jsonObject[webServiceName] = json;
     });
 
     return jsonObject;
@@ -456,7 +458,7 @@ var plugin_RestClient = {
     // the deferred object for the caller
     async = true;
 
-    var dfd = $.Deferred(), promiseArray = [], webserviceNamesArray = [], webserviceParameterArray = [], splittedService, resultObject = {};
+    var dfd = $.Deferred(), promiseArray = [], webwebServiceNamesArray = [], webserviceParameterArray = [], splittedService, resultObject = {};
 
     app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - generate a ajax call for each webservice");
 
@@ -464,29 +466,29 @@ var plugin_RestClient = {
 
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - generate single async ajax call");
 
-      var serviceName = call[0], parameter = call[1], server, path, promise, wsd, cachedJson, wsEventTrigger;
+      var webServiceName = call[0], parameter = call[1], server, path, promise, wsd, cachedJson, wsEventTrigger;
 
       wsEventTrigger = $.Deferred();
 
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get server name");
       app.debug.todo("use getServer() and getService()");
-      if (serviceName.indexOf('.') != -1) {
-        splittedService = serviceName.split(".");
+      if (webServiceName.indexOf('.') != -1) {
+        splittedService = webServiceName.split(".");
         server = splittedService[0];
-        serviceName = splittedService[1];
+        webServiceName = splittedService[1];
       } else {
         server = app.wsc.getDefaultServerName();
       }
 
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get webservice path from wsd file");
 
-      wsd = plugin_RestClient.config.webservices[serviceName];
+      wsd = plugin_RestClient.config.webservices[webServiceName];
       if (wsd) {
         path = wsd.url;
       }
 
       else {
-        app.debug.error("plugin_RestClient.getMultipleJsonAsync() - service not defined: " + serviceName);
+        app.debug.error("plugin_RestClient.getMultipleJsonAsync() - service not defined: " + webServiceName);
         return dfd.reject();
       }
 
@@ -500,15 +502,15 @@ var plugin_RestClient = {
        */
 
       // event triggering
-      app.debug.info("plugin_RestClient - TRIGGER EVENT: " + serviceName);
-      $(document).trigger(serviceName, [wsEventTrigger.promise(), parameter]);
+      app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
+      $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
 
       // case: webesrvice is cacheable && webservice is cached
-      if ((cachedJson = plugin_RestClient.functions.cacheJson(serviceName, parameter)) && plugin_RestClient.config.webservices[serviceName].cacheable) {
-        app.debug.info("plugin_RestClient - CACHED: " + serviceName);
-        resultObject[serviceName] = cachedJson;
+      if ((cachedJson = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
+        app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
+        resultObject[webServiceName] = cachedJson;
         promiseArray.push($.Deferred().resolve());
-        webserviceNamesArray.push(plugin_RestClient.cachedWebserviceIndentifyer);
+        webwebServiceNamesArray.push(plugin_RestClient.cachedWebserviceIndentifyer);
 
         // resolve webservice event
         wsEventTrigger.resolve(cachedJson, parameter);
@@ -516,18 +518,18 @@ var plugin_RestClient = {
 
       // case: webservice request
       else {
-        app.debug.info("plugin_RestClient - CALL: " + serviceName);
-        promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[serviceName].method, plugin_RestClient.config.webservices[serviceName].timeout, async, plugin_RestClient.config.webservices[serviceName].local, server);
+        app.debug.info("plugin_RestClient - CALL: " + webServiceName);
+        promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[webServiceName].method, plugin_RestClient.config.webservices[webServiceName].timeout, async, plugin_RestClient.config.webservices[webServiceName].local, server);
 
         promiseArray.push(promise);
-        webserviceNamesArray.push(serviceName);
+        webwebServiceNamesArray.push(webServiceName);
         webserviceParameterArray.push(parameter);
 
         promise.done(function() {
-          app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + serviceName);
+          app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
           wsEventTrigger.resolve(arguments);
         }).fail(function() {
-          app.debug.info("plugin_RestClient - REJECT TRIGGER EVENT: " + serviceName);
+          app.debug.info("plugin_RestClient - REJECT TRIGGER EVENT: " + webServiceName);
           wsEventTrigger.reject(arguments);
         });
       }
@@ -543,7 +545,7 @@ var plugin_RestClient = {
       var argumentsArray = [].slice.apply(arguments);
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - add each result to resultObject");
 
-      $.each(webserviceNamesArray, function(key, value) {
+      $.each(webwebServiceNamesArray, function(key, value) {
         // alert(key + JSON.stringify(value));
 
         // case: do not for cached webservices
@@ -581,18 +583,58 @@ var plugin_RestClient = {
     return dfd.promise();
   },
 
+  /**
+   * The public functions used by the API *
+   * 
+   * @memberof plugin_RestClient
+   * @namespace plugin_RestClient.functions
+   */
   functions: {
 
     /**
+     * Retruns a specific webservice definition (wsd).
      * 
+     * @memberof plugin_RestClient.functions
+     * @function getWsd
+     * @param {String}
+     *          webServiceName - The name of the webservice.
+     * @returns {null|String} - The webservice definition object or NULL if the object doesn't exist.
      */
-    getWsd: function(serviceName) {
+    getWsd: function(webServiceName) {
       app.debug.trace("plugin_RestClient.functions.getWsd(" + app.debug.arguments(arguments) + ")");
-      return plugin_RestClient.config.webservices[serviceName] || null;
+      return plugin_RestClient.config.webservices[webServiceName] || null;
     },
 
     /**
+     * Retruns a specific webservice definition (wsd).
      * 
+     * @memberof plugin_RestClient.functions
+     * @function addWsd
+     * @param {String}
+     *          name - The name of the webservice.
+     * @param {String}
+     *          url - The relative URL of the webservice.
+     * @param {String}
+     *          method - The HTTP method (post|get|delete|put) of the webservice.
+     * @param {int}
+     *          timeout - Timeout in milliseconds until the webservice is rejected.
+     * @param {boolean}
+     *          cacheable - Allow lapstone to cache the webservice result.
+     * @param {int}
+     *          cacheInMs - How long should lapstone cache the webservice result.
+     * @param {boolean}
+     *          local - Ist the webservice a local file.
+     * @returns {boolean} Success or fail adding a the webservice.
+     */
+
+    /**
+     * Retruns a specific webservice definition (wsd).
+     * 
+     * @memberof plugin_RestClient.functions
+     * @function addWsd
+     * @param {Object}
+     *          webServiceDefinition - An object containing the webservice definition.
+     * @returns {boolean} Success or fail adding a the webservice.
      */
     addWsd: function(name, url, method, timeout, cacheable, cacheInMs, local) {
       app.debug.trace("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition(" + app.debug.arguments(arguments) + ")");
@@ -616,16 +658,22 @@ var plugin_RestClient = {
     },
 
     /**
+     * Deletes a webservice definition (wsd).
      * 
+     * @memberof plugin_RestClient.functions
+     * @function deleteWsd
+     * @param {String}
+     *          webServiceName - The name of the webservice.
+     * @returns {boolean} - Success or fail deleting a the webservice
      */
-    deleteWsd: function(name) {
+    deleteWsd: function(webServiceName) {
       app.debug.trace("plugin_RestClient.functions.deleteWsd(" + app.debug.arguments(arguments) + ")");
-      delete plugin_RestClient.config.webservices[name];
+      delete plugin_RestClient.config.webservices[webServiceName];
       return true;
     },
 
     /**
-     * 
+     * @deprecated removed in version 1.0
      */
     addWebserviceDefinition: function(name, url, method, timeout, cacheable, cacheInMs, local) {
       console.error("Depecated function!! use app.rc.addWsd(name, url, method, timeout, cacheable, cacheInMs, local)")
@@ -633,7 +681,7 @@ var plugin_RestClient = {
     },
 
     /**
-     * 
+     * @deprecated removed in version 1.0
      */
     addWebserviceDefinitionFile: function(path) {
       app.debug.debug("plugin_RestClient.functions.addWebserviceDefinitionFile(" + app.debug.arguments(arguments) + ")");
@@ -641,33 +689,55 @@ var plugin_RestClient = {
     },
 
     /**
+     * Removes a specific webservice call from cache.
      * 
+     * @memberof plugin_RestClient.functions
+     * @function removeCache
+     * @param {String}
+     *          webServiceName - The name of the webservice.
+     * @param {String}
+     *          parameter - The parameter of the call.
+     * @returns {boolean} - Success or fail deleting a webservice from cache.
      */
-    removeCache: function(serviceName, parameter) {
+    removeCache: function(webServiceName, parameter) {
       app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
-      app.store.localStorage.removeObject(plugin_RestClient.cachedWebserviceIndentifyer + serviceName);
+      app.store.localStorage.removeObject(plugin_RestClient.cachedWebserviceIndentifyer + webServiceName);
       return true;
     },
 
     /**
+     * Removes the eintire webservice cache.
      * 
+     * @memberof plugin_RestClient.functions
+     * @function clearCache
+     * @returns {boolean} - Success or fail removing the cache.
      */
-    clearCache: function(serviceName, parameter) {
+    clearCache: function(webServiceName, parameter) {
       app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
       app.store.localStorage.removeItem(plugin_RestClient.cachedWebserviceIndentifyer + "*");
       return true;
     },
 
     /**
+     * Caches a webservice. Uses the name of the webservice an the calling parameter as identifyer.
      * 
+     * @memberof plugin_RestClient.functions
+     * @function cacheJson
+     * @param {String}
+     *          webServiceName - The name of the webservice.
+     * @param {Object}
+     *          parameter - The parameter of the call.
+     * @param {Object}
+     *          data - The data to cache.
+     * @returns {boolean} - Success or fail caching a the webservice. No reason is returned.
      */
-    cacheJson: function(serviceName, parameter, data) {
+    cacheJson: function(webServiceName, parameter, data) {
       app.debug.trace("plugin_RestClient.functions.cacheJson(" + app.debug.arguments(arguments) + ")");
       app.debug.validate(_);
       var cachedWs, wsd, uniqueWsIdentifyer;
 
-      wsd = app.rc.getWsd(serviceName);
-      uniqueWsIdentifyer = (serviceName + JSON.stringify(parameter)).hashCode();
+      wsd = app.rc.getWsd(webServiceName);
+      uniqueWsIdentifyer = (webServiceName + JSON.stringify(parameter)).hashCode();
 
       if (wsd.cacheable) {
         app.debug.debug("plugin_RestClient.functions.cacheJson() - case: webservice is cacheable");
@@ -676,7 +746,7 @@ var plugin_RestClient = {
           app.debug.debug("plugin_RestClient.functions.cacheJson() - case: store to local storage");
 
           cachedWs = {
-            servicename: serviceName,
+            servicename: webServiceName,
             parameter: parameter,
             cachetimestamp: Date.now(),
             data: JSON.stringify(data)
@@ -729,17 +799,25 @@ var plugin_RestClient = {
     },
 
     /**
+     * Returns the full URL of a webservice call
      * 
+     * @memberof plugin_RestClient.functions
+     * @function getFullUrl
+     * @param {String}
+     *          webServiceName - The name of the webservice.
+     * @param {String}
+     *          parameter - The parameter of the call.
+     * @returns {String} - The full URL of the webservice call.
      */
     getFullUrl: function(service, parameter) {
       app.debug.trace("plugin_RestClient.functions.getFullUrl(" + app.debug.arguments(arguments) + ")");
 
-      var processedServerName, processedServiceName, processedPath, processedData, wsd, serverUrl, url;
+      var processedServerName, processedWebServiceName, processedPath, processedData, wsd, serverUrl, url;
 
       processedServerName = plugin_RestClient.getServer(service);
-      processedServiceName = plugin_RestClient.getService(service);
+      processedWebServiceName = plugin_RestClient.getService(service);
 
-      wsd = plugin_RestClient.config.webservices[processedServiceName];
+      wsd = plugin_RestClient.config.webservices[processedWebServiceName];
       processedPath = plugin_RestClient.getPath(parameter, wsd.url);
       processedData = plugin_RestClient.getData(parameter, wsd.url);
 
@@ -807,7 +885,73 @@ var plugin_RestClient = {
     },
 
     /**
+     * Call a webservice synchronous which returns a JSON text.
      * 
+     * @memberof plugin_RestClient.functions
+     * @function getJson
+     * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title,
+     *          userId: userId }, false, 1);
+     * @param {String}
+     *          webServiceName - The name of the webservice.
+     * @param {Object}
+     *          parameter - The parameter of the call.
+     * @param {false}
+     *          false - Call the webservice synchronous.
+     * @param {int}
+     *          attempts - The amount how often a you call a webservice before rejecting it.
+     * @returns {null|Object} - The received JSON object or null in case of an error.
+     */
+
+    /**
+     * Call a webservice asynchronous which returns a JSON text.
+     * 
+     * @memberof plugin_RestClient.functions
+     * @function getJson
+     * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title,
+     *          userId: userId }, true, 1);
+     * @param {String}
+     *          webServiceName - The name of the webservice.
+     * @param {Object}
+     *          parameter - The parameter of the call.
+     * @param {true}
+     *          true - Call the webservice asynchronous.
+     * @param {int}
+     *          attempts - The amount how often a you call a webservice before rejecting it.
+     * @returns {null|Object<jQuery.Deferred>} A jQuery.Deferrd Object or null in case of an error.
+     */
+
+    /**
+     * Call multiple webservices synchronous which returning a JSON text.
+     * 
+     * @memberof plugin_RestClient.functions
+     * @function getJson
+     * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken:
+     *          token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId,
+     *          userid: userId }], ["getScheduleConfig", { wstoken: token }]], false, 3);
+     * @param {Array<Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
+     *          (webServiceName, parameter) webServiceName - The name of the webservice.
+     * @param {false}
+     *          false - Call the webservice synchronous.
+     * @param {int}
+     *          attempts - The amount how often a you call a webservice before rejecting it.
+     * @returns {null|Object} - The received JSON object or null in case of an error.
+     */
+
+    /**
+     * Call multiple webservices asynchronous which returning a JSON text.
+     * 
+     * @memberof plugin_RestClient.functions
+     * @function getJson
+     * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken:
+     *          token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId,
+     *          userid: userId }], ["getScheduleConfig", { wstoken: token }]], true, 3);
+     * @param {Array<Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
+     *          (webServiceName, parameter) webServiceName - The name of the webservice.
+     * @param {true}
+     *          true - Call the webservice asynchronous.
+     * @param {int}
+     *          attempts - The amount how often a you call a webservice before rejecting it.
+     * @returns {null|Object<jQuery.Deferred>} A jQuery.Deferrd object or null in case of an error.
      */
     getJson: function(service, parameter, async, attempts, dfd) {
       app.debug.trace("plugin_RestClient.functions.getJson(" + app.debug.arguments(arguments) + ")");

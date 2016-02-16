@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
  * free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software
@@ -15,7 +15,11 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
+/**
+ * Plugin to create debug output. It will be removed in release Versions.
+ * 
+ * @namespace plugin_Debug
+ */
 var plugin_Debug = {
   /**
    * Configuration loaded from json file or html5 storage. Use plugin_Informator
@@ -90,6 +94,14 @@ var plugin_Debug = {
    */
   definePluginEvents: function() {
     app.debug.trace("plugin_Debug.definePluginEvents(" + app.debug.arguments(arguments) + ")");
+
+    /**
+     * show app.about() when you click 7 times in 4 secconds
+     */
+    $("html").on("vclick", function(event) {
+      plugin_Debug.aboutListener(event, $(this));
+
+    });
   },
 
   // called by pages.js
@@ -218,15 +230,93 @@ var plugin_Debug = {
   },
 
   // private functions
-  /**
-   * @private
-   */
+  aboutListener: function(event, element) {
+    var clicks;
+
+    if (!element.data("clicks")) {
+      element.data("clicks", []);
+    }
+
+    clicks = element.data("clicks");
+
+    clicks.unshift(Date.now());
+
+    if ((clicks[0] - clicks[6]) < 2000) {
+
+      clicks = [];
+      plugin_Debug.about();
+    }
+
+    clicks = clicks.slice(0, 7);
+
+    // alert(clicks);
+  },
+
+  about: function() {
+    app.debug.validate(plugin_Notification);
+
+    var content;
+
+    $("html").off("vclick");
+
+    content = $("<ul>");
+
+    content.append($("<li>").append($("<p>").text("App version: ").append($("<strong>").text(app.config.version.app))));
+    content.append($("<li>").append($("<p>").text("Lapstone version: ").append($("<strong>").text(app.config.version.lapstone))));
+    content.append($("<li>").append($("<p>").text("Lapstone release version: ").append($("<strong>").text(app.config.min))));
+
+    content.append($("<li>").append($("<p>").text("jQuery version: ").append($("<strong>").text($.fn.jquery))));
+    content.append($("<li>").append($("<p>").text("jQuery mobile version: ").append($("<strong>").text($.mobile.version))));
+    content.append($("<li>").append($("<p>").text("Use apache cordova: ").append($("<strong>").text(app.config.apacheCordova))));
+
+    // HTML Meta
+    content.append($("<li>").append($("<p>").text("User Agent: ").append($("<strong>").text(navigator.userAgent))));
+    content.append($("<li>").append($("<p>").text("HTML Viewport: ").append($("<strong>").text($("meta[name=viewport]").attr("content")))));
+    // Page
+    content.append($("<li>").append($("<p>").text("Current Page: ").append($("<strong>").text($("div[data-role=page]").attr("id")))));
+    // App
+    content.append($("<li>").append($("<p>").text("Startup Time: ").append($("<strong>").text(app.config.startup + " seconds"))));
+
+    app.notify.dialog({
+      text: content,
+      title: "About the app.",
+      headline: "Use this data when you report a bug.",
+      buttonLeft: "Report a Bug",
+      buttonRight: "Close",
+      callbackButtonLeft: function(popup) {
+        $("html").on("vclick", function(event) {
+          plugin_Debug.aboutListener(event, $(this));
+        });
+      },
+      callbackButtonRight: function(popup) {
+        $("html").on("vclick", function(event) {
+          plugin_Debug.aboutListener(event, $(this));
+        });
+      },
+      delayInMs: 0,
+      width: "80%"
+    })
+  },
 
   // public functions
   /**
+   * The public functions used by the API *
+   * 
+   * @memberof plugin_Debug
    * @namespace plugin_Debug.functions
    */
   functions: {
+
+    /**
+     * Consumes an array with values of different types and returns it as a
+     * string.
+     * 
+     * @memberof plugin_Debug.functions
+     * @function arguments
+     * @param {Array}
+     *          argumentsToPrint - An array with the arguments to print.
+     * @returns {String} A string representation of the array.
+     */
     arguments: function(argumentsToPrint) {
       var returnValue = "";
 
@@ -242,52 +332,132 @@ var plugin_Debug = {
 
     // debug functions
 
+    /**
+     * Handles the debug output on level: TRACE
+     * 
+     * @memberof plugin_Debug.functions
+     * @function trace
+     * @param {String}
+     *          output - The debug output.
+     */
     trace: function(output) {
       // log debug output
       this.log(output, "TRACE");
     },
 
+    /**
+     * Handles the debug output on level: DEBUG
+     * 
+     * @memberof plugin_Debug.functions
+     * @function debug
+     * @param {String}
+     *          output - The debug output.
+     */
     debug: function(output) {
       // log debug output
       this.log(output, "DEBUG");
     },
 
+    /**
+     * Handles the debug output on level: TODO
+     * 
+     * @memberof plugin_Debug.functions
+     * @function todo
+     * @param {String}
+     *          output - The debug output.
+     */
     todo: function(output) {
       // log debug output
       this.log(output, "TODO", true);
     },
 
+    /**
+     * Handles the debug output on level: INFO
+     * 
+     * @memberof plugin_Debug.functions
+     * @function info
+     * @param {String}
+     *          output - The debug output.
+     */
     info: function(output) {
       // log debug output
       this.log(output, "INFO");
     },
 
+    /**
+     * Handles the debug output on level: EVENT
+     * 
+     * @memberof plugin_Debug.functions
+     * @function event
+     * @param {jQuery.Event}
+     *          output - The debug output.
+     */
     event: function(event) {
       // log debug output
-      eventinger = event;
+      // eventinger = event;
       this.log("Type: " + event.type + " Target: " + event.target, "EVENT");
     },
 
+    /**
+     * Handles the debug output on level: APP
+     * 
+     * @memberof plugin_Debug.functions
+     * @function app
+     * @param {String}
+     *          output - The debug output.
+     */
     app: function(output) {
       // log debug output
       this.log(output, "APP");
     },
 
+    /**
+     * Handles the debug output on level: WARN
+     * 
+     * @memberof plugin_Debug.functions
+     * @function warn
+     * @param {String}
+     *          output - The debug output.
+     */
     warn: function(output) {
       // log debug output
       this.log(output, "WARN");
     },
 
+    /**
+     * Handles the debug output on level: ERROR
+     * 
+     * @memberof plugin_Debug.functions
+     * @function error
+     * @param {String}
+     *          output - The debug output.
+     */
     error: function(output) {
       // log debug output
       this.log(output, "ERROR", true);
     },
 
+    /**
+     * Handles the debug output on level: FATAL
+     * 
+     * @memberof plugin_Debug.functions
+     * @function fatal
+     * @param {String}
+     *          output - The debug output.
+     */
     fatal: function(output) {
       // log debug output
       this.log(output, "FATAL", true);
     },
 
+    /**
+     * Handles the debug output on level: DEPRECATED
+     * 
+     * @memberof plugin_Debug.functions
+     * @function deprecated
+     * @param {String}
+     *          output - The debug output.
+     */
     deprecated: function(text) {
       if (plugin_Debug.config.debugDevice) {
         try {
@@ -301,6 +471,30 @@ var plugin_Debug = {
       }
     },
 
+    /**
+     * Validates if an objects exists. You can use this function to validate
+     * that an object exists before you use it. E.g.: Validate if a JSON
+     * configuration file has specific members.
+     * 
+     * @memberof plugin_Debug.functions
+     * @function validate
+     * @param {Object}
+     *          object - The object to validate.
+     */
+
+    /**
+     * Validates if an objects of a specific type exists. You can use this
+     * function to validate that an object of a specific type exists before you
+     * use it. E.g.: Validate if a JSON configuration file has specific members
+     * with specific types.
+     * 
+     * @memberof plugin_Debug.functions
+     * @function validate
+     * @param {Object}
+     *          object - The object to validate.
+     * @param {Type}
+     *          type - Type to validate.
+     */
     validate: function(object, type) {
       if (type) {
         if (!(typeof object === type)) {
@@ -322,7 +516,15 @@ var plugin_Debug = {
     },
 
     /**
-     * log
+     * Handles the debug output. Depending of the configuration the function is
+     * printing to console and/or to a log object.
+     * 
+     * @memberof plugin_Debug.functions
+     * @function log
+     * @param {String}
+     *          output - The debug output.
+     * @param {String} -
+     *          The debug level.
      */
     log: function(output, level, trace) {
 
@@ -352,15 +554,25 @@ var plugin_Debug = {
       }
     },
 
-    /**
-     * Shows the log object in an alert window
-     */
     showLog: function() {
       console.warn("Deprecated function!!");
       alert(JSON.stringify(plugin_Debug.logObject));
     },
 
+    /**
+     * List functions.
+     * 
+     * @memberof plugin_Debug.functions
+     * @namespace plugin_Debug.functions.ls
+     */
     ls: {
+
+      /**
+       * Lists all webservice definitions (wsd).
+       * 
+       * @memberof plugin_Debug.functions.ls
+       * @function wsd
+       */
       wsd: function() {
         app.debug.trace("plugin_Debug.functions.ls.wsd(" + app.debug.arguments(arguments) + ")");
         $.each(plugin_RestClient.config.webservices, function(wsName, singleWsd) {
@@ -392,8 +604,32 @@ var plugin_Debug = {
       }
     },
 
+    /**
+     * Feedback functions.
+     * 
+     * @memberof plugin_Debug.functions
+     * @namespace plugin_Debug.functions.feedback
+     */
     feedback: {
 
+      /**
+       * Collect untranslated language IDs
+       * 
+       * @memberof plugin_Debug.functions.feedback
+       * @function language
+       * @param {Object
+       *          <String, String> - Untranslated
+       */
+
+      /**
+       * Collect untranslated language IDs. And prints the untranslated IDs to
+       * console with debug level: WARN.
+       * 
+       * @memberof plugin_Debug.functions.feedback
+       * @function language
+       * @param {Object
+       *          <String, Object> - Untranslated
+       */
       language: function(object) {
         app.debug.trace("plugin_Debug.functions.feedback.language(" + app.debug.arguments(arguments) + ")");
         app.debug.warn("Unimplemented language: " + JSON.stringify(object));
@@ -420,11 +656,5 @@ var plugin_Debug = {
       }
     }
   },
-/**
- * Add line to log object.
- * 
- * @param {string}
- *          text text to log
- */
 
 };

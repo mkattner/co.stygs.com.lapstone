@@ -63,7 +63,7 @@ var plugin_Navigation = {
      */
     $("body").on("pagecontainerload", function(event, ui) {
       app.debug.event(event);
-      
+
       app.debug.debug("plugin_Navigation.definePluginEvents() - change current pageid in config");
       plugin_Navigation.config["currentPageId"] = "#" + ui.toPage.attr("id");
     });
@@ -127,6 +127,12 @@ var plugin_Navigation = {
           $(location).attr("href", url);
         }
       }, 50);
+    },
+
+    virtual: function(url) {
+      app.debug.validate(pages.config.virtual);
+      
+
     },
 
     back: function(transition) {

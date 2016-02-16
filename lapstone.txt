@@ -37,3 +37,12 @@ call: java -jar lapstone.jar
    -name=NameOfPluginToModify | NameOfPluginToCreate | NameOfPluginToDelete
    -modus= new | (not yet implemented: add | update | remove)
    -lapstone=/absolute/path/to/the/lapstone/sources
+   
+ --
+ 
+ *) Use jsdoc and docstrap to create the documentation for your app
+ jsdoc ./*  -d ./documentation -r  -t /usr/local/lib/node_modules/ink-docstrap/template -c ../../tools/DocStrap/config.json 
+ 
+ It's a node.js module:
+ npm install -g jsdoc
+ npm install -g ink-docstrap

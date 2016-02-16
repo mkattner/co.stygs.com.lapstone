@@ -1,0 +1,11 @@
+{
+	"name": "lapstone",
+	"shortname": "lapstone",
+	"template": "JQueryMobileFooterPage",
+	"asyncLoading": false,
+	"useKeepAlive": false,
+	"loginObligate": false,
+	"isGlobalPage": false,
+	"contentRefresh": false,
+	"contentRefreshInterval": 0
+}

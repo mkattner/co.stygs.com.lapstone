@@ -1,19 +1,14 @@
-/**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+/*
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_LoadExternalScripts = {
@@ -25,115 +20,126 @@ var plugin_LoadExternalScripts = {
     dfd.resolve();
     return dfd.promise();
   },
+
   pluginsLoaded: function() {
     app.debug.trace(this.config.name + ".pluginsLoaded()", 11);
 
-    var dfd = $.Deferred(), promises = Array(), promiseOfPromises, url;
+    var dfd, promises, promiseOfPromises, promisesOfUnorderedScripts, promisesOfUnorderedStyles, orderedStyleArray;
 
-    /**
-     * styles ordered
-     */
-    app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered styles");
+    dfd = $.Deferred();
+    promises = Array();
 
-    app.debug.validate(plugin_LoadExternalScripts.config.scripts.cssOrdered);
+    promisesOfUnorderedStyles = Array();
+    promisesOfUnorderedScripts = Array();
 
-    promises.push(plugin_LoadExternalScripts.loadCssAsync(plugin_LoadExternalScripts.config.scripts.cssOrdered.slice().map(function(url) {
-      if (app.config.min) {
-        return url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
-      }
-
-      else {
-        return url;
-      }
-    })));
+    orderedStyleArray = Array();
 
     /**
      * styles unordered
      */
+    app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered styles");
+    app.debug.validate(plugin_LoadExternalScripts.config.scripts.style);
 
-    promises.slice(-1).pop().done(function() {
+    $.each(plugin_LoadExternalScripts.config.scripts.style, function(url, value) {
+      if (value) {
+        if (url in plugin_LoadExternalScripts.loadedScripts) {
+          ;// do nothing already loaded
+        }
 
-      app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered styles");
+        else if (url.endsWith(".css")) {
+          app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process css: " + url);
 
-      app.debug.validate(plugin_LoadExternalScripts.config.scripts.css);
-      $.each(plugin_LoadExternalScripts.config.scripts.css, function(key, value) {
-        if (value) {
-          if (key in plugin_LoadExternalScripts.loadedScripts) {
-            ;// do nothing already loaded
-          } else {
-            if (app.config.min) {
-              url = key.substring(0, key.lastIndexOf(".")) + "." + app.config.version.app + ".css";
-              promises.push(globalLoader.AsyncStyleLoader(url));
-              plugin_LoadExternalScripts.loadedScripts[url] = true;
-            }
-
-            else {
-              url = key;
-              promises.push(globalLoader.AsyncStyleLoader(url));
-              plugin_LoadExternalScripts.loadedScripts[url] = true;
-            }
-
+          if (app.config.min) {
+            url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
           }
 
+          promisesOfUnorderedStyles.push(globalLoader.AsyncStyleLoader(url));
+          plugin_LoadExternalScripts.loadedScripts[url] = true;
         }
-      });
 
+        else if (url.endsWith(".less")) {
+          app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process less: " + url);
+
+          if (app.config.min) {
+            url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
+          }
+
+          else {
+            url = url;
+          }
+          promisesOfUnorderedStyles.push(globalLoader.AsyncLessLoader(url));
+          plugin_LoadExternalScripts.loadedScripts[url] = true;
+        }
+
+      }
     });
 
     /**
-     * less unordered
+     * styles ordered
      */
-    promises.slice(-1).pop().done(function() {
-      app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered less styles");
+    $.when.apply($, promisesOfUnorderedStyles).done(function() {
+      app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered styles");
+      app.debug.validate(plugin_LoadExternalScripts.config.scripts.styleOrdered);
 
-      app.debug.validate(plugin_LoadExternalScripts.config.scripts.less);
-      $.each(plugin_LoadExternalScripts.config.scripts.less, function(key, value) {
-        if (value) {
-          if (key in plugin_LoadExternalScripts.loadedScripts) {
-            ;// do nothing already loaded
-          } else {
-            if (app.config.min) {
-              url = key.substring(0, key.lastIndexOf(".")) + "." + app.config.version.app + ".css";
-              promises.push(globalLoader.AsyncStyleLoader(url));
-              plugin_LoadExternalScripts.loadedScripts[url] = true;
-            }
+      $.each(plugin_LoadExternalScripts.config.scripts.styleOrdered, function(index, url) {
+        if (url in plugin_LoadExternalScripts.loadedScripts) {
+          ;// do nothing already loaded
+        }
 
-            else {
-              url = key + ".less";
-              promises.push(globalLoader.AsyncLessLoader(url));
-              plugin_LoadExternalScripts.loadedScripts[url] = true;
-            }
-
+        else if (url.endsWith(".css")) {
+          app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process css: " + url);
+          if (app.config.min) {
+            url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
           }
 
+          else {
+            url = url;
+          }
+          orderedStyleArray.push(url);
+          plugin_LoadExternalScripts.loadedScripts[url] = true;
         }
+
+        else if (url.endsWith(".less")) {
+          app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process less: " + url);
+          if (app.config.min) {
+            // remove .less
+            url = url.substring(0, url.lastIndexOf("."));
+            url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
+          }
+
+          orderedStyleArray.push(url);
+          plugin_LoadExternalScripts.loadedScripts[url] = true;
+        }
+
       });
+      promises.push(plugin_LoadExternalScripts.loadStyleAsync(orderedStyleArray));
+    }).fail(function() {
+      dfd.reject();
+    });
+
+    /**
+     * scripts unordered
+     */
+    app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered scripts");
+    app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascript);
+
+    $.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
+      if (value) {
+        promisesOfUnorderedScripts.push(globalLoader.AsyncScriptLoader(key));
+        plugin_LoadExternalScripts.loadedScripts[key] = true;
+      }
     });
 
     /**
      * scripts ordered
      */
-    app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered scripts");
+    $.when.apply($, promises).done(function() {
+      app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered scripts");
+      app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascriptOrdered);
 
-    app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascriptOrdered);
-    promises.push(plugin_LoadExternalScripts.loadScriptsAsync(plugin_LoadExternalScripts.config.scripts.javascriptOrdered.slice()));
-
-    /**
-     * scripts unordered
-     */
-
-    promises.slice(-1).pop().done(function() {
-
-      app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered scripts");
-
-      app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascript);
-      $.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
-        if (value) {
-          promises.push(globalLoader.AsyncScriptLoader(key));
-          plugin_LoadExternalScripts.loadedScripts[key] = true;
-        }
-      });
-
+      promises.push(plugin_LoadExternalScripts.loadScriptsAsync(plugin_LoadExternalScripts.config.scripts.javascriptOrdered.slice()));
+    }).fail(function() {
+      dfd.reject();
     });
 
     /**
@@ -215,40 +221,50 @@ var plugin_LoadExternalScripts = {
     return dfd.promise();
   },
 
-  loadCssAsync: function(cssArray) {
-    app.debug.trace("plugin_LoadExternalScripts.loadCssAsync()");
+  loadStyleAsync: function(styleArray) {
+    app.debug.trace("plugin_LoadExternalScripts.loadStyleAsync()");
 
-    var dfd = $.Deferred(), url, promise;
+    var dfd = $.Deferred(), url, promise, subPromise;
 
-    if (cssArray.length > 0) {
-      url = cssArray.pop();
+    if (styleArray.length > 0) {
+      url = styleArray.pop();
 
-      app.debug.debug("plugin_LoadExternalScripts.loadCssAsync() - LOAD url: " + url);
+      app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - LOAD url: " + url);
 
-      globalLoader.AsyncStyleLoader(url).done(function() {
+      if (url.endsWith(".less")) {
+        promise = globalLoader.AsyncLessLoader(url)
+      }
+
+      else if (url.endsWith(".css")) {
+        promise = globalLoader.AsyncStyleLoader(url)
+      }
+
+      promise.done(function() {
         plugin_LoadExternalScripts.loadedScripts[url] = true;
 
-        app.debug.debug("plugin_LoadExternalScripts.loadCssAsync() - DONE url: " + url);
+        app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - DONE url: " + url);
 
-        app.debug.debug("plugin_LoadExternalScripts.loadCssAsync() - call recursive");
-        promise = plugin_LoadExternalScripts.loadCssAsync(cssArray);
+        app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - call recursive");
+        subPromise = plugin_LoadExternalScripts.loadStyleAsync(styleArray);
 
-        promise.done(function() {
+        subPromise.done(function() {
           dfd.resolve();
         });
 
-        promise.fail(function() {
+        subPromise.fail(function() {
           dfd.reject();
         });
 
-      }).fail(function() {
-        app.debug.debug("plugin_LoadExternalScripts.loadCssAsync() - FAIL url: " + url);
+      })
+
+      promise.fail(function() {
+        app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - FAIL url: " + url);
         dfd.reject();
       });
     }
 
     else {
-      app.debug.debug("plugin_LoadExternalScripts.loadCssAsync() - case: css array empty; resolve");
+      app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - case: css array empty; resolve");
       dfd.resolve();
     }
 
