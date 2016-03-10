@@ -55,7 +55,7 @@ public class Deploy {
 
 		    File destination = new File(pathname.getAbsolutePath().replace(www.getAbsolutePath(), www_debug.getAbsolutePath()));
 
-		    if (destination.getName().startsWith("page.lapstone") || destination.getName().equals("lapstone.html")) {
+		    if (destination.getName().startsWith("page.lapstone") ) {
 			return false;
 		    }
 

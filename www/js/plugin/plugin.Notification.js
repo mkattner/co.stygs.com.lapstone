@@ -1,19 +1,14 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_Notification = {
@@ -513,8 +508,8 @@ var plugin_Notification = {
     },
 
     /**
-     * alert({ id:"", text: "", title: "", headline: "", button: "",
-     * callbackButton: function(popup) { }, delayInMs: 0, width: "50%" })
+     * app.notify.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button", callbackButton:
+     * function(popup) { }, delayInMs: 0, width: "50%" });
      */
     alert: function(text, title, headline, button, callbackButton, delayInMs) {
       var notification;
@@ -541,9 +536,9 @@ var plugin_Notification = {
     },
 
     /**
-     * dialog( { id:"", text: "", title: "", headline: "", buttonLeft: "",
-     * buttonRight: "", callbackButtonLeft: function(popup) { },
-     * callbackButtonRight: function(popup) { }, delayInMs: 0, width: "50%" });
+     * app.notify.dialog({ id: "", text: "text", title: "title", headline: "headline", buttonLeft: "button left",
+     * buttonRight: "button right", callbackButtonLeft: function(popup) { }, callbackButtonRight: function(popup) { },
+     * delayInMs: 0, width: "50%" });
      */
     dialog: function(text, title, headline, buttonLeft, buttonRight, callbackButtonLeft, callbackButtonRight, delayInMs) {
       var notification;
@@ -571,10 +566,10 @@ var plugin_Notification = {
     },
 
     /**
-     * trialog trialog( { id:"", text: "", title: "", headline: "", buttonLeft:
-     * "", buttonCenter: "", buttonRight: "", callbackButtonLeft:
-     * function(popup) { }, callbackButtonCenter: function(popup) { },
-     * callbackButtonRight: function(popup) { }, delayInMs: 0, width: "50%" });
+     * app.notify.trialog({ id: "", text: "text", title: "title", headline: "headline", buttonLeft: "button left",
+     * buttonCenter: "button center", buttonRight: "button right", callbackButtonLeft: function(popup) { },
+     * callbackButtonCenter: function(popup) { }, callbackButtonRight: function(popup) { }, delayInMs: 0, width: "50%"
+     * });
      */
     trialog: function(notification) {
 
@@ -889,6 +884,13 @@ var plugin_Notification = {
      * 
      */
     loader: {
+      
+      /**
+       * 
+       */
+      isLoaderActive: function() {
+        return ($(".loader").length) ? true : false;
+      },
 
       /**
        * 

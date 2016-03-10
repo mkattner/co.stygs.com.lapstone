@@ -1,19 +1,14 @@
 /*
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
  * Plugin to create debug output. It will be removed in release Versions.
@@ -22,8 +17,7 @@
  */
 var plugin_Debug = {
   /**
-   * Configuration loaded from json file or html5 storage. Use plugin_Informator
-   * to get access.
+   * Configuration loaded from json file or html5 storage. Use plugin_Informator to get access.
    * 
    * @private
    */
@@ -86,8 +80,7 @@ var plugin_Debug = {
     return dfd.promise();
   },
   /**
-   * Define the jQuery event delegations for the plugin. Called by pages.js
-   * after ...
+   * Define the jQuery event delegations for the plugin. Called by pages.js after ...
    * 
    * @protected
    * @returns {boolean} Succesfull or unsuccessful
@@ -106,8 +99,7 @@ var plugin_Debug = {
 
   // called by pages.js
   /**
-   * AfterHtmlInjectedBeforePageComputing event. Called by pages.js after
-   * page.create().
+   * AfterHtmlInjectedBeforePageComputing event. Called by pages.js after page.create().
    * 
    * @protected
    * @param container
@@ -125,6 +117,7 @@ var plugin_Debug = {
         },
         styles: {
           "position": "fixed",
+          "display": "none",
           "z-index": "1050",
           "top": "0px",
           "left": "0px",
@@ -190,6 +183,24 @@ var plugin_Debug = {
       }));
 
       container.append(debugDiv);
+
+      debugDiv.css({
+        "display": "none"
+      });
+
+      container.append($("<div>").attr("id", "divDebugButton").css({
+        "position": "fixed",
+        "display": "block",
+        "z-index": "1050",
+        "top": "0px",
+        "left": "0px",
+        "height": "10px",
+        "width": "20px",
+        "background-color": "red"
+      }).on("click", function() {
+        $(this).hide();
+        $("#divDebug").show();
+      }));
     }
   },
   /**
@@ -225,6 +236,8 @@ var plugin_Debug = {
         // }, {
         // "duration": 200
         // });
+
+        $("#divDebugButton").show();
       })
     }
   },
@@ -241,7 +254,7 @@ var plugin_Debug = {
 
     clicks.unshift(Date.now());
 
-    if ((clicks[0] - clicks[6]) < 2000) {
+    if ((clicks[0] - clicks[6]) < 1500) {
 
       clicks = [];
       plugin_Debug.about();
@@ -308,8 +321,7 @@ var plugin_Debug = {
   functions: {
 
     /**
-     * Consumes an array with values of different types and returns it as a
-     * string.
+     * Consumes an array with values of different types and returns it as a string.
      * 
      * @memberof plugin_Debug.functions
      * @function arguments
@@ -395,7 +407,7 @@ var plugin_Debug = {
     event: function(event) {
       // log debug output
       // eventinger = event;
-      this.log("Type: " + event.type + " Target: " + event.target, "EVENT");
+      this.log("Type: " + event.type + " Target classes: " + $(event.target).attr("class"), "EVENT");
     },
 
     /**
@@ -471,10 +483,13 @@ var plugin_Debug = {
       }
     },
 
+    flat: function() {
+
+    },
+
     /**
-     * Validates if an objects exists. You can use this function to validate
-     * that an object exists before you use it. E.g.: Validate if a JSON
-     * configuration file has specific members.
+     * Validates if an objects exists. You can use this function to validate that an object exists before you use it.
+     * E.g.: Validate if a JSON configuration file has specific members.
      * 
      * @memberof plugin_Debug.functions
      * @function validate
@@ -483,10 +498,9 @@ var plugin_Debug = {
      */
 
     /**
-     * Validates if an objects of a specific type exists. You can use this
-     * function to validate that an object of a specific type exists before you
-     * use it. E.g.: Validate if a JSON configuration file has specific members
-     * with specific types.
+     * Validates if an objects of a specific type exists. You can use this function to validate that an object of a
+     * specific type exists before you use it. E.g.: Validate if a JSON configuration file has specific members with
+     * specific types.
      * 
      * @memberof plugin_Debug.functions
      * @function validate
@@ -497,9 +511,17 @@ var plugin_Debug = {
      */
     validate: function(object, type) {
       if (type) {
-        if (!(typeof object === type)) {
+        if (type === "array") {
+          if (!Array.isArray(object)) {
+            plugin_Debug.functions.fatal();
+            throw new Error("Validation problem. Please look at the stacktrace.");
+
+          }
+        }
+
+        else if (!(typeof object === type)) {
           plugin_Debug.functions.fatal();
-          throw new Error("Validation problem. Please look at the stacktrace.");
+          throw new Error("Validation problem: " + typeof object + " != " + type + ". Please look at the stacktrace.");
         }
       }
 
@@ -516,8 +538,8 @@ var plugin_Debug = {
     },
 
     /**
-     * Handles the debug output. Depending of the configuration the function is
-     * printing to console and/or to a log object.
+     * Handles the debug output. Depending of the configuration the function is printing to console and/or to a log
+     * object.
      * 
      * @memberof plugin_Debug.functions
      * @function log
@@ -622,8 +644,7 @@ var plugin_Debug = {
        */
 
       /**
-       * Collect untranslated language IDs. And prints the untranslated IDs to
-       * console with debug level: WARN.
+       * Collect untranslated language IDs. And prints the untranslated IDs to console with debug level: WARN.
        * 
        * @memberof plugin_Debug.functions.feedback
        * @function language

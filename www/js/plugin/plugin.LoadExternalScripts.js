@@ -38,38 +38,38 @@ var plugin_LoadExternalScripts = {
      * styles unordered
      */
     app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered styles");
-    app.debug.validate(plugin_LoadExternalScripts.config.scripts.style);
+    app.debug.validate(plugin_LoadExternalScripts.config.scripts.style, "array");
 
-    $.each(plugin_LoadExternalScripts.config.scripts.style, function(url, value) {
-      if (value) {
-        if (url in plugin_LoadExternalScripts.loadedScripts) {
-          ;// do nothing already loaded
+    $.each(plugin_LoadExternalScripts.config.scripts.style, function(index, url) {
+      if (url in plugin_LoadExternalScripts.loadedScripts) {
+        ;// do nothing already loaded
+      }
+
+      else if (url.endsWith(".css")) {
+        app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process css: " + url);
+
+        if (app.config.min) {
+          url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
         }
 
-        else if (url.endsWith(".css")) {
-          app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process css: " + url);
+        promisesOfUnorderedStyles.push(globalLoader.AsyncStyleLoader(url));
+        plugin_LoadExternalScripts.loadedScripts[url] = true;
+      }
 
-          if (app.config.min) {
-            url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
-          }
+      else if (url.endsWith(".less")) {
+        app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process less: " + url);
 
-          promisesOfUnorderedStyles.push(globalLoader.AsyncStyleLoader(url));
-          plugin_LoadExternalScripts.loadedScripts[url] = true;
+        if (app.config.min) {
+          // remove .less
+          url = url.substring(0, url.lastIndexOf("."));
+          url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
         }
 
-        else if (url.endsWith(".less")) {
-          app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process less: " + url);
-
-          if (app.config.min) {
-            url = url.substring(0, url.lastIndexOf(".")) + "." + app.config.version.app + ".css";
-          }
-
-          else {
-            url = url;
-          }
-          promisesOfUnorderedStyles.push(globalLoader.AsyncLessLoader(url));
-          plugin_LoadExternalScripts.loadedScripts[url] = true;
+        else {
+          url = url;
         }
+        promisesOfUnorderedStyles.push(globalLoader.AsyncLessLoader(url));
+        plugin_LoadExternalScripts.loadedScripts[url] = true;
 
       }
     });
@@ -79,7 +79,7 @@ var plugin_LoadExternalScripts = {
      */
     $.when.apply($, promisesOfUnorderedStyles).done(function() {
       app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered styles");
-      app.debug.validate(plugin_LoadExternalScripts.config.scripts.styleOrdered);
+      app.debug.validate(plugin_LoadExternalScripts.config.scripts.styleOrdered, "array");
 
       $.each(plugin_LoadExternalScripts.config.scripts.styleOrdered, function(index, url) {
         if (url in plugin_LoadExternalScripts.loadedScripts) {
@@ -121,13 +121,11 @@ var plugin_LoadExternalScripts = {
      * scripts unordered
      */
     app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load unordered scripts");
-    app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascript);
+    app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascript, "array");
 
-    $.each(plugin_LoadExternalScripts.config.scripts.javascript, function(key, value) {
-      if (value) {
-        promisesOfUnorderedScripts.push(globalLoader.AsyncScriptLoader(key));
-        plugin_LoadExternalScripts.loadedScripts[key] = true;
-      }
+    $.each(plugin_LoadExternalScripts.config.scripts.javascript, function(index, url) {
+      promisesOfUnorderedScripts.push(globalLoader.AsyncScriptLoader(url));
+      plugin_LoadExternalScripts.loadedScripts[url] = true;
     });
 
     /**
@@ -135,7 +133,7 @@ var plugin_LoadExternalScripts = {
      */
     $.when.apply($, promises).done(function() {
       app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - case: load ordered scripts");
-      app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascriptOrdered);
+      app.debug.validate(plugin_LoadExternalScripts.config.scripts.javascriptOrdered, "array");
 
       promises.push(plugin_LoadExternalScripts.loadScriptsAsync(plugin_LoadExternalScripts.config.scripts.javascriptOrdered.slice()));
     }).fail(function() {

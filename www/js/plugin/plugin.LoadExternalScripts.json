@@ -2,21 +2,21 @@
 	"name":"LoadExternalScripts",
 	"shortname":"load",
 	"scripts":{
-		"style":{
-			"../ext/jQueryMobile/jquery.mobile.min.css":true,
-			"../ext/fullcalendar/fullcalendar.min.css":true,
-			"../css/fonts.css.less":true
-		},
+		"style":[
+			"../ext/jQueryMobile/jquery.mobile.min.css",
+			"../ext/fullcalendar/fullcalendar.min.css",
+			"../css/fonts.css.less"
+		],
 		"styleOrdered":[
 			"../css/global.css.less"
 		],
-		"javascript":{
-			"../ext/MD5.js":true,
-			"../ext/DATE.js":true,
-			"../ext/URI/URI.js":true,
-			"../ext/Chart/Chart.min.js":true,
-			"../ext/underscore/underscore-min.js":true
-		},
+		"javascript":[
+			"../ext/MD5.js",
+			"../ext/DATE.js",
+			"../ext/URI/URI.js",
+			"../ext/Chart/Chart.min.js",
+			"../ext/underscore/underscore-min.js"
+		],
 		"javascriptOrdered":[
 			"../ext/jquery.serializejson.min.js",
 			"../ext/aerogear/aerogear.min.js",

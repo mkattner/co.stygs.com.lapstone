@@ -860,7 +860,7 @@ function extendJsAndJquery() {
       hash = ((hash << 5) - hash) + _char;
       hash = hash & hash; // Convert to 32bit integer
     }
-    return hash;
+    return Math.abs(hash);
   }
 
   // some android versions don't support startsWith

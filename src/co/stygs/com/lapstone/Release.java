@@ -2,6 +2,7 @@ package co.stygs.com.lapstone;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -11,6 +12,8 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
 import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
 import co.stygs.com.lapstone.objects.LapstoneJson;
+import co.stygs.com.lapstone.objects.Plugin_LoadExternalScriptsJson;
+import co.stygs.com.lapstone.objects.Plugin_SkinJson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inet.lib.less.Less;
@@ -72,14 +75,8 @@ public class Release {
 	    objectMapper.writeValue(configuration, lapstoneJson);
 
 	    // ********************************************************************
-	    // create single plugin file
-
-	    Release.createSinglePluginFile(www);
-
-	    // ********************************************************************
-	    // create single page file
-
-	    Release.createSinglePageFile(www);
+	    // combine files
+	    Release.createCombinedFilesFile(www);
 
 	    // ********************************************************************
 	    // minify plugins
@@ -185,6 +182,49 @@ public class Release {
 	    e.printStackTrace();
 	    return false;
 	}
+    }
+
+    private static void createCombinedFilesFile(File www) throws Exception {
+	ObjectMapper objectMapper = new ObjectMapper();
+	File configuration;
+
+	configuration = new File(www, "js/plugin/plugin.LoadExternalScripts.json");
+	Plugin_LoadExternalScriptsJson loadExternalScriptsJson = objectMapper.readValue(configuration, Plugin_LoadExternalScriptsJson.class);
+
+//	configuration = new File(www, "js/plugin/plugin.Skin.json");
+//	Plugin_SkinJson skinJson = objectMapper.readValue(configuration, Plugin_SkinJson.class);
+
+	List<String> style;
+	List<String> javascript;
+
+	style = loadExternalScriptsJson.getScripts().getStyle();
+	style.addAll(loadExternalScriptsJson.getScripts().getStyleOrdered());
+
+	javascript = loadExternalScriptsJson.getScripts().getJavascript();
+	javascript.addAll(loadExternalScriptsJson.getScripts().getJavascriptOrdered());
+
+	String combinedJavascript = "";
+	for (String url : javascript) {
+	    combinedJavascript += FileUtils.readFileToString(new File(www, "page/" + url));
+	}
+	FileUtils.write(new File(www, "files/all.javascript.js"), combinedJavascript);
+
+	String combinedStyle = "";
+	for (String url : style) {
+	    combinedStyle += FileUtils.readFileToString(new File(www, "page/" + url));
+	}
+	FileUtils.write(new File(www, "files/all.style.css"), combinedStyle);
+
+	// ********************************************************************
+	// create single plugin file
+
+	Release.createSinglePluginFile(www);
+
+	// ********************************************************************
+	// create single page file
+
+	Release.createSinglePageFile(www);
+
     }
 
     private static void createSinglePluginFile(File www) throws Exception {

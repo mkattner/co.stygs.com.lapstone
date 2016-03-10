@@ -219,14 +219,9 @@ var plugin_RestClient = {
     wsEventTrigger = $.Deferred();
 
     app.debug.debug("plugin_RestClient.getSingleJson() - get server name");
-    app.debug.todo("use getServer() and getService()");
-    if (paramService.indexOf('.') != -1) {
-      splittedService = paramService.split(".");
-      server = splittedService[0];
-      paramService = splittedService[1];
-    } else {
-      server = app.wsc.getDefaultServerName();
-    }
+
+    server = plugin_RestClient.getServer(paramService);
+    paramService = plugin_RestClient.getService(paramService);
 
     // get the path which is defined in wsd file
     wsd = plugin_RestClient.config.webservices[paramService]
@@ -264,16 +259,6 @@ var plugin_RestClient = {
 
     }
 
-    // add language wildcards wich could be defined in webservice
-    // response
-    if (plugins.functions.pluginLoaded("MultilanguageIso639_3")) {
-      if (json.language != undefined) {
-        $.each(json.language, function(key, value) {
-          app.lang.addParameter(key, value);
-        });
-      }
-    }
-
     plugin_RestClient.functions.cacheJson(paramService, parameter, json);
 
     app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
@@ -289,30 +274,33 @@ var plugin_RestClient = {
     app.debug.debug("plugin_RestClient.getSingleJsonAsync() - get a single json object; async = true;");
 
     // the deferred object for the caller
-    var dfd = $.Deferred(), server, path, promise, splittedService, wsd, cachedJson, wsEventTrigger;
+    var dfd = $.Deferred(), server, service, path, promise, splittedService, wsd, cachedJson, wsEventTrigger;
 
     wsEventTrigger = $.Deferred();
 
     app.debug.debug("plugin_RestClient.getSingleJsonAsync() - get server name");
-    app.debug.todo("use getServer() and getService()");
-    if (paramService.indexOf('.') != -1) {
-      splittedService = paramService.split(".");
-      server = splittedService[0];
-      paramService = splittedService[1];
-    } else {
-      server = app.wsc.getDefaultServerName();
-    }
+    // app.debug.todo("use getServer() and getService()");
+    // if (paramService.indexOf('.') != -1) {
+    // splittedService = paramService.split(".");
+    // server = splittedService[0];
+    // paramService = splittedService[1];
+    // } else {
+    // server = app.wsc.getDefaultServerName();
+    // }
 
-    app.debug.debug("plugin_RestClient.getSingleJsonAsync() server: " + server + "; service: " + paramService);
+    server = plugin_RestClient.getServer(paramService);
+    service = plugin_RestClient.getService(paramService);
+
+    app.debug.debug("plugin_RestClient.getSingleJsonAsync() server: " + server + "; service: " + service);
 
     // get the path which is defined in wsd file
-    wsd = plugin_RestClient.config.webservices[paramService]
+    wsd = plugin_RestClient.config.webservices[service]
     if (wsd) {
       path = wsd.url;
     }
 
     else {
-      app.debug.error("plugin_RestClient.getSingleJsonAsync() - service not defined: " + paramService);
+      app.debug.error("plugin_RestClient.getSingleJsonAsync() - service not defined: " + service);
       return dfd.reject();
     }
 
@@ -320,59 +308,52 @@ var plugin_RestClient = {
     path = plugin_RestClient.getPath(parameter, path);
 
     // event triggering
-    app.debug.info("plugin_RestClient - TRIGGER EVENT: " + paramService);
-    $(document).trigger(paramService, [wsEventTrigger.promise(), parameter]);
+    app.debug.info("plugin_RestClient - TRIGGER EVENT: " + service);
+    $(document).trigger(service, [wsEventTrigger.promise(), parameter]);
 
     // case: webesrvice is cacheable && webservice is cached
-    if ((cachedJson = plugin_RestClient.functions.cacheJson(paramService, parameter)) && plugin_RestClient.config.webservices[paramService].cacheable) {
-      app.debug.info("plugin_RestClient - CACHED: " + paramService);
+    if ((cachedJson = plugin_RestClient.functions.cacheJson(service, parameter)) && plugin_RestClient.config.webservices[service].cacheable) {
+      app.debug.info("plugin_RestClient - CACHED: " + service);
 
-      promise = $.Deferred().resolve(cachedJson);
-
-      app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
+      app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + service);
       wsEventTrigger.resolve(cachedJson);
+
+      return dfd.resolve(cachedJson);
     }
 
     // case: webservice request
     else {
-      app.debug.info("plugin_RestClient - CALL: " + paramService);
-      promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[paramService].method, plugin_RestClient.config.webservices[paramService].timeout, async, plugin_RestClient.config.webservices[paramService].local, server);
+      app.debug.info("plugin_RestClient - CALL: " + service);
+      promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[service].method, plugin_RestClient.config.webservices[service].timeout, async, plugin_RestClient.config.webservices[service].local, server);
 
+      promise.done(function(json) {
+
+        app.debug.debug("plugin_RestClient.getSingleJsonAsync()- Webservice call done: " + JSON.stringify(json));
+        plugin_RestClient.functions.cacheJson(paramService, parameter, json);
+        dfd.resolve(json);
+
+        app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
+        wsEventTrigger.resolve(json);
+      });
+
+      promise.fail(function(error, jqXHR) {
+        app.debug.debug("plugin_RestClient.getSingleJsonAsync() - Webservice call failed: " + JSON.stringify(error));
+
+        app.debug.info("plugin_RestClient - FAILED: " + error.id);
+
+        dfd.reject(error, jqXHR);
+
+        app.debug.info("plugin_RestClient - REJECT TRIGGER EVENT: " + paramService);
+        wsEventTrigger.reject(error, jqXHR);
+      });
+
+      return dfd.promise();
     }
 
     // ask for the json file
     // add language wildcards wich could be defined in webservice
     // response
 
-    promise.done(function(json) {
-      // alert("async webservice call done");
-      if (plugins.functions.pluginLoaded("MultilanguageIso639_3")) {
-        if (json.language != undefined) {
-          $.each(json.language, function(key, value) {
-            app.lang.addParameter(key, value);
-          });
-        }
-      }
-      app.debug.debug("plugin_RestClient.getSingleJsonAsync()- Webservice call done: " + JSON.stringify(json));
-      plugin_RestClient.functions.cacheJson(paramService, parameter, json);
-      dfd.resolve(json);
-
-      app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
-      wsEventTrigger.resolve(json);
-    });
-
-    promise.fail(function(error, jqXHR) {
-      app.debug.debug("plugin_RestClient.getSingleJsonAsync() - Webservice call failed: " + JSON.stringify(error));
-
-      app.debug.info("plugin_RestClient - FAILED: " + error.id);
-
-      dfd.reject(error, jqXHR);
-
-      app.debug.info("plugin_RestClient - REJECT TRIGGER EVENT: " + paramService);
-      wsEventTrigger.reject(error, jqXHR);
-    });
-
-    return dfd.promise();
   },
 
   getMultipleJson: function(paramService, parameter, async) {
@@ -389,14 +370,18 @@ var plugin_RestClient = {
       wsEventTrigger = $.Deferred();
 
       app.debug.debug("plugin_RestClient.getMultipleJson() - get server name");
-      app.debug.todo("use getServer() and getService()");
-      if (webServiceName.indexOf('.') != -1) {
-        splittedService = webServiceName.split(".");
-        server = splittedService[0];
-        webServiceName = splittedService[1];
-      } else {
-        server = app.wsc.getDefaultServerName();
-      }
+      // app.debug.todo("use getServer() and getService()");
+      // if (webServiceName.indexOf('.') != -1) {
+      // splittedService = webServiceName.split(".");
+      // server = splittedService[0];
+      // webServiceName = splittedService[1];
+      // } else {
+      // server = app.wsc.getDefaultServerName();
+      // }
+
+      server = plugin_RestClient.getServer(webServiceName);
+      webServiceName = plugin_RestClient.getService(webServiceName);
+
       // set async to false (in each case)
       async = false;
 
@@ -436,15 +421,6 @@ var plugin_RestClient = {
 
       app.debug.debug("plugin_RestClient.getMultipleJson() - add language wildcards wich could be defined in webservice response");
 
-      if (plugins.functions.pluginLoaded("MultilanguageIso639_3")) {
-
-        if (json.language != undefined) {
-          $.each(json.language, function(key, value) {
-            app.lang.addParameter(key, value);
-          });
-        }
-      }
-
       plugin_RestClient.functions.cacheJson(webServiceName, parameter, json);
       app.debug.debug("plugin_RestClient.getMultipleJson() - add result to resultObject");
       jsonObject[webServiceName] = json;
@@ -471,14 +447,18 @@ var plugin_RestClient = {
       wsEventTrigger = $.Deferred();
 
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get server name");
-      app.debug.todo("use getServer() and getService()");
-      if (webServiceName.indexOf('.') != -1) {
-        splittedService = webServiceName.split(".");
-        server = splittedService[0];
-        webServiceName = splittedService[1];
-      } else {
-        server = app.wsc.getDefaultServerName();
-      }
+      // app.debug.todo("use getServer() and getService()");
+      // if (webServiceName.indexOf('.') != -1) {
+      // splittedService = webServiceName.split(".");
+      // server = splittedService[0];
+      // webServiceName = splittedService[1];
+      // } else {
+      // server = app.wsc.getDefaultServerName();
+      // }
+      //  
+
+      server = plugin_RestClient.getServer(webServiceName);
+      webServiceName = plugin_RestClient.getService(webServiceName);
 
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get webservice path from wsd file");
 
@@ -508,9 +488,12 @@ var plugin_RestClient = {
       // case: webesrvice is cacheable && webservice is cached
       if ((cachedJson = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
         app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
+
         resultObject[webServiceName] = cachedJson;
+
         promiseArray.push($.Deferred().resolve());
         webwebServiceNamesArray.push(plugin_RestClient.cachedWebserviceIndentifyer);
+        webserviceParameterArray.push(parameter);
 
         // resolve webservice event
         wsEventTrigger.resolve(cachedJson, parameter);
@@ -545,24 +528,16 @@ var plugin_RestClient = {
       var argumentsArray = [].slice.apply(arguments);
       app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - add each result to resultObject");
 
-      $.each(webwebServiceNamesArray, function(key, value) {
+      $.each(webwebServiceNamesArray, function(arrayIndex, value) {
         // alert(key + JSON.stringify(value));
 
         // case: do not for cached webservices
         if (value !== plugin_RestClient.cachedWebserviceIndentifyer) {
 
-          if (plugins.functions.pluginLoaded("MultilanguageIso639_3")) {
-            if (argumentsArray[key].language != undefined) {
-              $.each(argumentsArray[key].language, function(key, value) {
-                app.lang.addParameter(key, value);
-              });
-            }
-          }
-
           app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - cache webservice");
-          plugin_RestClient.functions.cacheJson(value, webserviceParameterArray[key], argumentsArray[key]);
+          plugin_RestClient.functions.cacheJson(value, webserviceParameterArray[arrayIndex], argumentsArray[arrayIndex]);
 
-          resultObject[value] = argumentsArray[key];
+          resultObject[value] = argumentsArray[arrayIndex];
         }
       });
 
@@ -773,7 +748,7 @@ var plugin_RestClient = {
           }
 
           else if ((cachedWs.cachetimestamp + wsd.cacheInMs) < Date.now()) {
-            app.debug.debug("plugin_RestClient.functions.cacheJson() - case: cash time timed out");
+            app.debug.debug("plugin_RestClient.functions.cacheJson() - case: cache time timed out");
             return false;
           }
 
@@ -827,11 +802,16 @@ var plugin_RestClient = {
 
     },
 
-    getJsonWithLoader: function(service, parameter, async, attempts) {
+    getJsonWithLoader_Overrun: null,
+    getJsonWithLoader: function(service, parameter, async, attempts, timeoutInMs) {
       app.debug.trace("plugin_RestClient.functions.getJsonWithLoader(" + app.debug.arguments(arguments) + ")");
+
       var result, timeout;
 
       result = plugin_RestClient.functions.getJson(service, parameter, async, attempts);
+
+      timeoutInMs = timeoutInMs || 200;
+      window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Overrun)
 
       if ($.isFunction(result.promise)) {
         timeout = window.setTimeout(function() {
@@ -858,18 +838,24 @@ var plugin_RestClient = {
           loaderText += "- text";
 
           app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - show loader after timeout");
-          app.notify.loader.bubbleDiv({
-            show: true,
-            headline: app.lang.string(loaderHeadline, "webservice with loader"),
-            text: app.lang.string(loaderText, "webservice with loader")
-          });
+
+          if (!app.notify.loader.isLoaderActive()) {
+            app.notify.loader.bubbleDiv({
+              show: true,
+              headline: app.lang.string(loaderHeadline, "webservice with loader"),
+              text: app.lang.string(loaderText, "webservice with loader")
+            });
+          }
 
           result.always(function() {
 
             app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - remove loader");
-            app.notify.loader.bubbleDiv({
-              show: false
-            });
+
+            plugin_RestClient.functions.getJsonWithLoader_Overrun = window.setTimeout(function() {
+              app.notify.loader.bubbleDiv({
+                show: false
+              });
+            }, 100)
 
           });
 
@@ -928,7 +914,8 @@ var plugin_RestClient = {
      * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken:
      *          token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId,
      *          userid: userId }], ["getScheduleConfig", { wstoken: token }]], false, 3);
-     * @param {Array<Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
+     * @param {Array
+     *          <Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
      *          (webServiceName, parameter) webServiceName - The name of the webservice.
      * @param {false}
      *          false - Call the webservice synchronous.
@@ -945,7 +932,8 @@ var plugin_RestClient = {
      * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken:
      *          token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId,
      *          userid: userId }], ["getScheduleConfig", { wstoken: token }]], true, 3);
-     * @param {Array<Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
+     * @param {Array
+     *          <Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
      *          (webServiceName, parameter) webServiceName - The name of the webservice.
      * @param {true}
      *          true - Call the webservice asynchronous.

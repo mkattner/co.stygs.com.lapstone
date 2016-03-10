@@ -51,7 +51,7 @@ var plugin_HTML5Storage = {
 	definePluginEvents : function() {
 		app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
 		// data-html5-<storage id>
-		$(document).on("click", "a", function(event) {
+		$(document).on("vclick", "a", function(event) {
 		  app.debug.event(event);
 		  
 			app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");
@@ -296,13 +296,23 @@ var plugin_HTML5Storage = {
 			clearHtml5 : function() {
 				app.debug.trace("plugin_HTML5Storage.functions.localStorage.clearHtml5(" + app.debug.arguments(arguments) + ")");
 				$.each(window.localStorage, function(key, value) {
-					if (key.substr(app.config.name.length + 1, 10) == "data-html5") {
+					
+				  if (key.substr(app.config.name.length + 1, 10) == "data-html5") {
+				    app.debug.deprecated("data-html5 functionality will be removed in future versions.")
 						try {
 							window.localStorage.removeItem(key.trim())
 						} catch (err) {
 							alert(err);
 						}
 					}
+					
+					if (key.substr(app.config.name.length + 1, 8) == "data-app") {
+            try {
+              window.localStorage.removeItem(key.trim())
+            } catch (err) {
+              alert(err);
+            }
+          }
 				});
 				return true;
 			},
