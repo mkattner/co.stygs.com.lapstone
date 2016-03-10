@@ -883,13 +883,14 @@ var plugin_Notification = {
     /**
      * 
      */
+    loader_isActive: false,
     loader: {
-      
+
       /**
        * 
        */
       isLoaderActive: function() {
-        return ($(".loader").length) ? true : false;
+        return plugin_Notification.functions.loader_isActive;
       },
 
       /**
@@ -897,6 +898,7 @@ var plugin_Notification = {
        */
       bubble: function(show) {
         if (show) {
+          plugin_Notification.functions.loader_isActive = true;
           app.template.append("div[data-role=content]", "app-loader-bubble");
         } else {
           plugin_Notification.functions.loader.remove();
@@ -923,6 +925,7 @@ var plugin_Notification = {
         }
 
         if (object.show) {
+          plugin_Notification.functions.loader_isActive = true;
 
           loader = app.template.get("app-loader-bubbleDiv");
           if (object.text != undefined) {
@@ -950,6 +953,7 @@ var plugin_Notification = {
               object.appendTo.append(loader);
             else
               $("div[data-role=content]").append(loader);
+
           }
 
         }
@@ -963,7 +967,9 @@ var plugin_Notification = {
        * 
        */
       remove: function() {
-        $(".app-loader").remove();
+        app.debug.validate(jQuery.ui);
+        $(".app-loader").fadeOut(30).remove();
+        plugin_Notification.functions.loader_isActive = false;
       }
     }
 

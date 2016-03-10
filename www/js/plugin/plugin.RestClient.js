@@ -330,10 +330,11 @@ var plugin_RestClient = {
 
         app.debug.debug("plugin_RestClient.getSingleJsonAsync()- Webservice call done: " + JSON.stringify(json));
         plugin_RestClient.functions.cacheJson(paramService, parameter, json);
-        dfd.resolve(json);
 
         app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
         wsEventTrigger.resolve(json);
+
+        dfd.resolve(json);
       });
 
       promise.fail(function(error, jqXHR) {
@@ -405,7 +406,9 @@ var plugin_RestClient = {
 
       if ((json = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
         app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
-
+       
+        app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
+        wsEventTrigger.resolve(json);
       }
 
       // case: webservice request
@@ -496,6 +499,7 @@ var plugin_RestClient = {
         webserviceParameterArray.push(parameter);
 
         // resolve webservice event
+        app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
         wsEventTrigger.resolve(cachedJson, parameter);
       }
 
@@ -803,72 +807,89 @@ var plugin_RestClient = {
     },
 
     getJsonWithLoader_Overrun: null,
+    getJsonWithLoader_Delay: null,
+    getJsonWithLoader_Queue: 0,
     getJsonWithLoader: function(service, parameter, async, attempts, timeoutInMs) {
       app.debug.trace("plugin_RestClient.functions.getJsonWithLoader(" + app.debug.arguments(arguments) + ")");
-
-      var result, timeout;
+      app.debug.info("plugin_RestClient - SHOW");
+      var result;
 
       result = plugin_RestClient.functions.getJson(service, parameter, async, attempts);
 
       timeoutInMs = timeoutInMs || 200;
       window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Overrun)
 
+      // IF result is a deferred object
       if ($.isFunction(result.promise)) {
-        timeout = window.setTimeout(function() {
-          var loaderHeadline, loaderText;
 
-          loaderHeadline = "page: " + $("[data-role=page]").attr("id") + " - ";
-          loaderText = "page: " + $("[data-role=page]").attr("id") + " - ";
+        plugin_RestClient.functions.getJsonWithLoader_Queue++;
 
-          if (typeof service === "string") {
-            loaderHeadline += service + " ";
-            loaderText += service + " ";
-          }
+        // ----------------
+        var loaderHeadline, loaderText;
 
-          else {
-            $.each(service, function(index, serviceDefinition) {
+        loaderHeadline = "page: " + $("[data-role=page]").attr("id") + " - ";
+        loaderText = "page: " + $("[data-role=page]").attr("id") + " - ";
 
-              loaderHeadline += serviceDefinition[0] + " ";
-              loaderText += serviceDefinition[0] + " ";
+        if (typeof service === "string") {
+          loaderHeadline += service + " ";
+          loaderText += service + " ";
+        }
 
-            });
-          }
+        else {
+          $.each(service, function(index, serviceDefinition) {
 
-          loaderHeadline += "- headline";
-          loaderText += "- text";
+            loaderHeadline += serviceDefinition[0] + " ";
+            loaderText += serviceDefinition[0] + " ";
 
-          app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - show loader after timeout");
+          });
+        }
 
+        loaderHeadline += "- headline";
+        loaderText += "- text";
+
+        app.debug.flat(app.lang.string(loaderHeadline, "webservice with loader"));
+        app.debug.flat(app.lang.string(loaderText, "webservice with loader"));
+
+        // -----------------
+
+        // IF there ist no other WS call in queue
+
+        // SET timeout for showind the loader
+        plugin_RestClient.functions.getJsonWithLoader_Delay = window.setTimeout(function() {
+
+          //
           if (!app.notify.loader.isLoaderActive()) {
+            app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - show loader after timeout");
+            app.debug.info("plugin_RestClient - SHOW: loader");
             app.notify.loader.bubbleDiv({
               show: true,
               headline: app.lang.string(loaderHeadline, "webservice with loader"),
               text: app.lang.string(loaderText, "webservice with loader")
             });
-
-            app.debug.flat(app.lang.string(loaderHeadline, "webservice with loader"));
-            app.debug.flat(app.lang.string(loaderText, "webservice with loader"));
-
           }
 
-          result.always(function() {
-
-            app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - remove loader");
-
-            plugin_RestClient.functions.getJsonWithLoader_Overrun = window.setTimeout(function() {
-              app.notify.loader.bubbleDiv({
-                show: false
-              });
-            }, 20);
-
-          });
-
-        }, 200);
+        }, timeoutInMs);
 
         result.always(function() {
           app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - webservice call was fast enough; do not show loader;");
-          window.clearTimeout(timeout);
+
+          plugin_RestClient.functions.getJsonWithLoader_Queue--;
+
+          if (plugin_RestClient.functions.getJsonWithLoader_Queue === 0) {
+
+            window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Delay);
+            plugin_RestClient.functions.getJsonWithLoader_Delay = null;
+
+            plugin_RestClient.functions.getJsonWithLoader_Overrun = window.setTimeout(function() {
+              app.debug.info("plugin_RestClient - HIDE: loader");
+              app.notify.loader.bubbleDiv({
+                show: false
+              });
+            }, 30);
+          }
+          
         });
+
       }
 
       return result;
