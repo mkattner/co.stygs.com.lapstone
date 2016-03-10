@@ -845,6 +845,10 @@ var plugin_RestClient = {
               headline: app.lang.string(loaderHeadline, "webservice with loader"),
               text: app.lang.string(loaderText, "webservice with loader")
             });
+
+            app.debug.flat(app.lang.string(loaderHeadline, "webservice with loader"));
+            app.debug.flat(app.lang.string(loaderText, "webservice with loader"));
+
           }
 
           result.always(function() {
@@ -855,7 +859,7 @@ var plugin_RestClient = {
               app.notify.loader.bubbleDiv({
                 show: false
               });
-            }, 20)
+            }, 20);
 
           });
 
