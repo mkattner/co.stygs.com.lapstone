@@ -855,7 +855,7 @@ var plugin_RestClient = {
               app.notify.loader.bubbleDiv({
                 show: false
               });
-            }, 100)
+            }, 20)
 
           });
 
