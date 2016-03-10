@@ -559,7 +559,7 @@ var plugin_Debug = {
 
         // log to console
         if (plugin_Debug.config.consoleLevel.indexOf(level) > -1) {
-          console.log(level + ": " + output);
+          console.log((level + "      ").slice(0, 5) + ": " + moment().format("HH:mm:ss.SSS") + ": " + output);
           if (trace) {
             // print stack trace
             try {
