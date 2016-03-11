@@ -526,7 +526,7 @@ var plugin_Debug = {
       }
 
       else {
-        if (!object) {
+        if (!object && (typeof object !== "number")) {
           plugin_Debug.functions.fatal();
           throw new Error("Validation problem. Please look at the stacktrace.");
         }
