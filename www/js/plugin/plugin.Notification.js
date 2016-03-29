@@ -278,8 +278,6 @@ var plugin_Notification = {
 
               if (notification.id) $("#popupAlert").addClass("app-popup-id-" + notification.id.trim());
 
-              if (notification.width) $("#popupAlert-popup").css("width", notification.width);
-
               if (notification.title) {
                 $("#popupAlert div[data-role=header] h1").text(notification.title);
                 $("#popupAlert div[data-role=header] h1").css("display", "block");
@@ -312,7 +310,16 @@ var plugin_Notification = {
               $("#popupAlert").popup("open");
             });
 
-            $("#popupAlert").popup();
+            $("#popupAlert").popup({
+
+              beforeposition: function() {
+                if (notification.width) {
+                  $("#popupAlert-popup").css({
+                    width: notification.width,
+                  });
+                }
+              }
+            });
 
           }, notification.delayInMs);
         });
@@ -967,7 +974,7 @@ var plugin_Notification = {
        * 
        */
       remove: function() {
-        app.debug.validate(jQuery.ui);
+        // app.debug.validate(jQuery.ui);
         $(".app-loader").fadeOut(30).remove();
         plugin_Notification.functions.loader_isActive = false;
       }

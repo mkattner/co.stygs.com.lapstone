@@ -1,19 +1,14 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_HtmlTemplates = {
@@ -30,71 +25,46 @@ var plugin_HtmlTemplates = {
     var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
     $.each(plugin_HtmlTemplates.config.templates, function(key, template) {
-      if (template.url != undefined) {
 
-        if (app.config.min) {
-          promises.push(globalLoader.AsyncTextLoader(template.url));
-          promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + "." + app.config.version.app + ".css"));
-        }
+      app.debug.validate(template.content);
+      app.debug.validate(template.style);
 
-        else {
-          promises.push(globalLoader.AsyncTextLoader(template.url));
-          promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
-        }
+      if (app.config.min) {
+        styleUrl = template.style;
+        styleUrl = styleUrl.substring(0, styleUrl.lastIndexOf("."));
+        styleUrl = styleUrl.substring(0, styleUrl.lastIndexOf(".")) + "." + app.config.version.app + ".css";
+
+        contentUrl = template.content;
+
+        promises.push(globalLoader.AsyncTextLoader(contentUrl));
+        promises.push(globalLoader.AsyncTextLoader(styleUrl));
 
       }
 
       else {
-        app.debug.debug("plugin_HtmlTemplates.pluginsLoaded() - step into context");
-        $.each(plugin_HtmlTemplates.config.templates[key], function(key, template) {
-          if (template.url != undefined) {
-
-            if (app.config.min) {
-              promises.push(globalLoader.AsyncTextLoader(template.url));
-              promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + "." + app.config.version.app + ".css"));
-            }
-
-            else {
-              promises.push(globalLoader.AsyncTextLoader(template.url));
-              promises.push(globalLoader.AsyncTextLoader(template.url.substr(0, template.url.lastIndexOf(".")) + ".css"));
-            }
-
-          }
-
-        });
+        promises.push(globalLoader.AsyncTextLoader(template.content));
+        promises.push(globalLoader.AsyncTextLoader(template.style));
       }
+
     });
 
     promiseOfPromises = $.when.apply($, promises);
 
     promiseOfPromises.done(function() {
-      var args = arguments, context, i = 0;
-      $.each(plugin_HtmlTemplates.config.templates, function(key, template) {
-        if (template.url != undefined) {
-          plugin_HtmlTemplates.templates[key] = {};
-          // console.log(i + args[i]);
-          plugin_HtmlTemplates.templates[key]['html'] = (args[i]);
-          i = i + 1;
-          // console.log(i + args[i]);
-          plugin_HtmlTemplates.templates[key]['css'] = (args[i]);
-          i = i + 1;
-        } else {
-          context = key;
-          plugin_HtmlTemplates.templates[context] = {};
-          $.each(plugin_HtmlTemplates.config.templates[key], function(key, template) {
-            if (template.url != undefined) {
-              plugin_HtmlTemplates.templates[context][key] = {};
-              // console.log(i + args[i]);
-              plugin_HtmlTemplates.templates[context][key]['html'] = (args[i]);
-              i = i + 1;
-              // console.log(i + args[i]);
-              plugin_HtmlTemplates.templates[context][key]['css'] = (args[i]);
-              i = i + 1;
-            }
+      var args = arguments, argumentsIndex = 0;
 
-          });
-        }
+      $.each(plugin_HtmlTemplates.config.templates, function(key, template) {
+
+        plugin_HtmlTemplates.templates[key] = {};
+        // console.log(i + args[i]);
+        plugin_HtmlTemplates.templates[key]['content'] = args[argumentsIndex];
+        argumentsIndex++;
+
+        plugin_HtmlTemplates.templates[key]['style'] = args[argumentsIndex];
+
+        argumentsIndex++;
       });
+
       dfd.resolve();
     });
     promiseOfPromises.fail(function() {
@@ -108,6 +78,7 @@ var plugin_HtmlTemplates = {
   pagesLoaded: function() {
     app.debug.trace("plugin_HtmlTemplates.pagesLoaded()");
     var dfd = $.Deferred();
+
     dfd.resolve();
     return dfd.promise();
   },
@@ -119,49 +90,63 @@ var plugin_HtmlTemplates = {
   afterHtmlInjectedBeforePageComputing: function(container) {
     app.debug.trace("plugin_HtmlTemplates.afterHtmlInjectedBeforePageComputing()");
   },
+
   pageSpecificEvents: function(container) {
     app.debug.trace("plugin_HtmlTemplates.pageSpecificEvents()");
   },
 
-  getText: function(templateId, context) {
-    app.debug.trace("plugin_HtmlTemplates.getText()");
-    var text = null, css = null, styleIsActive;
-    if (context != undefined) {
-      text = plugin_HtmlTemplates.templates[context][templateId]['html'];
-      css = plugin_HtmlTemplates.templates[context][templateId]['css'];
-      styleIsActive = plugin_HtmlTemplates.templates[context][templateId]['styleIsActive'];
-      if (styleIsActive == undefined) styleIsActive = plugin_HtmlTemplates.templates[context][templateId]['styleIsActive'] = false;
+  parseLess: function(data) {
+    var css;
+    try {
+      less.render(data, {
+        filename: "../files/template/xxx.less"
+      }, function(error, output) {
+        css = output.css;
+        // output.imports = array of string filenames of the imports referenced
+      });
+    } catch (e) {
+      alert(e);
+    }
+    return css;
+  },
 
-    } else {
-      text = plugin_HtmlTemplates.templates[templateId]['html'];
-      css = plugin_HtmlTemplates.templates[templateId]['css'];
-      styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'];
-      if (styleIsActive == undefined) styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = false;
+  getText: function(templateId) {
+    app.debug.trace("plugin_HtmlTemplates.getText()");
+    var text = null, style = null, styleIsActive;
+
+    text = plugin_HtmlTemplates.templates[templateId]['content'];
+    style = plugin_HtmlTemplates.templates[templateId]['style'];
+
+    if (!app.config.min) {
+      style = plugin_HtmlTemplates.parseLess(style);
     }
 
-    if ($("style#lapstoneStyles")[0] == undefined) $('head').append($("<style>").attr("id", "lapstoneStyles"));
+    styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'];
+
+    if (styleIsActive == undefined) {
+      styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = false;
+    }
+
+    if ($("style#lapstoneStyles")[0] == undefined) {
+      $('head').append($("<style>").attr("id", "lapstoneStyles"));
+    }
 
     if (styleIsActive === false) {
-      $("style#lapstoneStyles").append(css);
+      $("style#lapstoneStyles").append(style);
 
-      if (context != undefined) {
-        plugin_HtmlTemplates.templates[context][templateId]['styleIsActive'] = true;
-      } else {
-        plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = true;
-      }
+      plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = true;
+
     }
     app.debug.debug("plugin_HtmlTemplates.getText() - text: " + text);
     return text;
   },
 
-  getElements: function(templateId, context) {
+  getElements: function(templateId) {
     app.debug.trace("plugin_HtmlTemplates.getElements()");
     var elements;
-    if (context != undefined) {
-      elements = plugin_HtmlTemplates.config.templates[context][templateId]['elements'];
-    } else {
-      elements = plugin_HtmlTemplates.config.templates[templateId]['elements'];
-    }
+
+    elements = plugin_HtmlTemplates.config.templates[templateId]['elements'];
+
     if (elements == undefined) elements = {};
 
     app.debug.debug("plugin_HtmlTemplates.getElements() - elements: " + JSON.stringify(elements));
@@ -170,33 +155,54 @@ var plugin_HtmlTemplates = {
   },
 
   functions: {
-    get: function(templateId, context) {
+    get: function(templateId) {
       app.debug.trace("plugin_HtmlTemplates.functions.get()");
       app.debug.debug("plugin_HtmlTemplates.functions.get() - templateId: " + templateId);
-      app.debug.debug("plugin_HtmlTemplates.functions.get() - context: " + context);
-      return $(plugin_HtmlTemplates.getText(templateId, context));
+      var templateObject, extendObject;
+
+      templateObject = $(plugin_HtmlTemplates.getText(templateId));
+      extendObject = {};
+
+      // extend the
+      if (plugin_HtmlTemplates.config.templates[templateId].elements) {
+        $.each(plugin_HtmlTemplates.config.templates[templateId].elements, function(elementKey, elementSelector) {
+          extendObject["_" + elementKey] = function(contentObject) {
+            if (contentObject) {
+              return this.find(elementSelector).append(contentObject);
+            } 
+            
+            else {
+              return this.find(elementSelector);
+            }
+          }
+
+        });
+      }
+
+      templateObject.extend(extendObject);
+
+      return templateObject;
     },
-    append: function(selector, templateId, context) {
+    append: function(selector, templateId) {
       app.debug.trace("plugin_HtmlTemplates.functions.append()");
-      $(selector).append(plugin_HtmlTemplates.functions.get(templateId, context));
+      $(selector).append(plugin_HtmlTemplates.functions.get(templateId));
     },
-    prepend: function(selector, templateId, context) {
+    prepend: function(selector, templateId) {
       app.debug.trace("plugin_HtmlTemplates.functions.prepend()");
-      $(selector).prepend(plugin_HtmlTemplates.functions.get(templateId, context));
+      $(selector).prepend(plugin_HtmlTemplates.functions.get(templateId));
     },
-    overwrite: function(selector, templateId, context) {
+    overwrite: function(selector, templateId) {
       app.debug.trace("plugin_HtmlTemplates.functions.overwrite()");
       app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - selector: " + selector);
       app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - templateId: " + templateId);
-      app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - context: " + context);
       $(selector).empty();
       $(selector).attr("data-context", templateId);
-      $(selector).prepend(plugin_HtmlTemplates.functions.get(templateId, context));
+      $(selector).prepend(plugin_HtmlTemplates.functions.get(templateId));
       app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - new html code: " + $(selector)[0].outerHTML);
     },
-    elements: function(templateId, context) {
+    elements: function(templateId) {
       app.debug.trace("plugin_HtmlTemplates.functions.elements()");
-      return plugin_HtmlTemplates.getElements(templateId, context);
+      return plugin_HtmlTemplates.getElements(templateId);
     }
   }
 };

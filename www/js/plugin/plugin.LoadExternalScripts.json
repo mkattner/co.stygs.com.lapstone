@@ -23,7 +23,7 @@
 			"../ext/fullcalendar/fullcalendar.min.js",
 			"../ext/moment/moment.js",
 			"../ext/jQueryUiTouchPunch/jquery.ui.touch-punch.min.js",
-			"../ext/jQueryUiDragAndDrop/jquery-ui.min.js"
+			"../ext/jQueryUi/jquery-ui.min.js"
 		]
 		
 	}

@@ -5,7 +5,7 @@
 	{
 		"JQueryMobilePageStructure": 
 		{
-			"url": "../template/JQueryMobilePageStructure.html",
+			"content": "../template/JQueryMobilePageStructure.html",
 			"elements": 
 			{
 				"header": "div[data-role=header]",
@@ -16,7 +16,7 @@
 
 		"JQueryMobilePlainPage": 
 		{
-			"url": "../template/JQueryMobilePlainPage.html",
+			"content": "../template/JQueryMobilePlainPage.html",
 			"elements": 
 			{
 				"content": "div[data-role=content]"
@@ -25,7 +25,7 @@
 
 		"JQueryMobileHeaderPage": 
 		{
-			"url": "../template/JQueryMobileHeaderPage.html",
+			"content": "../template/JQueryMobileHeaderPage.html",
 			"elements": 
 			{
 				"header": "div[data-role=header]",
@@ -35,7 +35,7 @@
 
 		"JQueryMobileFooterPage": 
 		{
-			"url": "../template/JQueryMobileFooterPage.html",
+			"content": "../template/JQueryMobileFooterPage.html",
 			"elements": 
 			{
 				"content": "div[data-role=content]",
@@ -45,73 +45,44 @@
 
 		"JQueryMobileNavigationPanel": 
 		{
-			"url": "../template/JQueryMobileNavigationPanel.html"
+			"content": "../template/JQueryMobileNavigationPanel.html"
 		},
 
 		"JQueryMobilePopupDialog": 
 		{
-			"url": "../template/JQueryMobilePopupDialog.html"
+			"content": "../template/JQueryMobilePopupDialog.html"
 		},
 
 		"JQueryMobilePopupTrialog": 
 		{
-			"url": "../template/JQueryMobilePopupTrialog.html"
+			"content": "../template/JQueryMobilePopupTrialog.html"
 		},
 
 		"JQueryMobilePopupAlert": 
 		{
-			"url": "../template/JQueryMobilePopupAlert.html"
+			"content": "../template/JQueryMobilePopupAlert.html"
 		},
 
 		"app-loader-bubble": 
 		{
-			"url": "../template/app.loader.bubble.html"
+			"content": "../template/app.loader.bubble.html"
 		},
 
 		"app-loader-bubble-inline-button": 
 		{
-			"url": "../template/app.loader.bubble.inline-button.html"
+			"content": "../template/app.loader.bubble.inline-button.html"
 		},
 
 		"app-loader-bubbleDiv": 
 		{
-			"url": "../template/app.loader.bubbleDiv.html"
+			"content": "../template/app.loader.bubbleDiv.html"
 		},
 
 		"chartjs-custom-tooltip": 
 		{
-			"url": "../template/chartjs.custom.tooltip.html"
-		},
-
-		"themis": 
-		{
-			"ThemisHeaderContent": 
-			{
-				"url": "../template/ThemisHeaderContent.html"
-			},
-
-			"ThemisNavigationPanelContent": 
-			{
-				"url": "../template/ThemisNavigationPanelContent.html"
-			}
-		},
-
-		"responsive": 
-		{
-			"grid-33-33-33": 
-			{
-				"url": "../template/app.responsive.grid.33.33.33.html"
-			},
-
-			"listA": 
-			{
-				"url": "../template/app.responsive.list.A.html"
-			},
-
-			"listB": 
-			{
-				"url": "../template/app.responsive.list.B.html"
-			}
+			"content": "../template/chartjs.custom.tooltip.html"
 		}
+
+		
 	}
 }

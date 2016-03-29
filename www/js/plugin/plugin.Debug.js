@@ -549,6 +549,11 @@ var plugin_Debug = {
      *          The debug level.
      */
     log: function(output, level, trace) {
+      var now = new Date();
+      var dateString = /*
+                         * now.getUTCFullYear().toString() + "." + (now.getUTCMonth() + 1).pad() + "." +
+                         * now.getUTCDate().pad() + " " +
+                         */now.getUTCHours().pad() + ":" + now.getUTCMinutes().pad() + ":" + now.getUTCSeconds().pad() + "." + now.getUTCMilliseconds().pad(3);
 
       if (plugin_Debug.config.debugDevice) {
 
@@ -559,7 +564,7 @@ var plugin_Debug = {
 
         // log to console
         if (plugin_Debug.config.consoleLevel.indexOf(level) > -1) {
-          console.log((level + ": " + "      ").slice(0, 7) + moment().format("HH:mm:ss.SSS") + ": " + output);
+          console.log((level + ": " + "      ").slice(0, 7) + dateString + ": " + output);
           if (trace) {
             // print stack trace
             try {

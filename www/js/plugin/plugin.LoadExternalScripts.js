@@ -161,7 +161,32 @@ var plugin_LoadExternalScripts = {
     app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
     var dfd = $.Deferred();
 
-    if (!app.config.min) { return app.load.javascript("../ext/less/less.min.js"); }
+    if (!app.config.min) {
+      globalLoader.AsyncScriptLoader("../ext/less/less.min.js").done(function() {
+        less.logger.addListener({
+          debug: function(msg) {
+            app.debug.debug(msg);
+          },
+          info: function(msg) {
+            app.debug.info(msg);
+          },
+          warn: function(msg) {
+            app.debug.warn(msg);
+          },
+          error: function(msg) {
+            app.debug.error(msg);
+          }
+        });
+        dfd.resolve();
+
+      }).fail(function() {
+        dfd.reject();
+      });
+    }
+
+    else {
+      dfd.resolve();
+    }
 
     dfd.resolve();
     return dfd.promise();

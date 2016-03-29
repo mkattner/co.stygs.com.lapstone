@@ -848,6 +848,14 @@ function handleOpenURL(url) {
  */
 function extendJsAndJquery() {
 
+  Number.prototype.pad = function(size) {
+    var s = String(this);
+    while (s.length < (size || 2)) {
+      s = "0" + s;
+    }
+    return s;
+  }
+
   // useful hashCode function
   String.prototype.hashCode = function() {
     var hash, length, _char;
@@ -874,6 +882,12 @@ function extendJsAndJquery() {
   if (typeof String.prototype.endsWith != 'function') {
     String.prototype.endsWith = function(suffix) {
       return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+  }
+
+  if (typeof String.prototype.contains != 'function') {
+    String.prototype.contains = function(it) {
+      return this.indexOf(it) != -1;
     };
   }
 
