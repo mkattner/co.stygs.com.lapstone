@@ -197,6 +197,7 @@ var plugin_FormInputDesigner = {
 
 	generateInput : function(options, type) {
 		app.debug.trace("plugin_FormInputDesigner.generateInput()");
+		app.debug.deprecated("Plugin FormInputDesigner is deprecated and will be removed.");
 		options = plugin_FormInputDesigner.verifyOptions(options);
 		var attributes = plugin_FormInputDesigner.getAttributes(options), input = '<input type="' + type + '"  ' + attributes + ' />', label = "", html;
 		if (options.label != undefined && options.label == true)
@@ -212,6 +213,7 @@ var plugin_FormInputDesigner = {
 
 	generateOutput : function(options, type) {
 		app.debug.trace("plugin_FormInputDesigner.generateOutput()");
+		app.debug.deprecated("Plugin FormInputDesigner is deprecated and will be removed.");
 		options = plugin_FormInputDesigner.verifyOptions(options);
 		var attributes = plugin_FormInputDesigner.getAttributes(options), output;
 		if (options.text == undefined)

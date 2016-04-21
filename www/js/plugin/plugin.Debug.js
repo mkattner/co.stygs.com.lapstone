@@ -110,22 +110,19 @@ var plugin_Debug = {
     if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
       var debugDiv, select;
 
-      debugDiv = app.ni.element.div({
+      debugDiv = $("<div>").attr({
         id: "divDebug",
-        attributes: {
-          "data-enhance": "false"
-        },
-        styles: {
-          "position": "fixed",
-          "display": "none",
-          "z-index": "1050",
-          "top": "0px",
-          "left": "0px",
-          "padding": "5px",
-          "min-width": "150px",
-          "min-height": "50px",
-          "background-color": "rgba(200, 200, 200, 0.7)"
-        }
+        "data-enhance": "false"
+      }).css({
+        "position": "fixed",
+        "display": "none",
+        "z-index": "1050",
+        "top": "0px",
+        "left": "0px",
+        "padding": "5px",
+        "min-width": "150px",
+        "min-height": "50px",
+        "background-color": "rgba(200, 200, 200, 0.7)"
       });
 
       /**

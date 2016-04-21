@@ -1072,6 +1072,7 @@ var plugin_RestClient = {
 
       else {
         app.alive.badConnectionHandler();
+        return null;
       }
 
       // return error

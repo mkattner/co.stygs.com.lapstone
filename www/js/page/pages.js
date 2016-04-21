@@ -827,8 +827,8 @@ var pages = {
         $("#" + container.attr("id")).off();
         $(document).off("#" + container.attr("id"));
 
-        app.debug.debug("plugin.eventFunctions.everyPage.pagehide: empty parameter object");
-        window["page_" + container.attr('id')]["parameter"] = {};
+//        app.debug.debug("plugin.eventFunctions.everyPage.pagehide: empty parameter object");
+//        window["page_" + container.attr('id')]["parameter"] = {};
 
         app.debug.debug("remove page from DOM: " + container.attr('id'));
         container.remove();

@@ -147,8 +147,8 @@ function loadConfiguration() {
     if (configuration.badConnectionPage === undefined) console.warn("lapstone.json has no 'badConnectionPage' property.");
 
     // transform app/lapstone version to an integer value
-    app.config.version['lapstone_int'] = app.config.version.lapstone.toIntegerVersion();
-    app.config.version['app_int'] = app.config.version.app.toIntegerVersion();
+    // app.config.version['lapstone_int'] = app.config.version.lapstone.toIntegerVersion();
+    // app.config.version['app_int'] = app.config.version.app.toIntegerVersion();
 
     // preset the title of the app
     $('title').text(app.config.title);
@@ -166,13 +166,14 @@ function loadConfiguration() {
 function updateFramework() {
   var dfd = $.Deferred();
 
-  var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion, currentAppVersion_int, currentLapstoneVersion_int;
+  var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;// currentAppVersion_int,
+  // currentLapstoneVersion_int;
 
   currentAppVersion = app.config.version.app;
   currentLapstoneVersion = app.config.version.lapstone;
 
-  currentAppVersion_int = app.config.version.app_int;
-  currentLapstoneVersion_int = app.config.version.lapstone_int;
+  // currentAppVersion_int = app.config.version.app.toIntegerVersion();
+  // currentLapstoneVersion_int = app.config.version.lapstone.toIntegerVersion();
 
   plugin_Informator.loadConfigurationIntoHtml5Storage({
     "app": {
@@ -197,19 +198,48 @@ function updateFramework() {
 
     app.info.set("app.config.version.app", currentAppVersion);
     app.info.set("app.config.version.lapstone", currentLapstoneVersion);
-    app.info.set("app.config.version.app_int", currentAppVersion_int);
-    app.info.set("app.config.version.lapstone_int", currentLapstoneVersion_int);
+    // app.info.set("app.config.version.app_int", currentAppVersion_int);
+    // app.info.set("app.config.version.lapstone_int", currentLapstoneVersion_int);
 
     // do the update before reloading
     globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(response) {
-      dfd.resolve();
+      var updateScriptPromisses;
+
+      updateScriptPromisses = [];
+
+      $.each(response.updateRegistry, function(index, updateObject) {
+        console.log(JSON.stringify(updateObject))
+
+        if (updateObject.startWithAppVersion && updateObject.stopWithAppVersion) {
+          if (currentAppVersion.toIntegerVersion() >= updateObject.startWithAppVersion.toIntegerVersion() && currentAppVersion.toIntegerVersion() < updateObject.stopWithAppVersion.toIntegerVersion()) {
+            // App Update
+            console.warn("App Update: " + updateObject.description);
+            updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+          }
+        }
+
+        if (updateObject.startWithLapstoneVersion && updateObject.stopWithLapstoneVersion) {
+          if (currentLapstoneVersion.toIntegerVersion() >= updateObject.startWithLapstoneVersion.toIntegerVersion() && currentLapstoneVersion.toIntegerVersion() < updateObject.stopWithLapstoneVersion.toIntegerVersion()) {
+            // Lapstone Update
+            console.warn("Lapstone Update: " + updateObject.description);
+            updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+          }
+        }
+
+      });
+
+      $.when.apply($, updateScriptPromisses).done(function() {
+        location.reload();
+      }).fail(function() {
+        dfd.reject();
+      });
+
     }).fail(function() {
-      dfd.resolve();
+      dfd.reject();
     });
 
     // reload
 
-    location.reload();
   }
 
   else {

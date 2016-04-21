@@ -1,0 +1,5 @@
+Lapstone: MIT
+Apache Cordova: Apache 2.0 License
+Aerogear:
+ChartJS: MIT
+CryptoJS: MIT
