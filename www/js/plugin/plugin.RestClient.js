@@ -243,6 +243,7 @@ var plugin_RestClient = {
     // event triggering
     app.debug.info("plugin_RestClient - TRIGGER EVENT: " + paramService);
     $(document).trigger(paramService, [wsEventTrigger.promise(), parameter]);
+    app.debug.webservice(paramService);
 
     if ((json = plugin_RestClient.functions.cacheJson(paramService, parameter)) && plugin_RestClient.config.webservices[paramService].cacheable) {
       app.debug.info("plugin_RestClient - CACHED: " + paramService);
@@ -310,6 +311,7 @@ var plugin_RestClient = {
     // event triggering
     app.debug.info("plugin_RestClient - TRIGGER EVENT: " + service);
     $(document).trigger(service, [wsEventTrigger.promise(), parameter]);
+    app.debug.webservice(service);
 
     // case: webesrvice is cacheable && webservice is cached
     if ((cachedJson = plugin_RestClient.functions.cacheJson(service, parameter)) && plugin_RestClient.config.webservices[service].cacheable) {
@@ -403,6 +405,7 @@ var plugin_RestClient = {
       // event triggering
       app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
       $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
+      app.debug.webservice(webServiceName);
 
       if ((json = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
         app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
@@ -487,6 +490,7 @@ var plugin_RestClient = {
       // event triggering
       app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
       $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
+      app.debug.webservice(webServiceName);
 
       // case: webesrvice is cacheable && webservice is cached
       if ((cachedJson = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {

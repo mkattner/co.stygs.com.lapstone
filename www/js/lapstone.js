@@ -576,7 +576,7 @@ var globalLoader = {
 }
 
 $(document).bind("mobileinit", function() {
-  app.debug.alert("jQuery mobile initialized", 30);
+  app.debug.debug("jQuery mobile initialized", 30);
   $.mobile.ajaxEnabled = true;
   $.support.cors = true;
   $.mobile.allowCrossDomainPages = true;

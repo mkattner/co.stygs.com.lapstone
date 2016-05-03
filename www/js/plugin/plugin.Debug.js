@@ -91,10 +91,10 @@ var plugin_Debug = {
     /**
      * show app.about() when you click 7 times in 4 secconds
      */
-    $("html").on("vclick", function(event) {
-      plugin_Debug.aboutListener(event, $(this));
-
-    });
+    // $(document).on("vclick", function(event) {
+    // plugin_Debug.aboutListener(event, $(this));
+    //
+    // });
   },
 
   // called by pages.js
@@ -340,6 +340,20 @@ var plugin_Debug = {
     },
 
     // debug functions
+    /**
+     * Handles the debug output on level: TRACE
+     * 
+     * @memberof plugin_Debug.functions
+     * @function trace
+     * @param {String}
+     *          output - The debug output.
+     */
+    webservice: function(serviceName) {
+      if (typeof serviceName === "string") {
+        plugin_RestClient.config.webservices[serviceName]['calls'] = plugin_RestClient.config.webservices[serviceName]['calls'] || 0;
+        plugin_RestClient.config.webservices[serviceName]['calls']++;
+      }
+    },
 
     /**
      * Handles the debug output on level: TRACE
@@ -676,6 +690,11 @@ var plugin_Debug = {
       wsdGetJson: function() {
         app.debug.trace("plugin_Debug.functions.feedback.wsdGetJson(" + app.debug.arguments(arguments) + ")");
         return JSON.stringify(plugin_RestClient.config.webservices);
+      },
+      wsdGetCalls: function() {
+        $.each(plugin_RestClient.config.webservices, function(serviceName, wsd) {
+          console.log(serviceName + ": " + (wsd.calls || 0));
+        });
       }
     }
   },
