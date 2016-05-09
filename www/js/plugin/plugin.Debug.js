@@ -612,31 +612,33 @@ var plugin_Debug = {
        * @memberof plugin_Debug.functions.ls
        * @function wsd
        */
-      wsd: function() {
+      wsd: function(snipplet) {
         app.debug.trace("plugin_Debug.functions.ls.wsd(" + app.debug.arguments(arguments) + ")");
         $.each(plugin_RestClient.config.webservices, function(wsName, singleWsd) {
           var path, query;
 
-          console.log("Name: " + wsName);
+          if (typeof snipplet === "string" && wsName.contains(snipplet)) {
+            console.log("Name: " + wsName);
 
-          if (singleWsd.hasOwnProperty("url")) {
-            path = singleWsd.url.split('?')[0];
-            query = singleWsd.url.split('?')[1];
+            if (singleWsd.hasOwnProperty("url")) {
+              path = singleWsd.url.split('?')[0];
+              query = singleWsd.url.split('?')[1];
 
-            console.log("\tPath: " + path);
-            // console.log("\tQuery: " + query);
+              console.log("\tPath: " + path);
+              // console.log("\tQuery: " + query);
 
-            // console.log("\tPath parameter: todo");
+              // console.log("\tPath parameter: todo");
 
-            console.log("\tQuery parameter:");
-            if (query) $.each(query.split("&"), function(index, parameter) {
-              console.log("\t\t" + parameter.replace("=", " = "));
-            });
-            console.log(" ");
-          }
+              console.log("\tQuery parameter:");
+              if (query) $.each(query.split("&"), function(index, parameter) {
+                console.log("\t\t" + parameter.replace("=", " : "));
+              });
+              console.log(" ");
+            }
 
-          else {
-            console.error("Webservice has no url property.");
+            else {
+              console.error("Webservice has no url property.");
+            }
           }
         });
 
