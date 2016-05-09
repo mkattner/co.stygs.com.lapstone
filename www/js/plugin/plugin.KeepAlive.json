@@ -1,19 +1,21 @@
 {
-	"name": "KeepAlive",
-	"shortname": "alive",
-	"useKeepAlive": false,
-	"server": "template",
-	"intervalInS": 20,
-	"path": "keepAlive.json",
-	"method": "get",
-	"type": "json",
-	"timeout": "12000",
-	"lastDuration": null,
-	"isAlive": true,
-	"maximumResponseTime": 13000,
-	"error": 
-	{
-		"text": "",
-		"code": 0
+	"name":"KeepAlive",
+	"shortname":"alive",
+	"include":[
+		
+	],
+	"useKeepAlive":false,
+	"server":"template",
+	"intervalInS":20,
+	"path":"keepAlive.json",
+	"method":"get",
+	"type":"json",
+	"timeout":"12000",
+	"lastDuration":null,
+	"isAlive":true,
+	"maximumResponseTime":13000,
+	"error":{
+		"text":"",
+		"code":0
 	}
 }

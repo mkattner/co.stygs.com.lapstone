@@ -1,26 +1,24 @@
 {
-	"name": "Skin",
-	"shortname": "skin",
-	"useSkinPlugin": false,
-	"defaultSkin": "modern",
-	"skins": 
-	{
-		"icon": 
-		[
+	"name":"Skin",
+	"shortname":"skin",
+	"include":[
+		
+	],
+	"useSkinPlugin":false,
+	"defaultSkin":"modern",
+	"skins":{
+		"icon":[
 			"../css/skin/icon/fonts.css",
 			"../css/skin/icon/global.css"
 		],
-
-		"modern": 
-		[
+		"modern":[
 			"../css/skin/modern/fonts.css",
 			"../css/skin/modern/global.css"
 		],
-
-		"text": 
-		[
+		"text":[
 			"../css/skin/text/fonts.css",
 			"../css/skin/text/global.css"
 		]
+		
 	}
 }

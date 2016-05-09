@@ -1,9 +1,11 @@
 {
-	"name": "MultilanguageIso639_3",
-	"shortname": "lang",
-	"defaultLanguage": "deu",
-	"availableLanguages": 
-	[
+	"name":"MultilanguageIso639_3",
+	"shortname":"lang",
+	"include":[
+		
+	],
+	"defaultLanguage":"deu",
+	"availableLanguages":[
 		"deu",
 		"eng"
 	]

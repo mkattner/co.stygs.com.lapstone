@@ -11,6 +11,15 @@ public class Plugin_LoadExternalScriptsJson {
 
     private String name;
     private String shortname;
+    private List<String> include;
+
+    public List<String> getInclude() {
+	return include;
+    }
+
+    public void setInclude(List<String> include) {
+	this.include = include;
+    }
 
     public String getName() {
 	return name;

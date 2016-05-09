@@ -132,7 +132,7 @@ var plugin_ImageProvider = {
 			}
 		},
 
-		getUrlById : function(id, cont) {
+		getUrlById : function(id, context) {
 			var img, toParse;
 			// alert(id + " = " + plugin_ImageProvider.images[id])
 			if ((img = plugin_ImageProvider.images[id]) == undefined) {

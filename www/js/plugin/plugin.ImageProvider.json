@@ -1,8 +1,10 @@
 {
-	"name": "ImageProvider",
-	"shortname": "img",
-	"imgdFiles": 
-	{
-		"../files/imgd/imgd.template.json": true
+	"name":"ImageProvider",
+	"shortname":"img",
+	"include":[
+		
+	],
+	"imgdFiles":{
+		"../files/imgd/imgd.template.json":true
 	}
 }

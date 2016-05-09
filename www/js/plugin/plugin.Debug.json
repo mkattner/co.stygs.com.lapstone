@@ -1,6 +1,9 @@
 {
 	"name":"Debug",
 	"shortname":"debug",
+	"include":[
+		
+	],
 	"debugDevice":true,
 	"debugLevels":{
 		"TRACE":1,

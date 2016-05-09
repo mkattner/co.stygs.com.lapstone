@@ -39,10 +39,10 @@ var plugin_RestClient = {
     promiseOfPromises = $.when.apply($, promises);
 
     promiseOfPromises.done(function() {
-      dfd.resolve();
+      dfd.resolve(arguments);
     });
     promiseOfPromises.fail(function() {
-      dfd.reject();
+      dfd.reject(arguments);
     });
 
     return dfd.promise();
@@ -83,8 +83,9 @@ var plugin_RestClient = {
       });
       dfd.resolve();
     });
-    promise.done(function() {
-      dfd.reject();
+
+    promise.fail(function() {
+      dfd.reject(arguments);
     });
 
     return dfd.promise();
@@ -95,6 +96,7 @@ var plugin_RestClient = {
    */
   loadDefinitionFile: function(path) {
     app.debug.trace("plugin_RestClient.loadDefinitionFile()");
+    app.debug.deprecated();
     var json = globalLoader.JsonLoader(path);
     app.debug.debug("plugin_RestClient.loadDefinitionFile() - add each webservice definition");
     $.each(json, function(name, values) {
@@ -841,8 +843,7 @@ var plugin_RestClient = {
         if (typeof service === "string") {
           loaderHeadline += service + " ";
           loaderText += service + " ";
-        }
-        else {
+        } else {
           $.each(service, function(index, serviceDefinition) {
 
             loaderHeadline += serviceDefinition[0] + " ";

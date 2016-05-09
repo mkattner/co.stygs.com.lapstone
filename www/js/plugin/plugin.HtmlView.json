@@ -1,5 +1,8 @@
 {
-	"name": "HtmlView",
-	"shortname": "view",
-	"multilanguageContext": "view"
+	"name":"HtmlView",
+	"shortname":"view",
+	"include":[
+		
+	],
+	"multilanguageContext":"view"
 }

@@ -1,16 +1,13 @@
 /*
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>
+ * You should have received a copy of the GNU General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>
  */
 
 /**
@@ -42,12 +39,8 @@ var page_badConnection = {
       if (!$('body').hasClass(key)) $('body').addClass(key);
     });
     var content = container.find('div[data-role=content]');
-    content.append(app.ni.element.h1({
-      "text": "Bad Connection"
-    }));
-    content.append(app.ni.element.p({
-      "text": "Check your internet connection. You will be redirected after your connection is back again."
-    }));
+    content.append($("<h1>").text("Bad Connection"));
+    content.append($("<p>").text("Check your internet connection. You will be redirected after your connection is back again."));
 
   },
 

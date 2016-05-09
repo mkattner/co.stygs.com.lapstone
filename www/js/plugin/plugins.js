@@ -1,19 +1,14 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugins = {
@@ -25,7 +20,7 @@ var plugins = {
     // reverse order
     startup.addFunction("lapstone is defining the plugins' events", plugins.callPluginEvents, "");
     startup.addFunction("lapstone is calling the plugins' loaded event", plugins.callPluginsLoadedEvent, "");
-    startup.addFunction("lapstone is verifying the plugins' properties", plugins.verifyPlugins, "");
+    startup.addFunction("lapstone is loading the plugins' include scripts", plugins.includeFiles, "");
     startup.addFunction("lapstone is loading the plugins", plugins.loadPlugins, "");
     startup.addFunction("lapstone us verifying the plugins' configuration", plugins.verifyPluginNames, "");
     startup.addFunction("lapstone is loading the plugins' configuration", plugins.loadPluginConfig, "");
@@ -63,19 +58,25 @@ var plugins = {
     return dfd.promise();
   },
 
-  verifyPlugins: function() {
-    var dfd = $.Deferred();
+  includeFiles: function() {
+    var dfd = $.Deferred(), pluginIncludePromises = [];
 
     $.each(plugins.config, function(pluginName, loaded) {
-      if (plugins.config.Debug && loaded) {
-        ;
-        // if (!window['plugin_' + pluginName].priv)
-        // console.warn("The plugin " + pluginName + " has no priv
-        // object.");
+      if (loaded) {
+        app.debug.validate(window['plugin_' + pluginName].config.include);
+        $.each(window['plugin_' + pluginName].config.include, function(index, includeFile) {
+          pluginIncludePromises.push(globalLoader.AsyncScriptLoader("../js/plugin/include/" + pluginName + "/" + includeFile))
+        });
+
       }
     });
 
-    dfd.resolve();
+    $.when.apply($, pluginIncludePromises).done(function() {
+      dfd.resolve();
+    }).fail(function(error) {
+      dfd.reject(error);
+    });
+
     return dfd.promise();
   },
 
@@ -209,12 +210,12 @@ var plugins = {
 
     promiseOfPromises = $.when.apply($, promises);
 
-    promiseOfPromises.done(function() {
-      dfd.resolve();
+    promiseOfPromises.done(function(success) {
+      dfd.resolve(success);
     });
 
-    promiseOfPromises.fail(function() {
-      dfd.reject();
+    promiseOfPromises.fail(function(error) {
+      dfd.reject(error);
     });
 
     return dfd.promise();

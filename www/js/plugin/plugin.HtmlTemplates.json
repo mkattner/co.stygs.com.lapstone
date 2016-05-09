@@ -1,88 +1,38 @@
 {
-	"name": "HtmlTemplates",
-	"shortname": "template",
-	"templates": 
-	{
-		"JQueryMobilePageStructure": 
-		{
-			"content": "../template/JQueryMobilePageStructure.html",
-			"elements": 
-			{
-				"header": "div[data-role=header]",
-				"content": "div[data-role=content]",
-				"footer": "div[data-role=footer]"
+	"name":"HtmlTemplates",
+	"shortname":"template",
+	"include":[
+		
+	],
+	"templates":{
+		"JQueryMobilePopupTrialog":{
+			"content":"../files/template/JQueryMobilePopupTrialog.html",
+			"style":"../files/template/JQueryMobilePopupTrialog.css.less"
+		},
+		"JQueryMobilePopupDialog":{
+			"content":"../files/template/JQueryMobilePopupDialog.html",
+			"style":"../files/template/JQueryMobilePopupDialog.css.less"
+		},
+		"JQueryMobilePopupAlert":{
+			"content":"../files/template/JQueryMobilePopupAlert.html",
+			"style":"../files/template/JQueryMobilePopupAlert.css.less"
+		},
+		"app-loader-bubble":{
+			"content":"../files/template/app.loader.bubble.html",
+			"style":"../files/template/app.loader.bubble.css.less"
+		},
+		"app-loader-bubbleDiv":{
+			"content":"../files/template/app.loader.bubbleDiv.html",
+			"style":"../files/template/app.loader.bubbleDiv.css.less"
+		},
+		"JQueryMobilePlainPage":{
+			"content":"../files/template/JQueryMobilePlainPage.html",
+			"style":"../files/template/JQueryMobilePlainPage.css.less",
+			"elements":{
+				"content":"div[data-role=content]"
 			}
-		},
-
-		"JQueryMobilePlainPage": 
-		{
-			"content": "../template/JQueryMobilePlainPage.html",
-			"elements": 
-			{
-				"content": "div[data-role=content]"
-			}
-		},
-
-		"JQueryMobileHeaderPage": 
-		{
-			"content": "../template/JQueryMobileHeaderPage.html",
-			"elements": 
-			{
-				"header": "div[data-role=header]",
-				"content": "div[data-role=content]"
-			}
-		},
-
-		"JQueryMobileFooterPage": 
-		{
-			"content": "../template/JQueryMobileFooterPage.html",
-			"elements": 
-			{
-				"content": "div[data-role=content]",
-				"footer": "div[data-role=footer]"
-			}
-		},
-
-		"JQueryMobileNavigationPanel": 
-		{
-			"content": "../template/JQueryMobileNavigationPanel.html"
-		},
-
-		"JQueryMobilePopupDialog": 
-		{
-			"content": "../template/JQueryMobilePopupDialog.html"
-		},
-
-		"JQueryMobilePopupTrialog": 
-		{
-			"content": "../template/JQueryMobilePopupTrialog.html"
-		},
-
-		"JQueryMobilePopupAlert": 
-		{
-			"content": "../template/JQueryMobilePopupAlert.html"
-		},
-
-		"app-loader-bubble": 
-		{
-			"content": "../template/app.loader.bubble.html"
-		},
-
-		"app-loader-bubble-inline-button": 
-		{
-			"content": "../template/app.loader.bubble.inline-button.html"
-		},
-
-		"app-loader-bubbleDiv": 
-		{
-			"content": "../template/app.loader.bubbleDiv.html"
-		},
-
-		"chartjs-custom-tooltip": 
-		{
-			"content": "../template/chartjs.custom.tooltip.html"
+			
 		}
-
 		
 	}
 }

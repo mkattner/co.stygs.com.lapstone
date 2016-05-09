@@ -174,10 +174,9 @@ var plugin_Debug = {
       /**
        * close button
        */
-      debugDiv.append(app.ni.button.button({
+      debugDiv.append($("<button>").attr({
         id: "btnClose",
-        value: "close"
-      }));
+      }).text("Close"));
 
       container.append(debugDiv);
 
@@ -537,7 +536,9 @@ var plugin_Debug = {
       }
 
       else {
-        if (!object && (typeof object !== "number")) {
+        if (typeof object === "number" || typeof object === "boolean" || typeof object === "string") {
+          return;
+        } else if (!object) {
           plugin_Debug.functions.fatal();
           throw new Error("Validation problem. Please look at the stacktrace.");
         }

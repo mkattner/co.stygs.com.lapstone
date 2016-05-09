@@ -319,7 +319,7 @@ var globalLoader = {
         globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
       } else {
         initialisationPanel.changeStatus("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
-        dfd.reject(textStatus);
+        dfd.reject(arguments);
       }
     });
 
@@ -381,7 +381,7 @@ var globalLoader = {
         globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
       } else {
         initialisationPanel.changeStatus("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
-        dfd.reject(textStatus);
+        dfd.reject(arguments);
       }
     });
     return dfd.promise();
@@ -438,7 +438,7 @@ var globalLoader = {
         globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
       } else {
         initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
-        dfd.reject(textStatus);
+        dfd.reject(arguments);
       }
     });
     return dfd.promise();
@@ -503,7 +503,7 @@ var globalLoader = {
         globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
       } else {
         initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
-        dfd.reject(textStatus);
+        dfd.reject(arguments);
       }
     });
     return dfd.promise();
@@ -544,7 +544,7 @@ var globalLoader = {
           globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
         } else {
           startup.log("So the framework loading fails.");
-          dfd.reject(textStatus);
+          dfd.reject(arguments);
         }
       } else {
         if ($("style#lapstoneStyles")[0] == undefined) $('head').append($("<style>").attr("id", "lapstoneStyles"));
@@ -557,7 +557,7 @@ var globalLoader = {
         globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
       } else {
         initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
-        dfd.reject(textStatus);
+        dfd.reject(arguments);
       }
     });
     return dfd.promise();
@@ -810,8 +810,17 @@ var startup = {
     }
   },
 
-  functionFail: function() {
+  functionFail: function(error) {
+    var serializedError;
+
     console.log(startup.currentPosition + ": " + startupDefinition[startup.currentPosition]['status'] + " FAILED");
+
+    try {
+      serializedError = JSON.stringify(error);
+      console.log("ERROR: " + serializedError);
+    } catch (e) {
+    }
+
     startup.dfd.reject();
   },
 

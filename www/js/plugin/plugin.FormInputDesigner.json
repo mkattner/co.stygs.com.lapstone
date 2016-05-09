@@ -1,4 +1,7 @@
 {
-	"name": "FormInputDesigner",
-	"shortname": "ni"
+	"name":"FormInputDesigner",
+	"shortname":"ni",
+	"include":[
+		
+	]
 }

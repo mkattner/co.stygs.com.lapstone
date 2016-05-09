@@ -1,6 +1,9 @@
 {
 	"name":"LoadExternalScripts",
 	"shortname":"load",
+	"include":[
+		
+	],
 	"scripts":{
 		"style":[
 			"../ext/jQueryMobile/jquery.mobile.min.css",

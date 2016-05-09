@@ -1,6 +1,9 @@
 {
 	"name":"Actions",
 	"shortname":"actions",
+	"include":[
+		
+	],
 	"actionFiles":[
 		"../files/actions/actions.js"
 	]

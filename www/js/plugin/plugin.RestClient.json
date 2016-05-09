@@ -1,23 +1,23 @@
 {
-	"name": "RestClient",
-	"shortname": "rc",
-	"useKeepAlive": true,
+	"name":"RestClient",
+	"shortname":"rc",
+	"include":[
+		
+	],
+	"useKeepAlive":true,
 	"global_getJsonWithLoader_Timeout":200,
 	"global_getJsonWithLoader_Overrun":40,
-	"wsdFiles": 
-	{
-		"../files/wsd/wsd.template.json": true
+	"wsdFiles":{
+		"../files/wsd/wsd.template.json":true
 	},
-
-	"webservices": 
-	{
-		"template": 
-		{
-			"url": "string url",
-			"method": "string method",
-			"timeout": "int timeout",
-			"cacheable": false,
-			"cacheInMs": 0
+	"webservices":{
+		"template":{
+			"url":"string url",
+			"method":"string method",
+			"timeout":"int timeout",
+			"cacheable":false,
+			"cacheInMs":0
 		}
+		
 	}
 }

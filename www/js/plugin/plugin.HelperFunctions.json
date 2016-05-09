@@ -1,13 +1,15 @@
 {
-	"name": "HelperFunctions",
-	"shortname": "help",
-	"validate": 
-	{
-		"email": "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
-		"password": "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\\W]).{8,100}",
-		"firstname": "[a-zA-z0-9]{2,40}",
-		"lastname": "[a-zA-z0-9]{2,40}",
-		"username": "",
-		"website": ""
+	"name":"HelperFunctions",
+	"shortname":"help",
+	"include":[
+		
+	],
+	"validate":{
+		"email":"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+		"password":"(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\\W]).{8,100}",
+		"firstname":"[a-zA-z0-9]{2,40}",
+		"lastname":"[a-zA-z0-9]{2,40}",
+		"username":"",
+		"website":""
 	}
 }
