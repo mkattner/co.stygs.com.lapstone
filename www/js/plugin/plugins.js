@@ -61,22 +61,27 @@ var plugins = {
   includeFiles: function() {
     var dfd = $.Deferred(), pluginIncludePromises = [];
 
-    $.each(plugins.config, function(pluginName, loaded) {
-      if (loaded) {
-        app.debug.validate(window['plugin_' + pluginName].config.include);
-        $.each(window['plugin_' + pluginName].config.include, function(index, includeFile) {
-          pluginIncludePromises.push(globalLoader.AsyncScriptLoader("../js/plugin/include/" + pluginName + "/" + includeFile))
-        });
-
-      }
-    });
-
-    $.when.apply($, pluginIncludePromises).done(function() {
+    if (app.config.min) {
       dfd.resolve();
-    }).fail(function(error) {
-      dfd.reject(error);
-    });
+    }
 
+    else {
+      $.each(plugins.config, function(pluginName, loaded) {
+        if (loaded) {
+          app.debug.validate(window['plugin_' + pluginName].config.include);
+          $.each(window['plugin_' + pluginName].config.include, function(index, includeFile) {
+            pluginIncludePromises.push(globalLoader.AsyncScriptLoader("../js/plugin/include/" + pluginName + "/" + includeFile))
+          });
+
+        }
+      });
+
+      $.when.apply($, pluginIncludePromises).done(function() {
+        dfd.resolve();
+      }).fail(function(error) {
+        dfd.reject(error);
+      });
+    }
     return dfd.promise();
   },
 

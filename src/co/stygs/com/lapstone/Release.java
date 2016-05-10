@@ -2,6 +2,7 @@ package co.stygs.com.lapstone;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,12 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
 import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
 import co.stygs.com.lapstone.objects.LapstoneJson;
+import co.stygs.com.lapstone.objects.Page_JSON;
+import co.stygs.com.lapstone.objects.Plugin_JSON;
 import co.stygs.com.lapstone.objects.Plugin_LoadExternalScriptsJson;
 import co.stygs.com.lapstone.objects.Plugin_SkinJson;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inet.lib.less.Less;
 
@@ -191,8 +195,9 @@ public class Release {
 	configuration = new File(www, "js/plugin/plugin.LoadExternalScripts.json");
 	Plugin_LoadExternalScriptsJson loadExternalScriptsJson = objectMapper.readValue(configuration, Plugin_LoadExternalScriptsJson.class);
 
-//	configuration = new File(www, "js/plugin/plugin.Skin.json");
-//	Plugin_SkinJson skinJson = objectMapper.readValue(configuration, Plugin_SkinJson.class);
+	// configuration = new File(www, "js/plugin/plugin.Skin.json");
+	// Plugin_SkinJson skinJson = objectMapper.readValue(configuration,
+	// Plugin_SkinJson.class);
 
 	List<String> style;
 	List<String> javascript;
@@ -229,6 +234,9 @@ public class Release {
 
     private static void createSinglePluginFile(File www) throws Exception {
 	String allPluginsContent = "";
+	Plugin_JSON pluginConfiguration;
+	ObjectMapper objectMapper = new ObjectMapper();
+	objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	// create map and copy just the used pages
 	System.out.println();
 	System.out.println("Create all.plugin.js file. Copy just used plugins.");
@@ -242,17 +250,21 @@ public class Release {
 
 		currentFileContent = FileUtils.readFileToString(file);
 
+		// do not process hidden file
 		if (file.getName().startsWith(".")) {
 		    currentFileContent = "";
 		}
 
+		// plugin management file
 		else if (file.getName().equals("plugins.js")) {
 		}
 
+		// plugin configuration file
 		else if (file.getName().equals("plugins.json")) {
 		    currentFileContent = "var config_json = " + currentFileContent;
 		}
 
+		// plugin javascript files
 		else if (file.getName().endsWith("js")) {
 		    String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
 		    System.out.println("Identifiyer: " + jsIdentifyer);
@@ -272,16 +284,40 @@ public class Release {
 		    currentFileContent = FileUtils.readFileToString(file);
 		}
 
+		// plugin configuration files
 		else if (file.getName().endsWith("json")) {
 		    String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
 		    System.out.println("Identifiyer: " + jsIdentifyer);
 		    currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
+
+		    // parse JSON file to include the included files
+		    pluginConfiguration = objectMapper.readValue(file, Plugin_JSON.class);
+		    for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
+			File pluginIncludeFile = new File(www, "js/plugin/include/" + pluginConfiguration.getName() + "/" + pluginIncludeFileName);
+			System.out.println("Adding include file: " + pluginIncludeFile.getAbsolutePath());
+
+			// Minify the js include file
+
+			try {
+
+			    Compressor.compressJavaScript(pluginIncludeFile.getAbsolutePath(), pluginIncludeFile.getAbsolutePath(), new JavascriptCompressorOptions());
+
+			}
+
+			catch (Exception e) {
+			    throw new CompressorException(e);
+			}
+
+			currentFileContent += ";" + FileUtils.readFileToString(pluginIncludeFile);
+			pluginIncludeFile.delete();
+		    }
 
 		}
 
 		// delete processed file
 		file.delete();
 
+		// add semicolon at the end of js/json file
 		if (!currentFileContent.endsWith(";"))
 		    currentFileContent += ";";
 
@@ -289,10 +325,15 @@ public class Release {
 	    }
 	}
 	FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent);
+	FileUtils.deleteDirectory(new File(www, "js/plugin/include"));
     }
 
     private static void createSinglePageFile(File www) throws Exception {
 	String allPagesContent = "";
+	Page_JSON pageConfiguration;
+	ObjectMapper objectMapper = new ObjectMapper();
+	objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	List<File> include_onceList = new ArrayList<>();
 	// create map and copy just the used pages
 	System.out.println();
 	System.out.println("Create all.pages.js file. Copy just used pages.");
@@ -342,6 +383,15 @@ public class Release {
 		    System.out.println("Identifiyer: " + jsIdentifyer);
 		    currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
 
+		    // parse JSON file to include the included files
+		    pageConfiguration = objectMapper.readValue(file, Page_JSON.class);
+		    for (String pageIncludeFileName : pageConfiguration.getInclude_once()) {
+			File pageIncludeFile = new File(www, "js/page/include/" + pageIncludeFileName);
+
+			if (!include_onceList.contains(pageIncludeFile)) {
+			    include_onceList.add(pageIncludeFile);
+			}
+		    }
 		}
 
 		// delete processed file
@@ -354,7 +404,21 @@ public class Release {
 	    }
 	}
 
+	for (File include_onceFile : include_onceList) {
+	    // Minify the js include file
+
+	    try {
+		Compressor.compressJavaScript(include_onceFile.getAbsolutePath(), include_onceFile.getAbsolutePath(), new JavascriptCompressorOptions());
+	    } catch (Exception e) {
+		throw new CompressorException(e);
+	    }
+
+	    System.out.println("Adding include_once file: " + include_onceFile.getAbsolutePath());
+	    allPagesContent += ";" + FileUtils.readFileToString(include_onceFile);
+	    include_onceFile.delete();
+	}
 	FileUtils.write(new File(www, "js/page/all.page.js"), allPagesContent);
+	FileUtils.deleteDirectory(new File(www, "js/page/include"));
     }
 
     private static void compressSinglePluginFile(File www, String version) throws Exception {
@@ -394,16 +458,6 @@ public class Release {
 
 	allPages.delete();
 
-	// include files
-	for (File jsFile : new File(www, "js/page/include/").listFiles()) {
-
-	    if (jsFile.getName().endsWith(".js")) {
-		File newJsFile = new File(www, "js/page/include/" + jsFile.getName().replace(".js", "." + version + ".js"));
-
-		Compressor.compressJavaScript(jsFile.getAbsolutePath(), newJsFile.getAbsolutePath(), o);
-
-		jsFile.delete();
-	    }
-	}
+	
     }
 }

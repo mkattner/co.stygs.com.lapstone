@@ -1,19 +1,14 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var pages = {
@@ -44,56 +39,36 @@ var pages = {
   },
 
   include: function() {
-    var dfd = $.Deferred(), currentPage, promises = Array(), promiseOfPromises, resolve = true;
+    var dfd = $.Deferred(), pageIncludePromises = [];
 
-    $.each(pages.pageNames, function(key, pageName) {
-      app.debug.debug("pages.include() - processing page: " + pageName);
-      currentPage = window['page_' + pageName];
+    if (app.config.min) {
+      dfd.resolve();
+    }
 
-      if (currentPage.include_once != undefined) {
+    else {
+      $.each(pages.config, function(pageName, loaded) {
+        if (loaded) {
 
-        if (Array.isArray(currentPage.include_once)) {
-          resolve = false;
-
-          $.each(currentPage.include_once, function(index, includeName) {
-            var url;
-
-            if (pages.includeOnce.indexOf(includeName) === -1) {
-
-              if (app.config.min) {
-                url = "../js/page/include/" + includeName.substring(0, includeName.lastIndexOf(".")) + "." + app.config.version.app + ".js";
-                app.debug.debug("pages.include() - including: " + url);
-                promises.push(globalLoader.AsyncScriptLoader(url));
-              }
-
-              else {
-                url = "../js/page/include/" + includeName;
-                app.debug.debug("pages.include() - including: " + url);
-                promises.push(globalLoader.AsyncScriptLoader(url));
-              }
-
+          app.debug.validate(window['page_' + pageName].config.include_once);
+          app.debug.validate(window['page_' + pageName].config.include);
+          $.each(window['page_' + pageName].config.include_once, function(index, includeFile) {
+            if (pages.includeOnce.indexOf(includeFile) === -1) {
+              pageIncludePromises.push(globalLoader.AsyncScriptLoader("../js/page/include/" + includeFile));
+              pages.includeOnce.push(includeFile);
             }
-
-            pages.includeOnce.push(includeName);
           });
 
-          promiseOfPromises = $.when.apply($, promises);
-
-          promiseOfPromises.done(function() {
-            app.debug.debug("pages.include() - including done");
-            dfd.resolve();
-          }).fail(function() {
-            app.debug.debug("pages.include() - including: fails");
-            dfd.reject();
-          });
         }
-      }
-    });
+      });
 
-    if (resolve) dfd.resolve();
+      $.when.apply($, pageIncludePromises).done(function() {
+        dfd.resolve();
+      }).fail(function(error) {
+        dfd.reject(error);
+      });
+    }
 
     return dfd.promise();
-
   },
 
   callPluginsPagesLoaded: function() {
@@ -146,8 +121,6 @@ var pages = {
         console.warn("The page: " + pageName + " has no 'config' property.");
       } else {
         if (currentPage.config.name === undefined) console.warn("The page: " + pageName + " has no 'config.name' property.");
-
-        if (currentPage.config.shortname === undefined) console.warn("The page: " + pageName + " has no 'config.shortname' property.");
 
         if (currentPage.config.template === undefined) console.warn("The page: " + pageName + " has no 'config.template' property.");
 
@@ -239,18 +212,12 @@ var pages = {
         alert("Fatal error: The property 'name' is not defined in JSON file: ../js/page." + key + ".json")
         return false;
       }
-      if (window['page_' + key].config.shortname == undefined) {
-        alert("Fatal error: The property 'shortname' is not defined in JSON file: ../js/page." + key + ".json")
-        return false;
-      }
 
       // insert promise
       promise = window['page_' + key].constructor();
       promise.done(function() {
         window['page_' + key]['config']['page'] = key;
         window['page_' + key]['config']['pageId'] = '#' + key;
-
-        app[window['page_' + key].config.shortname] = window['page_' + key].functions;
 
         pages.pageNames.push(key);
 
@@ -827,8 +794,8 @@ var pages = {
         $("#" + container.attr("id")).off();
         $(document).off("#" + container.attr("id"));
 
-//        app.debug.debug("plugin.eventFunctions.everyPage.pagehide: empty parameter object");
-//        window["page_" + container.attr('id')]["parameter"] = {};
+        // app.debug.debug("plugin.eventFunctions.everyPage.pagehide: empty parameter object");
+        // window["page_" + container.attr('id')]["parameter"] = {};
 
         app.debug.debug("remove page from DOM: " + container.attr('id'));
         container.remove();
@@ -1011,8 +978,7 @@ var pages = {
         window['page_' + container.attr('id')].events.pagebeforecreate(event, container);
 
         /**
-         * Include files from the inlcude array. Every time when the page is
-         * called.
+         * Include files from the inlcude array. Every time when the page is called.
          */
         if (window['page_' + container.attr('id')].include != undefined) {
           app.debug.trace("pages.js - page has an include array");

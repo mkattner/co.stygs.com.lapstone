@@ -1,11 +1,16 @@
 {
 	"name": "##template",
-	"shortname": "##template",
 	"template": "JQueryMobileFooterPage",
 	"asyncLoading": false,
 	"useKeepAlive": false,
 	"loginObligate": false,
 	"isGlobalPage": false,
 	"contentRefresh": false,
-	"contentRefreshInterval": 0
+	"contentRefreshInterval": 0,
+	"include":[
+		
+	],
+	"include_once":[
+		
+	]
 }

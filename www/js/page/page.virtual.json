@@ -7,5 +7,11 @@
 	"loginObligate": false,
 	"isGlobalPage": false,
 	"contentRefresh": false,
-	"contentRefreshInterval": 0
+	"contentRefreshInterval": 0,
+	"include":[
+		
+	],
+	"include_once":[
+		
+	]
 }
