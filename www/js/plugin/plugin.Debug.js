@@ -91,10 +91,17 @@ var plugin_Debug = {
     /**
      * show app.about() when you click 7 times in 4 secconds
      */
-    // $(document).on("vclick", function(event) {
-    // plugin_Debug.aboutListener(event, $(this));
-    //
-    // });
+    $(document).on("vclick", function(event) {
+      plugin_Debug.aboutListener(event, $(this));
+
+    });
+
+    $(document).on("webserviceCall", function(event, promise, wsName, parameter) {
+      promise.fail(function(error) {
+        alert(wsName + ": " + JSON.stringify(error) + "--- URL: " + app.rc.getFullUrl(wsName, parameter));
+      });
+
+    });
   },
 
   // called by pages.js

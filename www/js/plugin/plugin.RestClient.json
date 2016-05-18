@@ -2,7 +2,10 @@
 	"name":"RestClient",
 	"shortname":"rc",
 	"include":[
-		
+		"getMultipleJson.js",
+		"getMultipleJsonAsync.js",
+		"getSingleJson.js",
+		"getSingleJsonAsync.js"
 	],
 	"useKeepAlive":true,
 	"global_getJsonWithLoader_Timeout":200,
