@@ -10,9 +10,9 @@
 	"useKeepAlive":true,
 	"global_getJsonWithLoader_Timeout":200,
 	"global_getJsonWithLoader_Overrun":40,
-	"wsdFiles":{
-		"../files/wsd/wsd.template.json":true
-	},
+	"wsdFiles":[
+		"../files/wsd/wsd.template.json"
+	],
 	"webservices":{
 		"template":{
 			"url":"string url",

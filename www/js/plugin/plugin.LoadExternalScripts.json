@@ -4,30 +4,15 @@
 	"include":[
 		
 	],
-	"scripts":{
-		"style":[
-			"../ext/jQueryMobile/jquery.mobile.min.css",
-			"../ext/fullcalendar/fullcalendar.min.css",
-			"../css/fonts.css.less"
-		],
-		"styleOrdered":[
-			"../css/global.css.less"
-		],
-		"javascript":[
-			"../ext/MD5.js",
-			"../ext/DATE.js",
-			"../ext/URI/URI.js",
-			"../ext/Chart/Chart.min.js",
-			"../ext/underscore/underscore-min.js"
-		],
-		"javascriptOrdered":[
-			"../ext/jquery.serializejson.min.js",
-			"../ext/aerogear/aerogear.min.js",
-			"../ext/fullcalendar/fullcalendar.min.js",
-			"../ext/moment/moment.js",
-			"../ext/jQueryUiTouchPunch/jquery.ui.touch-punch.min.js",
-			"../ext/jQueryUi/jquery-ui.min.js"
-		]
-		
-	}
+	"styleOrdered":[
+		"../ext/jQueryMobile/jquery.mobile.min.css",
+		"../css/fonts.css.less",
+		"../css/global.css.less"
+	],
+	"javascriptOrdered":[
+		"../ext/jQueryUi/jquery-ui.min.js",
+		"../ext/jQueryUiTouchPunch/jquery.ui.touch-punch.min.js",
+		"../ext/moment/moment.js"
+	]
+	
 }

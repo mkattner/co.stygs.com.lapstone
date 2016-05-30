@@ -12,11 +12,12 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 
 import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
 import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
-import co.stygs.com.lapstone.objects.LapstoneJson;
-import co.stygs.com.lapstone.objects.Page_JSON;
-import co.stygs.com.lapstone.objects.Plugin_JSON;
-import co.stygs.com.lapstone.objects.Plugin_LoadExternalScriptsJson;
-import co.stygs.com.lapstone.objects.Plugin_SkinJson;
+import co.stygs.com.lapstone.objects.json.LapstoneJSON;
+import co.stygs.com.lapstone.objects.json.Page_JSON;
+import co.stygs.com.lapstone.objects.json.Plugin_JSON;
+import co.stygs.com.lapstone.objects.json.Plugin_LoadExternalScriptsJSON;
+import co.stygs.com.lapstone.objects.json.Plugin_RestClientJSON;
+import co.stygs.com.lapstone.objects.json.WsdJSON;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,8 @@ public class Release {
     public static Boolean ReleaseLapstone(Map<String, String> argMap) throws Exception {
 
 	System.out.println();
-	System.out.println("Running method RELEASE()");
+	System.out.println("Running method RELEASE() ------------------------------------------------------------------");
+	System.out.println();
 	try {
 	    // initialize directories
 	    File rootPath = new File(argMap.get("path"));
@@ -40,8 +42,8 @@ public class Release {
 	    // ********************************************************************
 	    // debug output
 
-	    System.out.println("root path: " + rootPath.getAbsolutePath());
-	    System.out.println("path to www: " + www.getAbsolutePath());
+	    System.out.println("        root path: " + rootPath.getAbsolutePath());
+	    System.out.println("      path to www: " + www.getAbsolutePath());
 	    System.out.println("path to www_debug: " + www_debug.getAbsolutePath());
 
 	    // ********************************************************************
@@ -49,7 +51,7 @@ public class Release {
 
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    File configuration = new File(www_debug, "js/lapstone.json");
-	    LapstoneJson lapstoneJson = objectMapper.readValue(configuration, LapstoneJson.class);
+	    LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 	    String appVersion = (String) lapstoneJson.version.get("app");
 	    Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
 	    buildVersion++;
@@ -72,7 +74,7 @@ public class Release {
 	    // set cordova configuration
 
 	    configuration = new File(www, "js/lapstone.json");
-	    lapstoneJson = objectMapper.readValue(configuration, LapstoneJson.class);
+	    lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
 	    lapstoneJson.min = true;
 
@@ -80,7 +82,7 @@ public class Release {
 
 	    // ********************************************************************
 	    // combine files
-	    Release.createCombinedFilesFile(www);
+	    Release.createCombinedFilesFile(www, newVersion);
 
 	    // ********************************************************************
 	    // minify plugins
@@ -94,7 +96,12 @@ public class Release {
 
 	    // ********************************************************************
 	    // compile less
-	    System.out.println("Compile all the .less files ending with TODO");
+	    System.out.println();
+	    System.out.println("Compute the LESS and CSS style files --------------------------------------------------");
+	    System.out.println();
+	    System.out.println("Compile all the LESS files ending with .css.less --------------------------------------");
+	    System.out.println();
+
 	    for (File lessFile : FileUtils.listFiles(www, new IOFileFilter() {
 
 		@Override
@@ -113,8 +120,8 @@ public class Release {
 	    }, DirectoryFileFilter.DIRECTORY)) {
 		File cssFromLessFile = new File(lessFile.getAbsolutePath().replace(".less", ""));
 
-		System.out.println("computing less file: " + lessFile.getAbsolutePath());
-		System.out.println("       write to css: " + cssFromLessFile.getAbsolutePath());
+		System.out.println("compute less file: " + lessFile.getAbsolutePath());
+		System.out.println("     write to css: " + cssFromLessFile.getAbsolutePath());
 		System.out.println();
 
 		FileUtils.write(cssFromLessFile, Less.compile(lessFile, false));
@@ -122,7 +129,10 @@ public class Release {
 	    }
 
 	    // delete the less files
-	    System.out.println("Delete the less files.");
+	    System.out.println();
+	    System.out.println("Delete the LESS files because they are unused in the RELEASE version. -----------------");
+	    System.out.println();
+
 	    for (File lessFile : FileUtils.listFiles(www, new IOFileFilter() {
 
 		@Override
@@ -145,7 +155,9 @@ public class Release {
 
 	    // ********************************************************************
 	    // minify css
-	    System.out.println("Minify all css files.");
+	    System.out.println();
+	    System.out.println("Minify all CSS files. -----------------------------------------------------------------");
+	    System.out.println();
 
 	    StylesheetCompressorOptions c = new StylesheetCompressorOptions();
 	    for (File cssFile : FileUtils.listFiles(www, new IOFileFilter() {
@@ -188,37 +200,64 @@ public class Release {
 	}
     }
 
-    private static void createCombinedFilesFile(File www) throws Exception {
+    private static void createCombinedFilesFile(File www, String newVersion) throws Exception {
 	ObjectMapper objectMapper = new ObjectMapper();
 	File configuration;
+	File currentFile;
 
-	configuration = new File(www, "js/plugin/plugin.LoadExternalScripts.json");
-	Plugin_LoadExternalScriptsJson loadExternalScriptsJson = objectMapper.readValue(configuration, Plugin_LoadExternalScriptsJson.class);
-
+	// PLUGIN Skin
 	// configuration = new File(www, "js/plugin/plugin.Skin.json");
 	// Plugin_SkinJson skinJson = objectMapper.readValue(configuration,
 	// Plugin_SkinJson.class);
 
+	// PLUGIN LoadExternalScripts
+	configuration = new File(www, "js/plugin/plugin.LoadExternalScripts.json");
+	Plugin_LoadExternalScriptsJSON loadExternalScriptsJson = objectMapper.readValue(configuration, Plugin_LoadExternalScriptsJSON.class);
+
 	List<String> style;
 	List<String> javascript;
 
-	style = loadExternalScriptsJson.getScripts().getStyle();
-	style.addAll(loadExternalScriptsJson.getScripts().getStyleOrdered());
+	style = loadExternalScriptsJson.getStyleOrdered();
 
-	javascript = loadExternalScriptsJson.getScripts().getJavascript();
-	javascript.addAll(loadExternalScriptsJson.getScripts().getJavascriptOrdered());
+	// JAVASCRIPT
+	javascript = loadExternalScriptsJson.getJavascriptOrdered();
 
+	System.out.println();
 	String combinedJavascript = "";
 	for (String url : javascript) {
-	    combinedJavascript += FileUtils.readFileToString(new File(www, "page/" + url));
+	    currentFile = new File(www, "page/" + url);
+	    System.out.println("Add: " + currentFile.getAbsolutePath());
+	    combinedJavascript += FileUtils.readFileToString(currentFile) + "\n\n";
+	    currentFile.delete();
 	}
-	FileUtils.write(new File(www, "files/all.javascript.js"), combinedJavascript);
+	File allJavascriptFile = new File(www, "files/all.javascript." + newVersion + ".js");
+	FileUtils.write(allJavascriptFile, combinedJavascript);
+	// Compressor.compressJavaScript(allJavascriptFile.getAbsolutePath(),
+	// allJavascriptFile.getAbsolutePath(), new
+	// JavascriptCompressorOptions());
 
+	// STYLES
+	System.out.println();
 	String combinedStyle = "";
 	for (String url : style) {
-	    combinedStyle += FileUtils.readFileToString(new File(www, "page/" + url));
+	    currentFile = new File(www, "page/" + url);
+	    System.out.println("Add: " + currentFile.getAbsolutePath());
+	    combinedStyle += FileUtils.readFileToString(currentFile) + "\n\n";
+	    currentFile.delete();
 	}
 	FileUtils.write(new File(www, "files/all.style.css"), combinedStyle);
+
+	// PLUGIN RestClient
+	configuration = new File(www, "js/plugin/plugin.RestClient.json");
+	Plugin_RestClientJSON restClientJson = objectMapper.readValue(configuration, Plugin_RestClientJSON.class);
+	for (String url : restClientJson.getWsdFiles()) {
+	    currentFile = new File(www, "page/" + url);
+	    WsdJSON wsdJSON = objectMapper.readValue(currentFile, WsdJSON.class);
+	    restClientJson.getWebservices().putAll(wsdJSON);
+	    currentFile.delete();
+	}
+	objectMapper.writeValue(configuration, restClientJson);
+	
 
 	// ********************************************************************
 	// create single plugin file
@@ -239,7 +278,8 @@ public class Release {
 	objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	// create map and copy just the used pages
 	System.out.println();
-	System.out.println("Create all.plugin.js file. Copy just used plugins.");
+	System.out.println("Create all.plugin.js file. Copy just used plugins. ----------------------------------------");
+	System.out.println();
 
 	for (File file : new File(www, "js/plugin").listFiles()) {
 	    System.out.println();
@@ -335,8 +375,10 @@ public class Release {
 	objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	List<File> include_onceList = new ArrayList<>();
 	// create map and copy just the used pages
+
 	System.out.println();
-	System.out.println("Create all.pages.js file. Copy just used pages.");
+	System.out.println("Create all.pages.js file. Copy just used pages. -------------------------------------------");
+	System.out.println();
 
 	for (File file : new File(www, "js/page").listFiles()) {
 	    System.out.println();
@@ -458,6 +500,5 @@ public class Release {
 
 	allPages.delete();
 
-	
     }
 }

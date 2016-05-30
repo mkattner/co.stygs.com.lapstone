@@ -290,7 +290,7 @@ public class JavaScriptCompressor {
 		lbits = (long) source.charAt(offset) << 48;
 		lbits |= (long) source.charAt(offset + 1) << 32;
 		lbits |= (long) source.charAt(offset + 2) << 16;
-		lbits |= (long) source.charAt(offset + 3);
+		lbits |= source.charAt(offset + 3);
 		if (type == 'J') {
 		    number = lbits;
 		} else {

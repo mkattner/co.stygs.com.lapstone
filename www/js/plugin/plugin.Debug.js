@@ -95,13 +95,14 @@ var plugin_Debug = {
       plugin_Debug.aboutListener(event, $(this));
 
     });
+    if (!app.config.min) {
+      $(document).on("webserviceCall", function(event, promise, wsName, parameter) {
+        promise.fail(function(error) {
+          alert(wsName + ": " + JSON.stringify(error) + "--- URL: " + app.rc.getFullUrl(wsName, parameter));
+        });
 
-    $(document).on("webserviceCall", function(event, promise, wsName, parameter) {
-      promise.fail(function(error) {
-        alert(wsName + ": " + JSON.stringify(error) + "--- URL: " + app.rc.getFullUrl(wsName, parameter));
       });
-
-    });
+    }
   },
 
   // called by pages.js

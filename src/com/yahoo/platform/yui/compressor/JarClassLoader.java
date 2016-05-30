@@ -20,6 +20,7 @@ public class JarClassLoader extends ClassLoader {
 
     private static String jarPath;
 
+    @Override
     public Class loadClass(String name) throws ClassNotFoundException {
 
         // First check if the class is already loaded
@@ -89,6 +90,7 @@ public class JarClassLoader extends ClassLoader {
         return null;
     }
 
+    @Override
     protected Class findClass(String name) {
 
         Class c = null;

@@ -932,6 +932,7 @@ var pages = {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + container + ")");
 
         if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
+          // TODO use object
           app.notify.add.alert(app.lang.string("login obligate text", "lapstone"), false, app.lang.string("login obligate headline", "lapstone"), app.lang.string("login obligate confirm", "lapstone"));
           app.sess.destroyAll();
           app.help.navigation.redirect(app.config.startPage, "slidefade");

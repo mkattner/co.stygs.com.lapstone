@@ -28,22 +28,24 @@ var plugin_RestClient = {
 
   pluginsLoaded: function() {
     app.debug.trace("plugin_RestClient.pluginsLoaded()");
-    var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
+    var dfd = $.Deferred(), promises = Array();
     // load the webservice definitions
-    $.each(plugin_RestClient.config.wsdFiles, function(path, loadFile) {
-      if (loadFile) {
+
+    if (app.config.min) {
+      dfd.resolve();
+    }
+
+    else {
+      $.each(plugin_RestClient.config.wsdFiles, function(index, path) {
         promises.push(plugin_RestClient.loadDefinitionFileAsync(path));
-      }
-    });
+      });
 
-    promiseOfPromises = $.when.apply($, promises);
-
-    promiseOfPromises.done(function() {
-      dfd.resolve(arguments);
-    });
-    promiseOfPromises.fail(function() {
-      dfd.reject(arguments);
-    });
+      $.when.apply($, promises).done(function() {
+        dfd.resolve(arguments);
+      }).fail(function() {
+        dfd.reject(arguments);
+      });
+    }
 
     return dfd.promise();
   },
@@ -210,13 +212,6 @@ var plugin_RestClient = {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // JSON functions
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
-
-
-
-
-
- 
 
   /**
    * The public functions used by the API *

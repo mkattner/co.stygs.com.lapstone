@@ -167,7 +167,8 @@ public class YUICompressor {
 
                             JavaScriptCompressor compressor = new JavaScriptCompressor(in, new ErrorReporter() {
 
-                                public void warning(String message, String sourceName,
+                                @Override
+				public void warning(String message, String sourceName,
                                         int line, String lineSource, int lineOffset) {
                                     System.err.println("\n[WARNING] in " + localFilename);
                                     if (line < 0) {
@@ -177,7 +178,8 @@ public class YUICompressor {
                                     }
                                 }
 
-                                public void error(String message, String sourceName,
+                                @Override
+				public void error(String message, String sourceName,
                                         int line, String lineSource, int lineOffset) {
                                     System.err.println("[ERROR] in " + localFilename);
                                     if (line < 0) {
@@ -187,7 +189,8 @@ public class YUICompressor {
                                     }
                                 }
 
-                                public EvaluatorException runtimeError(String message, String sourceName,
+                                @Override
+				public EvaluatorException runtimeError(String message, String sourceName,
                                         int line, String lineSource, int lineOffset) {
                                     error(message, sourceName, line, lineSource, lineOffset);
                                     return new EvaluatorException(message);

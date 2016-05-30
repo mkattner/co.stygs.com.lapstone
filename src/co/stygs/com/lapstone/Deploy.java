@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import co.stygs.com.lapstone.objects.LapstoneJson;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
 public class Deploy {
     // ************************************************************************
@@ -36,9 +36,9 @@ public class Deploy {
 	    // update cordova version
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    File configuration = new File(www, "js/lapstone.json");
-	    LapstoneJson lapstoneJson;
+	    LapstoneJSON lapstoneJson;
 
-	    lapstoneJson = objectMapper.readValue(configuration, LapstoneJson.class);
+	    lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
 	    String appVersion = (String) lapstoneJson.version.get("lapstone");
 	    Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
@@ -124,8 +124,8 @@ public class Deploy {
 	    // update app configuration
 	    File configLapstone = new File(www, "js/lapstone.json");
 	    File configApp = new File(www_debug, "js/lapstone.json");
-	    LapstoneJson lapstone = objectMapper.readValue(configLapstone, LapstoneJson.class);
-	    LapstoneJson app = objectMapper.readValue(configApp, LapstoneJson.class);
+	    LapstoneJSON lapstone = objectMapper.readValue(configLapstone, LapstoneJSON.class);
+	    LapstoneJSON app = objectMapper.readValue(configApp, LapstoneJSON.class);
 	    app.version.put("lapstone", lapstone.version.get("lapstone"));
 	    objectMapper.writeValue(configApp, app);
 
