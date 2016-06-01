@@ -4,10 +4,10 @@
 	"include":[
 		
 	],
-	"wseFiles":{
-		"../files/wse/wse.http.json":true,
-		"../files/wse/wse.moodle.json":true
-	},
+	"wseFiles":[
+		"../files/wse/wse.http.json",
+		"../files/wse/wse.moodle.json"
+	],
 	"actions":{
 		"redirect":"",
 		"logout":"",

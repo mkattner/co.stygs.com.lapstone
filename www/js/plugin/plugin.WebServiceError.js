@@ -32,21 +32,25 @@ var plugin_WebServiceError = {
       dfd.reject();
     }
 
-    // load the webservice definitions
-    $.each(plugin_WebServiceError.config.wseFiles, function(path, loadFile) {
-      if (loadFile) {
-        promises.push(plugin_WebServiceError.loadDefinitionFileAsync(path));
-      }
-    });
-
-    promiseOfPromises = $.when.apply($, promises);
-
-    promiseOfPromises.done(function() {
+    if (app.config.min) {
       dfd.resolve();
-    });
-    promiseOfPromises.fail(function() {
-      dfd.reject();
-    });
+    }
+
+    else {
+      // load the webservice definitions
+      $.each(plugin_WebServiceError.config.wseFiles, function(index, url) {
+        promises.push(plugin_WebServiceError.loadDefinitionFileAsync(url));
+      });
+
+      promiseOfPromises = $.when.apply($, promises);
+
+      promiseOfPromises.done(function() {
+        dfd.resolve();
+      });
+      promiseOfPromises.fail(function() {
+        dfd.reject();
+      });
+    }
 
     return dfd.promise();
 

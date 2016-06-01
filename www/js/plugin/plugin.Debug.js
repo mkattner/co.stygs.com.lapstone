@@ -61,7 +61,7 @@ var plugin_Debug = {
     var dfd = $.Deferred();
 
     // add dev language to language array
-    plugin_MultilanguageIso639_3.config.availableLanguages.push("dev");
+    if (window.plugin_MultilanguageIso639_3) plugin_MultilanguageIso639_3.config.availableLanguages.push("dev");
 
     dfd.resolve();
     return dfd.promise();
@@ -98,7 +98,7 @@ var plugin_Debug = {
     if (!app.config.min) {
       $(document).on("webserviceCall", function(event, promise, wsName, parameter) {
         promise.fail(function(error) {
-          alert(wsName + ": " + JSON.stringify(error) + "--- URL: " + app.rc.getFullUrl(wsName, parameter));
+          alert(wsName + ": \n" + "URL:\n" + app.rc.getFullUrl(wsName, parameter) + "\n\nWebservice returns:\n" + JSON.stringify(error));
         });
 
       });

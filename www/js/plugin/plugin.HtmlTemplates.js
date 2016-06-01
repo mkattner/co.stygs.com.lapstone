@@ -13,7 +13,6 @@
 
 var plugin_HtmlTemplates = {
   config: null,
-  templates: {},
   constructor: function() {
     var dfd = $.Deferred();
     dfd.resolve();
@@ -24,52 +23,42 @@ var plugin_HtmlTemplates = {
 
     var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
-    $.each(plugin_HtmlTemplates.config.templates, function(key, template) {
-
-      app.debug.validate(template.content);
-      app.debug.validate(template.style);
-
-      if (app.config.min) {
-        styleUrl = template.style;
-        styleUrl = styleUrl.substring(0, styleUrl.lastIndexOf("."));
-        styleUrl = styleUrl.substring(0, styleUrl.lastIndexOf(".")) + "." + app.config.version.app + ".css";
-
-        contentUrl = template.content;
-
-        promises.push(globalLoader.AsyncTextLoader(contentUrl));
-        promises.push(globalLoader.AsyncTextLoader(styleUrl));
-
-      }
-
-      else {
-        promises.push(globalLoader.AsyncTextLoader(template.content));
-        promises.push(globalLoader.AsyncTextLoader(template.style));
-      }
-
-    });
-
-    promiseOfPromises = $.when.apply($, promises);
-
-    promiseOfPromises.done(function() {
-      var args = arguments, argumentsIndex = 0;
-
+    if (app.config.min) {
+      dfd.resolve();
+    } else {
       $.each(plugin_HtmlTemplates.config.templates, function(key, template) {
 
-        plugin_HtmlTemplates.templates[key] = {};
-        // console.log(i + args[i]);
-        plugin_HtmlTemplates.templates[key]['content'] = args[argumentsIndex];
-        argumentsIndex++;
+        app.debug.validate(template.content);
+        app.debug.validate(template.style);
 
-        plugin_HtmlTemplates.templates[key]['style'] = args[argumentsIndex];
+        promises.push(globalLoader.AsyncTextLoader(template.content));
+        promises.push(globalLoader.AsyncTextLoader(template.style));
 
-        argumentsIndex++;
       });
 
-      dfd.resolve();
-    });
-    promiseOfPromises.fail(function() {
-      dfd.reject();
-    });
+      promiseOfPromises = $.when.apply($, promises);
+
+      promiseOfPromises.done(function() {
+        var args = arguments, argumentsIndex = 0;
+
+        $.each(plugin_HtmlTemplates.config.templates, function(key, template) {
+
+          // plugin_HtmlTemplates.config.templates[key] = {};
+          // console.log(i + args[i]);
+          plugin_HtmlTemplates.config.templates[key]['content'] = args[argumentsIndex];
+          argumentsIndex++;
+
+          plugin_HtmlTemplates.config.templates[key]['style'] = args[argumentsIndex];
+
+          argumentsIndex++;
+        });
+
+        dfd.resolve();
+      });
+      promiseOfPromises.fail(function() {
+        dfd.reject();
+      });
+    }
 
     return dfd.promise();
   },
@@ -114,17 +103,17 @@ var plugin_HtmlTemplates = {
     app.debug.trace("plugin_HtmlTemplates.getText()");
     var text = null, style = null, styleIsActive;
 
-    text = plugin_HtmlTemplates.templates[templateId]['content'];
-    style = plugin_HtmlTemplates.templates[templateId]['style'];
+    text = plugin_HtmlTemplates.config.templates[templateId]['content'];
+    style = plugin_HtmlTemplates.config.templates[templateId]['style'];
 
     if (!app.config.min) {
       style = plugin_HtmlTemplates.parseLess(style);
     }
 
-    styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'];
+    styleIsActive = plugin_HtmlTemplates.config.templates[templateId]['styleIsActive'];
 
     if (styleIsActive == undefined) {
-      styleIsActive = plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = false;
+      styleIsActive = plugin_HtmlTemplates.config.templates[templateId]['styleIsActive'] = false;
     }
 
     if ($("style#lapstoneStyles")[0] == undefined) {
@@ -134,7 +123,7 @@ var plugin_HtmlTemplates = {
     if (styleIsActive === false) {
       $("style#lapstoneStyles").append(style);
 
-      plugin_HtmlTemplates.templates[templateId]['styleIsActive'] = true;
+      plugin_HtmlTemplates.config.templates[templateId]['styleIsActive'] = true;
 
     }
     app.debug.debug("plugin_HtmlTemplates.getText() - text: " + text);
@@ -169,8 +158,8 @@ var plugin_HtmlTemplates = {
           extendObject["_" + elementKey] = function(contentObject) {
             if (contentObject) {
               return this.find(elementSelector).append(contentObject);
-            } 
-            
+            }
+
             else {
               return this.find(elementSelector);
             }

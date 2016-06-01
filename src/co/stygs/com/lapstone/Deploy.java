@@ -40,11 +40,11 @@ public class Deploy {
 
 	    lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
-	    String appVersion = (String) lapstoneJson.version.get("lapstone");
+	    String appVersion = (String) lapstoneJson.getVersion().get("lapstone");
 	    Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
 	    buildVersion++;
-	    String newVersion = ((String) lapstoneJson.version.get("lapstone")).substring(0, ((String) lapstoneJson.version.get("lapstone")).lastIndexOf(".") + 1) + buildVersion.toString();
-	    lapstoneJson.version.put("lapstone", newVersion);
+	    String newVersion = ((String) lapstoneJson.getVersion().get("lapstone")).substring(0, ((String) lapstoneJson.getVersion().get("lapstone")).lastIndexOf(".") + 1) + buildVersion.toString();
+	    lapstoneJson.getVersion().put("lapstone", newVersion);
 	    objectMapper.writeValue(configuration, lapstoneJson);
 
 	    // ********************************************************************
@@ -126,7 +126,7 @@ public class Deploy {
 	    File configApp = new File(www_debug, "js/lapstone.json");
 	    LapstoneJSON lapstone = objectMapper.readValue(configLapstone, LapstoneJSON.class);
 	    LapstoneJSON app = objectMapper.readValue(configApp, LapstoneJSON.class);
-	    app.version.put("lapstone", lapstone.version.get("lapstone"));
+	    app.getVersion().put("lapstone", lapstone.getVersion().get("lapstone"));
 	    objectMapper.writeValue(configApp, app);
 
 	    // ********************************************************************

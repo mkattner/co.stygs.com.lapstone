@@ -48,13 +48,9 @@ function initialisation() {
 
   dfd = $.Deferred();
 
-  promise = initialisationPanel.start();
+  extendJsAndJquery();
 
-  promise.done(function() {
-    extendJsAndJquery();
-
-    dfd.resolve();
-  });
+  dfd.resolve();
 
   return dfd.promise();
 }
@@ -118,42 +114,47 @@ function loadConfiguration() {
 
     $.extend(true, app.config, configuration);
 
-    // show version
-    $('.lapstone-version').text(app.config.version.lapstone);
-    $('.app-version').text(app.config.version.app);
+    initialisationPanel.start().done(function() {
+      // show version
+      $('.lapstone-version').text(app.config.version.lapstone);
+      $('.app-version').text(app.config.version.app);
 
-    if (configuration.name === undefined) console.warn("lapstone.json has no 'name' property.");
+      if (configuration.name === undefined) console.warn("lapstone.json has no 'name' property.");
 
-    if (configuration.title === undefined) console.warn("lapstone.json has no 'title' property.");
+      if (configuration.title === undefined) console.warn("lapstone.json has no 'title' property.");
 
-    if (configuration.version === undefined) {
-      console.warn("lapstone.json has no 'version' property.");
-    } else {
-      if (configuration.version.app === undefined) console.warn("lapstone.json has no 'version.app' property.");
+      if (configuration.version === undefined) {
+        console.warn("lapstone.json has no 'version' property.");
+      } else {
+        if (configuration.version.app === undefined) console.warn("lapstone.json has no 'version.app' property.");
 
-      if (configuration.version.lapstone === undefined) console.warn("lapstone.json has no 'version.lapstone' property.");
+        if (configuration.version.lapstone === undefined) console.warn("lapstone.json has no 'version.lapstone' property.");
 
-      if (configuration.version.update === undefined) console.warn("lapstone.json has no 'version.update' property.");
-    }
+        if (configuration.version.update === undefined) console.warn("lapstone.json has no 'version.update' property.");
+      }
 
-    if (configuration.min === undefined) console.warn("lapstone.json has no 'min' property.");
+      if (configuration.min === undefined) console.warn("lapstone.json has no 'min' property.");
 
-    if (configuration.startPage === undefined) console.warn("lapstone.json has no 'startPage' property.");
+      if (configuration.startPage === undefined) console.warn("lapstone.json has no 'startPage' property.");
 
-    if (configuration.startPage_firstStart === undefined) console.warn("lapstone.json has no 'startPage_firstStart' property.");
+      if (configuration.startPage_firstStart === undefined) console.warn("lapstone.json has no 'startPage_firstStart' property.");
 
-    if (configuration.startPage_loggedIn === undefined) console.warn("lapstone.json has no 'startPage_loggedIn' property.");
+      if (configuration.startPage_loggedIn === undefined) console.warn("lapstone.json has no 'startPage_loggedIn' property.");
 
-    if (configuration.badConnectionPage === undefined) console.warn("lapstone.json has no 'badConnectionPage' property.");
+      if (configuration.badConnectionPage === undefined) console.warn("lapstone.json has no 'badConnectionPage' property.");
 
-    // transform app/lapstone version to an integer value
-    // app.config.version['lapstone_int'] = app.config.version.lapstone.toIntegerVersion();
-    // app.config.version['app_int'] = app.config.version.app.toIntegerVersion();
+      // transform app/lapstone version to an integer value
+      // app.config.version['lapstone_int'] = app.config.version.lapstone.toIntegerVersion();
+      // app.config.version['app_int'] = app.config.version.app.toIntegerVersion();
 
-    // preset the title of the app
-    $('title').text(app.config.title);
+      // preset the title of the app
+      $('title').text(app.config.title);
 
-    dfd.resolve();
+      dfd.resolve();
+    }).fail(function() {
+      dfd.reject();
+    });
+
   });
 
   promise.fail(function() {
@@ -166,83 +167,91 @@ function loadConfiguration() {
 function updateFramework() {
   var dfd = $.Deferred();
 
-  var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;// currentAppVersion_int,
-  // currentLapstoneVersion_int;
+  if (window.plugin_Informator) {
 
-  currentAppVersion = app.config.version.app;
-  currentLapstoneVersion = app.config.version.lapstone;
+    var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;// currentAppVersion_int,
+    // currentLapstoneVersion_int;
 
-  // currentAppVersion_int = app.config.version.app.toIntegerVersion();
-  // currentLapstoneVersion_int = app.config.version.lapstone.toIntegerVersion();
+    currentAppVersion = app.config.version.app;
+    currentLapstoneVersion = app.config.version.lapstone;
 
-  plugin_Informator.loadConfigurationIntoHtml5Storage({
-    "app": {
-      "config": {
-        "version": app.config.version
+    // currentAppVersion_int = app.config.version.app.toIntegerVersion();
+    // currentLapstoneVersion_int = app.config.version.lapstone.toIntegerVersion();
+
+    plugin_Informator.loadConfigurationIntoHtml5Storage({
+      "app": {
+        "config": {
+          "version": app.config.version
+        }
       }
+    });
+
+    oldLapstoneVersion = app.config.version.lapstone;
+    oldAppVersion = app.config.version.app;
+
+    if (app.config.version.update === true) {
+      console.warn("update done");
     }
-  });
+    // alert(currentAppVersion + oldAppVersion + currentLapstoneVersion +
+    // oldLapstoneVersion);
+    if (currentLapstoneVersion != oldLapstoneVersion || currentAppVersion != oldAppVersion) {
+      console.warn("TODO Lastone || App Version Update");
+      // alert("do update")
+      app.info.set("app.config.version.update", true);
 
-  oldLapstoneVersion = app.config.version.lapstone;
-  oldAppVersion = app.config.version.app;
+      app.info.set("app.config.version.app", currentAppVersion);
+      app.info.set("app.config.version.lapstone", currentLapstoneVersion);
+      // app.info.set("app.config.version.app_int", currentAppVersion_int);
+      // app.info.set("app.config.version.lapstone_int", currentLapstoneVersion_int);
 
-  if (app.config.version.update === true) {
-    console.warn("update done");
-  }
-  // alert(currentAppVersion + oldAppVersion + currentLapstoneVersion +
-  // oldLapstoneVersion);
-  if (currentLapstoneVersion != oldLapstoneVersion || currentAppVersion != oldAppVersion) {
-    console.warn("TODO Lastone || App Version Update");
-    // alert("do update")
-    app.info.set("app.config.version.update", true);
+      // do the update before reloading
+      globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(response) {
+        var updateScriptPromisses;
 
-    app.info.set("app.config.version.app", currentAppVersion);
-    app.info.set("app.config.version.lapstone", currentLapstoneVersion);
-    // app.info.set("app.config.version.app_int", currentAppVersion_int);
-    // app.info.set("app.config.version.lapstone_int", currentLapstoneVersion_int);
+        updateScriptPromisses = [];
 
-    // do the update before reloading
-    globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(response) {
-      var updateScriptPromisses;
+        $.each(response.updateRegistry, function(index, updateObject) {
+          console.log(JSON.stringify(updateObject))
 
-      updateScriptPromisses = [];
-
-      $.each(response.updateRegistry, function(index, updateObject) {
-        console.log(JSON.stringify(updateObject))
-
-        if (updateObject.startWithAppVersion && updateObject.stopWithAppVersion) {
-          if (currentAppVersion.toIntegerVersion() >= updateObject.startWithAppVersion.toIntegerVersion() && currentAppVersion.toIntegerVersion() < updateObject.stopWithAppVersion.toIntegerVersion()) {
-            // App Update
-            console.warn("App Update: " + updateObject.description);
-            updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+          if (updateObject.startWithAppVersion && updateObject.stopWithAppVersion) {
+            if (currentAppVersion.toIntegerVersion() >= updateObject.startWithAppVersion.toIntegerVersion() && currentAppVersion.toIntegerVersion() < updateObject.stopWithAppVersion.toIntegerVersion()) {
+              // App Update
+              console.warn("App Update: " + updateObject.description);
+              updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+            }
           }
-        }
 
-        if (updateObject.startWithLapstoneVersion && updateObject.stopWithLapstoneVersion) {
-          if (currentLapstoneVersion.toIntegerVersion() >= updateObject.startWithLapstoneVersion.toIntegerVersion() && currentLapstoneVersion.toIntegerVersion() < updateObject.stopWithLapstoneVersion.toIntegerVersion()) {
-            // Lapstone Update
-            console.warn("Lapstone Update: " + updateObject.description);
-            updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+          if (updateObject.startWithLapstoneVersion && updateObject.stopWithLapstoneVersion) {
+            if (currentLapstoneVersion.toIntegerVersion() >= updateObject.startWithLapstoneVersion.toIntegerVersion() && currentLapstoneVersion.toIntegerVersion() < updateObject.stopWithLapstoneVersion.toIntegerVersion()) {
+              // Lapstone Update
+              console.warn("Lapstone Update: " + updateObject.description);
+              updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+            }
           }
-        }
 
-      });
+        });
 
-      $.when.apply($, updateScriptPromisses).done(function() {
-        location.reload();
+        $.when.apply($, updateScriptPromisses).done(function() {
+          location.reload();
+        }).fail(function() {
+          dfd.reject();
+        });
+
       }).fail(function() {
         dfd.reject();
       });
 
-    }).fail(function() {
-      dfd.reject();
-    });
+      // reload
 
-    // reload
+    }
 
+    else {
+      dfd.resolve();
+    }
   }
 
   else {
+    console.log("Update mechanism doesn't works without Informator plugin.")
     dfd.resolve();
   }
 
@@ -464,49 +473,27 @@ var globalLoader = {
     return text;
   },
 
-  AsyncStyleLoader: function(url, attempts, attempt, dfd) {
+  AsyncStyleLoader: function(url, attempts, attempt) {
+    var dfd = $.Deferred();
+    globalLoader.AsyncTextLoader(url).done(function(styleString) {
+      $('head').append($("<style>").text(styleString));
+      dfd.resolve(styleString);
+    }).fail(function() {
+      dfd.reject(arguments);
+    })
 
-    if (dfd == undefined) dfd = $.Deferred();
-
-    if (attempt == undefined) attempt = 1;
-
-    if (attempts == undefined) attempts = globalLoader.globalAttempts;
-
-    $.ajax({
-      cache: cacheAjax(),
-      url: url,
-      async: true,
-      dataType: "text",
-      timeout: globalLoader.globalTimeout
-    }).done(function(data, textStatus, jqXHR) {
-      // console.log("+++++++ " + JSON.stringify(jqXHR));
-      if (textStatus === "timeout") {
-        startup.log("Timeout while loading: " + url);
-        startup.log("It was attempt " + attempt + " of " + attempts + ".");
-        if (attempt < attempts) {
-          startup.log("So we try again.");
-          globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
-        } else {
-          startup.log("So the framework loading fails.");
-          dfd.reject(textStatus);
-        }
-      } else {
-
-        if ($("style")[0] == undefined) $('head').append("<style></style>");
-
-        $("style").before('<link rel="stylesheet" type="text/css" href="' + url + '">');
-
-        dfd.resolve(data);
-      }
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-      if (attempt < attempts) {
-        globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
-      } else {
-        initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
-        dfd.reject(arguments);
-      }
-    });
     return dfd.promise();
+  },
+
+  StyleLoader: function(url, attempts, attempt) {
+    var css, cssLink;
+
+    if (!cacheAjax())
+      cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
+    else
+      cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '">';
+
+    $("head").append(cssLink);
   },
 
   StyleLoader: function(url, attempts, attempt) {
@@ -635,31 +622,20 @@ function waitForDeviceready() {
 var initialisationPanel = {
   panel: null,
   start: function() {
-    var dfd = $.Deferred(), promise;
+    var dfd = $.Deferred(), doneFunction, failFunction;
 
-    $('head').append("<title>");
-    $('title').text("...");
-
-    promise = globalLoader.AsyncTextLoader('../js/lapstone.html');
-
-    globalLoader.StyleLoader("../js/lapstone.css");
-
-    promise.done(function(data) {
+    doneFunction = function(data) {
       var interval;
       initialisationPanel.panel = data;
-
       initialisationPanel.show();
 
       // preload images
-      $.each(startupDefinition, function(index, object) {
-
-        startup.images[object.image] = {};
-
-        startup.images[object.image]['startup'] = new Image();
-        startup.images[object.image]['startup'].src = "../images/lapstone/init_" + object.image + "_startup.png";
-
-        startup.images[object.image]['success'] = new Image();
-        startup.images[object.image]['success'].src = "../images/lapstone/init_" + object.image + "_success.png";
+      $.each(startupDefinition, function(index, startupPart) {
+        startup.images[startupPart.image] = {};
+        startup.images[startupPart.image]['startup'] = new Image();
+        startup.images[startupPart.image]['startup'].src = "../images/lapstone/init_" + startupPart.image + "_startup.png";
+        startup.images[startupPart.image]['success'] = new Image();
+        startup.images[startupPart.image]['success'].src = "../images/lapstone/init_" + startupPart.image + "_success.png";
       });
 
       interval = setInterval(function() {
@@ -683,14 +659,25 @@ var initialisationPanel = {
           }
           dfd.resolve();
         }
-
       }, 10);
+    }
 
-    });
-
-    promise.fail(function(e) {
+    failFunction = function(e) {
       dfd.reject();
-    });
+    };
+
+    $('head').append("<title>");
+    $('title').text("...");
+
+    if (app.config.min) {
+      $("head").append(function() {
+        return $("<style>").append(app.config.startupStyle)
+      });
+      doneFunction(app.config.startupContent);
+    } else {
+      globalLoader.StyleLoader("../js/lapstone.css");
+      globalLoader.AsyncTextLoader('../js/lapstone.html').done(doneFunction).fail(failFunction);
+    }
     return dfd.promise();
   },
   show: function(status) {
@@ -717,17 +704,17 @@ var initialisationPanel = {
 }
 
 var startupDefinition = [{
-  "status": "lapstone starts initialisation",
-  "function": initialisation,
-  "parameter": "",
-  "result": "",
-  "image": "start"
-}, {
   "status": "lapstone is loading the configuration",
   "function": loadConfiguration,
   "parameter": "",
   "result": "",
   "image": "configuration"
+}, {
+  "status": "lapstone starts initialisation",
+  "function": initialisation,
+  "parameter": "",
+  "result": "",
+  "image": "start"
 }, {
   "status": "lapstone is loading the plugins",
   "function": loadPlugins,
@@ -870,7 +857,13 @@ $(document).ready(function() {
 
   inititalisationPromise.always(function() {
     // alert();
-    app.info.set("app.config.version.update", false);
+    if (window.plugin_Informator) {
+      app.info.set("app.config.version.update", false);
+    }
+
+    else {
+      console.log("Update mechanism doesn't works without Informator plugin.")
+    }
   });
 
 });

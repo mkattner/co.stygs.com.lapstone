@@ -14,10 +14,14 @@ import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
 import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 import co.stygs.com.lapstone.objects.json.Page_JSON;
+import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplatesJSON;
+import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplates_TemplateJSON;
 import co.stygs.com.lapstone.objects.json.Plugin_JSON;
 import co.stygs.com.lapstone.objects.json.Plugin_LoadExternalScriptsJSON;
 import co.stygs.com.lapstone.objects.json.Plugin_RestClientJSON;
+import co.stygs.com.lapstone.objects.json.Plugin_WebServiceErrorJSON;
 import co.stygs.com.lapstone.objects.json.WsdJSON;
+import co.stygs.com.lapstone.objects.json.WseJSON;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,11 +56,11 @@ public class Release {
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    File configuration = new File(www_debug, "js/lapstone.json");
 	    LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
-	    String appVersion = (String) lapstoneJson.version.get("app");
+	    String appVersion = (String) lapstoneJson.getVersion().get("app");
 	    Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
 	    buildVersion++;
-	    String newVersion = ((String) lapstoneJson.version.get("app")).substring(0, ((String) lapstoneJson.version.get("app")).lastIndexOf(".") + 1) + buildVersion.toString();
-	    lapstoneJson.version.put("app", newVersion);
+	    String newVersion = ((String) lapstoneJson.getVersion().get("app")).substring(0, ((String) lapstoneJson.getVersion().get("app")).lastIndexOf(".") + 1) + buildVersion.toString();
+	    lapstoneJson.getVersion().put("app", newVersion);
 	    objectMapper.writeValue(configuration, lapstoneJson);
 
 	    System.out.println();
@@ -76,7 +80,16 @@ public class Release {
 	    configuration = new File(www, "js/lapstone.json");
 	    lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
-	    lapstoneJson.min = true;
+	    lapstoneJson.setMin( true);
+
+	    File startupStyle = new File(www, "js/lapstone.css");
+	    File startupContent = new File(www, "js/lapstone.html");
+
+	    lapstoneJson.setStartupContent(FileUtils.readFileToString(startupContent));
+	    lapstoneJson.setStartupStyle(FileUtils.readFileToString(startupStyle));
+	    
+	    startupStyle.delete();
+	    startupContent.delete();
 
 	    objectMapper.writeValue(configuration, lapstoneJson);
 
@@ -210,6 +223,31 @@ public class Release {
 	// Plugin_SkinJson skinJson = objectMapper.readValue(configuration,
 	// Plugin_SkinJson.class);
 
+	// PLUGIN HtmlTemplates
+	configuration = new File(www, "js/plugin/plugin.HtmlTemplates.json");
+	Plugin_HtmlTemplatesJSON htmlTemplates = objectMapper.readValue(configuration, Plugin_HtmlTemplatesJSON.class);
+	for (String templateName : htmlTemplates.getTemplates().keySet()) {
+	    String styleUrl = htmlTemplates.getTemplates().get(templateName).getStyle();
+	    String contentUrl = htmlTemplates.getTemplates().get(templateName).getContent();
+
+	    File styleFile = new File(www, "page/" + styleUrl);
+	    File contentFile = new File(www, "page/" + contentUrl);
+
+	    String style;
+	    if (styleFile.getName().endsWith(".less"))
+		style = Less.compile(styleFile, true);
+	    else
+		style = FileUtils.readFileToString(styleFile);
+	    String content = FileUtils.readFileToString(contentFile);
+
+	    htmlTemplates.getTemplates().get(templateName).setStyle(style);
+	    htmlTemplates.getTemplates().get(templateName).setContent(content);
+
+	    styleFile.delete();
+	    contentFile.delete();
+	}
+	objectMapper.writeValue(configuration, htmlTemplates);
+
 	// PLUGIN LoadExternalScripts
 	configuration = new File(www, "js/plugin/plugin.LoadExternalScripts.json");
 	Plugin_LoadExternalScriptsJSON loadExternalScriptsJson = objectMapper.readValue(configuration, Plugin_LoadExternalScriptsJSON.class);
@@ -257,7 +295,17 @@ public class Release {
 	    currentFile.delete();
 	}
 	objectMapper.writeValue(configuration, restClientJson);
-	
+
+	// PLUGIN WebServiceError
+	configuration = new File(www, "js/plugin/plugin.WebServiceError.json");
+	Plugin_WebServiceErrorJSON webServiceErrorJson = objectMapper.readValue(configuration, Plugin_WebServiceErrorJSON.class);
+	for (String url : webServiceErrorJson.getWseFiles()) {
+	    currentFile = new File(www, "page/" + url);
+	    WseJSON wseJSON = objectMapper.readValue(currentFile, WseJSON.class);
+	    webServiceErrorJson.getWse().putAll(wseJSON);
+	    currentFile.delete();
+	}
+	objectMapper.writeValue(configuration, webServiceErrorJson);
 
 	// ********************************************************************
 	// create single plugin file
