@@ -24,7 +24,7 @@ var page_badConnection = {
   elements: null,
 
   constructor: function() {
-    app.debug.alert("page_" + this.config.name + ".constructor()", 10);
+    app.debug.debug("page_" + this.config.name + ".constructor()");
     var dfd = $.Deferred();
     dfd.resolve();
     return dfd.promise();
@@ -33,7 +33,7 @@ var page_badConnection = {
 
   // load the html structure
   creator: function(container) {
-    app.debug.alert("page_" + this.config.name + ".creator()", 10);
+    app.debug.trace("page_" + this.config.name + ".creator()");
     app.template.overwrite("#" + container.attr("id"), "JQueryMobilePlainPage");
     $.each(app.detect.classes.array(), function(key, name) {
       if (!$('body').hasClass(key)) $('body').addClass(key);
@@ -83,7 +83,7 @@ var page_badConnection = {
 
   // set the jquery events
   setEvents: function(container) {
-    app.debug.alert("page_" + this.config.name + ".setEvents()", 10);
+    app.debug.trace("page_" + this.config.name + ".setEvents()");
     $(this.config.pageId).on("connectionisalive", function(event, duration) {
       app.help.navigation.back();
     });
@@ -99,14 +99,14 @@ var page_badConnection = {
     // but before the browser history has been modified by the navigation
     // process.
     pagebeforechange: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagebeforechange()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforechange()");
 
     },
 
     // Triggered on the page being initialized, before most plugin
     // auto-initialization occurs.
     pagebeforecreate: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagebeforecreate()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforecreate()");
 
     },
 
@@ -115,13 +115,13 @@ var page_badConnection = {
     // the
     // actual transition animation is kicked off.
     pagebeforehide: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagebeforehide()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforehide()");
 
     },
 
     // Triggered before any load request is made.
     pagebeforeload: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagebeforeload()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforeload()");
 
     },
 
@@ -129,7 +129,7 @@ var page_badConnection = {
     // actual
     // transition animation is kicked off.
     pagebeforeshow: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagebeforeshow()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforeshow()");
 
     },
 
@@ -137,13 +137,13 @@ var page_badConnection = {
     // loading the page into the DOM and all page transition animations have
     // completed.
     pagechange: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagechange()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagechange()");
 
     },
 
     // Triggered when the changePage() request fails to load the page.
     pagechangefailed: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagechangefailed()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagechangefailed()");
 
     },
 
@@ -153,33 +153,33 @@ var page_badConnection = {
     // contained
     // markup.
     pagecreate: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagecreate()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagecreate()");
 
     },
 
     // Triggered on the ���fromPage��� after the transition animation has
     // completed.
     pagehide: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pagehide()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pagehide()");
 
     },
 
     // Triggered on the page being initialized, after initialization occurs.
     pageinit: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pageinit()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pageinit()");
 
     },
 
     // Triggered after the page is successfully loaded and inserted into the
     // DOM.
     pageload: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pageload()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pageload()");
 
     },
 
     // Triggered if the page load request failed.
     pageloadfailed: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pageloadfailed()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pageloadfailed()");
 
     },
 
@@ -187,14 +187,14 @@ var page_badConnection = {
     // page
     // from the DOM.
     pageremove: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pageremove()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pageremove()");
 
     },
 
     // Triggered on the ���toPage��� after the transition animation has
     // completed.
     pageshow: function(event, container) {
-      app.debug.alert("page_" + $(container).attr('id') + ".pageshow()", 12);
+      app.debug.trace("page_" + $(container).attr('id') + ".pageshow()");
 
     }
   }

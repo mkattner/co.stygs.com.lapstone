@@ -1,27 +1,32 @@
 package co.stygs.com.lapstone;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
 import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
+import co.stygs.com.lapstone.objects.json.IPlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 import co.stygs.com.lapstone.objects.json.Page_JSON;
-import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplatesJSON;
-import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplates_TemplateJSON;
+import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplates_JSON;
 import co.stygs.com.lapstone.objects.json.Plugin_JSON;
-import co.stygs.com.lapstone.objects.json.Plugin_LoadExternalScriptsJSON;
-import co.stygs.com.lapstone.objects.json.Plugin_RestClientJSON;
-import co.stygs.com.lapstone.objects.json.Plugin_WebServiceErrorJSON;
-import co.stygs.com.lapstone.objects.json.WsdJSON;
-import co.stygs.com.lapstone.objects.json.WseJSON;
+import co.stygs.com.lapstone.objects.json.Plugin_LoadExternalScripts_JSON;
+import co.stygs.com.lapstone.objects.json.Plugin_RestClient_JSON;
+import co.stygs.com.lapstone.objects.json.Plugin_WebServiceError_JSON;
+import co.stygs.com.lapstone.objects.json.Wsd_JSON;
+import co.stygs.com.lapstone.objects.json.Wse_JSON;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,14 +85,14 @@ public class Release {
 	    configuration = new File(www, "js/lapstone.json");
 	    lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
-	    lapstoneJson.setMin( true);
+	    lapstoneJson.setMin(true);
 
 	    File startupStyle = new File(www, "js/lapstone.css");
 	    File startupContent = new File(www, "js/lapstone.html");
 
 	    lapstoneJson.setStartupContent(FileUtils.readFileToString(startupContent));
 	    lapstoneJson.setStartupStyle(FileUtils.readFileToString(startupStyle));
-	    
+
 	    startupStyle.delete();
 	    startupContent.delete();
 
@@ -204,6 +209,16 @@ public class Release {
 		cssFile.delete();
 	    }
 
+	    // delete empty and unused directoryies
+//	    for (File toDelete : FileUtils.listFilesAndDirs(new File(www, "ext"), new NotFileFilter(TrueFileFilter.INSTANCE), DirectoryFileFilter.DIRECTORY)) {
+//		
+//
+//		if (!(toDelete.getName().equals("ext") || toDelete.getName().equals("jQuery")|| toDelete.getName().equals("jQueryMobile"))) {
+//		    System.out.println("Delete: " + toDelete.getAbsolutePath());
+//		    FileUtils.deleteDirectory(toDelete);
+//		}
+//	    }
+
 	    return true;
 
 	} catch (IOException e) {
@@ -223,89 +238,30 @@ public class Release {
 	// Plugin_SkinJson skinJson = objectMapper.readValue(configuration,
 	// Plugin_SkinJson.class);
 
-	// PLUGIN HtmlTemplates
-	configuration = new File(www, "js/plugin/plugin.HtmlTemplates.json");
-	Plugin_HtmlTemplatesJSON htmlTemplates = objectMapper.readValue(configuration, Plugin_HtmlTemplatesJSON.class);
-	for (String templateName : htmlTemplates.getTemplates().keySet()) {
-	    String styleUrl = htmlTemplates.getTemplates().get(templateName).getStyle();
-	    String contentUrl = htmlTemplates.getTemplates().get(templateName).getContent();
+	configuration = new File(www, "js/lapstone.json");
+	LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
-	    File styleFile = new File(www, "page/" + styleUrl);
-	    File contentFile = new File(www, "page/" + contentUrl);
+	configuration = new File(www, "js/plugin/plugins.json");
+	Map<String, Boolean> plugins = objectMapper.readValue(configuration, HashMap.class);
+	for (String pluginName : plugins.keySet()) {
+	    String curretnClass = "co.stygs.com.lapstone.objects.json.Plugin_" + pluginName + "_JSON";
+	    try {
+		System.out.println("Running release() method on: " + curretnClass);
+		IPlugin_JSON plugin_JSON = (IPlugin_JSON) Class.forName(curretnClass).newInstance();
+		plugin_JSON.release(www, lapstoneJson);
 
-	    String style;
-	    if (styleFile.getName().endsWith(".less"))
-		style = Less.compile(styleFile, true);
-	    else
-		style = FileUtils.readFileToString(styleFile);
-	    String content = FileUtils.readFileToString(contentFile);
-
-	    htmlTemplates.getTemplates().get(templateName).setStyle(style);
-	    htmlTemplates.getTemplates().get(templateName).setContent(content);
-
-	    styleFile.delete();
-	    contentFile.delete();
+	    } catch (ClassNotFoundException e) {
+		System.out.println("ClassNotFoundException: " + curretnClass);
+	    }
 	}
-	objectMapper.writeValue(configuration, htmlTemplates);
+
+	// PLUGIN HtmlTemplates
 
 	// PLUGIN LoadExternalScripts
-	configuration = new File(www, "js/plugin/plugin.LoadExternalScripts.json");
-	Plugin_LoadExternalScriptsJSON loadExternalScriptsJson = objectMapper.readValue(configuration, Plugin_LoadExternalScriptsJSON.class);
-
-	List<String> style;
-	List<String> javascript;
-
-	style = loadExternalScriptsJson.getStyleOrdered();
-
-	// JAVASCRIPT
-	javascript = loadExternalScriptsJson.getJavascriptOrdered();
-
-	System.out.println();
-	String combinedJavascript = "";
-	for (String url : javascript) {
-	    currentFile = new File(www, "page/" + url);
-	    System.out.println("Add: " + currentFile.getAbsolutePath());
-	    combinedJavascript += FileUtils.readFileToString(currentFile) + "\n\n";
-	    currentFile.delete();
-	}
-	File allJavascriptFile = new File(www, "files/all.javascript." + newVersion + ".js");
-	FileUtils.write(allJavascriptFile, combinedJavascript);
-	// Compressor.compressJavaScript(allJavascriptFile.getAbsolutePath(),
-	// allJavascriptFile.getAbsolutePath(), new
-	// JavascriptCompressorOptions());
-
-	// STYLES
-	System.out.println();
-	String combinedStyle = "";
-	for (String url : style) {
-	    currentFile = new File(www, "page/" + url);
-	    System.out.println("Add: " + currentFile.getAbsolutePath());
-	    combinedStyle += FileUtils.readFileToString(currentFile) + "\n\n";
-	    currentFile.delete();
-	}
-	FileUtils.write(new File(www, "files/all.style.css"), combinedStyle);
 
 	// PLUGIN RestClient
-	configuration = new File(www, "js/plugin/plugin.RestClient.json");
-	Plugin_RestClientJSON restClientJson = objectMapper.readValue(configuration, Plugin_RestClientJSON.class);
-	for (String url : restClientJson.getWsdFiles()) {
-	    currentFile = new File(www, "page/" + url);
-	    WsdJSON wsdJSON = objectMapper.readValue(currentFile, WsdJSON.class);
-	    restClientJson.getWebservices().putAll(wsdJSON);
-	    currentFile.delete();
-	}
-	objectMapper.writeValue(configuration, restClientJson);
 
 	// PLUGIN WebServiceError
-	configuration = new File(www, "js/plugin/plugin.WebServiceError.json");
-	Plugin_WebServiceErrorJSON webServiceErrorJson = objectMapper.readValue(configuration, Plugin_WebServiceErrorJSON.class);
-	for (String url : webServiceErrorJson.getWseFiles()) {
-	    currentFile = new File(www, "page/" + url);
-	    WseJSON wseJSON = objectMapper.readValue(currentFile, WseJSON.class);
-	    webServiceErrorJson.getWse().putAll(wseJSON);
-	    currentFile.delete();
-	}
-	objectMapper.writeValue(configuration, webServiceErrorJson);
 
 	// ********************************************************************
 	// create single plugin file

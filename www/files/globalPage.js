@@ -1,15 +1,5 @@
 var globalPage = {
-	menu : {
-		mobileNavigation : function() {
 
-		},
-		desktopNavigation : function() {
-
-		},
-		pageNavigation : function() {
-
-		}
-	},
 
 	/*
 	 * jQuery mobile event - pagebeforechange

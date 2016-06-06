@@ -37,7 +37,7 @@ var page_start = {
   creator: function(container) {
     app.debug.alert("page_" + this.config.name + ".creator()", 10);
 
-    initialisationPanel.show("");
+//    initialisationPanel.show("");
 
   },
   async: {
@@ -162,7 +162,7 @@ var page_start = {
     // completed.
     pageshow: function(event, container) {
 
-      window.setTimeout(function() {
+//      window.setTimeout(function() {
         // alert(app.info.firstUse());
         if (app.info.firstUse() === true) {
           app.info.firstUse(false);
@@ -172,7 +172,7 @@ var page_start = {
         } else {
           app.nav.redirect(app.config.startPage, "slideup");
         }
-      }, 1000);
+//      }, 1000);
     }
   }
 };

@@ -18,12 +18,12 @@ var plugins = {
     var dfd = $.Deferred();
 
     // reverse order
-    startup.addFunction("lapstone is defining the plugins' events", plugins.callPluginEvents, "");
-    startup.addFunction("lapstone is calling the plugins' loaded event", plugins.callPluginsLoadedEvent, "");
-    startup.addFunction("lapstone is loading the plugins' include scripts", plugins.includeFiles, "");
-    startup.addFunction("lapstone is loading the plugins", plugins.loadPlugins, "");
-    startup.addFunction("lapstone us verifying the plugins' configuration", plugins.verifyPluginNames, "");
-    startup.addFunction("lapstone is loading the plugins' configuration", plugins.loadPluginConfig, "");
+    startup.addFunction("                  defining the plugins' events", plugins.callPluginEvents, "");
+    startup.addFunction("                  calling the plugins' loaded event", plugins.callPluginsLoadedEvent, "");
+    startup.addFunction("                  loading the plugins' include scripts", plugins.includeFiles, "");
+    startup.addFunction("                  loading the plugins", plugins.loadPlugins, "");
+    startup.addFunction("                  verifying the plugins' configuration", plugins.verifyPluginNames, "");
+    startup.addFunction("                  loading the plugins' configuration", plugins.loadPluginConfig, "");
     dfd.resolve();
     return dfd.promise();
   },

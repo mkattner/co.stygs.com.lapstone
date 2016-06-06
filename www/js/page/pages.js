@@ -25,14 +25,14 @@ var pages = {
 
     // reverse order
 
-    startup.addFunction("lapstone is calling the plugins' pages loaded function", pages.callPluginsPagesLoaded, "");
-    startup.addFunction("lapstone is calling the pages' setEvents() function", pages.setEvents, "");
-    startup.addFunction("lapstone is verifying the pages' properties", pages.verifyPages, "");
-    startup.addFunction("lapstone is including external scripts for pages", pages.include, "");
-    startup.addFunction("lapstone is loading the pages", pages.loadPages, "");
-    startup.addFunction("lapstone is verifying the pages' names", pages.verifyPageNames, "");
-    startup.addFunction("lapstone is loading the pages' configuration", pages.loadPageConfig, "");
-    startup.addFunction("lapstone is loading the script for global pages", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
+    startup.addFunction("                  calling the plugins' pages loaded function", pages.callPluginsPagesLoaded, "");
+    startup.addFunction("                  calling the pages' setEvents() function", pages.setEvents, "");
+    startup.addFunction("                  verifying the pages' properties", pages.verifyPages, "");
+    startup.addFunction("                  including external scripts for pages", pages.include, "");
+    startup.addFunction("                  loading the pages", pages.loadPages, "");
+    startup.addFunction("                  verifying the pages' names", pages.verifyPageNames, "");
+    startup.addFunction("                  loading the pages' configuration", pages.loadPageConfig, "");
+    startup.addFunction("                  loading the script for global pages", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
 
     dfd.resolve();
     return dfd.promise();

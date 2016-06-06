@@ -8,16 +8,16 @@
 	"defaultSkin":"modern",
 	"skins":{
 		"icon":[
-			"../css/skin/icon/fonts.css",
-			"../css/skin/icon/global.css"
+			"../css.less/skin/icon/fonts.css.less",
+			"../css.less/skin/icon/global.css.less"
 		],
 		"modern":[
-			"../css/skin/modern/fonts.css",
-			"../css/skin/modern/global.css"
+			"../css.less/skin/modern/fonts.css.less",
+			"../css.less/skin/modern/global.css.less"
 		],
 		"text":[
-			"../css/skin/text/fonts.css",
-			"../css/skin/text/global.css"
+			"../css.less/skin/text/fonts.css.less",
+			"../css.less/skin/text/global.css.less"
 		]
 		
 	}

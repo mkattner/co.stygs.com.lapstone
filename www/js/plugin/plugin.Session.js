@@ -1,30 +1,23 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+ * following conditions: The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_Session = {
   config: null,
-  sessionRegistryIdentifyer: "sessionregistry",
   glabalSessionIdentifyer: "globalsession",
   sessionIndentifyer: "_t_lapstonesession_",
   // called by plugins.js
   constructor: function() {
     var dfd = $.Deferred();
-    console.log("TODO - create session registry")
     dfd.resolve();
     return dfd.promise();
 
@@ -69,32 +62,10 @@ var plugin_Session = {
 
   },
 
-  /**
-   * 
-   */
-  sessions: function(sessionName, active) {
-    var sessionRegistry;
-
-    if (sessionRegistry = app.store.localStorage.getObject(plugin_Session.sessionRegistryIdentifyer)) {
-      if (sessionName) sessionRegistry[sessionName] = active;
-
-    }
-
-    else {
-      sessionRegistry = {
-        sessionName: active
-      };
-    }
-
-    app.store.localStorage.setObject(plugin_Session.sessionRegistryIdentifyer, sessionRegistry);
-
-    return sessionRegistry;
-  },
-
   // private functions
   getPrefix: function(prefix) {
     if (prefix == undefined) prefix = plugin_Session.glabalSessionIdentifyer;
-    return prefix;
+    return prefix+"_";
   },
 
   // public functions
@@ -137,7 +108,6 @@ var plugin_Session = {
       sessionName = plugin_Session.getPrefix(sessionName);
       app.debug.trace("plugin_Session.functions.setValue(" + key + ", " + value + ")");
       app.store.localStorage.set(plugin_Session.sessionIndentifyer + sessionName + key, value);
-      plugin_Session.sessions(sessionName, true);
     },
 
     getValue: function(key, sessionName) {
@@ -154,16 +124,12 @@ var plugin_Session = {
 
       app.store.localStorage.removeItem(plugin_Session.sessionIndentifyer + sessionName + "*");
 
-      plugin_Session.sessions(sessionName, false);
     },
 
     destroyAll: function() {
       app.debug.trace("plugin_Session.functions.destroyAll(" + app.debug.arguments(arguments) + ")");
-      $.each(plugin_Session.sessions(), function(sessionName, isLoaded) {
-        //alert(sessionName)
-        if (isLoaded) plugin_Session.functions.destroy(sessionName);
-      });
-      app.store.localStorage.removeItem(plugin_Session.sessionRegistryIdentifyer + "*");
+
+      app.store.localStorage.removeItem(plugin_Session.sessionIndentifyer + "*");
       console.log("TODO - implement");
     },
 

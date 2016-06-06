@@ -17,7 +17,7 @@
 		"template":{
 			"url":"string url",
 			"method":"string method",
-			"timeout":"int timeout",
+			"timeout":1000,
 			"cacheable":false,
 			"cacheInMs":0
 		}

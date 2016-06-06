@@ -63,7 +63,6 @@ var plugin_LoadExternalScripts = {
         else if (url.endsWith(".css")) {
           app.debug.debug("plugin_LoadExternalScripts.pluginsLoaded() - process css: " + url);
 
-          url = url;
           orderedStyleArray.push(url);
           plugin_LoadExternalScripts.loadedScripts[url] = true;
         }
@@ -110,6 +109,15 @@ var plugin_LoadExternalScripts = {
     var dfd = $.Deferred();
 
     if (!app.config.min) {
+      less = {
+        env: "development",
+        logLevel: 0,
+        async: false,
+        fileAsync: false,
+        poll: 1000,
+        dumpLineNumbers: "comments",
+        relativeUrls: false,
+      };
       globalLoader.AsyncScriptLoader("../ext/less/less.min.js").done(function() {
         less.logger.addListener({
           debug: function(msg) {

@@ -67,7 +67,7 @@ function loadPlugins() {
   // load the plugins file
   promise = globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
-    startup.addFunction("plugin constructor", plugins.constructor, "");
+    startup.addFunction("                  plugin constructor", plugins.constructor, "");
     // plugins.constructor();
     dfd.resolve();
   });
@@ -90,7 +90,7 @@ function loadPages() {
   // load pages file
   promise = globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
-    startup.addFunction("page constructor", pages.constructor, "");
+    startup.addFunction("                  page constructor", pages.constructor, "");
     // pages.constructor();
     dfd.resolve();
   });
@@ -278,7 +278,6 @@ function enchantPages() {
   promise = globalLoader.AsyncScriptLoader("../ext/jQueryMobile/jquery.mobile.min.js");
 
   promise.done(function() {
-    initialisationPanel.changeStatus("jquery mobile  loaded");
 
     dfd.resolve();
 
@@ -327,7 +326,7 @@ var globalLoader = {
       if (attempt < attempts) {
         globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
       } else {
-        initialisationPanel.changeStatus("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
+        console.log("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
         dfd.reject(arguments);
       }
     });
@@ -349,7 +348,7 @@ var globalLoader = {
         json = data;
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        initialisationPanel.changeStatus("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
+        console.log("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
       }
     });
     return json;
@@ -381,15 +380,16 @@ var globalLoader = {
           dfd.reject(textStatus);
         }
       } else {
-        window.setTimeout(function() {
-          dfd.resolve(data);
-        }, 200);
+        // i dont know why
+        // window.setTimeout(function() {
+        dfd.resolve(data);
+        // }, 200);
       }
     }).fail(function(jqXHR, textStatus, errorThrown) {
       if (attempt < attempts) {
         globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
       } else {
-        initialisationPanel.changeStatus("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
+        console.log("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
         dfd.reject(arguments);
       }
     });
@@ -446,7 +446,7 @@ var globalLoader = {
       if (attempt < attempts) {
         globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
       } else {
-        initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
+        console.log("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
         dfd.reject(arguments);
       }
     });
@@ -476,6 +476,12 @@ var globalLoader = {
   AsyncStyleLoader: function(url, attempts, attempt) {
     var dfd = $.Deferred();
     globalLoader.AsyncTextLoader(url).done(function(styleString) {
+
+      styleString = styleString.replaceAll("url(\"", "url(\"" + url.substring(0, url.lastIndexOf("/") + 1));
+      styleString = styleString.replaceAll("url('", "url('" + url.substring(0, url.lastIndexOf("/") + 1));
+
+      //console.log(styleString)
+
       $('head').append($("<style>").text(styleString));
       dfd.resolve(styleString);
     }).fail(function() {
@@ -543,7 +549,7 @@ var globalLoader = {
       if (attempt < attempts) {
         globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
       } else {
-        initialisationPanel.changeStatus("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
+        console.log("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
         dfd.reject(arguments);
       }
     });
@@ -590,12 +596,16 @@ function onDeviceReady() {
 function waitForMobileinit() {
   var dfd = $.Deferred(), interval;
 
-  interval = setInterval(function() {
-    if (app.config.jQueryMobile == true) {
-      dfd.resolve();
-      clearInterval(interval);
-    }
-  }, 50);
+  if (app.config.jQueryMobile == true) {
+    dfd.resolve();
+  } else {
+    interval = setInterval(function() {
+      if (app.config.jQueryMobile == true) {
+        dfd.resolve();
+        clearInterval(interval);
+      }
+    }, 50);
+  }
 
   return dfd.promise();
 }
@@ -620,176 +630,147 @@ function waitForDeviceready() {
 }
 
 var initialisationPanel = {
-  panel: null,
   start: function() {
     var dfd = $.Deferred(), doneFunction, failFunction;
-
-    doneFunction = function(data) {
-      var interval;
-      initialisationPanel.panel = data;
-      initialisationPanel.show();
-
-      // preload images
-      $.each(startupDefinition, function(index, startupPart) {
-        startup.images[startupPart.image] = {};
-        startup.images[startupPart.image]['startup'] = new Image();
-        startup.images[startupPart.image]['startup'].src = "../images/lapstone/init_" + startupPart.image + "_startup.png";
-        startup.images[startupPart.image]['success'] = new Image();
-        startup.images[startupPart.image]['success'].src = "../images/lapstone/init_" + startupPart.image + "_success.png";
-      });
-
-      interval = setInterval(function() {
-        var loaded = true;
-        for (imgKey in startup.images) {
-          if (startup.images[imgKey].startup.complete && startup.images[imgKey].success.complete) {
-            ;
-          } else {
-            loaded = false;
-          }
-        }
-
-        if (loaded == true) {
-          clearInterval(interval);
-          for (imgKey in startup.images) {
-            $("#lapstone-progress").append($('<img>', {
-              id: 'imgInit-' + imgKey,
-              src: startup.images[imgKey].startup.src,
-              alt: imgKey
-            }).addClass("lapstone-startup-image"));
-          }
-          dfd.resolve();
-        }
-      }, 10);
-    }
-
-    failFunction = function(e) {
-      dfd.reject();
-    };
 
     $('head').append("<title>");
     $('title').text("...");
 
     if (app.config.min) {
-      $("head").append(function() {
-        return $("<style>").append(app.config.startupStyle)
-      });
-      doneFunction(app.config.startupContent);
-    } else {
+      $("head").append($("<style>").append(app.config.startupStyle));
+      $('body').append(app.config.startupContent);
+      dfd.resolve();
+    }
+
+    else {
       globalLoader.StyleLoader("../js/lapstone.css");
-      globalLoader.AsyncTextLoader('../js/lapstone.html').done(doneFunction).fail(failFunction);
+      globalLoader.AsyncTextLoader('../js/lapstone.html').done(function(data) {
+
+        $('body').append(data);
+        dfd.resolve();
+      }).fail(function() {
+        dfd.reject();
+      });
     }
     return dfd.promise();
   },
-  show: function(status) {
-    $('body').append(initialisationPanel.panel);
-    if (status !== undefined) initialisationPanel.changeStatus(status);
-  },
+
   hide: function() {
     $("#LAPSTONE").remove();
   },
-  changeStatus: function(status) {
-    $("#LAPSTONE .lapstone-status").text(status);
+
+  updateProgress: function() {
+    var current = parseInt($("progress").attr("value"));
+
+    $("progress").attr("value", current + 5)
+
   },
-  alterImage: function(imgKey) {
-    // console.log(imgKey)
-    $("#imgInit-" + imgKey).replaceWith($('<img>', {
-      id: 'imgInit-' + imgKey,
-      src: startup.images[imgKey].success.src,
-      alt: imgKey
-    }).addClass("lapstone-startup-image"));
+
+  changeStatus: function() {
+    $("#LAPSTONE .lapstone-status").text(startup.currentDefinition['status']);
   },
+
   finish: function() {
     initialisationPanel.hide();
   }
 }
 
 var startupDefinition = [{
-  "status": "lapstone is loading the configuration",
+  "status": "Lapstone startup: loading configuration",
   "function": loadConfiguration,
   "parameter": "",
   "result": "",
   "image": "configuration"
 }, {
-  "status": "lapstone starts initialisation",
+  "status": "Lapstone startup: initialisation",
   "function": initialisation,
   "parameter": "",
   "result": "",
   "image": "start"
 }, {
-  "status": "lapstone is loading the plugins",
+  "status": "Lapstone startup: load plugins",
   "function": loadPlugins,
   "parameter": "",
   "result": "",
   "image": "plugins"
 }, {
-  "status": "lapstone is loading the pages",
+  "status": "Lapstone startup: load pages",
   "function": loadPages,
   "parameter": "",
   "result": "",
   "image": "pages"
 }, {
-  "status": "lapstone is checking for updates",
+  "status": "Lapstone startup: checking for updates",
   "function": updateFramework,
   "parameter": "",
   "result": "",
   "image": "updates"
 }, {
-  "status": "lapstone enchants the pages",
+  "status": "Lapstone startup: load jQueryMobile",
   "function": enchantPages,
   "parameter": "",
   "result": "",
   "image": "enchantment"
 }, {
-  "status": "lapstone waits for jQuerys' mobileinit event",
-  "function": waitForMobileinit,
-  "parameter": "",
-  "result": "",
-  "image": "mobileinit"
-}, {
-  "status": "lapstone waits for apache cordovas' deviceready event",
+  "status": "Lapstone startup: wait for apache cordova deviceready event",
   "function": waitForDeviceready,
   "parameter": "",
   "result": "",
   "image": "deviceready"
+}, {
+  "status": "Lapstone startup: wait for jQuerysmobile mobileinit event",
+  "function": waitForMobileinit,
+  "parameter": "",
+  "result": "",
+  "image": "mobileinit"
 }]
 
 var startup = {
-  currentPosition: 0,
+  currentDefinition: {
+    "status": "----------------- Starting the Lapstone Framework",
+  // "function": waitForDeviceready,
+  // "parameter": "",
+  // "result": "",
+  // "image": "deviceready"
+  },
   dfd: $.Deferred(),
-  timestamp: Date.now(),
+  timestamp: Date.now() / 1000,
+  startupTimestamp: Date.now() / 1000,
   promise: null,
   images: {},
 
   addFunction: function(status, func, parameter) {
-    startupDefinition.splice(startup.currentPosition + 1, 0, {
+    startupDefinition.unshift({
       "status": status,
       "function": func,
       "parameter": parameter,
       "result": ""
     });
   },
-
-  log: function(text) {
-    console.log(text);
+  log: function() {
+    var timestamp = Date.now() / 1000;
+    console.log((timestamp - startup.timestamp).toFixed(3) + "s: " + startup.currentDefinition['status']);
+    startup.timestamp = timestamp;
   },
 
   functionDone: function(data) {
     var promise;
 
-    if (startupDefinition[startup.currentPosition]['image'] != undefined) initialisationPanel.alterImage(startupDefinition[startup.currentPosition]['image']);
+    // remove that shit, it costs 1000ms
+    // delay startup for a smoother user experience
+    // window.setTimeout(function() {
+    startup.log();
+    startup.currentDefinition = startupDefinition.shift();
+    if (startup.currentDefinition) {
 
-    startup.currentPosition++;
+      initialisationPanel.changeStatus();
+      initialisationPanel.updateProgress();
+      promise = startup.currentDefinition['function'](startup.currentDefinition['parameter']);
 
-    if (startupDefinition.length > startup.currentPosition) {
-      startup.log(startup.currentPosition + ": " + ((Date.now() - startup.timestamp) / 1000).toFixed(3) + "s: " + startupDefinition[startup.currentPosition]['status']);
-      initialisationPanel.changeStatus(startupDefinition[startup.currentPosition]['status']);
+      promise.done(startup.functionDone);
+      promise.fail(startup.functionFail);
 
-      // delay startup for a smoother user experience
-      window.setTimeout(function() {
-        promise = startupDefinition[startup.currentPosition]['function'](startupDefinition[startup.currentPosition]['parameter']);
-        promise.done(startup.functionDone);
-        promise.fail(startup.functionFail);
-      }, 50);
+      // }, 50);
 
       // alert('next')
     } else {
@@ -800,8 +781,8 @@ var startup = {
   functionFail: function(error) {
     var serializedError;
 
-    console.log(startup.currentPosition + ": " + startupDefinition[startup.currentPosition]['status'] + " FAILED");
-
+    console.log(" FAILED");
+    startup.log();
     try {
       serializedError = JSON.stringify(error);
       console.log("ERROR: " + serializedError);
@@ -812,10 +793,8 @@ var startup = {
   },
 
   initFramework: function() {
-    var promise = startupDefinition[0]['function'](startupDefinition[0]['parameter']);
+    startup.functionDone();
 
-    promise.done(startup.functionDone);
-    promise.fail(startup.functionFail);
     return startup.dfd.promise();
   }
 }
@@ -828,18 +807,19 @@ $(document).ready(function() {
 
   inititalisationPromise.done(function() {
     // alert("init done");
-    setTimeout(function() {
+    // setTimeout(function() {
 
-      initialisationPanel.finish();
+    initialisationPanel.finish();
+    
 
-      // trigger the lapstone initialisation event
-      $(document).trigger("lapstone");
+    // trigger the lapstone initialisation event
+    $(document).trigger("lapstone");
 
-      app.config['startup'] = ((Date.now() - startup.timestamp) / 1000);
+    app.config['startup'] = ((Date.now()) / 1000) - startup.startupTimestamp;
 
-      console.log("Lapstone started in " + app.config.startup + "seconds");
+    console.log("Lapstone started in " + app.config.startup + "seconds");
 
-    }, 200);
+    // }, 200);
   });
 
   inititalisationPromise.fail(function() {
@@ -908,6 +888,13 @@ function extendJsAndJquery() {
     // see below for better implementation!
     String.prototype.startsWith = function(str) {
       return this.indexOf(str) === 0;
+    };
+  }
+
+  if (typeof String.prototype.replaceAll != 'function') {
+    String.prototype.replaceAll = function(search, replacement) {
+      var target = this;
+      return target.replace(new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'), replacement);
     };
   }
 

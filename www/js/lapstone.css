@@ -4,11 +4,12 @@
 	width: 100%;
 	top: 0px;
 	left: 0px;
-	background: url('../img/background.jpg') no-repeat fixed center top/cover transparent;
+	background: linear-gradient(45deg, #ffffff 0%, #f6f6f6 47%, #ededed 100%);
 	text-align: center;
 	z-index: 1000;
 }
 
+}
 #LAPSTONE>div#lapstone-content {
 	position: relative;
 	top: 15%;
@@ -27,6 +28,6 @@
 /* 64x64px .png image */
 #LAPSTONE>div#lapstone-progress>.lapstone-startup-image {
 	background: transparent;
-	height:45px;
-	margin:10px;
+	height: 45px;
+	margin: 10px;
 }

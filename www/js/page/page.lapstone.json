@@ -1,7 +1,7 @@
 {
 	"name": "lapstone",
 	"shortname": "lapstone",
-	"template": "JQueryMobileFooterPage",
+	"template": "JQueryMobilePlainPage",
 	"asyncLoading": false,
 	"useKeepAlive": false,
 	"loginObligate": false,

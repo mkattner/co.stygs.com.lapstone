@@ -17,12 +17,19 @@
  */
 
 var plugin_Informator = {
+        
+        
+        
   config: null,
   configurationPrefix: "informator-config",
 
   constructor: function() {
     var dfd = $.Deferred();
 
+    plugin_Informator.config.excludedPlugins.push("HtmlTemplates");
+    plugin_Informator.config.excludedPlugins.push("RestClient");
+    plugin_Informator.config.excludedPlugins.push("ImageProvider");
+    
     dfd.resolve();
     return dfd.promise();
   },

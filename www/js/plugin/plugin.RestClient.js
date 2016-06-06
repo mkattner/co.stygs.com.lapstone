@@ -369,7 +369,7 @@ var plugin_RestClient = {
       wsd = app.rc.getWsd(webServiceName);
       uniqueWsIdentifyer = (webServiceName + JSON.stringify(parameter)).hashCode();
 
-      if (wsd.cacheable) {
+      if (wsd.cacheable === true) {
         app.debug.debug("plugin_RestClient.functions.cacheJson() - case: webservice is cacheable");
         // store into local storage
         if (data) {

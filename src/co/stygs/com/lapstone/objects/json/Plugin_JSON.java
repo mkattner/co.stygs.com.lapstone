@@ -1,5 +1,7 @@
 package co.stygs.com.lapstone.objects.json;
 
+import java.io.File;
+
 public class Plugin_JSON extends APlugin_JSON {
 
     public Plugin_JSON() {
@@ -7,7 +9,7 @@ public class Plugin_JSON extends APlugin_JSON {
     }
 
     @Override
-    public Boolean release() {
+    public Boolean release(File www, LapstoneJSON lapstoneJson) {
 	// TODO Auto-generated method stub
 	return null;
     }
