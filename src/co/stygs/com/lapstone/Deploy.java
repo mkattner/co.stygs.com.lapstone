@@ -131,7 +131,7 @@ public class Deploy {
 
 	    // ********************************************************************
 	    // copy lapstone.jar
-	    FileUtils.copyFile(new File(lapstonePath, "lapstone.jar"), new File(appPath, "lapstone.jar"), true);
+	    FileUtils.copyFile(new File(lapstonePath, "target/co.stygs.com.lapstone-development.jar"), new File(appPath, "lapstone.jar"), true);
 	    FileUtils.copyFile(new File(lapstonePath, "lapstone.txt"), new File(appPath, "lapstone.txt"), true);
 
 	    return true;

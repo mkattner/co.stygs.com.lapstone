@@ -20,13 +20,13 @@ import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
 import co.stygs.com.lapstone.objects.json.IPlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 import co.stygs.com.lapstone.objects.json.Page_JSON;
-import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplates_JSON;
 import co.stygs.com.lapstone.objects.json.Plugin_JSON;
-import co.stygs.com.lapstone.objects.json.Plugin_LoadExternalScripts_JSON;
-import co.stygs.com.lapstone.objects.json.Plugin_RestClient_JSON;
-import co.stygs.com.lapstone.objects.json.Plugin_WebServiceError_JSON;
 import co.stygs.com.lapstone.objects.json.Wsd_JSON;
 import co.stygs.com.lapstone.objects.json.Wse_JSON;
+import co.stygs.com.lapstone.objects.json.plugin.Plugin_HtmlTemplates_JSON;
+import co.stygs.com.lapstone.objects.json.plugin.Plugin_LoadExternalScripts_JSON;
+import co.stygs.com.lapstone.objects.json.plugin.Plugin_RestClient_JSON;
+import co.stygs.com.lapstone.objects.json.plugin.Plugin_WebServiceError_JSON;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -209,11 +209,10 @@ public class Release {
 		cssFile.delete();
 	    }
 
-	    // delete empty and unused directoryies
+//	    // delete empty and unused directoryies
 //	    for (File toDelete : FileUtils.listFilesAndDirs(new File(www, "ext"), new NotFileFilter(TrueFileFilter.INSTANCE), DirectoryFileFilter.DIRECTORY)) {
-//		
 //
-//		if (!(toDelete.getName().equals("ext") || toDelete.getName().equals("jQuery")|| toDelete.getName().equals("jQueryMobile"))) {
+//		if (!(toDelete.getName().equals("ext") || toDelete.getName().equals("jQuery") || toDelete.getName().equals("jQueryMobile"))) {
 //		    System.out.println("Delete: " + toDelete.getAbsolutePath());
 //		    FileUtils.deleteDirectory(toDelete);
 //		}
@@ -244,8 +243,10 @@ public class Release {
 	configuration = new File(www, "js/plugin/plugins.json");
 	Map<String, Boolean> plugins = objectMapper.readValue(configuration, HashMap.class);
 	for (String pluginName : plugins.keySet()) {
-	    String curretnClass = "co.stygs.com.lapstone.objects.json.Plugin_" + pluginName + "_JSON";
+	    String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
 	    try {
+		System.out.println();
+		System.out.println("-----------------------------------------------------------------------------------");
 		System.out.println("Running release() method on: " + curretnClass);
 		IPlugin_JSON plugin_JSON = (IPlugin_JSON) Class.forName(curretnClass).newInstance();
 		plugin_JSON.release(www, lapstoneJson);
