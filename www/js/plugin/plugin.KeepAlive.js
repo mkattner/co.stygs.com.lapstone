@@ -191,7 +191,7 @@ var plugin_KeepAlive = {
 		},
 		
 		badConnectionHandler:function(){
-			app.nav.redirect(app.config.badConnectionPage, "slideup");
+			app.nav.redirect(app.config.badConnectionPage, "none");
 		}
 	}
 };

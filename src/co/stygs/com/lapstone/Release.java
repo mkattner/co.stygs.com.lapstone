@@ -200,23 +200,28 @@ public class Release {
 
 		File newCssFile = new File(cssFile.getAbsoluteFile().getParentFile().getAbsolutePath(), cssFile.getName().replace(".css", "." + newVersion + ".css"));
 
-		System.out.println();
+		System.out.println("Todo: We've only a few CSS files!!");
 		System.out.println("Compress css: " + cssFile.getAbsolutePath());
 		System.out.println("   Rename to: " + newCssFile.getAbsolutePath());
 
-		Compressor.compressStylesheet(cssFile.getAbsolutePath(), newCssFile.getAbsolutePath(), c);
-
+		// Compressor.compressStylesheet(cssFile.getAbsolutePath(),
+		// newCssFile.getAbsolutePath(), c);
+		cssFile.renameTo(newCssFile);
 		cssFile.delete();
 	    }
 
-//	    // delete empty and unused directoryies
-//	    for (File toDelete : FileUtils.listFilesAndDirs(new File(www, "ext"), new NotFileFilter(TrueFileFilter.INSTANCE), DirectoryFileFilter.DIRECTORY)) {
-//
-//		if (!(toDelete.getName().equals("ext") || toDelete.getName().equals("jQuery") || toDelete.getName().equals("jQueryMobile"))) {
-//		    System.out.println("Delete: " + toDelete.getAbsolutePath());
-//		    FileUtils.deleteDirectory(toDelete);
-//		}
-//	    }
+	    // // delete empty and unused directoryies
+	    // for (File toDelete : FileUtils.listFilesAndDirs(new File(www,
+	    // "ext"), new NotFileFilter(TrueFileFilter.INSTANCE),
+	    // DirectoryFileFilter.DIRECTORY)) {
+	    //
+	    // if (!(toDelete.getName().equals("ext") ||
+	    // toDelete.getName().equals("jQuery") ||
+	    // toDelete.getName().equals("jQueryMobile"))) {
+	    // System.out.println("Delete: " + toDelete.getAbsolutePath());
+	    // FileUtils.deleteDirectory(toDelete);
+	    // }
+	    // }
 
 	    return true;
 

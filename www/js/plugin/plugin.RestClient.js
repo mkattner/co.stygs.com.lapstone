@@ -463,6 +463,11 @@ var plugin_RestClient = {
     getJsonWithLoader: function(service, parameter, async, attempts, timeoutInMs, overrunInMs) {
       app.debug.trace("plugin_RestClient.functions.getJsonWithLoader(" + app.debug.arguments(arguments) + ")");
 
+      // keep alive is Activated and connection is down
+      // if (plugin_RestClient.config.useKeepAlive && !app.alive.isAlive()) {
+      //        
+      // }
+
       var result;
 
       result = plugin_RestClient.functions.getJson(service, parameter, async, attempts);
@@ -475,9 +480,16 @@ var plugin_RestClient = {
       app.debug.info("plugin_RestClient - LOADER: timeout = " + timeoutInMs + "; overrun = " + overrunInMs);
 
       window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Overrun);
+      // alert(async + " - " + result);
+      // an error occured
+      if (parameter === true && result === null) {
+        var dfd = $.Deferred();
+        dfd.reject("ERROR");
+        return dfd.promise();
+      }
 
-      // IF result is a deferred object
-      if ($.isFunction(result.promise)) {
+      // result is a deferred object
+      else if ($.isFunction(result.promise)) {
 
         plugin_RestClient.functions.getJsonWithLoader_Queue++;
 
@@ -720,9 +732,21 @@ var plugin_RestClient = {
         }
       }
 
+      // not alive
       else {
-        app.alive.badConnectionHandler();
-        return null;
+        // call is async
+        if (parameter === true || parameter === true) {
+          var dfd = $.Deferred();
+          dfd.reject({
+            id: Math.abs("not alive".hashCode()),
+            error: "not alive"
+          }, null);
+          return dfd.promise();
+        }
+
+        else {
+          return null;
+        }
       }
 
       // return error
