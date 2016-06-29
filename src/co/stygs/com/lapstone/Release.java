@@ -33,6 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inet.lib.less.Less;
 
 public class Release {
+
+    public static List<File> cssRegistry = new ArrayList<>();
+
     // ************************************************************************
     //
     //
@@ -178,29 +181,37 @@ public class Release {
 	    System.out.println();
 
 	    StylesheetCompressorOptions c = new StylesheetCompressorOptions();
-	    for (File cssFile : FileUtils.listFiles(www, new IOFileFilter() {
-
-		@Override
-		public boolean accept(File file) {
-		    if (file.getName().endsWith(".css")) {
-			if (file.getName().equals("lapstone.css"))
-			    return false;
-			return true;
-		    }
-		    return false;
-		}
-
-		@Override
-		public boolean accept(File dir, String name) {
-		    // TODO Auto-generated method stub
-		    return false;
-		}
-
-	    }, DirectoryFileFilter.DIRECTORY)) {
+	    // for (File cssFile : FileUtils.listFiles(www, new IOFileFilter() {
+	    //
+	    // @Override
+	    // public boolean accept(File file) {
+	    // if (file.getName().endsWith(".css")) {
+	    // switch (file.getName()) {
+	    // case "lapstone.css":
+	    // return false;
+	    //
+	    // case "all.style.css":
+	    // return true;
+	    //
+	    // default:
+	    // return false;
+	    //
+	    // }
+	    // }
+	    // return false;
+	    // }
+	    //
+	    // @Override
+	    // public boolean accept(File dir, String name) {
+	    // // TODO Auto-generated method stub
+	    // return false;
+	    // }
+	    //
+	    // }, DirectoryFileFilter.DIRECTORY))
+	    for (File cssFile : Release.cssRegistry) {
 
 		File newCssFile = new File(cssFile.getAbsoluteFile().getParentFile().getAbsolutePath(), cssFile.getName().replace(".css", "." + newVersion + ".css"));
 
-		System.out.println("Todo: We've only a few CSS files!!");
 		System.out.println("Compress css: " + cssFile.getAbsolutePath());
 		System.out.println("   Rename to: " + newCssFile.getAbsolutePath());
 

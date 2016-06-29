@@ -11,6 +11,7 @@ import com.inet.lib.less.Less;
 
 import co.stygs.com.lapstone.Compressor;
 import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
+import co.stygs.com.lapstone.Release;
 import co.stygs.com.lapstone.objects.json.APlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
@@ -81,6 +82,7 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 		FileUtils.write(allSkins, combinedStyle);
 		System.out.println("compress skin file:       " + allSkins.getAbsolutePath());
 		Compressor.compressStylesheet(allSkins.getAbsolutePath(), allSkins.getAbsolutePath(), new StylesheetCompressorOptions());
+		Release.cssRegistry.add(allSkins);
 	    }
 	}
 
