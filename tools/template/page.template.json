@@ -1,6 +1,6 @@
 {
 	"name": "##template",
-	"template": "JQueryMobileFooterPage",
+	"template": "JQueryMobilePlainPage",
 	"asyncLoading": false,
 	"useKeepAlive": false,
 	"loginObligate": false,

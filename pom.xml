@@ -7,6 +7,7 @@
 	<description>OS independent mobile framework</description>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
+		<finalName>lapstone</finalName>
 		<resources>
 			<resource>
 				<directory>src</directory>
@@ -35,8 +36,10 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 	<dependencies>
@@ -72,4 +75,9 @@
 			<version>1.4</version>
 		</dependency>
 	</dependencies>
+	<organization>
+		<name>stygs e.U.</name>
+		<url>www.stygs.com</url>
+	</organization>
+	<url>www.stygs.com</url>
 </project>

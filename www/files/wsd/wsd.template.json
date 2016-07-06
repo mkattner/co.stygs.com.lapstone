@@ -3,7 +3,7 @@
 	{
 		"url": "string url",
 		"method": "string method",
-		"timeout": "int timeout",
+		"timeout": 0,
 		"cacheable": false,
 		"cacheInMs": 0
 	}
