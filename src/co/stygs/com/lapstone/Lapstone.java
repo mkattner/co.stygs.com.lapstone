@@ -97,7 +97,31 @@ public class Lapstone {
 		}
 
 		break;
+	    case "template":
+		if (argMap.get("path") == null) {
+		    System.out.println("Missing parameter: -path");
+		    Lapstone.PrintHelp();
+		}
 
+		else if (argMap.get("modus") == null) {
+		    System.out.println("Missing parameter: -modus");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("lapstone") == null) {
+		    System.out.println("Missing parameter: -lapstone");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (argMap.get("name") == null) {
+		    System.out.println("Missing parameter: -name");
+		    Lapstone.PrintHelp();
+		}
+
+		else if (!Template.TemplateLapstone(argMap)) {
+		    PrintHelp();
+		}
+		break;
 	    case "plugin":
 
 		if (argMap.get("path") == null) {
