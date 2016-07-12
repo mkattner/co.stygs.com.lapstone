@@ -35,8 +35,8 @@ public class Template {
 	    Plugin_HtmlTemplates_JSON htmlTemplates = objectMapper.readValue(configuration, Plugin_HtmlTemplates_JSON.class);
 	    
 	    Plugin_HtmlTemplates_JSON_Template template = new Plugin_HtmlTemplates_JSON_Template();
-	    template.setContent("../files/template/" + html.getPath());
-	    template.setStyle("../files/template/" + less.getPath());
+	    template.setContent("../files/template/" + html.getName());
+	    template.setStyle("../files/template/" + less.getName());
 	    template.setElements(new HashMap<>());
 	    
 	    htmlTemplates.getTemplates().put(argMap.get("name"), template);
