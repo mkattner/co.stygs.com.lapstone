@@ -147,11 +147,10 @@ var plugin_KeepAlive = {
     timeout = plugin_KeepAlive.config.timeout;
     server = plugin_WebServiceClient.functions.getServer(plugin_KeepAlive.config.server, false);
 
-    app.debug.todo("Use function to combine paths");
-    server = (server.endsWith("/") ? server.substr(0, server.length - 1) : server);
-    path = (path.startsWith("/") ? path.substr(1, path.length) : path);
-//    alert(server + "   " + path)
-    url = server + "/" + path;
+//    server = (server.endsWith("/") ? server.substr(0, server.length - 1) : server);
+//    path = (path.startsWith("/") ? path.substr(1, path.length) : path);
+    // alert(server + " " + path)
+    url = server.pathCombine(path);
 
     // url = url.replace("//", "/");
     wsDuration = 0;

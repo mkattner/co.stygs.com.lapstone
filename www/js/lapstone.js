@@ -480,7 +480,7 @@ var globalLoader = {
       styleString = styleString.replaceAll("url(\"", "url(\"" + url.substring(0, url.lastIndexOf("/") + 1));
       styleString = styleString.replaceAll("url('", "url('" + url.substring(0, url.lastIndexOf("/") + 1));
 
-      //console.log(styleString)
+      // console.log(styleString)
 
       $('head').append($("<style>").text(styleString));
       dfd.resolve(styleString);
@@ -810,7 +810,6 @@ $(document).ready(function() {
     // setTimeout(function() {
 
     initialisationPanel.finish();
-    
 
     // trigger the lapstone initialisation event
     $(document).trigger("lapstone");
@@ -908,6 +907,21 @@ function extendJsAndJquery() {
     String.prototype.contains = function(it) {
       return this.indexOf(it) != -1;
     };
+  }
+
+  String.prototype.pathCombine = function(path) {
+    var url, set;
+    url = this + "/" + (path);
+    set = url.match(/([^:]\/{2,})/g); // Match (NOT ":") followed by (2 OR 3 "/")
+
+    for ( var str in set) {
+      // Modify the data you have
+      var replace_with = set[str].substr(0, 1) + '/';
+
+      // Replace the match
+      url = url.replace(set[str], replace_with);
+    }
+    return url;
   }
 
   String.prototype.toIntegerVersion = function(delimiter) {

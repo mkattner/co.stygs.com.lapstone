@@ -704,7 +704,7 @@ var plugin_Debug = {
       },
       wsdGetCalls: function() {
         $.each(plugin_RestClient.config.webservices, function(serviceName, wsd) {
-          console.log(serviceName + ": " + (wsd.calls || 0));
+          console.log((wsd.calls || 0) + " - " + serviceName + " - " + wsd.url);
         });
       }
     }
