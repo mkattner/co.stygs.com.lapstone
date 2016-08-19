@@ -5,7 +5,9 @@
 	"asyncLoading": false,
 	"useKeepAlive": false,
 	"loginObligate": false,
-	"isGlobalPage": false,
+	"globalPage":[
+		
+	],
 	"contentRefresh": false,
 	"contentRefreshInterval": 0,
 	"include":[

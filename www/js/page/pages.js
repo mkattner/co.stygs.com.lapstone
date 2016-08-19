@@ -27,12 +27,14 @@ var pages = {
 
     startup.addFunction("                  calling the plugins' pages loaded function", pages.callPluginsPagesLoaded, "");
     startup.addFunction("                  calling the pages' setEvents() function", pages.setEvents, "");
+    startup.addFunction("                  load pages' globalPages", pages.globalPages, "");
     startup.addFunction("                  verifying the pages' properties", pages.verifyPages, "");
     startup.addFunction("                  including external scripts for pages", pages.include, "");
     startup.addFunction("                  loading the pages", pages.loadPages, "");
     startup.addFunction("                  verifying the pages' names", pages.verifyPageNames, "");
     startup.addFunction("                  loading the pages' configuration", pages.loadPageConfig, "");
-    startup.addFunction("                  loading the script for global pages", globalLoader.AsyncScriptLoader, "../files/globalPage.js");
+    // startup.addFunction(" loading the script for global pages", globalLoader.AsyncScriptLoader,
+    // "../files/globalPage.js");
 
     dfd.resolve();
     return dfd.promise();
@@ -128,7 +130,9 @@ var pages = {
 
         if (currentPage.config.loginObligate === undefined) console.warn("The page: " + pageName + " has no 'config.loginObligate' property.");
 
-        if (currentPage.config.isGlobalPage === undefined) console.warn("The page: " + pageName + " has no 'config.isGlobalPage' property.");
+        if (typeof currentPage.config.isGlobalPage === "boolean") console.warn("The page: " + pageName + " has 'config.isGlobalPage' property. This mechanism is deprecated. Use globalPage[''] property");
+
+        if (currentPage.config.globalPage == undefined) console.warn("The page: " + pageName + " has no 'config.globalPage : []' property.");
 
         if (currentPage.config.contentRefresh === undefined) console.warn("The page: " + pageName + " has no 'config.contentRefresh' property.");
 
@@ -313,6 +317,39 @@ var pages = {
     return dfd.promise();
 
   },
+
+  globalPages: function() {
+
+    var dfd = $.Deferred(), globalPageIncludes = Array(), promises = Array(), promiseOfPromises;
+
+    $.each(pages.config, function(pageName, value) {
+      if (value === true) {
+        // alert(window["page_" + pageName].config.globalPage)
+        $.each(window["page_" + pageName].config.globalPage, function(index, globalPageName) {
+          if (globalPageIncludes.indexOf(globalPageName) === -1) {
+            globalPageIncludes.push(globalPageName);
+          }
+        });
+      }
+    });
+
+    $.each(globalPageIncludes, function(index, globalPageName) {
+      promises.push(globalLoader.AsyncScriptLoader("../files/globalPages/" + globalPageName + ".js"))
+    });
+
+    promiseOfPromises = $.when.apply($, promises);
+
+    promiseOfPromises.done(function() {
+      dfd.resolve();
+    });
+
+    promiseOfPromises.fail(function() {
+      dfd.reject();
+    });
+
+    return dfd.promise();
+  },
+
   setEvents: function() {
     var dfd = $.Deferred();
 
@@ -719,11 +756,13 @@ var pages = {
 
       // alert(container.attr('data-type'));
       if (container.attr('data-type') == "static") {
+        app.debug.deprecated("Pagetype: static will be removed");
         // case 1: page is static
         app.debug.debug("case: page type is static");
         pages.eventFunctions.everyPage[eventName](event, container);
         pages.eventFunctions.staticPage[eventName](event, container);
       } else if (container.attr('data-type') == "static-inline") {
+        app.debug.deprecated("Pagetype: static-inline will be removed");
         // case 2: page is inline-static
         app.debug.debug("case: page type is inline-static");
         var staticContainer = container.clone();
@@ -742,11 +781,13 @@ var pages = {
       } else {
         // case 4: page is a common lapstone page
         app.debug.debug("case: page is a common lapstone page");
-        if (window["page_" + container.attr('id')].config.isGlobalPage == true)
-          globalPage[eventName](event, container);
-        else if (window["page_" + container.attr('id')].config.isGlobalPage == undefined) globalPage[eventName](event, container);
+
         pages.eventFunctions.everyPage[eventName](event, container);
         pages.eventFunctions.lapstonePage[eventName](event, container);
+        // call the global pages
+        $.each(window["page_" + container.attr('id')].config.globalPage, function(index, globalPageName) {
+          window["globalPage_" + globalPageName][eventName](event, container);
+        });
       }
 
     },
@@ -1015,6 +1056,13 @@ var pages = {
               // container.attr('id')].elements[name]);
               window['page_' + container.attr('id')].elements[name] = container.find(selector);
             });
+
+            // elements for global page
+            $.each(window['page_' + container.attr('id')].config.globalPage, function(index, globalPageName) {
+              window["globalPage_" + globalPageName].elements = window['page_' + container.attr('id')].elements;
+            });
+
+          
 
             // alert('page_' + container.attr('id'));
             // window['page_' +

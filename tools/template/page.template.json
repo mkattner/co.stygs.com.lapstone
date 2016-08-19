@@ -1,12 +1,14 @@
 {
-	"name": "##template",
-	"template": "JQueryMobilePlainPage",
-	"asyncLoading": false,
-	"useKeepAlive": false,
-	"loginObligate": false,
-	"isGlobalPage": false,
-	"contentRefresh": false,
-	"contentRefreshInterval": 0,
+	"name":"##template",
+	"template":"JQueryMobilePlainPage",
+	"asyncLoading":false,
+	"useKeepAlive":false,
+	"loginObligate":false,
+	"globalPage":[
+		
+	],
+	"contentRefresh":false,
+	"contentRefreshInterval":0,
 	"include":[
 		
 	],

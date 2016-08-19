@@ -425,7 +425,9 @@ var plugin_Debug = {
     event: function(event) {
       // log debug output
       // eventinger = event;
-      this.log("Type: " + event.type + " Target classes: " + $(event.target).attr("class"), "EVENT");
+      this.log("          Type: " + event.type, "EVENT");
+      if ($(event.target).attr("class")) this.log("Target classes: " + $(event.target).attr("class"), "EVENT");
+      if ($(event.target).attr("id")) this.log("     Target id: " + $(event.target).attr("id"), "EVENT");
     },
 
     /**
@@ -465,6 +467,18 @@ var plugin_Debug = {
     error: function(output) {
       // log debug output
       this.log(output, "ERROR", true);
+    },
+
+    /**
+     * Calls a function
+     * 
+     * @memberof plugin_Debug.functions
+     * @function operation
+     * @param {Function}
+     *          operation - The function to call.
+     */
+    operation: function(operation) {
+      operation();
     },
 
     /**
@@ -696,7 +710,7 @@ var plugin_Debug = {
       },
       imageGetJson: function() {
         app.debug.trace("plugin_Debug.functions.feedback.languageGetJson(" + app.debug.arguments(arguments) + ")");
-        return JSON.stringify($.extend(true, plugin_Debug.feedback.image, plugin_ImageProvider.images));
+        return JSON.stringify($.extend(true, plugin_Debug.feedback.image, plugin_ImageProvider.config.images));
       },
       wsdGetJson: function() {
         app.debug.trace("plugin_Debug.functions.feedback.wsdGetJson(" + app.debug.arguments(arguments) + ")");
