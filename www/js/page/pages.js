@@ -636,7 +636,7 @@ var pages = {
 
       } else if (window['page_' + $(this).attr('id')] == undefined) {
         alert("-Fatal error: Can't find the page object: page_" + $(this).attr('id') + "; Please have a look to your pages.json file. You'll be redirected to the index.html page.");
-        app.help.navigation.redirect("index.html");
+        app.nav.redirect("index.html", "none");
       } else {
         // case 3: page is a common lapstone page
 
@@ -859,111 +859,7 @@ var pages = {
       }
     },
 
-    staticPage: {
-      pagebeforechange: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagebeforechange(" + event + ", " + container + ")");
-      },
-      pagebeforecreate: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagebeforecreate(" + event + ", " + container + ")");
-
-        app.debug.debug("do language string replacement");
-        container.find("[data-language]").each(function(index, element) {
-          var languageArray = $(this).attr('data-language').split(".");
-          $(this).html(app.lang.string(languageArray[1], languageArray[0]));
-        });
-      },
-      pagebeforehide: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagebeforehide(" + event + ", " + container + ")");
-      },
-      pagebeforeload: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagebeforeload(" + event + ", " + container + ")");
-      },
-      pagebeforeshow: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagechange(" + event + ", " + container + ")");
-      },
-      pagechange: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagechange(" + event + ", " + container + ")");
-      },
-      pagechangefailed: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagechangefailed(" + event + ", " + container + ")");
-      },
-      pagecreate: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagecreate(" + event + ", " + container + ")");
-      },
-      pagehide: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pagehide(" + event + ", " + container + ")");
-      },
-      pageinit: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pageinit(" + event + ", " + container + ")");
-      },
-      pageload: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pageload(" + event + ", " + container + ")");
-      },
-      pageloadfailed: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pageloadfailed(" + event + ", " + container + ")");
-      },
-      pageremove: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pageremove(" + event + ", " + container + ")");
-      },
-      pageshow: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.staticPage.pageshow(" + event + ", " + container + ")");
-      }
-    },
-    staticInlinePage: {
-      pagebeforechange: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforechange(" + event + ", " + container + ")");
-      },
-      pagebeforecreate: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforecreate(" + event + ", " + container + ")");
-        app.debug.debug("do language string replacement");
-
-        staticContainer.find("[data-language]").each(function(index, element) {
-          var languageArray = $(this).attr('data-language').split(".");
-          $(this).html(app.lang.string(languageArray[1], languageArray[0]));
-        });
-        var html = staticContainer.html();
-        container.find('div[data-role=content]').replaceWith(html);
-        // wichtig, dass macht irgend eine sache mit den dialog feldern.
-        pages.callPluginsPageFunctions(container);
-      },
-      pagebeforehide: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforehide(" + event + ", " + container + ")");
-      },
-      pagebeforeload: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagebeforeload(" + event + ", " + container + ")");
-      },
-      pagebeforeshow: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")");
-
-      },
-      pagechange: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagechange(" + event + ", " + container + ")");
-      },
-      pagechangefailed: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagechangefailed(" + event + ", " + container + ")");
-      },
-      pagecreate: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagecreate(" + event + ", " + container + ")");
-      },
-      pagehide: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pagehide(" + event + ", " + container + ")");
-      },
-      pageinit: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pageinit(" + event + ", " + container + ")");
-      },
-      pageload: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pageload(" + event + ", " + container + ")");
-      },
-      pageloadfailed: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pageloadfailed(" + event + ", " + container + ")");
-      },
-      pageremove: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pageremove(" + event + ", " + container + ")");
-      },
-      pageshow: function(event, container, staticContainer) {
-        app.debug.trace("plugin.eventFunctions.staticInlinePage.pageshow(" + event + ", " + container + ")");
-      }
-    },
+    
     lapstonePage: {
       pagebeforechange: function(event, container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + container + ")");
@@ -1061,8 +957,6 @@ var pages = {
             $.each(window['page_' + container.attr('id')].config.globalPage, function(index, globalPageName) {
               window["globalPage_" + globalPageName].elements = window['page_' + container.attr('id')].elements;
             });
-
-          
 
             // alert('page_' + container.attr('id'));
             // window['page_' +
