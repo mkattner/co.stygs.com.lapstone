@@ -115,7 +115,7 @@ var plugin_KeepAlive = {
   ajax: function(url, data, type, method, timeout) {
     app.debug.trace("plugin.KeepAlive.js plugin_KeepAlive.ajax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ")");
     try {
-      $.ajax({
+    return  $.ajax({
         cache: false,
         url: url,
         data: data,
@@ -133,7 +133,7 @@ var plugin_KeepAlive = {
   },
 
   /*
-   * 
+   *
    * 0 OK; 1 Webservice failed; 2 Timeout Error
    */
   keepAliveRequest: function() {
@@ -158,7 +158,7 @@ var plugin_KeepAlive = {
     switch (plugin_KeepAlive.config.type) {
     case "json":
       plugin_KeepAlive.startTime = Date.now();
-      plugin_KeepAlive.ajax(url, data, "json", method, timeout);
+      return plugin_KeepAlive.ajax(url, data, "json", method, timeout);
       break;
     case "xml":
       alert("still not implemented");
@@ -178,10 +178,16 @@ var plugin_KeepAlive = {
   // called by user
   /**
    * Public functions for plugin_KeepAlive
-   * 
+   *
    * @namespace plugin_KeepAlive.functions
    */
   functions: {
+request:function(){
+
+return plugin_KeepAlive.keepAliveRequest();
+
+},
+
     isAlive: function() {
       return plugin_KeepAlive.config.isAlive;
     },
