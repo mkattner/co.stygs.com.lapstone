@@ -755,34 +755,16 @@ var pages = {
       app.debug.debug("PageId: " + container.attr('id'));
 
       // alert(container.attr('data-type'));
-      if (container.attr('data-type') == "static") {
-        app.debug.deprecated("Pagetype: static will be removed");
-        // case 1: page is static
-        app.debug.debug("case: page type is static");
-        pages.eventFunctions.everyPage[eventName](event, container);
-        pages.eventFunctions.staticPage[eventName](event, container);
-      } else if (container.attr('data-type') == "static-inline") {
-        app.debug.deprecated("Pagetype: static-inline will be removed");
-        // case 2: page is inline-static
-        app.debug.debug("case: page type is inline-static");
-        var staticContainer = container.clone();
-
-        if (container.attr('data-global') === "true") {
-          globalPage[eventName](event, container);
-        }
-
-        pages.eventFunctions.everyPage[eventName](event, container);
-        pages.eventFunctions.staticInlinePage[eventName](event, container, staticContainer);
-      } else if (window['page_' + container.attr('id')] == undefined) {
+      if (window['page_' + container.attr('id')] == undefined) {
         // case 3: page ist not defined in pages.json
         app.debug.debug("case: page ist not defined in pages.json");
         alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + container.attr('id') + "; Please have a look to your pages.json file.");
-        app.help.navigation.redirect("index.html");
+        app.nav.redirect("index.html", "none");
       } else {
         // case 4: page is a common lapstone page
         app.debug.debug("case: page is a common lapstone page");
 
-        pages.eventFunctions.everyPage[eventName](event, container);
+//        pages.eventFunctions.everyPage[eventName](event, container);
         pages.eventFunctions.lapstonePage[eventName](event, container);
         // call the global pages
         $.each(window["page_" + container.attr('id')].config.globalPage, function(index, globalPageName) {
@@ -792,74 +774,6 @@ var pages = {
 
     },
 
-    everyPage: {
-      pagebeforechange: function(event, container) {
-        // <!--
-        app.debug.debug("plugin.eventFunctions.everyPage.pagebeforechange(" + event + ", " + container + ")");
-        // -->
-      },
-      pagebeforecreate: function(event, container) {
-        // <!--
-        app.debug.debug("plugin.eventFunctions.everyPage.pagebeforecreate(" + event + ", " + container + ")");
-        // -->
-      },
-      pagebeforehide: function(event, container) {
-        app.debug.debug("plugin.eventFunctions.everyPage.pagebeforehide(" + event + ", " + container + ")");
-
-        app.debug.debug("plugin.eventFunctions.everyPage.pagehide: clear refresh interval");
-        /*
-         */
-      },
-      pagebeforeload: function(event, container) {
-        app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeload(" + event + ", " + container + ")");
-      },
-      pagebeforeshow: function(event, container) {
-        app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeshow(" + event + ", " + container + ")");
-
-        app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeshow: check refresh interval");
-
-      },
-      pagechange: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pagechange(" + event + ", " + container + ")");
-      },
-      pagechangefailed: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pagechangefailed(" + event + ", " + container + ")");
-      },
-      pagecreate: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pagecreate(" + event + ", " + container + ")");
-      },
-      pagehide: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pagehide(" + event + ", " + container + ")");
-
-        app.debug.debug("plugin.eventFunctions.everyPage.pagehide: clear page specific event delegates");
-        $("#" + container.attr("id")).off();
-        $(document).off("#" + container.attr("id"));
-
-        // app.debug.debug("plugin.eventFunctions.everyPage.pagehide: empty parameter object");
-        // window["page_" + container.attr('id')]["parameter"] = {};
-
-        app.debug.debug("remove page from DOM: " + container.attr('id'));
-        container.remove();
-
-      },
-      pageinit: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pageinit(" + event + ", " + container + ")");
-      },
-      pageload: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pageload(" + event + ", " + container + ")");
-      },
-      pageloadfailed: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pageloadfailed(" + event + ", " + container + ")");
-      },
-      pageremove: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pageremove(" + event + ", " + container + ")");
-      },
-      pageshow: function(event, container) {
-        app.debug.trace("plugin.eventFunctions.everyPage.pageshow(" + event + ", " + container + ")");
-      }
-    },
-
-    
     lapstonePage: {
       pagebeforechange: function(event, container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + container + ")");
@@ -1067,7 +981,7 @@ var pages = {
         window['page_' + container.attr('id')].events.pagebeforeshow(event, container);
 
         if (window['page_' + container.attr('id')].config.contentRefresh == true) {
-          app.debug.debug("plugin.eventFunctions.everyPage.pagebeforeshow: set refresh interval every " + window['page_' + container.attr('id')].config.contentRefreshInterval + " ms");
+          app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforeshow: set refresh interval every " + window['page_' + container.attr('id')].config.contentRefreshInterval + " ms");
 
           pages.refreshInterval = window.setInterval(function() {
             // $().empty();
@@ -1094,6 +1008,15 @@ var pages = {
       },
       pagehide: function(event, container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagehide(" + event + ", " + container + ")");
+        app.debug.debug("plugin.eventFunctions.lapstonePage.pagehide: clear page specific event delegates");
+        $("#" + container.attr("id")).off();
+        $(document).off("#" + container.attr("id"));
+
+        // app.debug.debug("plugin.eventFunctions.everyPage.pagehide: empty parameter object");
+        // window["page_" + container.attr('id')]["parameter"] = {};
+
+        app.debug.debug("remove page from DOM: " + container.attr('id'));
+        container.remove();
         window['page_' + container.attr('id')].events.pagehide(event, container);
       },
       pageinit: function(event, container) {
