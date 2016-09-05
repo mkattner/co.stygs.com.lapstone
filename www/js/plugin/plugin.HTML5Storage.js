@@ -51,7 +51,7 @@ var plugin_HTML5Storage = {
 	definePluginEvents : function() {
 		app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
 		// data-html5-<storage id>
-		$(document).on("vclick", "a", function(event) {
+		$(document).on("click", "a", function(event) {
 		  app.debug.event(event);
 		  
 			app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");

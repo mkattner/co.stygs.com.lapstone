@@ -197,7 +197,7 @@ var pages = {
         dfd.reject();
       });
     }
-    // 
+    //
     return dfd.promise();
   },
 
@@ -615,7 +615,7 @@ var pages = {
     // jquery Mobile Events for specific pages
 
     /*
-     * 
+     *
      */
     $(document).on('pagebeforechange', '.app-page', function(event) {
       app.debug.trace("pages.js jQuery mobile event: pagebeforechange for: " + $(this).attr('id'));
@@ -623,7 +623,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagebeforecreate', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'));
@@ -645,7 +645,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagebeforehide', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagebeforehide for: " + $(this).attr('id'));
@@ -653,7 +653,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagebeforeload', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagebeforeload for: " + $(this).attr('id'));
@@ -661,7 +661,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagebeforeshow', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagebeforeshow for: " + $(this).attr('id'));
@@ -669,7 +669,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagechange', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagechange for: " + $(this).attr('id'));
@@ -677,7 +677,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagechangefailed', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagechangefailed for: " + $(this).attr('id'));
@@ -685,7 +685,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagecreate', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagecreate for: " + $(this).attr('id'));
@@ -693,7 +693,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pagehide', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pagehide for: " + $(this).attr('id'));
@@ -701,7 +701,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pageinit', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pageinit for: " + $(this).attr('id'));
@@ -709,7 +709,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pageload', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pageload for: " + $(this).attr('id'));
@@ -717,7 +717,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pageloadfailed', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pageloadfailed for: " + $(this).attr('id'));
@@ -725,7 +725,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pageremove', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pageremove for: " + $(this).attr('id'));
@@ -733,7 +733,7 @@ var pages = {
     });
 
     /*
-     * 
+     *
      */
     $(document).on('pageshow', '.app-page', function(event) {
       app.debug.trace("jQuery mobile event: pageshow for: " + $(this).attr('id'));
@@ -749,10 +749,14 @@ var pages = {
   },
 
   // a function for each event
+  eventPromises: {},
+  eventTimeouts:{},
   eventFunctions: {
     pageTypeSelector: function(event, container, eventName) {
       app.debug.trace("plugin.eventFunctions.pageTypeSelector(" + event + ", " + container + ", " + eventName + ")");
       app.debug.debug("PageId: " + container.attr('id'));
+
+      var eventFunctionResult;
 
       // alert(container.attr('data-type'));
       if (window['page_' + container.attr('id')] == undefined) {
@@ -764,12 +768,28 @@ var pages = {
         // case 4: page is a common lapstone page
         app.debug.debug("case: page is a common lapstone page");
 
-//        pages.eventFunctions.everyPage[eventName](event, container);
-        pages.eventFunctions.lapstonePage[eventName](event, container);
+        pages.eventPromises[eventName] = Array();
+        pages.eventTimeouts[eventName] = null;
+
+        // pages.eventFunctions.everyPage[eventName](event, container);
+        eventFunctionResult = pages.eventFunctions.lapstonePage[eventName](event, container);
+        if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
+          pages.eventPromises[eventName].push(eventFunctionResult);
+        }
         // call the global pages
         $.each(window["page_" + container.attr('id')].config.globalPage, function(index, globalPageName) {
-          window["globalPage_" + globalPageName][eventName](event, container);
+          eventFunctionResult = window["globalPage_" + globalPageName][eventName](event, container);
+          if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
+            pages.eventPromises[eventName].push(eventFunctionResult);
+          }
         });
+
+        if (pages.eventPromises[eventName].length) {
+          $.when.apply($, pages.eventPromises[eventName]).always(function() {
+            window.clearTimeout(pages.eventTimeouts[eventName]);
+            app.notify.loader.remove();
+          });
+        }
       }
 
     },
@@ -784,9 +804,11 @@ var pages = {
 
         if (window['page_' + container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
           // TODO use object
+
           app.notify.add.alert(app.lang.string("login obligate text", "lapstone"), false, app.lang.string("login obligate headline", "lapstone"), app.lang.string("login obligate confirm", "lapstone"));
-          app.sess.destroyAll();
-          app.help.navigation.redirect(app.config.startPage, "slidefade");
+          app.actions.logout();
+          app.nav.redirect(app.config.startPage);
+
 
         } else if (plugins.config.KeepAlive === true) {
           app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive");
@@ -823,7 +845,7 @@ var pages = {
         app.debug.trace("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage()");
         app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - pageId: " + container.attr('id'));
 
-        var promiseOfAsyncPageLoading, elements = null, timeout, dfdPageCreation;
+        var promiseOfAsyncPageLoading, elements = null,  dfdPageCreation;
 
         dfdPageCreation = $.Deferred();
 
@@ -889,7 +911,7 @@ var pages = {
           app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.creator()");
           promiseOfAsyncPageLoading = window['page_' + container.attr('id')].async.creator(container);
 
-          timeout = window.setTimeout(function() {
+          pages.eventTimeouts["pagebeforecreate"] = window.setTimeout(function() {
             app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - show loader");
 
             app.notify.loader.bubbleDiv({
@@ -930,8 +952,8 @@ var pages = {
           });
 
           promiseOfAsyncPageLoading.always(function() {
-            window.clearTimeout(timeout);
-            app.notify.loader.remove();
+
+
             app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.always()");
             window['page_' + container.attr('id')].async.always(container);
           });

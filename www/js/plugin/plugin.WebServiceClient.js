@@ -229,7 +229,7 @@ var plugin_WebServiceClient = {
               }
 
               app.debug.debug("plugin_WebServiceClient.getAjax() - setRequestHeader(" + paramKey + ", " + paramValue + ")");
-              jqXHR.setRequestHeader(split[0], split[1]);
+              jqXHR.setRequestHeader(paramKey, paramValue);
             }
           }
         },
@@ -305,7 +305,7 @@ var plugin_WebServiceClient = {
   functions: {
 
     /**
-     * 
+     *
      */
     getXml: function(uri, data, method, timeout) {
       app.debug.trace("plugin_WebServiceClient.functions.getXml()");
@@ -314,7 +314,7 @@ var plugin_WebServiceClient = {
     },
 
     /**
-     * 
+     *
      */
     getJson: function(path, data, parameter, method, timeout, async, local, server) {
       app.debug.trace("plugin_WebServiceClient.functions.getJson()");
@@ -338,7 +338,7 @@ var plugin_WebServiceClient = {
     // ask first or second or third or fourth or fifth server for the
     // prefered server
     /**
-     * 
+     *
      */
     askForPreferedServer: function() {
       app.debug.trace("plugin_WebServiceClient.functions.askForPreferedServer()");
@@ -349,7 +349,7 @@ var plugin_WebServiceClient = {
     },
 
     /**
-     * 
+     *
      */
     getDefaultServerName: function() {
       app.debug.trace("plugin_WebServiceClient.functions.getDefaultServerName()");
@@ -357,7 +357,7 @@ var plugin_WebServiceClient = {
     },
 
     /**
-     * 
+     *
      */
     getServer: function(name, asObject) {
       app.debug.trace("plugin_WebServiceClient.functions.getServer()");
@@ -386,7 +386,7 @@ var plugin_WebServiceClient = {
     },
 
     /**
-     * 
+     *
      */
     setServer: function(name, url, async) {
       app.debug.trace("plugin_WebServiceClient.functions.setServer()");
@@ -439,7 +439,7 @@ var plugin_WebServiceClient = {
     },
 
     /**
-     * 
+     *
      */
     keepAliveRequest: function() {
       app.debug.trace("plugin_WebServiceClient.functions.keepAliveRequest()");
@@ -447,7 +447,7 @@ var plugin_WebServiceClient = {
     },
 
     /**
-     * 
+     *
      */
     ping: function(serverName, async) {
       app.debug.trace("plugin_WebServiceClient.functions.ping()");
