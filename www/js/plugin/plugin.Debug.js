@@ -627,7 +627,73 @@ var plugin_Debug = {
      * @namespace plugin_Debug.functions.ls
      */
     ls: {
+      cleanupWsd: function() {
+        $.each(plugin_RestClient.config.wsdFiles, function(index, wsdUrl) {
+          globalLoader.AsyncJsonLoader(wsdUrl, 3).done(function(wsd) {
+            var newWsdFileContent, sortMembers;
 
+            sortMembers = function(obj) {
+              return Object.keys(obj).sort(function(a, b) {
+                return a[0].hashCode() - b[0].hashCode();
+              }).reduce(function(result, key) {
+                result[key] = obj[key];
+                return result;
+              }, {});
+            };
+
+            newWsdFileContent = {}
+            $.each(wsd, function(wsdName, wsdObject) {
+              var url, parameters, headers, newWsd;
+
+              newWsdFileContent[wsdName] = wsdObject;
+              newWsdFileContent[wsdName]["parameters"] = {};
+              newWsdFileContent[wsdName]["headers"] = {};
+
+              url = wsdObject.url.split("?")[0];
+              parameters = wsdObject.url.split("?")[1].split("$")[0];
+              headers = wsdObject.url.split("?")[1].split("$")[1];
+
+              if (parameters) $.each(parameters.split("&"), function(index, singleParameter) {
+                newWsdFileContent[wsdName]["parameters"][singleParameter.split("=")[0]] = singleParameter.split("=")[1];
+              });
+
+              if (headers) $.each(headers.split("&"), function(index, singleParameter) {
+                newWsdFileContent[wsdName]["headers"][singleParameter.split("=")[0]] = singleParameter.split("=")[1];
+              });
+
+              if (url[0] !== '/') url = "/" + url;
+              newWsdFileContent[wsdName]["url"] = url;
+
+              newWsdFileContent[wsdName]["info"] = newWsdFileContent[wsdName]["info"] || "Add description or info here.";
+              newWsdFileContent[wsdName]["method"] = newWsdFileContent[wsdName]["method"] || "POST";
+              newWsdFileContent[wsdName]["timeout"] = newWsdFileContent[wsdName]["timeout"] || 5000;
+              newWsdFileContent[wsdName]["cacheable"] = newWsdFileContent[wsdName]["cacheable"] || false;
+              newWsdFileContent[wsdName]["cacheInMs"] = newWsdFileContent[wsdName]["cacheInMs"] || 0;
+
+              // sort keys
+              newWsd = {
+                "info": newWsdFileContent[wsdName]["info"],
+                "url": newWsdFileContent[wsdName]["url"],
+                "parameters": newWsdFileContent[wsdName]["parameters"],
+                "headers": newWsdFileContent[wsdName]["headers"],
+                "method": newWsdFileContent[wsdName]["method"],
+                "timeout": newWsdFileContent[wsdName]["timeout"],
+                "cacheable": newWsdFileContent[wsdName]["cacheable"],
+                "cacheInMs": newWsdFileContent[wsdName]["cacheInMs"]
+
+              }
+
+              newWsd["parameters"] = sortMembers(newWsd["parameters"]);
+              newWsd["headers"] = sortMembers(newWsd["headers"]);
+              newWsdFileContent[wsdName] = newWsd;
+
+            });
+            newWsdFileContent = sortMembers(newWsdFileContent);
+            console.log(wsdUrl);
+            console.log(JSON.stringify(newWsdFileContent));
+          });
+        });
+      },
       /**
        * Lists all webservice definitions (wsd).
        * 

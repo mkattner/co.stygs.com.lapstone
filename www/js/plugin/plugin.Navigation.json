@@ -3,5 +3,10 @@
 	"shortname":"nav",
 	"include":[
 		
-	]
+	],
+	"type":{
+		"ALERT":1,
+		"DIALOG":2,
+		"TRIALOG":3
+	}
 }

@@ -13,7 +13,7 @@
 
 var plugin_Notification = {
   config: null,
-  notifications: null,
+  notifications: [],
   callbackFunction: null,
   callbackFunctionBtnLeft: null,
   callbackFunctionBtnRight: null,
@@ -92,12 +92,6 @@ var plugin_Notification = {
      */
     $(document).on('pageshow', function(event) {
       app.debug.event(event);
-
-      if (!plugin_Notification.notifications) {
-        plugin_Notification.notifications = app.store.localStorage.getObject("popup_notifications");
-      }
-      // alert(JSON.stringify(plugin_Notification.notifications));
-      app.store.localStorage.removeObject("popup_notifications");
       plugin_Notification.popupShow();
     });
 
@@ -260,7 +254,21 @@ var plugin_Notification = {
   // private functions
   popupShow: function(notification) {
     // alert(JSON.stringify(plugin_Notification.notifications));
-    if (notification != undefined) {
+
+    if (notification === undefined) {
+      notification = plugin_Notification.notifications.pop();
+      // alert(JSON.stringify(notification));
+      if (notification) {
+        if (notification.pageDelay === undefined) {
+          plugin_Notification.popupShow(notification);
+        } else if (typeof notification.pageDelay === "number" && notification.pageDelay === 0) {
+          plugin_Notification.popupShow(notification);
+        } else {
+          notification.pageDelay--;
+          plugin_Notification.notifications.push(notification)
+        }
+      }
+    } else {
       switch (notification.type) {
 
       case "alert":
@@ -445,51 +453,6 @@ var plugin_Notification = {
       default:
         app.debug.error("error in popupShow();");
         break;
-      }
-
-    }
-    // display popups from array
-    else {
-      if (plugin_Notification.notifications != null) {
-        if (Object.keys(plugin_Notification.notifications).length == 0)
-          plugin_Notification.notifications = null;
-        else {
-          // todo more popups
-          notification = plugin_Notification.notifications['1'];
-          // alert(JSON.stringify(notification));
-          delete plugin_Notification.notifications['1'];
-          setTimeout(function() {
-            app.template.append("[data-role=page]", "JQueryMobilePopupAlert");
-
-            $("#popupAlert").popup();
-
-            if (notification.width) $("#popupAlert-popup").css("width", notification.width);
-
-            if (notification.title) {
-              $("#popupAlert div[data-role=header] h1").text(notification.title);
-              $("#popupAlert div[data-role=header] h1").css("display", "block");
-            } else {
-              $("#popupAlert div[data-role=header] h1").css("display", "none");
-            }
-
-            if (notification.headline) {
-              $("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
-              $("#popupAlert div.ui-content h3.ui-title").css("display", "block");
-            } else {
-              $("#popupAlert div.ui-content h3.ui-title").css("display", "none");
-            }
-
-            $("#popupAlert #btn-alert").text(notification.button);
-
-            if (typeof notification.text == "object") {
-              $("#popupAlert div.ui-content p").replaceWith(notification.text);
-            } else {
-              $("#popupAlert div.ui-content p").html(notification.text);
-            }
-
-            $("#popupAlert").popup("open");
-          }, notification.delayInMs);
-        }
       }
     }
   },
@@ -861,23 +824,68 @@ var plugin_Notification = {
     add: {
 
       /**
-       * 
+       * app.notify.add.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button",
+       * callbackButton: function(popup) { }, delayInMs: 0, width: "50%", pageDelay:0 });
        */
       alert: function(text, title, headline, button, callbackButton, delayInMs) {
 
-        if (!plugin_Notification.notifications) plugin_Notification.notifications = app.store.localStorage.getObject("popup_notifications");
-        if (!plugin_Notification.notifications) plugin_Notification.notifications = {};
-        if (delayInMs == undefined || delayInMs == null) delayInMs = 100;
-        var nextKey = Object.keys(plugin_Notification.notifications).length + 1;
-        plugin_Notification.notifications[nextKey] = {
-          "type": "alert",
-          "text": text,
-          "title": title,
-          "headline": headline,
-          "button": button,
-          "callback": callbackButton
-        };
-        app.store.localStorage.setObject("popup_notifications", plugin_Notification.notifications);
+        var notification;
+
+        if ($.isPlainObject(text)) {
+          notification = text;
+        }
+
+        else {
+          app.debug.deprecated("Please use an object as argument.");
+          notification = {
+            "text": text,
+            "title": title,
+            "headline": headline,
+            "button": button,
+            "callback": callbackButton,
+            "delayInMs": delayInMs
+          };
+        }
+
+        notification.type = "alert";
+
+        plugin_Notification.notifications.push(notification);
+      },
+
+      dialog: function(text, title, headline, buttonLeft, buttonRight, callbackButtonLeft, callbackButtonRight, delayInMs) {
+        var notification;
+
+        if ($.isPlainObject(text)) {
+          notification = text;
+        }
+
+        else {
+          app.debug.deprecated("Please use an object as argument.")
+          notification = {
+            "text": text,
+            "title": title,
+            "headline": headline,
+            "buttonLeft": buttonLeft,
+            "buttonRight": buttonRight,
+            "callbackButtonLeft": callbackButtonLeft,
+            "callbackButtonRight": callbackButtonRight,
+            "delayInMs": delayInMs
+          };
+        }
+
+        notification.type = "dialog";
+
+        plugin_Notification.notifications.push(notification);
+      },
+      trialog: function() {
+        if (!$.isPlainObject(notification)) {
+          app.debug.deprecated("Please use an object as argument.");
+          return null;
+        }
+
+        notification.type = "trialog";
+
+        plugin_Notification.notifications.push(notification);
       }
     },
 

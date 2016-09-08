@@ -164,14 +164,7 @@ var page_start = {
 
 //      window.setTimeout(function() {
         // alert(app.info.firstUse());
-        if (app.info.firstUse() === true) {
-          app.info.firstUse(false);
-          app.nav.redirect(app.config.startPage_firstStart, "slideup");
-        } else if (app.sess.loggedIn()) {
-          app.nav.redirect(app.config.startPage_loggedIn, "slideup");
-        } else {
-          app.nav.redirect(app.config.startPage, "slideup");
-        }
+       app.nav.start();
 //      }, 1000);
     }
   }

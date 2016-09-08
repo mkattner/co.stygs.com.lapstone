@@ -191,13 +191,24 @@ function updateFramework() {
 
     if (app.config.version.update === true) {
       console.warn("update done");
+      app.notify.add.alert({
+        title: app.lang.string("update done - title", "lapstone", {
+          version: app.config.version.app
+        }),
+        headline: app.lang.string("update done - headline", "lapstone", {
+          version: app.config.version.app
+        }),
+        text: app.lang.string("update done - text", "lapstone", {
+          version: app.config.version.app
+        }),
+        button: app.lang.string("update done - button", "lapstone")
+      });
     }
     // alert(currentAppVersion + oldAppVersion + currentLapstoneVersion +
     // oldLapstoneVersion);
     if (currentLapstoneVersion != oldLapstoneVersion || currentAppVersion != oldAppVersion) {
       console.warn("TODO Lastone || App Version Update");
       // alert("do update")
-      app.info.set("app.config.version.update", true);
 
       app.info.set("app.config.version.app", currentAppVersion);
       app.info.set("app.config.version.lapstone", currentLapstoneVersion);
@@ -210,6 +221,7 @@ function updateFramework() {
 
         updateScriptPromisses = [];
 
+        // run update scripts
         $.each(response.updateRegistry, function(index, updateObject) {
           console.log(JSON.stringify(updateObject))
 
@@ -230,9 +242,10 @@ function updateFramework() {
           }
 
         });
-
+        // update scrips finished
         $.when.apply($, updateScriptPromisses).done(function() {
-          location.reload();
+          app.info.set("app.config.version.update", true);
+          app.nav.redirect(app.config.startPage_firstStart);
         }).fail(function() {
           dfd.reject();
         });

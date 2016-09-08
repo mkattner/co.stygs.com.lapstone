@@ -11,6 +11,7 @@ public class Wsd_JSON_Webservice {
     private String method;
     private Integer timeout;
     private String url;
+    private String info;
 
     public Integer getCacheInMs() {
 	return cacheInMs;
@@ -58,6 +59,14 @@ public class Wsd_JSON_Webservice {
 
     public void setLocal(String local) {
 	this.local = local;
+    }
+
+    public String getInfo() {
+	return info;
+    }
+
+    public void setInfo(String info) {
+	this.info = info;
     }
 
     private String local;
