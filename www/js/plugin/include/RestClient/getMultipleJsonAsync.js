@@ -26,23 +26,16 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
     // }
     //  
 
-    server = plugin_RestClient.getServer(webServiceName);
-    webServiceName = plugin_RestClient.getService(webServiceName);
+//    server = plugin_RestClient.getServer(webServiceName);
+//    webServiceName = plugin_RestClient.getService(webServiceName);
 
     app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get webservice path from wsd file");
 
-    wsd = plugin_RestClient.config.webservices[webServiceName];
-    if (wsd) {
-      path = wsd.url;
-    }
+    wsd = app.rc.getWsd(webServiceName);
+    app.rc.mergeWsdWithParameters(wsd, parameter);
 
-    else {
-      app.debug.error("plugin_RestClient.getMultipleJsonAsync() - service not defined: " + webServiceName);
-      return dfd.reject();
-    }
-
-    app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - replace parameters in path");
-    path = plugin_RestClient.getPath(parameter, path);
+//    app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - replace parameters in path");
+//    path = plugin_RestClient.getPath(parameter, path);
 
     app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - ask for the deferred promise object");
 
@@ -53,7 +46,7 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
     // event triggering
     app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
     $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
-    $(document).trigger("webserviceCall", [wsEventTrigger.promise(), webServiceName, parameter]);
+    $(document).trigger("webserviceCall", [wsEventTrigger.promise(), webServiceName, wsd]);
     app.debug.webservice(webServiceName);
 
     // case: webesrvice is cacheable && webservice is cached
@@ -74,7 +67,7 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
     // case: webservice request
     else {
       app.debug.info("plugin_RestClient - CALL: " + webServiceName);
-      promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[webServiceName].method, plugin_RestClient.config.webservices[webServiceName].timeout, async, plugin_RestClient.config.webservices[webServiceName].local, server);
+      promise = app.wsc.getJson(wsd, parameter, async);
 
       promiseArray.push(promise);
       webwebServiceNamesArray.push(webServiceName);
@@ -93,6 +86,7 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
   // alert("promiseArray: " + JSON.stringify(promiseArray));
   // http://stackoverflow.com/questions/4878887/how-do-you-work-with-an-array-of-jquery-deferreds
   // http://stackoverflow.com/questions/5627284/pass-in-an-array-of-deferreds-to-when
+
   $.when.apply($, promiseArray).then(function() {
     app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - all async webservices are done");
     // alert(JSON.stringify([].slice.apply(arguments)));

@@ -1,14 +1,8 @@
 /*
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
- * following conditions: The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
  * Plugin to create debug output. It will be removed in release Versions.
@@ -96,9 +90,15 @@ var plugin_Debug = {
 
     });
     if (!app.config.min) {
-      $(document).on("webserviceCall", function(event, promise, wsName, parameter) {
+      $(document).on("webserviceCall", function(event, promise, wsName, wsd) {
         promise.fail(function(error) {
-          alert(wsName + ": \n" + "URL:\n" + app.rc.getFullUrl(wsName, parameter) + "\n\nWebservice returns:\n" + JSON.stringify(error));
+          var parameterString = "?";
+
+          $.each(wsd.parameters, function(name, value) {
+            parameterString += (name + "=" + value + "&");
+          })
+
+          alert(wsName + ": \n" + "URL:\n" + wsd.url + parameterString + "\n\nWsd:\n" + JSON.stringify(wsd) + "\n\nWebservice returns:\n" + JSON.stringify(error));
         });
 
       });
@@ -520,8 +520,7 @@ var plugin_Debug = {
     },
 
     /**
-     * Validates if an objects exists. You can use this function to validate that an object exists before you use it.
-     * E.g.: Validate if a JSON configuration file has specific members.
+     * Validates if an objects exists. You can use this function to validate that an object exists before you use it. E.g.: Validate if a JSON configuration file has specific members.
      * 
      * @memberof plugin_Debug.functions
      * @function validate
@@ -530,9 +529,7 @@ var plugin_Debug = {
      */
 
     /**
-     * Validates if an objects of a specific type exists. You can use this function to validate that an object of a
-     * specific type exists before you use it. E.g.: Validate if a JSON configuration file has specific members with
-     * specific types.
+     * Validates if an objects of a specific type exists. You can use this function to validate that an object of a specific type exists before you use it. E.g.: Validate if a JSON configuration file has specific members with specific types.
      * 
      * @memberof plugin_Debug.functions
      * @function validate
@@ -572,8 +569,7 @@ var plugin_Debug = {
     },
 
     /**
-     * Handles the debug output. Depending of the configuration the function is printing to console and/or to a log
-     * object.
+     * Handles the debug output. Depending of the configuration the function is printing to console and/or to a log object.
      * 
      * @memberof plugin_Debug.functions
      * @function log
@@ -585,8 +581,7 @@ var plugin_Debug = {
     log: function(output, level, trace) {
       var now = new Date();
       var dateString = /*
-                         * now.getUTCFullYear().toString() + "." + (now.getUTCMonth() + 1).pad() + "." +
-                         * now.getUTCDate().pad() + " " +
+                         * now.getUTCFullYear().toString() + "." + (now.getUTCMonth() + 1).pad() + "." + now.getUTCDate().pad() + " " +
                          */now.getUTCHours().pad() + ":" + now.getUTCMinutes().pad() + ":" + now.getUTCSeconds().pad() + "." + now.getUTCMilliseconds().pad(3);
 
       if (plugin_Debug.config.debugDevice) {
@@ -642,52 +637,64 @@ var plugin_Debug = {
             };
 
             newWsdFileContent = {}
-            $.each(wsd, function(wsdName, wsdObject) {
-              var url, parameters, headers, newWsd;
+            if (typeof wsd.headers !== "object") {
+              $.each(wsd, function(wsdName, wsdObject) {
+                var url, parameters, headers, newWsd;
 
-              newWsdFileContent[wsdName] = wsdObject;
-              newWsdFileContent[wsdName]["parameters"] = {};
-              newWsdFileContent[wsdName]["headers"] = {};
+                newWsdFileContent[wsdName] = wsdObject;
+                newWsdFileContent[wsdName]["parameters"] = {};
+                newWsdFileContent[wsdName]["headers"] = {};
 
-              url = wsdObject.url.split("?")[0];
-              parameters = wsdObject.url.split("?")[1].split("$")[0];
-              headers = wsdObject.url.split("?")[1].split("$")[1];
+                url = wsdObject.url.split("?")[0];
+                parameters = wsdObject.url.split("?")[1].split("$")[0];
+                headers = wsdObject.url.split("?")[1].split("$")[1];
 
-              if (parameters) $.each(parameters.split("&"), function(index, singleParameter) {
-                newWsdFileContent[wsdName]["parameters"][singleParameter.split("=")[0]] = singleParameter.split("=")[1];
+                if (parameters) $.each(parameters.split("&"), function(index, singleParameter) {
+                  newWsdFileContent[wsdName]["parameters"][singleParameter.split("=")[0]] = singleParameter.split("=")[1];
+                });
+
+                if (headers) $.each(headers.split("&"), function(index, singleParameter) {
+                  newWsdFileContent[wsdName]["headers"][singleParameter.split("=")[0]] = singleParameter.split("=")[1];
+                });
+
+                if (url[0] !== '/') url = "/" + url;
+                newWsdFileContent[wsdName]["url"] = url;
+
+                newWsdFileContent[wsdName]["info"] = newWsdFileContent[wsdName]["info"] || "Add description or info here.";
+                newWsdFileContent[wsdName]["method"] = newWsdFileContent[wsdName]["method"] || "POST";
+                newWsdFileContent[wsdName]["timeout"] = newWsdFileContent[wsdName]["timeout"] || 5000;
+                newWsdFileContent[wsdName]["cacheable"] = newWsdFileContent[wsdName]["cacheable"] || false;
+                newWsdFileContent[wsdName]["cacheInMs"] = newWsdFileContent[wsdName]["cacheInMs"] || 0;
+
+                // sort keys
+                newWsd = {
+                  "info": newWsdFileContent[wsdName]["info"],
+                  "url": newWsdFileContent[wsdName]["url"],
+                  "parameters": newWsdFileContent[wsdName]["parameters"],
+                  "headers": newWsdFileContent[wsdName]["headers"],
+                  "method": newWsdFileContent[wsdName]["method"],
+                  "timeout": newWsdFileContent[wsdName]["timeout"],
+                  "cacheable": newWsdFileContent[wsdName]["cacheable"],
+                  "cacheInMs": newWsdFileContent[wsdName]["cacheInMs"]
+
+                }
+
+                newWsd["parameters"] = sortMembers(newWsd["parameters"]);
+                newWsd["headers"] = sortMembers(newWsd["headers"]);
+                newWsdFileContent[wsdName] = newWsd;
+
               });
+            } else {
+              newWsdFileContent = wsd;
+            }
 
-              if (headers) $.each(headers.split("&"), function(index, singleParameter) {
-                newWsdFileContent[wsdName]["headers"][singleParameter.split("=")[0]] = singleParameter.split("=")[1];
-              });
-
-              if (url[0] !== '/') url = "/" + url;
-              newWsdFileContent[wsdName]["url"] = url;
-
-              newWsdFileContent[wsdName]["info"] = newWsdFileContent[wsdName]["info"] || "Add description or info here.";
-              newWsdFileContent[wsdName]["method"] = newWsdFileContent[wsdName]["method"] || "POST";
-              newWsdFileContent[wsdName]["timeout"] = newWsdFileContent[wsdName]["timeout"] || 5000;
-              newWsdFileContent[wsdName]["cacheable"] = newWsdFileContent[wsdName]["cacheable"] || false;
-              newWsdFileContent[wsdName]["cacheInMs"] = newWsdFileContent[wsdName]["cacheInMs"] || 0;
-
-              // sort keys
-              newWsd = {
-                "info": newWsdFileContent[wsdName]["info"],
-                "url": newWsdFileContent[wsdName]["url"],
-                "parameters": newWsdFileContent[wsdName]["parameters"],
-                "headers": newWsdFileContent[wsdName]["headers"],
-                "method": newWsdFileContent[wsdName]["method"],
-                "timeout": newWsdFileContent[wsdName]["timeout"],
-                "cacheable": newWsdFileContent[wsdName]["cacheable"],
-                "cacheInMs": newWsdFileContent[wsdName]["cacheInMs"]
-
-              }
-
-              newWsd["parameters"] = sortMembers(newWsd["parameters"]);
-              newWsd["headers"] = sortMembers(newWsd["headers"]);
-              newWsdFileContent[wsdName] = newWsd;
-
+            $.each(newWsdFileContent, function(wsdName, wsdObject) {
+              wsdObject["server"] = "";
+              wsdObject["dataType"] = "";
+              wsdObject["contentType"] = "";
+              wsdObject = sortMembers(wsdObject);
             });
+
             newWsdFileContent = sortMembers(newWsdFileContent);
             console.log(wsdUrl);
             console.log(JSON.stringify(newWsdFileContent));

@@ -19,36 +19,29 @@ plugin_RestClient.getSingleJsonAsync = function(paramService, parameter, async) 
   // server = app.wsc.getDefaultServerName();
   // }
 
-  server = plugin_RestClient.getServer(paramService);
-  service = plugin_RestClient.getService(paramService);
+//  server = plugin_RestClient.getServer(paramService);
+//  service = plugin_RestClient.getService(paramService);
 
-  app.debug.debug("plugin_RestClient.getSingleJsonAsync() server: " + server + "; service: " + service);
+  app.debug.debug("plugin_RestClient.getSingleJsonAsync() server: " + server + "; service: " + paramService);
 
   // get the path which is defined in wsd file
-  wsd = plugin_RestClient.config.webservices[service]
-  if (wsd) {
-    path = wsd.url;
-  }
+  wsd = app.rc.getWsd(paramService);
+  app.rc.mergeWsdWithParameters(wsd, parameter);
 
-  else {
-    app.debug.error("plugin_RestClient.getSingleJsonAsync() - service not defined: " + service);
-    return dfd.reject();
-  }
-
-  // replace the parameters in path string
-  path = plugin_RestClient.getPath(parameter, path);
+  // // replace the parameters in path string
+  // path = plugin_RestClient.getPath(parameter, path);
 
   // event triggering
-  app.debug.info("plugin_RestClient - TRIGGER EVENT: " + service);
-  $(document).trigger(service, [wsEventTrigger.promise(), parameter]);
-  $(document).trigger("webserviceCall", [wsEventTrigger.promise(), service, parameter]);
-  app.debug.webservice(service);
+  app.debug.info("plugin_RestClient - TRIGGER EVENT: " + paramService);
+  $(document).trigger(paramService, [wsEventTrigger.promise(), parameter]);
+  $(document).trigger("webserviceCall", [wsEventTrigger.promise(), paramService, wsd]);
+  app.debug.webservice(paramService);
 
   // case: webesrvice is cacheable && webservice is cached
-  if ((cachedJson = plugin_RestClient.functions.cacheJson(service, parameter)) && plugin_RestClient.config.webservices[service].cacheable) {
-    app.debug.info("plugin_RestClient - CACHED: " + service);
+  if ((cachedJson = plugin_RestClient.functions.cacheJson(paramService, parameter)) && plugin_RestClient.config.webservices[paramService].cacheable) {
+    app.debug.info("plugin_RestClient - CACHED: " + paramService);
 
-    app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + service);
+    app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
     wsEventTrigger.resolve(cachedJson);
 
     return dfd.resolve(cachedJson);
@@ -56,8 +49,8 @@ plugin_RestClient.getSingleJsonAsync = function(paramService, parameter, async) 
 
   // case: webservice request
   else {
-    app.debug.info("plugin_RestClient - CALL: " + service);
-    promise = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[service].method, plugin_RestClient.config.webservices[service].timeout, async, plugin_RestClient.config.webservices[service].local, server);
+    app.debug.info("plugin_RestClient - CALL: " + paramService);
+    promise = app.wsc.getJson(wsd, parameter, async);
 
     promise.done(function(json) {
 

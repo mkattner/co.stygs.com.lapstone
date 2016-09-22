@@ -21,30 +21,23 @@ plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
     // server = app.wsc.getDefaultServerName();
     // }
 
-    server = plugin_RestClient.getServer(webServiceName);
-    webServiceName = plugin_RestClient.getService(webServiceName);
+//    server = plugin_RestClient.getServer(webServiceName);
+//    webServiceName = plugin_RestClient.getService(webServiceName);
 
     // set async to false (in each case)
     async = false;
 
     app.debug.debug("plugin_RestClient.getMultipleJson() - get webservice path from wsd file");
-    wsd = plugin_RestClient.config.webservices[webServiceName]
-    if (wsd) {
-      path = wsd.url;
-    }
+    wsd = app.rc.getWsd(webServiceName);
+    app.rc.mergeWsdWithParameters(wsd, parameter);
 
-    else {
-      app.debug.error("plugin_RestClient.getMultipleJson() - service not defined: " + webServiceName);
-      return null;
-    }
-
-    app.debug.debug("plugin_RestClient.getMultipleJson() - replace parameters in path");
-    path = plugin_RestClient.getPath(parameter, path);
+    // app.debug.debug("plugin_RestClient.getMultipleJson() - replace parameters in path");
+    // path = plugin_RestClient.getPath(parameter, path);
 
     // event triggering
     app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
     $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
-    $(document).trigger("webserviceCall", [wsEventTrigger.promise(), webServiceName, parameter]);
+    $(document).trigger("webserviceCall", [wsEventTrigger.promise(), webServiceName, wsd]);
     app.debug.webservice(webServiceName);
 
     if ((json = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
@@ -58,7 +51,7 @@ plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
     else {
       app.debug.debug("plugin_RestClient.getMultipleJson() -  ask for the json file");
       app.debug.info("plugin_RestClient - CALL: " + webServiceName);
-      json = app.wsc.getJson(path[0], path[1], parameter, plugin_RestClient.config.webservices[webServiceName].method, plugin_RestClient.config.webservices[webServiceName].timeout, async, plugin_RestClient.config.webservices[webServiceName].local, server);
+      json = app.wsc.getJson(wsd, parameter, async);
 
       app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
       wsEventTrigger.resolve(json);

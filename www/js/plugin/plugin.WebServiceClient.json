@@ -1,57 +1,53 @@
 {
-	"name":"WebServiceClient",
-	"shortname":"wsc",
-	"include":[
-		
-	],
-	"defaultWebServiceTimeoutMs":5000,
-	"defaultWebServiceMethod":"post",
-	"defaultWebServiceType":"json",
-	"useServerShuffle":true,
-	"useHeaderToken":false,
-	"headerToken":{
-		"key":"Authorization",
-		"value":"data-html5-themis-token"
+	"name": "WebServiceClient",
+	"shortname": "wsc",
+	"include": [],
+	"defaultWebServiceTimeoutMs": 5000,
+	"defaultWebServiceMethod": "post",
+	"defaultWebServiceType": "json",
+	"useServerShuffle": true,
+	"useHeaderToken": false,
+	"headerToken": {
+		"key": "Authorization",
+		"value": "data-html5-themis-token"
 	},
-	"defaultServer":"template",
-	"server":{
-		"template":{
-			"active":true,
-			"pingPath":"",
-			"mappings":{
-				"post":"json",
-				"get":"query",
-				"put":"json",
-				"delete":"json"
+	"defaultServer": "template",
+	"server": {
+		"template": {
+			"active": true,
+			"pingPath": "",
+			"mappings": {
+				"post": "json",
+				"get": "query",
+				"put": "json",
+				"delete": "json"
 			},
-			"template":{
-				"scheme":"http",
-				"scheme_specific_part":"://",
-				"host":"themis-dev01.backmeup.at",
-				"port":8080,
-				"path":""
+			"template": {
+				"scheme": "http",
+				"scheme_specific_part": "://",
+				"host": "themis-dev01.backmeup.at",
+				"port": 8080,
+				"path": ""
 			},
-			"first":{
-				"scheme":"http",
-				"scheme_specific_part":"://",
-				"host":"themis-dev01.backmeup.at",
-				"port":8080,
-				"path":""
+			"first": {
+				"scheme": "http",
+				"scheme_specific_part": "://",
+				"host": "themis-dev01.backmeup.at",
+				"port": 8080,
+				"path": ""
 			},
-			"second":{
+			"second": {
 				
 			},
-			"third":{
+			"third": {
 				
 			},
-			"fouth":{
+			"fouth": {
 				
 			},
-			"fifth":{
+			"fifth": {
 				
 			}
-			
 		}
-		
 	}
 }

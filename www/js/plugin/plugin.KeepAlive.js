@@ -145,7 +145,10 @@ var plugin_KeepAlive = {
     data = "";
     method = plugin_KeepAlive.config.method;
     timeout = plugin_KeepAlive.config.timeout;
+
+    try{
     server = plugin_WebServiceClient.functions.getServer(plugin_KeepAlive.config.server, false);
+}catch(e){return }
 
 //    server = (server.endsWith("/") ? server.substr(0, server.length - 1) : server);
 //    path = (path.startsWith("/") ? path.substr(1, path.length) : path);

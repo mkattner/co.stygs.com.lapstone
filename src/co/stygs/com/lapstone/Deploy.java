@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
-
 public class Deploy {
     // ************************************************************************
     //
@@ -56,7 +55,7 @@ public class Deploy {
 
 		    File destination = new File(pathname.getAbsolutePath().replace(www.getAbsolutePath(), www_debug.getAbsolutePath()));
 
-		    if (destination.getName().startsWith("page.lapstone") ) {
+		    if (destination.getName().startsWith("page.lapstone")) {
 			return false;
 		    }
 
@@ -108,8 +107,8 @@ public class Deploy {
 		    if (destination.getName().startsWith("page.lapstone")) {
 			return false;
 		    }
-		    
-		    else  if (destination.getName().equals("pages.js")) {
+
+		    else if (destination.getName().equals("pages.js")) {
 			return true;
 		    }
 
@@ -119,6 +118,37 @@ public class Deploy {
 		    return false;
 		}
 	    }, true);
+
+	    // ********************************************************************
+	    // overwrite plugin includes
+	    
+	    
+	    
+	    
+	    
+	    FileUtils.copyDirectory(new File(www, "js/plugin/include"), new File(www_debug, "js/plugin/include"), true);
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
 
 	    FileUtils.copyFile(new File(www, "js/lapstone.js"), new File(www_debug, "js/lapstone.js"));
 

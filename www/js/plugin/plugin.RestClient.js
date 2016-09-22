@@ -1,14 +1,8 @@
 /*
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
- * following conditions: The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -110,109 +104,106 @@ var plugin_RestClient = {
   /**
    *
    */
-  getData: function(parameter, path) {
-    app.debug.trace("plugin_RestClient.getData(" + app.debug.arguments(arguments) + ")");
-
-    var data;
-
-    data = path.split('?')[1];
-    path = path.split('?')[0];
-
-    if (parameter != undefined) {
-      $.each(parameter, function(key, value) {
-        if (typeof value == "object") {
-          value = JSON.stringify(value);
-          data = data.replace('{' + key + '}', encodeURIComponent(value));
-        } else {
-          data = data.replace('{' + key + '}', encodeURIComponent(value));
-        }
-        app.debug.debug("plugin_RestClient.getData() - set in path: " + key + " = " + encodeURIComponent(value));
-
-      });
-    }
-
-    if (data == undefined) {
-      data = "";
-    }
-
-    app.debug.debug("plugin_RestClient.getData() - path: " + path);
-    app.debug.debug("plugin_RestClient.getData() - data: " + data);
-    app.debug.debug("plugin_RestClient.getData() - parameter: " + JSON.stringify(parameter));
-
-    return [path, data];
-  },
-
+  // getData: function(parameter, path) {
+  // app.debug.trace("plugin_RestClient.getData(" + app.debug.arguments(arguments) + ")");
+  //
+  // var data;
+  //
+  // data = path.split('?')[1];
+  // path = path.split('?')[0];
+  //
+  // if (parameter != undefined) {
+  // $.each(parameter, function(key, value) {
+  // if (typeof value == "object") {
+  // value = JSON.stringify(value);
+  // data = data.replace('{' + key + '}', encodeURIComponent(value));
+  // } else {
+  // data = data.replace('{' + key + '}', encodeURIComponent(value));
+  // }
+  // app.debug.debug("plugin_RestClient.getData() - set in path: " + key + " = " + encodeURIComponent(value));
+  //
+  // });
+  // }
+  //
+  // if (data == undefined) {
+  // data = "";
+  // }
+  //
+  // app.debug.debug("plugin_RestClient.getData() - path: " + path);
+  // app.debug.debug("plugin_RestClient.getData() - data: " + data);
+  // app.debug.debug("plugin_RestClient.getData() - parameter: " + JSON.stringify(parameter));
+  //
+  // return [path, data];
+  // },
+  //
+  // /**
+  // *
+  // */
+  // getPath: function(parameter, path) {
+  // app.debug.trace("plugin_RestClient.getPath(" + app.debug.arguments(arguments) + ")");
+  //
+  // var data;
+  //
+  // data = path.split('?')[1];
+  // path = path.split('?')[0];
+  //
+  // if (parameter != undefined) {
+  // $.each(parameter, function(key, value) {
+  // if (typeof value == "object") {
+  // value = JSON.stringify(value);
+  // path = path.replace('{' + key + '}', encodeURIComponent(value));
+  // } else {
+  // path = path.replace('{' + key + '}', encodeURIComponent(value));
+  // }
+  // app.debug.debug("plugin_RestClient.getPath() - set in path: " + key + " = " + encodeURIComponent(value));
+  //
+  // });
+  // }
+  //
+  // if (data == undefined) {
+  // data = "";
+  // }
+  //
+  // app.debug.debug("plugin_RestClient.getPath() - path: " + path);
+  // app.debug.debug("plugin_RestClient.getPath() - data: " + data);
+  // app.debug.debug("plugin_RestClient.getPath() - parameter: " + JSON.stringify(parameter));
+  //
+  // return [path, data];
+  // },
   /**
    *
    */
-  getPath: function(parameter, path) {
-    app.debug.trace("plugin_RestClient.getPath(" + app.debug.arguments(arguments) + ")");
-
-    var data;
-
-    data = path.split('?')[1];
-    path = path.split('?')[0];
-
-    if (parameter != undefined) {
-      $.each(parameter, function(key, value) {
-        if (typeof value == "object") {
-          value = JSON.stringify(value);
-          path = path.replace('{' + key + '}', encodeURIComponent(value));
-        } else {
-          path = path.replace('{' + key + '}', encodeURIComponent(value));
-        }
-        app.debug.debug("plugin_RestClient.getPath() - set in path: " + key + " = " + encodeURIComponent(value));
-
-      });
-    }
-
-    if (data == undefined) {
-      data = "";
-    }
-
-    app.debug.debug("plugin_RestClient.getPath() - path: " + path);
-    app.debug.debug("plugin_RestClient.getPath() - data: " + data);
-    app.debug.debug("plugin_RestClient.getPath() - parameter: " + JSON.stringify(parameter));
-
-    return [path, data];
-  },
-
-  /**
-   *
-   */
-  getServer: function(service) {
-    var splittedService, server;
-
-    if (service.indexOf('.') != -1) {
-      splittedService = service.split(".");
-      server = splittedService[0];
-    }
-
-    else {
-      server = app.wsc.getDefaultServerName();
-    }
-
-    return server;
-  },
-
-  /**
-   *
-   */
-  getService: function(service) {
-    var splittedService;
-
-    if (service.indexOf('.') != -1) {
-      splittedService = service.split(".");
-      service = splittedService[1];
-    }
-
-    return service;
-  },
-
+  // getServer: function(service) {
+  // var splittedService, server;
+  //
+  // if (service.indexOf('.') != -1) {
+  // splittedService = service.split(".");
+  // server = splittedService[0];
+  // }
+  //
+  // else {
+  // server = app.wsc.getDefaultServerName();
+  // }
+  //
+  // return server;
+  // },
+  //
+  // /**
+  // *
+  // */
+  // getService: function(service) {
+  // var splittedService;
+  //
+  // if (service.indexOf('.') != -1) {
+  // splittedService = service.split(".");
+  // service = splittedService[1];
+  // }
+  //
+  // return service;
+  // },
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // JSON functions
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
   /**
    * The public functions used by the API *
    *
@@ -232,7 +223,13 @@ var plugin_RestClient = {
      */
     getWsd: function(webServiceName) {
       app.debug.trace("plugin_RestClient.functions.getWsd(" + app.debug.arguments(arguments) + ")");
-      return plugin_RestClient.config.webservices[webServiceName] || null;
+      var wsd;
+      wsd = $.extend(true, {}, plugin_RestClient.config.webservices[webServiceName]);
+      if (Object.keys(wsd).length === 0) {
+        app.debug.error("Service not defined: " + webServiceName);
+        return null;
+      }
+      return wsd;
     },
 
     /**
@@ -266,26 +263,26 @@ var plugin_RestClient = {
      *          webServiceDefinition - An object containing the webservice definition.
      * @returns {boolean} Success or fail adding a the webservice.
      */
-    addWsd: function(name, url, method, timeout, cacheable, cacheInMs, local) {
-      app.debug.trace("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition(" + app.debug.arguments(arguments) + ")");
-
-      if (typeof url == "object") {
-        plugin_RestClient.config.webservices[name] = url;
-      }
-
-      else {
-        plugin_RestClient.config.webservices[name] = {
-          "url": url,
-          "method": method,
-          "timeout": timeout,
-          "cacheable": cacheable,
-          "cacheInMs": cacheInMs,
-          "local": local
-        };
-      }
-
-      return true;
-    },
+//    addWsd: function(name, url, method, timeout, cacheable, cacheInMs, local) {
+//      app.debug.trace("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition(" + app.debug.arguments(arguments) + ")");
+//
+//      if (typeof url == "object") {
+//        plugin_RestClient.config.webservices[name] = url;
+//      }
+//
+//      else {
+//        plugin_RestClient.config.webservices[name] = {
+//          "url": url,
+//          "method": method,
+//          "timeout": timeout,
+//          "cacheable": cacheable,
+//          "cacheInMs": cacheInMs,
+//          "local": local
+//        };
+//      }
+//
+//      return true;
+//    },
 
     /**
      * Deletes a webservice definition (wsd).
@@ -305,10 +302,10 @@ var plugin_RestClient = {
     /**
      * @deprecated removed in version 1.0
      */
-    addWebserviceDefinition: function(name, url, method, timeout, cacheable, cacheInMs, local) {
-      console.error("Depecated function!! use app.rc.addWsd(name, url, method, timeout, cacheable, cacheInMs, local)")
-
-    },
+//    addWebserviceDefinition: function(name, url, method, timeout, cacheable, cacheInMs, local) {
+//      console.error("Depecated function!! use app.rc.addWsd(name, url, method, timeout, cacheable, cacheInMs, local)")
+//
+//    },
 
     /**
      * @deprecated removed in version 1.0
@@ -439,23 +436,12 @@ var plugin_RestClient = {
      *          parameter - The parameter of the call.
      * @returns {String} - The full URL of the webservice call.
      */
-    getFullUrl: function(service, parameter) {
-      app.debug.trace("plugin_RestClient.functions.getFullUrl(" + app.debug.arguments(arguments) + ")");
-
-      var processedServerName, processedWebServiceName, processedPath, processedData, wsd, serverUrl, url;
-
-      processedServerName = plugin_RestClient.getServer(service);
-      processedWebServiceName = plugin_RestClient.getService(service);
-
-      wsd = plugin_RestClient.config.webservices[processedWebServiceName];
-      processedPath = plugin_RestClient.getPath(parameter, wsd.url);
-      processedData = plugin_RestClient.getData(parameter, wsd.url);
-
-      serverUrl = plugin_WebServiceClient.functions.getServer(processedServerName);
-
-      return serverUrl + processedPath[0] + "?" + processedData[1];
-
-    },
+//    getFullUrl: function(wsd, parameters) {
+//      app.debug.trace("plugin_RestClient.functions.getFullUrl(" + app.debug.arguments(arguments) + ")");
+//
+//      plugin_RestClient.functions.mergeWsdWithParameters
+//
+//    },
 
     getJsonWithLoader_Overrun: null,
     getJsonWithLoader_Delay: null,
@@ -571,8 +557,7 @@ var plugin_RestClient = {
      *
      * @memberof plugin_RestClient.functions
      * @function getJson
-     * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title,
-     *          userId: userId }, false, 1);
+     * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title, userId: userId }, false, 1);
      * @param {String}
      *          webServiceName - The name of the webservice.
      * @param {Object}
@@ -589,8 +574,7 @@ var plugin_RestClient = {
      *
      * @memberof plugin_RestClient.functions
      * @function getJson
-     * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title,
-     *          userId: userId }, true, 1);
+     * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title, userId: userId }, true, 1);
      * @param {String}
      *          webServiceName - The name of the webservice.
      * @param {Object}
@@ -607,12 +591,9 @@ var plugin_RestClient = {
      *
      * @memberof plugin_RestClient.functions
      * @function getJson
-     * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken:
-     *          token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId,
-     *          userid: userId }], ["getScheduleConfig", { wstoken: token }]], false, 3);
+     * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken: token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId, userid: userId }], ["getScheduleConfig", { wstoken: token }]], false, 3);
      * @param {Array
-     *          <Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
-     *          (webServiceName, parameter) webServiceName - The name of the webservice.
+     *          <Array<String, Object>>} webserviceCalls - An array containing arrays with two elements (webServiceName, parameter) webServiceName - The name of the webservice.
      * @param {false}
      *          false - Call the webservice synchronous.
      * @param {int}
@@ -625,12 +606,9 @@ var plugin_RestClient = {
      *
      * @memberof plugin_RestClient.functions
      * @function getJson
-     * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken:
-     *          token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId,
-     *          userid: userId }], ["getScheduleConfig", { wstoken: token }]], true, 3);
+     * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken: token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId, userid: userId }], ["getScheduleConfig", { wstoken: token }]], true, 3);
      * @param {Array
-     *          <Array<String, Object>>} webserviceCalls - An array containing arrays with two elements
-     *          (webServiceName, parameter) webServiceName - The name of the webservice.
+     *          <Array<String, Object>>} webserviceCalls - An array containing arrays with two elements (webServiceName, parameter) webServiceName - The name of the webservice.
      * @param {true}
      *          true - Call the webservice asynchronous.
      * @param {int}
@@ -645,11 +623,11 @@ var plugin_RestClient = {
         app.debug.debug("plugin_RestClient.functions.getJson() - case: keepAlive && isAlive");
 
         // get multible json objects
-        if (typeof service == "object") {
+        if (typeof service === "object") {
           app.debug.debug("plugin_RestClient.functions.getJson() - case: get multible json objects");
 
           // async = false
-          if (parameter == false || parameter == undefined) {
+          if (parameter === false || parameter === undefined) {
             app.debug.debug("plugin_RestClient.functions.getJson() case: async = false");
 
             if (!async) async = 1;
@@ -668,7 +646,7 @@ var plugin_RestClient = {
 
             promise = plugin_RestClient.getMultipleJsonAsync(service, parameter, async);
 
-            if (dfd == null || dfd == undefined) dfd = $.Deferred();
+            if (dfd === null || dfd === undefined) dfd = $.Deferred();
 
             promise.done(function(json) {
               dfd.resolve(json);
@@ -693,7 +671,7 @@ var plugin_RestClient = {
         }
 
         // get a single json object
-        else if (typeof service == "string") {
+        else if (typeof service === "string") {
           app.debug.debug("plugin_RestClient.functions.getJson() - case: get a single json object");
 
           // async = false
@@ -759,6 +737,42 @@ var plugin_RestClient = {
 
       // return error
       return null;
-    }
+    },
+
+    mergeWsdWithParameters: function(wsd, parameters) {
+
+      var map;
+
+      map = function(definitionObject, parameterObject) {
+        $.each(definitionObject, function(parameterKey, parameterValue) {
+          var mappedParameterKey;
+          if (parameterValue[0] === '{' && parameterValue[parameterValue.length - 1] === '}') {
+            mappedParameterKey = parameterValue.substr(1, parameterValue.length - 2);
+            if (parameters[mappedParameterKey] !== undefined) {
+              definitionObject[parameterKey] = parameters[mappedParameterKey];
+            } else {
+              app.debug.error("Undefined parameter in parameter object: " + mappedParameterKey);
+            }
+          }
+        });
+      };
+
+      // path
+      if (Object.keys(parameters).length > 0) {
+        $.each(parameters, function(parameterKey, parameterValue) {
+          wsd.url.replace("{" + parameterKey + "}", parameterValue);
+        });
+
+        // parameters
+        if (Object.keys(wsd.parameters).length > 0) {
+          map(wsd.parameters, parameters);
+        }
+
+        // headers
+        if (Object.keys(wsd.headers).length > 0) {
+          map(wsd.headers, parameters);
+        }
+      }
+    },
   }
 };

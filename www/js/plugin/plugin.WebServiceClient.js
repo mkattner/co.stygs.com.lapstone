@@ -1,14 +1,8 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
- * following conditions: The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_WebServiceClient = {
@@ -72,139 +66,169 @@ var plugin_WebServiceClient = {
     });
   },
 
-  getAjax: function(url, data, parameter, type, method, timeout, async, dataType) {
-    app.debug.trace("plugin_WebServiceClient.getAjax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ", " + async + ")");
-    app.debug.debug("plugin_WebServiceClient.getAjax() - webservice: " + url + "?" + data);
 
-    var json = null, dfd = null, headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals, encodedValue, exeptionConfig;
 
+  getAjax: function(wsd, parameters, async) {
+    // app.debug.trace("plugin_WebServiceClient.getAjax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ", " + async + ")");
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - webservice: " + url + "?" + data);
+
+    app.debug.operation(function() {
+      currentWsd = wsd;
+    });
+
+    var returnValue = null, dfd = null;// , headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals, encodedValue, exeptionConfig;
+
+    // the web service call is asynchronous; so return a dfd.promise() object
     if (async) {
       app.debug.debug("plugin_WebServiceClient.getAjax() - case: webservice is async - create deferred object");
       dfd = $.Deferred();
-      json = dfd.promise();
+      returnValue = dfd.promise();
     }
 
-    if (data.indexOf('§') != -1) {
-      app.debug.debug("plugin_WebServiceClient.getAjax() - case: webservice needs special headers");
-      splittedData = data.split("§");
-      headers = splittedData[1];
-      data = splittedData[0];
+    wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
+
+    wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
+
+
+
+    if (wsd.dataType.length === 0) {
+      wsd.dataType = plugin_WebServiceClient.config.server[wsd.server].mappings[wsd.method.toLowerCase()];
     }
 
-    contentType = "application/x-www-form-urlencoded";
-    if (dataType != undefined) {
-      app.debug.debug("plugin_WebServiceClient.getAjax() - case: dataType != undefined");
-
-      if (dataType.toLowerCase() == "query") {
-        app.debug.debug("plugin_WebServiceClient.getAjax() - case: contentType = text/plain");
-        $.each(parameter, function(key, value) {
-          if (typeof value == "object") {
-            app.debug.debug("plugin_WebServiceClient.getAjax() - case: value == object");
-
-            if (value instanceof Array) {
-              app.debug.debug("plugin_WebServiceClient.getAjax() - case: value == array");
-              encodedValue = "";
-              for (v in value) {
-                encodedValue += "&" + key + "=" + encodeURIComponent(value[v]);
-                app.debug.debug("plugin_WebServiceClient.getAjax() - array value: " + encodedValue);
-              }
-
-              encodedValue = encodedValue.substring(encodedValue.indexOf('=') + 1);
-              data = data.replace('{' + key + '}', encodedValue);
-              app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodedValue);
-            }
-
-            else {
-              app.debug.debug("plugin_WebServiceClient.getAjax() - case: value == undefined object");
-
-              value = JSON.stringify(value);
-              data = data.replace('{' + key + '}', encodeURIComponent(value));
-              app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value));
-
-            }
-          }
-
-          else {
-            app.debug.debug("plugin_WebServiceClient.getAjax() - case: value != array");
-
-            data = data.replace('{' + key + '}', encodeURIComponent(value));
-            app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value));
-
-          }
-
-        });
-
-        url += "?" + data;
-        data = '';
-        contentType = "text/plain";
-
-      } // end if
-
-      else if (dataType.toLowerCase() == "json") {
-        app.debug.debug("plugin_WebServiceClient.getAjax() - case: contentType = application/json; charset=utf-8");
-        app.debug.debug("plugin_WebServiceClient.getAjax() - create json object");
-        obj = {}
-        pairs = data.split('&');
-        for (i in pairs) {
-          indexOfEquals = pairs[i].indexOf('=');
-          paramKey = pairs[i].substring(0, indexOfEquals);
-          paramValue = pairs[i].substring(indexOfEquals + 1);
-          // var split = pairs[i].split('=');
-          // alert(paramKey);
-          // alert(paramValue);
-
-          if (paramValue.indexOf('{') != -1) {
-            app.debug.debug("plugin_WebServiceClient.getAjax() - parameter: " + paramKey + " = " + parameter[paramKey]);
-            obj[paramKey] = parameter[paramKey];
-
-          } else {
-            app.debug.debug("plugin_WebServiceClient.getAjax() - parameter: " + paramKey + " = " + paramValue);
-            obj[paramKey] = paramValue
-          }
-
-        }
-        data = JSON.stringify(obj);
-        contentType = "application/json; charset=utf-8";
-      }
-
-      else if (dataType.toLowerCase() == "form") {
-        app.debug.debug("plugin_WebServiceClient.getAjax() case: contentType = application/x-www-form-urlencoded");
-
-        $.each(parameter, function(key, value) {
-          if (typeof value == "object") {
-            value = JSON.stringify(value);
-            data = data.replace('{' + key + '}', encodeURIComponent(value));
-          } else {
-            data = data.replace('{' + key + '}', encodeURIComponent(value));
-          }
-          app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value));
-        });
-
-        contentType = "application/x-www-form-urlencoded; charset=UTF-8";
-      }
-
-      else {
-        alert("unknown type: " + dataType);
-      }
+    if (wsd.contentType.length === 0) {
+      wsd.contentType = "application/x-www-form-urlencoded";
     }
+
+    switch (wsd.contentType) {
+      case "application/json":
+        wsd["data"]=JSON.stringify(wsd.parameters);
+        break;
+      default:
+      wsd["data"]=wsd.parameters;
+break;
+    }
+
+    // if (data.indexOf('§') != -1) {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: webservice needs special headers");
+    // splittedData = data.split("§");
+    // headers = splittedData[1];
+    // data = splittedData[0];
+    // }
+    //
+    // contentType = "application/x-www-form-urlencoded";
+    // if (dataType != undefined) {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: dataType != undefined");
+    //
+    // if (dataType.toLowerCase() == "query") {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: contentType = text/plain");
+    // $.each(parameter, function(key, value) {
+    // if (typeof value == "object") {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: value == object");
+    //
+    // if (value instanceof Array) {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: value == array");
+    // encodedValue = "";
+    // for (v in value) {
+    // encodedValue += "&" + key + "=" + encodeURIComponent(value[v]);
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - array value: " + encodedValue);
+    // }
+    //
+    // encodedValue = encodedValue.substring(encodedValue.indexOf('=') + 1);
+    // data = data.replace('{' + key + '}', encodedValue);
+    // app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodedValue);
+    // }
+    //
+    // else {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: value == undefined object");
+    //
+    // value = JSON.stringify(value);
+    // data = data.replace('{' + key + '}', encodeURIComponent(value));
+    // app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value));
+    //
+    // }
+    // }
+    //
+    // else {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: value != array");
+    //
+    // data = data.replace('{' + key + '}', encodeURIComponent(value));
+    // app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value));
+    //
+    // }
+    //
+    // });
+    //
+    // url += "?" + data;
+    // data = '';
+    // contentType = "text/plain";
+    //
+    // } // end if
+    //
+    // else if (dataType.toLowerCase() == "json") {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - case: contentType = application/json; charset=utf-8");
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - create json object");
+    // obj = {}
+    // pairs = data.split('&');
+    // for (i in pairs) {
+    // indexOfEquals = pairs[i].indexOf('=');
+    // paramKey = pairs[i].substring(0, indexOfEquals);
+    // paramValue = pairs[i].substring(indexOfEquals + 1);
+    // // var split = pairs[i].split('=');
+    // // alert(paramKey);
+    // // alert(paramValue);
+    //
+    // if (paramValue.indexOf('{') != -1) {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - parameter: " + paramKey + " = " + parameter[paramKey]);
+    // obj[paramKey] = parameter[paramKey];
+    //
+    // } else {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() - parameter: " + paramKey + " = " + paramValue);
+    // obj[paramKey] = paramValue
+    // }
+    //
+    // }
+    // data = JSON.stringify(obj);
+    // contentType = "application/json; charset=utf-8";
+    // }
+    //
+    // else if (dataType.toLowerCase() == "form") {
+    // app.debug.debug("plugin_WebServiceClient.getAjax() case: contentType = application/x-www-form-urlencoded");
+    //
+    // $.each(parameter, function(key, value) {
+    // if (typeof value == "object") {
+    // value = JSON.stringify(value);
+    // data = data.replace('{' + key + '}', encodeURIComponent(value));
+    // } else {
+    // data = data.replace('{' + key + '}', encodeURIComponent(value));
+    // }
+    // app.debug.debug("pugin.RestClient.js ~ plugin_WebServiceClient.getAjax() - set in data: " + key + " = " + encodeURIComponent(value));
+    // });
+    //
+    // contentType = "application/x-www-form-urlencoded; charset=UTF-8";
+    // }
+    //
+    // else {
+    // alert("unknown type: " + dataType);
+    // }
+    // }
 
     try {
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax request");
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: url = " + url);
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: data = " + data);
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: dataType = " + dataType);
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: contentType = " + contentType);
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: async = " + async);
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: method = " + method);
-      app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: timeout = " + timeout);
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax request");
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: url = " + url);
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: data = " + data);
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: dataType = " + dataType);
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: contentType = " + contentType);
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: async = " + async);
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: method = " + method);
+      // app.debug.debug("plugin_WebServiceClient.getAjax() - ajax parameter: timeout = " + timeout);
       $.ajax({
-        url: url,
-        data: data,// ?key=value
-        dataType: type, // json
-        contentType: contentType,
+        url: wsd.url,
+        data: wsd.data,// ?key=value
+        dataType: wsd.dataTaype, // json
+        contentType: wsd.contentType,
         async: async, // false
-        method: method, // post
-        timeout: timeout, // 5000
+        method: wsd.method, // post
+        timeout: wsd.timeout, // 5000
         crossDomain: true,
         beforeSend: function(jqXHR, settings) {
           app.debug.debug("plugin_WebServiceClient.getAjax() beforeSend: set http headers");
@@ -215,28 +239,32 @@ var plugin_WebServiceClient = {
             jqXHR.setRequestHeader(plugin_WebServiceClient.config.headerToken.key, app.store.localStorage.get(plugin_WebServiceClient.config.headerToken.value));
           }
 
-          if (headers != null) {
-            app.debug.debug("plugin_WebServiceClient.getAjax() - case: headers != null");
-            app.debug.debug("plugin_WebServiceClient.getAjax() - set additional headers");
-            var pairs = headers.split('&'), split;
-            for (i in pairs) {
-              split = pairs[i].split('=');
-              paramKey = split[0];
-              paramValue = split[1];
+          if (Object.keys(wsd.headers).length > 0) {
+            // app.debug.debug("plugin_WebServiceClient.getAjax() - case: headers !== undefined");
+            // app.debug.debug("plugin_WebServiceClient.getAjax() - set additional headers");
+            // var pairs = headers.split('&'), split;
 
-              if (paramValue.indexOf('{') != -1) {
-                paramValue = parameter[paramKey];
-              }
-
-              app.debug.debug("plugin_WebServiceClient.getAjax() - setRequestHeader(" + paramKey + ", " + paramValue + ")");
-              jqXHR.setRequestHeader(paramKey, paramValue);
-            }
+            $.each(wsd.headers, function(headerKey, headerValue) {
+              jqXHR.setRequestHeader(headerKey, headerValue);
+            });
+            // for (i in pairs) {
+            // split = pairs[i].split('=');
+            // paramKey = split[0];
+            // paramValue = split[1];
+            //
+            // if (paramValue.indexOf('{') != -1) {
+            // paramValue = parameter[paramKey];
+            // }
+            //
+            // app.debug.debug("plugin_WebServiceClient.getAjax() - setRequestHeader(" + paramKey + ", " + paramValue + ")");
+            // jqXHR.setRequestHeader(paramKey, paramValue);
+            // }
           }
         },
 
         success: function(data, textStatus, jqXHR) {
           app.debug.debug("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() - Webservice done: " + JSON.stringify(data));
-          json = data;
+          returnValue = data;
 
           app.debug.debug("plugin_WebServiceClient.getAjax() - start exception handling");
           if (plugins.config.WebServiceError === true) {
@@ -244,8 +272,8 @@ var plugin_WebServiceClient = {
 
             if ((exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
               if (dfd != undefined && dfd != null) {
-                app.debug.debug("plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(json));
-                dfd.resolve(json);
+                app.debug.debug("plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(returnValue));
+                dfd.resolve(returnValue);
               }
 
             }
@@ -261,7 +289,7 @@ var plugin_WebServiceClient = {
           } else {
             if (dfd != undefined && dfd != null) {
               console.warn("Webservice Success!: Please use the plugin.WebServiceError (wse) to compute your errors and exceptions");
-              dfd.resolve(json);
+              dfd.resolve(returnValue);
             }
           }
         },
@@ -270,7 +298,7 @@ var plugin_WebServiceClient = {
           app.debug.debug("plugin_WebServiceClient.getAjax() - error: " + errorThrown);
           app.debug.debug("plugin_WebServiceClient.getAjax() - error: " + JSON.stringify(jqXHR));
           app.debug.debug("plugin_WebServiceClient.getAjax() - error: " + textStatus);
-          json = null;
+          returnValue = null;
           if (dfd != undefined && dfd != null) {
             app.debug.debug("plugin_WebServiceClient.getAjax() - case: reject deferred object");
 
@@ -280,14 +308,7 @@ var plugin_WebServiceClient = {
             } else {
               console.warn("Webservice Error!: Please use the plugin.WebServiceError (wse) to compute your errors and exceptions");
               dfd.reject({
-                "call": {
-                  "url": url,
-                  "data": data,
-                  "type": type,
-                  "async": async,
-                  "mehtod": method,
-                  "timeout": timeout
-                },
+                "call": wsd,
                 "jqXHR": JSON.parse(JSON.stringify(jqXHR))
               }, jqXHR);
             }
@@ -296,43 +317,43 @@ var plugin_WebServiceClient = {
       });
     } catch (err) {
       app.debug.debug("plugin_WebServiceClient.getAjax() - catch block: " + JSON.stringify(err));
-      json = null;
+      returnValue = null;
     }
-    app.debug.debug("plugin_WebServiceClient.getAjax() - Webservice returns: " + JSON.stringify(json));
-    return json;
+    app.debug.debug("plugin_WebServiceClient.getAjax() - Webservice returns: " + JSON.stringify(returnValue));
+    return returnValue;
   },
 
   functions: {
 
-    /**
-     *
-     */
-    getXml: function(uri, data, method, timeout) {
-      app.debug.trace("plugin_WebServiceClient.functions.getXml()");
-      var xml = plugin_WebServiceClient.getAjax(uri, data, "xml");
-      return xml;
-    },
+    // /**
+    // *
+    // */
+    // getXml: function(uri, data, method, timeout) {
+    // app.debug.trace("plugin_WebServiceClient.functions.getXml()");
+    // var xml = plugin_WebServiceClient.getAjax(uri, data, "xml");
+    // return xml;
+    // },
 
     /**
      *
      */
-    getJson: function(path, data, parameter, method, timeout, async, local, server) {
+    getJson: function(wsd, parameters, async) {
       app.debug.trace("plugin_WebServiceClient.functions.getJson()");
-      var url = null, dataType = null, json, serverConfig;
-      if (local === true) {
-        app.debug.debug("plugin_WebServiceClient.functions.getJson() - case: local == true");
-        url = path;
-      } else {
-        app.debug.debug("plugin_WebServiceClient.functions.getJson() - case: local == false");
-        serverConfig = plugin_WebServiceClient.getPreferedServer(server);
-        // alert(JSON.stringify(serverConfig));
-        url = serverConfig.scheme + serverConfig.scheme_specific_part + serverConfig.host + ":" + serverConfig.port + serverConfig.path + path;
-        dataType = plugin_WebServiceClient.config.server[server].mappings[method.toLowerCase()];
-        // alert(dataType);
-      }
+      var returnValue;
+      // if (local === true) {
+      // app.debug.debug("plugin_WebServiceClient.functions.getJson() - case: local == true");
+      // url = path;
+      // } else {
+      // app.debug.debug("plugin_WebServiceClient.functions.getJson() - case: local == false");
+      // serverConfig = plugin_WebServiceClient.getPreferedServer(server);
+      // alert(JSON.stringify(serverConfig));
+      // url = serverConfig.scheme + serverConfig.scheme_specific_part + serverConfig.host + ":" + serverConfig.port + serverConfig.path + path;
+      // dataType = plugin_WebServiceClient.config.server[server].mappings[method.toLowerCase()];
+      // alert(dataType);
+      // }
 
-      json = plugin_WebServiceClient.getAjax(url, data, parameter, "json", method, timeout, async, dataType);
-      return json;
+      returnValue = plugin_WebServiceClient.getAjax(wsd, parameters, async);
+      return returnValue;
     },
 
     // ask first or second or third or fourth or fifth server for the
