@@ -962,6 +962,7 @@ var pages = {
             window['page_' + $container.attr('id')].async.result = error;
             app.debug.debug("pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.fail()");
             window['page_' + $container.attr('id')].async.fail($container);
+            dfdPageCreation.reject($container);
           });
 
           promiseOfAsyncPageLoading.always(function() {

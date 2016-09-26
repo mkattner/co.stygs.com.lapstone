@@ -93,10 +93,12 @@ var plugin_Debug = {
       $(document).on("webserviceCall", function(event, promise, wsName, wsd) {
         promise.fail(function(error) {
           var parameterString = "?";
-
-          $.each(wsd.parameters, function(name, value) {
-            parameterString += (name + "=" + value + "&");
-          })
+          
+          if (wsd.parameters !== undefined) {
+            $.each(wsd.parameters, function(name, value) {
+              parameterString += (name + "=" + value + "&");
+            });
+          }
 
           alert(wsName + ": \n" + "URL:\n" + wsd.url + parameterString + "\n\nWsd:\n" + JSON.stringify(wsd) + "\n\nWebservice returns:\n" + JSON.stringify(error));
         });
@@ -627,6 +629,7 @@ var plugin_Debug = {
           globalLoader.AsyncJsonLoader(wsdUrl, 3).done(function(wsd) {
             var newWsdFileContent, sortMembers;
 
+            // function
             sortMembers = function(obj) {
               return Object.keys(obj).sort(function(a, b) {
                 return a[0].hashCode() - b[0].hashCode();
@@ -637,8 +640,10 @@ var plugin_Debug = {
             };
 
             newWsdFileContent = {}
-            if (typeof wsd.headers !== "object") {
-              $.each(wsd, function(wsdName, wsdObject) {
+            // alert(JSON.stringify(wsd) + "\n" + typeof wsd.headers + wsd.headers)
+
+            $.each(wsd, function(wsdName, wsdObject) {
+              if (typeof wsdObject.headers !== "object") {
                 var url, parameters, headers, newWsd;
 
                 newWsdFileContent[wsdName] = wsdObject;
@@ -682,11 +687,10 @@ var plugin_Debug = {
                 newWsd["parameters"] = sortMembers(newWsd["parameters"]);
                 newWsd["headers"] = sortMembers(newWsd["headers"]);
                 newWsdFileContent[wsdName] = newWsd;
-
-              });
-            } else {
-              newWsdFileContent = wsd;
-            }
+              } else {
+                newWsdFileContent[wsdName] = wsdObject;
+              }
+            });
 
             $.each(newWsdFileContent, function(wsdName, wsdObject) {
               wsdObject["server"] = "";

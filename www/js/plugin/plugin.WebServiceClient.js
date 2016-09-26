@@ -66,8 +66,6 @@ var plugin_WebServiceClient = {
     });
   },
 
-
-
   getAjax: function(wsd, parameters, async) {
     // app.debug.trace("plugin_WebServiceClient.getAjax(" + url + ", " + data + ", " + type + ", " + method + ", " + timeout + ", " + async + ")");
     // app.debug.debug("plugin_WebServiceClient.getAjax() - webservice: " + url + "?" + data);
@@ -86,10 +84,9 @@ var plugin_WebServiceClient = {
     }
 
     wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
+    app.debug.validate(wsd.serverObject, "object")
 
     wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
-
-
 
     if (wsd.dataType.length === 0) {
       wsd.dataType = plugin_WebServiceClient.config.server[wsd.server].mappings[wsd.method.toLowerCase()];
@@ -100,12 +97,12 @@ var plugin_WebServiceClient = {
     }
 
     switch (wsd.contentType) {
-      case "application/json":
-        wsd["data"]=JSON.stringify(wsd.parameters);
-        break;
-      default:
-      wsd["data"]=wsd.parameters;
-break;
+    case "application/json":
+      wsd["data"] = JSON.stringify(wsd.parameters);
+      break;
+    default:
+      wsd["data"] = $.extend(true, {}, wsd.parameters);
+      break;
     }
 
     // if (data.indexOf('§') != -1) {
@@ -335,7 +332,7 @@ break;
     // },
 
     /**
-     *
+     * 
      */
     getJson: function(wsd, parameters, async) {
       app.debug.trace("plugin_WebServiceClient.functions.getJson()");
@@ -359,7 +356,7 @@ break;
     // ask first or second or third or fourth or fifth server for the
     // prefered server
     /**
-     *
+     * 
      */
     askForPreferedServer: function() {
       app.debug.trace("plugin_WebServiceClient.functions.askForPreferedServer()");
@@ -370,7 +367,7 @@ break;
     },
 
     /**
-     *
+     * 
      */
     getDefaultServerName: function() {
       app.debug.trace("plugin_WebServiceClient.functions.getDefaultServerName()");
@@ -378,7 +375,7 @@ break;
     },
 
     /**
-     *
+     * 
      */
     getServer: function(name, asObject) {
       app.debug.trace("plugin_WebServiceClient.functions.getServer()");
@@ -407,7 +404,7 @@ break;
     },
 
     /**
-     *
+     * 
      */
     setServer: function(name, url, async) {
       app.debug.trace("plugin_WebServiceClient.functions.setServer()");
@@ -460,7 +457,7 @@ break;
     },
 
     /**
-     *
+     * 
      */
     keepAliveRequest: function() {
       app.debug.trace("plugin_WebServiceClient.functions.keepAliveRequest()");
@@ -468,7 +465,7 @@ break;
     },
 
     /**
-     *
+     * 
      */
     ping: function(serverName, async) {
       app.debug.trace("plugin_WebServiceClient.functions.ping()");

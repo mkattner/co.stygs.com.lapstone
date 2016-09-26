@@ -7,7 +7,7 @@
 
 /**
  * Plugin to call an cache pre defined websevices.
- *
+ * 
  * @namespace plugin_RestClient
  */
 var plugin_RestClient = {
@@ -65,7 +65,7 @@ var plugin_RestClient = {
   },
 
   /**
-   *
+   * 
    */
   loadDefinitionFileAsync: function(path) {
     app.debug.trace("plugin_RestClient.loadDefinitionFile()");
@@ -88,7 +88,7 @@ var plugin_RestClient = {
   },
 
   /**
-   *
+   * 
    */
   loadDefinitionFile: function(path) {
     app.debug.trace("plugin_RestClient.loadDefinitionFile()");
@@ -102,7 +102,7 @@ var plugin_RestClient = {
   },
 
   /**
-   *
+   * 
    */
   // getData: function(parameter, path) {
   // app.debug.trace("plugin_RestClient.getData(" + app.debug.arguments(arguments) + ")");
@@ -171,7 +171,7 @@ var plugin_RestClient = {
   // return [path, data];
   // },
   /**
-   *
+   * 
    */
   // getServer: function(service) {
   // var splittedService, server;
@@ -206,7 +206,7 @@ var plugin_RestClient = {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   /**
    * The public functions used by the API *
-   *
+   * 
    * @memberof plugin_RestClient
    * @namespace plugin_RestClient.functions
    */
@@ -214,7 +214,7 @@ var plugin_RestClient = {
 
     /**
      * Retruns a specific webservice definition (wsd).
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function getWsd
      * @param {String}
@@ -234,7 +234,7 @@ var plugin_RestClient = {
 
     /**
      * Retruns a specific webservice definition (wsd).
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function addWsd
      * @param {String}
@@ -256,37 +256,36 @@ var plugin_RestClient = {
 
     /**
      * Retruns a specific webservice definition (wsd).
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function addWsd
      * @param {Object}
      *          webServiceDefinition - An object containing the webservice definition.
      * @returns {boolean} Success or fail adding a the webservice.
      */
-//    addWsd: function(name, url, method, timeout, cacheable, cacheInMs, local) {
-//      app.debug.trace("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition(" + app.debug.arguments(arguments) + ")");
-//
-//      if (typeof url == "object") {
-//        plugin_RestClient.config.webservices[name] = url;
-//      }
-//
-//      else {
-//        plugin_RestClient.config.webservices[name] = {
-//          "url": url,
-//          "method": method,
-//          "timeout": timeout,
-//          "cacheable": cacheable,
-//          "cacheInMs": cacheInMs,
-//          "local": local
-//        };
-//      }
-//
-//      return true;
-//    },
-
+    // addWsd: function(name, url, method, timeout, cacheable, cacheInMs, local) {
+    // app.debug.trace("plugin.RestClient.js plugin_RestClient.functions.addWebserviceDefinition(" + app.debug.arguments(arguments) + ")");
+    //
+    // if (typeof url == "object") {
+    // plugin_RestClient.config.webservices[name] = url;
+    // }
+    //
+    // else {
+    // plugin_RestClient.config.webservices[name] = {
+    // "url": url,
+    // "method": method,
+    // "timeout": timeout,
+    // "cacheable": cacheable,
+    // "cacheInMs": cacheInMs,
+    // "local": local
+    // };
+    // }
+    //
+    // return true;
+    // },
     /**
      * Deletes a webservice definition (wsd).
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function deleteWsd
      * @param {String}
@@ -302,11 +301,10 @@ var plugin_RestClient = {
     /**
      * @deprecated removed in version 1.0
      */
-//    addWebserviceDefinition: function(name, url, method, timeout, cacheable, cacheInMs, local) {
-//      console.error("Depecated function!! use app.rc.addWsd(name, url, method, timeout, cacheable, cacheInMs, local)")
-//
-//    },
-
+    // addWebserviceDefinition: function(name, url, method, timeout, cacheable, cacheInMs, local) {
+    // console.error("Depecated function!! use app.rc.addWsd(name, url, method, timeout, cacheable, cacheInMs, local)")
+    //
+    // },
     /**
      * @deprecated removed in version 1.0
      */
@@ -317,7 +315,7 @@ var plugin_RestClient = {
 
     /**
      * Removes a specific webservice call from cache.
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function removeCache
      * @param {String}
@@ -334,7 +332,7 @@ var plugin_RestClient = {
 
     /**
      * Removes the eintire webservice cache.
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function clearCache
      * @returns {boolean} - Success or fail removing the cache.
@@ -347,7 +345,7 @@ var plugin_RestClient = {
 
     /**
      * Caches a webservice. Uses the name of the webservice an the calling parameter as identifyer.
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function cacheJson
      * @param {String}
@@ -427,7 +425,7 @@ var plugin_RestClient = {
 
     /**
      * Returns the full URL of a webservice call
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function getFullUrl
      * @param {String}
@@ -436,17 +434,25 @@ var plugin_RestClient = {
      *          parameter - The parameter of the call.
      * @returns {String} - The full URL of the webservice call.
      */
-//    getFullUrl: function(wsd, parameters) {
-//      app.debug.trace("plugin_RestClient.functions.getFullUrl(" + app.debug.arguments(arguments) + ")");
-//
-//      plugin_RestClient.functions.mergeWsdWithParameters
-//
-//    },
+    getFullUrl: function(wsd, parameters) {
+      app.debug.trace("plugin_RestClient.functions.getFullUrl(" + app.debug.arguments(arguments) + ")");
+      var url;
+
+      wsd = plugin_RestClient.functions.getWsd(wsd);
+      url = app.wsc.getServer(wsd.server).pathCombine(wsd.url);
+      url += "?";
+      plugin_RestClient.functions.mergeWsdWithParameters(wsd, parameters);
+
+      $.each(wsd.parameters, function(name, value) {
+        url += name + "=" + value + "&";
+      });
+      return url;
+    },
 
     getJsonWithLoader_Overrun: null,
     getJsonWithLoader_Delay: null,
     getJsonWithLoader_Queue: 0,
-    getJsonWithLoader: function(service, parameter, async, attempts, timeoutInMs, overrunInMs) {
+    getJsonWithLoader: function(service, parameter, async, attempts) {
       app.debug.trace("plugin_RestClient.functions.getJsonWithLoader(" + app.debug.arguments(arguments) + ")");
 
       // keep alive is Activated and connection is down
@@ -461,8 +467,8 @@ var plugin_RestClient = {
       app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_Timeout);
       app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_Overrun);
 
-      timeoutInMs = timeoutInMs || plugin_RestClient.config.global_getJsonWithLoader_Timeout;
-      overrunInMs = overrunInMs || plugin_RestClient.config.global_getJsonWithLoader_Overrun;
+      timeoutInMs = plugin_RestClient.config.global_getJsonWithLoader_Timeout;
+      overrunInMs = plugin_RestClient.config.global_getJsonWithLoader_Overrun;
       app.debug.info("plugin_RestClient - LOADER: timeout = " + timeoutInMs + "; overrun = " + overrunInMs);
 
       window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Overrun);
@@ -547,6 +553,9 @@ var plugin_RestClient = {
 
         });
 
+      } else {
+        alert(error);
+        result = result;
       }
 
       return result;
@@ -554,7 +563,7 @@ var plugin_RestClient = {
 
     /**
      * Call a webservice synchronous which returns a JSON text.
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function getJson
      * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title, userId: userId }, false, 1);
@@ -571,7 +580,7 @@ var plugin_RestClient = {
 
     /**
      * Call a webservice asynchronous which returns a JSON text.
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function getJson
      * @example app.rc.getJson("createBlockingEventForStudent", { wstoken: token, courseId: courseId, title: title, userId: userId }, true, 1);
@@ -588,7 +597,7 @@ var plugin_RestClient = {
 
     /**
      * Call multiple webservices synchronous which returning a JSON text.
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function getJson
      * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken: token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId, userid: userId }], ["getScheduleConfig", { wstoken: token }]], false, 3);
@@ -603,7 +612,7 @@ var plugin_RestClient = {
 
     /**
      * Call multiple webservices asynchronous which returning a JSON text.
-     *
+     * 
      * @memberof plugin_RestClient.functions
      * @function getJson
      * @example app.rc.getJson([["dakoraGetCourses", { wstoken: token, userid: 0 }], ["getExamplePool", { wstoken: token, courseid: courseId, userid: 0 }], ["getExampleTrash", { wstoken: token, courseid: courseId, userid: userId }], ["getScheduleConfig", { wstoken: token }]], true, 3);
@@ -722,11 +731,13 @@ var plugin_RestClient = {
         app.debug.debug("plugin_RestClient.functions.getJson() - server is not alive");
         // call is async
         if (parameter === true || async === true) {
-          var dfd = $.Deferred();
+          if (dfd === null || dfd === undefined) dfd = $.Deferred();
           dfd.reject({
             id: Math.abs("not alive".hashCode()),
             error: "not alive"
           }, null);
+
+          $(document).trigger("webserviceCall", [dfd.promise(), "server is not alive", {}]);
           return dfd.promise();
         }
 

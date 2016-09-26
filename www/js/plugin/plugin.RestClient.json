@@ -1,26 +1,37 @@
 {
-	"name":"RestClient",
-	"shortname":"rc",
-	"include":[
+	"name": "RestClient",
+	"shortname": "rc",
+	"include": [
 		"getMultipleJson.js",
 		"getMultipleJsonAsync.js",
 		"getSingleJson.js",
 		"getSingleJsonAsync.js"
 	],
-	"useKeepAlive":true,
-	"global_getJsonWithLoader_Timeout":200,
-	"global_getJsonWithLoader_Overrun":40,
-	"wsdFiles":[
+	"useKeepAlive": true,
+	"global_getJsonWithLoader_Timeout": 200,
+	"global_getJsonWithLoader_Overrun": 40,
+	"wsdFiles": [
 		"../files/wsd/wsd.template.json"
 	],
-	"webservices":{
-		"template":{
-			"url":"string url",
-			"method":"string method",
-			"timeout":1000,
-			"cacheable":false,
-			"cacheInMs":0
+	"webservices": {
+		"template": {
+			"info": "Add description or info here.",
+			"url": "/url/url/rest.php",
+			"parameters": {
+				"parameter": "{parameter}",
+				"fixedParameter": "fixedParameter"
+			},
+			"headers": {
+				"header": "{header}",
+				"fixedHeader": "fixedHeader"
+			},
+			"method": "POST",
+			"timeout": 8000,
+			"cacheable": false,
+			"cacheInMs": 0,
+			"server": "template",
+			"dataType": "",
+			"contentType": ""
 		}
-		
 	}
 }

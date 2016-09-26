@@ -1,14 +1,8 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
- * following conditions: The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_Notification = {
@@ -286,6 +280,10 @@ var plugin_Notification = {
 
               if (notification.id) $("#popupAlert").addClass("app-popup-id-" + notification.id.trim());
 
+              if (notification.width) $("#popupAlert-popup").css({
+                "width": notification.width,
+              });
+
               if (notification.title) {
                 $("#popupAlert div[data-role=header] h1").text(notification.title);
                 $("#popupAlert div[data-role=header] h1").css("display", "block");
@@ -319,13 +317,11 @@ var plugin_Notification = {
             });
 
             $("#popupAlert").popup({
-
               beforeposition: function() {
-                if (notification.width) {
-                  $("#popupAlert-popup").css({
-                    width: notification.width,
-                  });
-                }
+                $(this).closest(".ui-popup-container").css({
+                  "max-height": "95%",
+                  "overflow-y": "auto"
+                });
               }
             });
 
@@ -350,7 +346,9 @@ var plugin_Notification = {
 
               if (notification.id) $("#popupDialog").addClass("app-popup-id-" + notification.id.trim());
 
-              if (notification.width) $("#popupDialog-popup").css("width", notification.width);
+              if (notification.width) $("#popupDialog-popup").css({
+                "width": notification.width
+              });
 
               if (notification.title) {
                 $("#popupDialog div[data-role=header] h1").text(notification.title);
@@ -384,7 +382,14 @@ var plugin_Notification = {
               $("#popupDialog").popup("open");
             });
 
-            $("#popupDialog").popup();
+            $("#popupDialog").popup({
+              beforeposition: function() {
+                $(this).closest(".ui-popup-container").css({
+                  "max-height": "95%",
+                  "overflow-y": "auto"
+                });
+              }
+            });
 
           }, notification.delayInMs);
         });
@@ -408,7 +413,9 @@ var plugin_Notification = {
 
               if (notification.id) $("#popupTrialog").addClass("app-popup-id-" + notification.id.trim());
 
-              if (notification.width) $("#popupTrialog-popup").css("width", notification.width);
+              if (notification.width) $("#popupTrialog-popup").css({
+                "width": notification.width
+              });
 
               if (notification.title) {
                 $("#popupTrialog div[data-role=header] h1").text(notification.title);
@@ -443,7 +450,14 @@ var plugin_Notification = {
               $("#popupTrialog").popup("open");
             });
 
-            $("#popupTrialog").popup();
+            $("#popupTrialog").popup({
+              beforeposition: function() {
+                $(this).closest(".ui-popup-container").css({
+                  "max-height": "95%",
+                  "overflow-y": "auto"
+                });
+              }
+            });
 
           }, notification.delayInMs);
         });
@@ -478,8 +492,7 @@ var plugin_Notification = {
     },
 
     /**
-     * app.notify.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button", callbackButton:
-     * function(popup) { }, delayInMs: 0, width: "50%" });
+     * app.notify.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button", callbackButton: function(popup) { }, delayInMs: 0, width: "50%" });
      */
     alert: function(text, title, headline, button, callbackButton, delayInMs) {
       var notification;
@@ -506,9 +519,7 @@ var plugin_Notification = {
     },
 
     /**
-     * app.notify.dialog({ id: "", text: "text", title: "title", headline: "headline", buttonLeft: "button left",
-     * buttonRight: "button right", callbackButtonLeft: function(popup) { }, callbackButtonRight: function(popup) { },
-     * delayInMs: 0, width: "50%" });
+     * app.notify.dialog({ id: "", text: "text", title: "title", headline: "headline", buttonLeft: "button left", buttonRight: "button right", callbackButtonLeft: function(popup) { }, callbackButtonRight: function(popup) { }, delayInMs: 0, width: "50%" });
      */
     dialog: function(text, title, headline, buttonLeft, buttonRight, callbackButtonLeft, callbackButtonRight, delayInMs) {
       var notification;
@@ -536,10 +547,8 @@ var plugin_Notification = {
     },
 
     /**
-     * app.notify.trialog({ id: "", text: "text", title: "title", headline: "headline", buttonLeft: "button left",
-     * buttonCenter: "button center", buttonRight: "button right", callbackButtonLeft: function(popup) { },
-     * callbackButtonCenter: function(popup) { }, callbackButtonRight: function(popup) { }, delayInMs: 0, width: "50%"
-     * });
+     * app.notify.trialog({ id: "", text: "text", title: "title", headline: "headline", buttonLeft: "button left", buttonCenter: "button center", buttonRight: "button right", callbackButtonLeft: function(popup) { }, callbackButtonCenter: function(popup) { }, callbackButtonRight: function(popup) { },
+     * delayInMs: 0, width: "50%" });
      */
     trialog: function(notification) {
 
@@ -824,8 +833,7 @@ var plugin_Notification = {
     add: {
 
       /**
-       * app.notify.add.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button",
-       * callbackButton: function(popup) { }, delayInMs: 0, width: "50%", pageDelay:0 });
+       * app.notify.add.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button", callbackButton: function(popup) { }, delayInMs: 0, width: "50%", pageDelay:0 });
        */
       alert: function(text, title, headline, button, callbackButton, delayInMs) {
 
