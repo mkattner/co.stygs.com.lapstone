@@ -35,6 +35,31 @@ var app = {
     app[name] = object;
   }
 
+  ,
+  func: function(qualifyer, func, currentObject) {
+    var qualifyers, currentQualifyer;
+
+    qualifyers = qualifyer.split('.');
+    currentQualifyer = qualifyers.shift();
+    currentObject = currentObject || this;
+
+    if (qualifyers.length === 0) {
+
+      app.debug.operation(function() {
+        if (currentObject[currentQualifyer] !== undefined) {
+          app.debug.error(qualifyer);
+        }
+      });
+
+      currentObject[currentQualifyer] = func;
+    }
+
+    else {
+      currentObject[currentQualifyer] = currentObject[currentQualifyer] || {};
+      app.func(qualifyers.join('.'), func, currentObject[currentQualifyer]);
+    }
+  }
+
 };
 
 function initialisation() {
@@ -62,7 +87,7 @@ function loadPlugins() {
   promise = globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
     startup.addFunction("                  plugin constructor", plugins.constructor, "");
-    // plugins.constructor();
+    app["plugins"] = plugins;
     dfd.resolve();
   });
   promise.fail(function() {
@@ -85,7 +110,7 @@ function loadPages() {
   promise = globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
     startup.addFunction("                  page constructor", pages.constructor, "");
-    // pages.constructor();
+    app["pages"] = pages;
     dfd.resolve();
   });
   promise.fail(function() {
@@ -239,7 +264,8 @@ function updateFramework() {
         // update scrips finished
         $.when.apply($, updateScriptPromisses).done(function() {
           app.info.set("app.config.version.update", true);
-          app.nav.redirect(app.config.startPage_firstStart);
+//          app.nav.redirect(app.config.startPage_firstStart);
+          dfd.resolve();
         }).fail(function() {
           dfd.reject();
         });
@@ -829,6 +855,19 @@ $(document).ready(function() {
 
     app.config['startup'] = ((Date.now()) / 1000) - startup.startupTimestamp;
 
+    
+    // cleanup
+    delete initialisation;
+    delete loadPlugins;
+    delete loadPages;
+    delete loadConfiguration;
+    delete updateFramework;
+    delete enchantPages;
+    delete waitForMobileInit;
+    delete waitForDeviceready;
+    delete startupDefinition;
+    delete startup;
+    
     console.log("Lapstone started in " + app.config.startup + "seconds");
 
     // }, 200);

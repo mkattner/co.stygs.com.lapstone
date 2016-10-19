@@ -80,6 +80,13 @@ public class Wsd_JSON_Webservice {
         this.contentType = contentType;
     }
 
+    public String getExtend() {
+	return extend;
+    }
+    public void setExtend(String extend) {
+	this.extend = extend;
+    }
+
     private String method;
     private Integer timeout;
     private Boolean cacheable;
@@ -87,5 +94,6 @@ public class Wsd_JSON_Webservice {
     private String server;
     private String dataType;
     private String contentType;
+    private String extend;
 
 }

@@ -213,8 +213,8 @@ public class Release {
 
 		File newCssFile = new File(cssFile.getAbsoluteFile().getParentFile().getAbsolutePath(), cssFile.getName().replace(".css", "." + newVersion + ".css"));
 
-		System.out.println("Compress css: " + cssFile.getAbsolutePath());
-		System.out.println("   Rename to: " + newCssFile.getAbsolutePath());
+		System.out.println("              Read css: " + cssFile.getAbsolutePath());
+		System.out.println("Compress and rename to: " + newCssFile.getAbsolutePath());
 
 		// Compressor.compressStylesheet(cssFile.getAbsolutePath(),
 		// newCssFile.getAbsolutePath(), c);
@@ -222,84 +222,88 @@ public class Release {
 		cssFile.delete();
 
 		CascadingStyleSheet aCSS = CSSReader.readFromFile(newCssFile, CCharset.CHARSET_UTF_8_OBJ, ECSSVersion.CSS30);
-		CascadingStyleSheet newCss = new CascadingStyleSheet();
-		for (CSSStyleRule rule : aCSS.getAllStyleRules()) {
-		    int index = 0;
-		    for (CSSDeclaration declaration : rule.getAllDeclarations()) {
-			// DISPLAY:FLEX
-			if (declaration.getProperty().equals("display")) {
+		if (aCSS == null) {
+		    System.out.println("Error reading CSS file: " + newCssFile.getAbsolutePath());
+		    return false;
+		} else {
+		    for (CSSStyleRule rule : aCSS.getAllStyleRules()) {
+			int index = 0;
+			for (CSSDeclaration declaration : rule.getAllDeclarations()) {
+			    // DISPLAY:FLEX
+			    if (declaration.getProperty().equals("display")) {
 
-			    String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
-			    if (expression.equals("flex")) {
-				// display: -webkit-box;
-				// display: -moz-box;
-				// display: -ms-flexbox;
-				// display: -webkit-flex;
-				// display: flex;
-				rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-webkit-box"))));
+				String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
+				if (expression.equals("flex")) {
+				    // display: -webkit-box;
+				    // display: -moz-box;
+				    // display: -ms-flexbox;
+				    // display: -webkit-flex;
+				    // display: flex;
+				    rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-webkit-box"))));
+				    index++;
+				    rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-moz-box"))));
+				    index++;
+				    rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-ms-flexbox"))));
+				    index++;
+				    rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-webkit-flex"))));
+				    index++;
+				}
+			    }
+			    // FLEX
+			    else if (declaration.getProperty().equals("flex")) {
+				String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
+
+				// -webkit-box-flex: 8;
+				// -moz-box-flex: 8;
+				// width: 20%; -webkit-flex: 8;
+				// -ms-flex: 8;
+				// flex: 8;
+				rule.addDeclaration(index, new CSSDeclaration("-webkit-box-flex", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
 				index++;
-				rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-moz-box"))));
+				rule.addDeclaration(index, new CSSDeclaration("-moz-box-flex", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
 				index++;
-				rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-ms-flexbox"))));
-				index++;
-				rule.addDeclaration(index, new CSSDeclaration("display", new CSSExpression().addMember(new CSSExpressionMemberTermSimple("-webkit-flex"))));
+				rule.addDeclaration(index, new CSSDeclaration("-ms-flex", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
 				index++;
 			    }
-			}
-			// FLEX
-			else if (declaration.getProperty().equals("flex")) {
-			    String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
+			    // JUSTIFY-CONTENT
+			    else if (declaration.getProperty().equals("justify-content")) {
+				String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
 
-			    // -webkit-box-flex: 8;
-			    // -moz-box-flex: 8;
-			    // width: 20%; -webkit-flex: 8;
-			    // -ms-flex: 8;
-			    // flex: 8;
-			    rule.addDeclaration(index, new CSSDeclaration("-webkit-box-flex", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-moz-box-flex", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-ms-flex", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			}
-			// JUSTIFY-CONTENT
-			else if (declaration.getProperty().equals("justify-content")) {
-			    String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
+				rule.addDeclaration(index, new CSSDeclaration("-webkit-justify-content", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+				rule.addDeclaration(index, new CSSDeclaration("-moz-justify-content", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+				rule.addDeclaration(index, new CSSDeclaration("-ms-justify-content", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+			    }
+			    // ALIGN-ITEMS
+			    else if (declaration.getProperty().equals("align-items")) {
+				String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
 
-			    rule.addDeclaration(index, new CSSDeclaration("-webkit-justify-content", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-moz-justify-content", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-ms-justify-content", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			}
-			// ALIGN-ITEMS
-			else if (declaration.getProperty().equals("align-items")) {
-			    String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
+				rule.addDeclaration(index, new CSSDeclaration("-webkit-align-items", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+				rule.addDeclaration(index, new CSSDeclaration("-moz-align-items", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+				rule.addDeclaration(index, new CSSDeclaration("-ms-align-items", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+			    }
+			    // FLEX-DIRECTION
+			    else if (declaration.getProperty().equals("flex-direction")) {
+				String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
 
-			    rule.addDeclaration(index, new CSSDeclaration("-webkit-align-items", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-moz-align-items", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-ms-align-items", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			}
-			// FLEX-DIRECTION 
-			else if (declaration.getProperty().equals("flex-direction")) {
-			    String expression = declaration.getExpression().getAsCSSString(new CSSWriterSettings(), 0);
-
-			    rule.addDeclaration(index, new CSSDeclaration("-webkit-flex-direction", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-moz-flex-direction", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
-			    index++;
-			    rule.addDeclaration(index, new CSSDeclaration("-ms-flex-direction", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				rule.addDeclaration(index, new CSSDeclaration("-webkit-flex-direction", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+				rule.addDeclaration(index, new CSSDeclaration("-moz-flex-direction", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+				rule.addDeclaration(index, new CSSDeclaration("-ms-flex-direction", new CSSExpression().addMember(new CSSExpressionMemberTermSimple(expression))));
+				index++;
+			    }
 			    index++;
 			}
-			index++;
 		    }
-		}
-		new CSSWriter(ECSSVersion.CSS30, false).writeCSS(aCSS, new FileWriter(newCssFile));
+		    new CSSWriter(ECSSVersion.CSS30, true).writeCSS(aCSS, new FileWriter(newCssFile));
 
+		}
 	    }
 
 	    // // delete empty and unused directoryies

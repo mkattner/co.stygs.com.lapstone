@@ -18,12 +18,30 @@ var plugins = {
     var dfd = $.Deferred();
 
     // reverse order
+    startup.addFunction("                  cleanup plugins", plugins.cleanup, "");
     startup.addFunction("                  defining the plugins' events", plugins.callPluginEvents, "");
     startup.addFunction("                  calling the plugins' loaded event", plugins.callPluginsLoadedEvent, "");
     startup.addFunction("                  loading the plugins' include scripts", plugins.includeFiles, "");
     startup.addFunction("                  loading the plugins", plugins.loadPlugins, "");
     startup.addFunction("                  verifying the plugins' configuration", plugins.verifyPluginNames, "");
     startup.addFunction("                  loading the plugins' configuration", plugins.loadPluginConfig, "");
+    dfd.resolve();
+    return dfd.promise();
+  },
+  
+  
+  cleanup: function() {
+    var dfd = $.Deferred();
+    
+    
+    delete app.plugins.contructor
+    delete app.plugins.callPluginEvents
+    delete app.plugins.callPluginsLoadedEvent
+    delete app.plugins.includeFiles
+    delete app.plugins.loadPlugins
+    delete app.plugins.verifyPluginNames
+    delete app.plugins.loadPluginConfig;
+    
     dfd.resolve();
     return dfd.promise();
   },

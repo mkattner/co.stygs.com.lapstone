@@ -1,3 +1,4 @@
+//# sourceURL=plugin.RestClient.js
 /*
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -223,11 +224,18 @@ var plugin_RestClient = {
      */
     getWsd: function(webServiceName) {
       app.debug.trace("plugin_RestClient.functions.getWsd(" + app.debug.arguments(arguments) + ")");
-      var wsd;
+      var wsd, tmpWsd;
       wsd = $.extend(true, {}, plugin_RestClient.config.webservices[webServiceName]);
+
       if (Object.keys(wsd).length === 0) {
         app.debug.error("Service not defined: " + webServiceName);
         return null;
+      } else if (Object.keys(wsd).indexOf("extend") !== -1) {
+        // webservice is extension
+        // TODO multiple inheritances
+        tmpWsd = plugin_RestClient.functions.getWsd(wsd.extend);
+        delete wsd.extend;
+        wsd = $.extend(true, wsd, tmpWsd);
       }
       return wsd;
     },
@@ -756,30 +764,50 @@ var plugin_RestClient = {
 
       map = function(definitionObject, parameterObject) {
         $.each(definitionObject, function(parameterKey, parameterValue) {
-          var mappedParameterKey;
-          if (parameterValue[0] === '{' && parameterValue[parameterValue.length - 1] === '}') {
+
+          var mappedParameterKey, defaultValue;
+
+          // simple parameter with default value {parameter name}||0
+          if (parameterValue.contains("||")) {
+            defaultValue = parameterValue.substr(parameterValue.indexOf("||") + 2);
+            parameterValue = parameterValue.substr(0, parameterValue.indexOf("||"));
+          }
+
+          // simple parameter {parameter name}
+          if ((parameterValue[0] === '{') && (parameterValue[parameterValue.length - 1] === '}')) {
+
             mappedParameterKey = parameterValue.substr(1, parameterValue.length - 2);
+
             if (parameters[mappedParameterKey] !== undefined) {
+              
+              
               definitionObject[parameterKey] = parameters[mappedParameterKey];
-            } else {
+            }
+
+            else if (defaultValue !== undefined) {
+              definitionObject[parameterKey] = defaultValue;
+            }
+
+            else {
               app.debug.error("Undefined parameter in parameter object: " + mappedParameterKey);
             }
           }
+
         });
       };
 
-      // path
       if (Object.keys(parameters).length > 0) {
+        // map path
         $.each(parameters, function(parameterKey, parameterValue) {
           wsd.url.replace("{" + parameterKey + "}", parameterValue);
         });
 
-        // parameters
+        // map parameters
         if (Object.keys(wsd.parameters).length > 0) {
           map(wsd.parameters, parameters);
         }
 
-        // headers
+        // map headers
         if (Object.keys(wsd.headers).length > 0) {
           map(wsd.headers, parameters);
         }

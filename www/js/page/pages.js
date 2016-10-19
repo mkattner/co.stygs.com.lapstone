@@ -1,14 +1,8 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
- * following conditions: The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var pages = {
@@ -24,7 +18,7 @@ var pages = {
     var dfd = $.Deferred();
 
     // reverse order
-
+    startup.addFunction("                  cleanup pages", pages.cleanup);
     startup.addFunction("                  calling the plugins' pages loaded function", pages.callPluginsPagesLoaded, "");
     startup.addFunction("                  calling the pages' setEvents() function", pages.setEvents, "");
     startup.addFunction("                  load pages' globalPages", pages.globalPages, "");
@@ -37,6 +31,26 @@ var pages = {
     // globalLoader.AsyncScriptLoader,
     // "../files/globalPage.js");
 
+    dfd.resolve();
+    return dfd.promise();
+  },
+
+  cleanup: function() {
+    var dfd = $.Deferred();
+    
+    
+
+    
+    delete app.pages.contructor
+    delete app.pages.callPluginsPagesLoaded
+    delete app.pages.setEvents
+    delete app.pages.globalPages
+    delete app.pages.verifyPages
+    delete app.pages.include
+    delete app.pages.loadPages
+    delete app.pages.verifyPageNames
+    delete app.pages.loadPageConfig;
+    
     dfd.resolve();
     return dfd.promise();
   },
@@ -96,6 +110,7 @@ var pages = {
       promise = globalLoader.AsyncJsonLoader("../js/page/pages.json");
       promise.done(function(json) {
         pages.config = json;
+
         dfd.resolve();
       });
       promise.fail(function() {
@@ -118,7 +133,7 @@ var pages = {
     var dfd = $.Deferred(), currentPage;
     // alert(JSON.stringify(pages.pageNames));
     $.each(pages.pageNames, function(key, pageName) {
-      currentPage = window['page_' + pageName];
+      var currentPage = window['page_' + pageName];
 
       if (currentPage.config === undefined) {
         console.warn("The page: " + pageName + " has no 'config' property.");
@@ -176,6 +191,7 @@ var pages = {
       if (currentPage.setEvents === undefined) console.warn("The page: " + pageName + " has no 'setEvents' property.");
 
       if (currentPage.functions === undefined) console.warn("The page: " + pageName + " has no 'functions' property.");
+
     });
 
     dfd.resolve();
@@ -257,6 +273,14 @@ var pages = {
     if (app.config.min) {
       promiseOfPromises_js.done(function() {
         pages.callPluginPageEventFunctions();
+        $.each(pages.pageNames, function(key, pageName) {
+          var currentPage = window['page_' + pageName];
+
+          window["app"]["page"] = window["app"]["page"] || {};
+          window["app"]["page"][pageName] = window["app"]["page"][pageName] || {};
+          window["app"]["page"][pageName] = currentPage.functions;
+
+        });
         dfd.resolve();
       });
       promiseOfPromises_js.fail(function() {
@@ -273,6 +297,14 @@ var pages = {
 
         promiseOfPromises_func.done(function() {
           pages.callPluginPageEventFunctions();
+          $.each(pages.pageNames, function(key, pageName) {
+            var currentPage = window['page_' + pageName];
+
+            window["app"]["page"] = window["app"]["page"] || {};
+            window["app"]["page"][pageName] = window["app"]["page"][pageName] || {};
+            window["app"]["page"][pageName] = currentPage.functions;
+
+          });
           dfd.resolve();
         });
         promiseOfPromises_func.fail(function() {
@@ -789,14 +821,16 @@ var pages = {
         if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
           pages.eventPromises[eventName].push(eventFunctionResult);
         }
-        // call the global pages
-        $.each(window["page_" + $container.attr('id')].config.globalPage, function(index, globalPageName) {
 
-          eventFunctionResult = window["globalPage_" + globalPageName][eventName](event, $container);
-          if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
-            pages.eventPromises[eventName].push(eventFunctionResult);
-          }
-        });
+        if (eventFunctionResult !== false) {
+          // call the global pages
+          $.each(window["page_" + $container.attr('id')].config.globalPage, function(index, globalPageName) {
+            eventFunctionResult = window["globalPage_" + globalPageName][eventName](event, $container);
+            if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
+              pages.eventPromises[eventName].push(eventFunctionResult);
+            }
+          });
+        }
 
         $.when.apply($, pages.eventPromises[eventName]).always(function() {
           window.clearTimeout(pages.eventTimeouts[eventName]);
@@ -830,6 +864,7 @@ var pages = {
           });
 
           app.actions.logout();
+          return false;
 
         } else if (plugins.config.KeepAlive === true) {
           app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive");
@@ -847,6 +882,7 @@ var pages = {
                 app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server");
                 app.debug.debug("Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.", 60);
                 app.alive.badConnectionHandler();
+                return false;
               }
             } else {
               app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file");
@@ -1079,5 +1115,9 @@ var pages = {
         if (navigator.splashscreen != undefined) navigator.splashscreen.hide();
       }
     }
+  },
+
+  getCurrent: function() {
+    return window["page_" + $("[data-role=page]").attr("id")];
   }
 };

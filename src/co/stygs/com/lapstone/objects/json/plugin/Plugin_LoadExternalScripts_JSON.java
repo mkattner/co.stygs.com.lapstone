@@ -1,11 +1,17 @@
 package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.helger.commons.charset.CCharset;
+import com.helger.css.ECSSVersion;
+import com.helger.css.decl.CascadingStyleSheet;
+import com.helger.css.reader.CSSReader;
+import com.helger.css.writer.CSSWriter;
 import com.inet.lib.less.Less;
 
 import co.stygs.com.lapstone.Compressor;
@@ -88,7 +94,18 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 	    else if (url.endsWith(".css")) {
 		System.out.println("Compress CSS file:              " + currentFile.getAbsolutePath());
-		Compressor.compressStylesheet(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new StylesheetCompressorOptions());
+
+		CascadingStyleSheet aCSS = CSSReader.readFromFile(currentFile, CCharset.CHARSET_UTF_8_OBJ, ECSSVersion.CSS30);
+		if (aCSS == null) {
+		    throw new Exception();
+		} else {
+
+		    new CSSWriter(ECSSVersion.CSS30, true).writeCSS(aCSS, new FileWriter(currentFile));
+		}
+
+		// Compressor.compressStylesheet(currentFile.getAbsolutePath(),
+		// currentFile.getAbsolutePath(), new
+		// StylesheetCompressorOptions());
 
 		currentStyle = FileUtils.readFileToString(currentFile) + "\n\n";
 	    } else {

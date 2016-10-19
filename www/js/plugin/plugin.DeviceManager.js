@@ -1,3 +1,4 @@
+//# sourceURL=plugin.DeviceManager.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com
  * 

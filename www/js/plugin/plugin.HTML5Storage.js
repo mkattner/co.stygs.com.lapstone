@@ -1,3 +1,4 @@
+//# sourceURL=plugin.HTML5Storage.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com
  * 
