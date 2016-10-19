@@ -1,47 +1,39 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
- * following conditions: The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var plugins = {
+app["plugins"] = {
   config: null,
   pluginNames: [],
   constructor: function() {
     var dfd = $.Deferred();
 
     // reverse order
-    startup.addFunction("                  cleanup plugins", plugins.cleanup, "");
-    startup.addFunction("                  defining the plugins' events", plugins.callPluginEvents, "");
-    startup.addFunction("                  calling the plugins' loaded event", plugins.callPluginsLoadedEvent, "");
-    startup.addFunction("                  loading the plugins' include scripts", plugins.includeFiles, "");
-    startup.addFunction("                  loading the plugins", plugins.loadPlugins, "");
-    startup.addFunction("                  verifying the plugins' configuration", plugins.verifyPluginNames, "");
-    startup.addFunction("                  loading the plugins' configuration", plugins.loadPluginConfig, "");
+    startup.addFunction("                  cleanup plugins", app.plugins.cleanup, "");
+    startup.addFunction("                  defining the plugins' events", app.plugins.callPluginEvents, "");
+    startup.addFunction("                  calling the plugins' loaded event", app.plugins.callPluginsLoadedEvent, "");
+    startup.addFunction("                  loading the plugins' include scripts", app.plugins.includeFiles, "");
+    startup.addFunction("                  loading the plugins", app.plugins.loadPlugins, "");
+    startup.addFunction("                  verifying the plugins' configuration", app.plugins.verifyPluginNames, "");
+    startup.addFunction("                  loading the plugins' configuration", app.plugins.loadPluginConfig, "");
     dfd.resolve();
     return dfd.promise();
   },
-  
-  
+
   cleanup: function() {
     var dfd = $.Deferred();
-    
-    
-    delete app.plugins.contructor
-    delete app.plugins.callPluginEvents
-    delete app.plugins.callPluginsLoadedEvent
-    delete app.plugins.includeFiles
-    delete app.plugins.loadPlugins
-    delete app.plugins.verifyPluginNames
-    delete app.plugins.loadPluginConfig;
-    
+
+//    if (delete app.plugins.contructor === false) alert();
+//    if (delete app.plugins.callPluginEvents === false) alert();
+//    if (delete app.plugins.callPluginsLoadedEvent === false) alert();
+//    if (delete app.plugins.includeFiles === false) alert();
+//    if (delete app.plugins.loadPlugins === false) alert();
+//    if (delete app.plugins.verifyPluginNames === false) alert();
+//    if (delete app.plugins.loadPluginConfig === false) alert();
+
     dfd.resolve();
     return dfd.promise();
   },
@@ -49,15 +41,15 @@ var plugins = {
   loadPluginConfig: function() {
     var dfd = $.Deferred(), promise;
     if (app.config.min) {
-      plugins.config = config_json;
+      app.plugins.config = config_json;
       dfd.resolve();
     } else {
       promise = globalLoader.AsyncJsonLoader("../js/plugin/plugins.json");
       promise.done(function(data) {
-        plugins.config = data;
+        app.plugins.config = data;
         // remove unused plugins
-        $.each(plugins.config, function(pluginName, use) {
-          if (!use) delete plugins.config[pluginName];
+        $.each(app.plugins.config, function(pluginName, use) {
+          if (!use) delete app.plugins.config[pluginName];
         });
         dfd.resolve();
       });
@@ -84,7 +76,7 @@ var plugins = {
     }
 
     else {
-      $.each(plugins.config, function(pluginName, loaded) {
+      $.each(app.plugins.config, function(pluginName, loaded) {
         if (loaded) {
           app.debug.validate(window['plugin_' + pluginName].config.include);
           $.each(window['plugin_' + pluginName].config.include, function(index, includeFile) {
@@ -132,7 +124,7 @@ var plugins = {
       return;
     }
 
-    promiseConfiguration = plugins.loadPluginConfiguration(key);
+    promiseConfiguration = app.plugins.loadPluginConfiguration(key);
 
     promiseConfiguration.done(function() { // check the config:
       // name
@@ -159,7 +151,7 @@ var plugins = {
 
         // plugin succesfully loaded
         // attach plugin's name to array
-        plugins.pluginNames.push(key);
+        app.plugins.pluginNames.push(key);
 
         dfd.resolve();
       });
@@ -177,11 +169,11 @@ var plugins = {
 
   loadPlugins: function() {
     var dfd = $.Deferred(), promises_js = Array(), promiseOfPromises_js, promises_func = Array(), promiseOfPromises_func;
-    $.each(plugins.config, function(key, value) {
+    $.each(app.plugins.config, function(key, value) {
       if (value == true) {
         if (app.config.min) {
           // console.log("todo !!!!!");
-          promises_js.push(plugins.onPluginLoaded(key));
+          promises_js.push(app.plugins.onPluginLoaded(key));
         } else {
           promises_js.push(globalLoader.AsyncScriptLoader("../js/plugin/plugin." + key + ".js"));
         }
@@ -201,8 +193,8 @@ var plugins = {
     } else {
 
       promiseOfPromises_js.done(function() {
-        $.each(plugins.config, function(key, value) {
-          promises_func.push(plugins.onPluginLoaded(key));
+        $.each(app.plugins.config, function(key, value) {
+          promises_func.push(app.plugins.onPluginLoaded(key));
         });
 
         promiseOfPromises_func = $.when.apply($, promises_func);
@@ -227,7 +219,7 @@ var plugins = {
   callPluginsLoadedEvent: function() {
     var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
-    $.each(plugins.pluginNames, function(key, value) {
+    $.each(app.plugins.pluginNames, function(key, value) {
       promises.push(window['plugin_' + value].pluginsLoaded());
     });
 
@@ -246,7 +238,7 @@ var plugins = {
 
   callPluginEvents: function() {
     var dfd = $.Deferred();
-    $.each(plugins.pluginNames, function(key, value) {
+    $.each(app.plugins.pluginNames, function(key, value) {
       // try {
       window['plugin_' + value].definePluginEvents();
       // } catch (err) {
@@ -260,14 +252,14 @@ var plugins = {
 
   functions: {
     pluginLoaded: function(pluginName) {
-      app.debug.trace("plugins.functions.pluginLoaded()");
-      if (plugins.config.hasOwnProperty(pluginName)) {
-        app.debug.debug("plugins.functions.pluginLoaded() - true: " + pluginName);
+      app.debug.trace("app.plugins.functions.pluginLoaded()");
+      if (app.plugins.config.hasOwnProperty(pluginName)) {
+        app.debug.debug("app.plugins.functions.pluginLoaded() - true: " + pluginName);
         return true;
       }
 
       else {
-        app.debug.debug("plugins.functions.pluginLoaded() - false: " + pluginName);
+        app.debug.debug("app.plugins.functions.pluginLoaded() - false: " + pluginName);
         return false;
       }
     },

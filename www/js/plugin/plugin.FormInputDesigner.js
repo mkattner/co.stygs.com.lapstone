@@ -36,7 +36,7 @@ var plugin_FormInputDesigner = {
 		app.debug.trace("plugin_FormInputDesigner.pluginsLoaded()");
 		var dfd = $.Deferred();
 
-		if (plugins.functions.pluginLoaded("Skin")) {
+		if (app.plugins.functions.pluginLoaded("Skin")) {
 			if (plugin_Skin.config.useSkinPlugin) {
 				app.debug.trace("plugin_FormInputDesigner.pluginsLoaded() - case: Skin plugin is active");
 				plugin_FormInputDesigner.classes = [ plugin_Skin.config.defaultSkin ];

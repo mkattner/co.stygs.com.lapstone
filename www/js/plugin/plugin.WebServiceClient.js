@@ -270,7 +270,7 @@ var plugin_WebServiceClient = {
           returnValue = data;
 
           app.debug.debug("plugin_WebServiceClient.getAjax() - start exception handling");
-          if (plugins.config.WebServiceError === true) {
+          if (app.plugins.functions.pluginLoaded("WebServiceError") === true) {
             app.debug.debug("plugin_WebServiceClient.getAjax() - case: wse plugin is active");
 
             if ((exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
@@ -305,7 +305,7 @@ var plugin_WebServiceClient = {
           if (dfd != undefined && dfd != null) {
             app.debug.debug("plugin_WebServiceClient.getAjax() - case: reject deferred object");
 
-            if (plugins.config.WebServiceError === true) {
+            if (app.plugins.functions.pluginLoaded("WebServiceError") === true) {
               app.debug.debug("plugin_WebServiceClient.getAjax() - case: wse plugin is active");
               dfd.reject(app.wse.getExceptionConfig(jqXHR), jqXHR);
             } else {

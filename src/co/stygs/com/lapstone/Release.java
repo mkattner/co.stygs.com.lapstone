@@ -20,9 +20,7 @@ import co.stygs.com.lapstone.objects.json.Plugin_JSON;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.css.ECSSVersion;
-import com.helger.css.ICSSWriterSettings;
 import com.helger.css.decl.CSSDeclaration;
 import com.helger.css.decl.CSSExpression;
 import com.helger.css.decl.CSSExpressionMemberTermSimple;
@@ -552,6 +550,7 @@ public class Release {
 	    }
 	}
 
+	String includeContent = "";
 	for (File include_onceFile : include_onceList) {
 	    // Minify the js include file
 
@@ -562,9 +561,12 @@ public class Release {
 	    }
 
 	    System.out.println("Adding include_once file: " + include_onceFile.getAbsolutePath());
-	    allPagesContent += ";" + FileUtils.readFileToString(include_onceFile);
+	    includeContent += ";" + FileUtils.readFileToString(include_onceFile);
 	    include_onceFile.delete();
 	}
+	includeContent = "includeEverything=function(){" + includeContent + "};";
+	
+	allPagesContent += includeContent;
 	FileUtils.write(new File(www, "js/page/all.page.js"), allPagesContent);
 	FileUtils.deleteDirectory(new File(www, "js/page/include"));
     }

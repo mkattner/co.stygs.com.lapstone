@@ -58,7 +58,7 @@ var plugin_Informator = {
     if (this.config.useHtml5Storage && this.config.savePluginConfig) {
       app.debug.debug("plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage");
       global = {};
-      $.each(plugins.pluginNames, function(key, value) {
+      $.each(app.plugins.pluginNames, function(key, value) {
         if (plugin_Informator.config.excludedPlugins.indexOf(value) == -1) {
 
           if (global["plugin_" + value] == undefined) global["plugin_" + value] = {};

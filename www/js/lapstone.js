@@ -30,13 +30,14 @@ var app = {
     jQueryMobile: null
   },
 
-  addObject: function(name, object) {
-    console.error("Deprecated Function!");
-    app[name] = object;
-  }
+//  addObject: function(name, object) {
+//    console.error("Deprecated Function!");
+//    app[name] = object;
+//  }
 
-  ,
+//  ,
   func: function(qualifyer, func, currentObject) {
+    console.log(qualifyer)
     var qualifyers, currentQualifyer;
 
     qualifyers = qualifyer.split('.');
@@ -86,8 +87,7 @@ function loadPlugins() {
   // load the plugins file
   promise = globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
-    startup.addFunction("                  plugin constructor", plugins.constructor, "");
-    app["plugins"] = plugins;
+    startup.addFunction("                  plugin constructor", app.plugins.constructor, "");
     dfd.resolve();
   });
   promise.fail(function() {
@@ -109,8 +109,7 @@ function loadPages() {
   // load pages file
   promise = globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
-    startup.addFunction("                  page constructor", pages.constructor, "");
-    app["pages"] = pages;
+    startup.addFunction("                  page constructor", app.pages.constructor, "");
     dfd.resolve();
   });
   promise.fail(function() {
@@ -264,7 +263,7 @@ function updateFramework() {
         // update scrips finished
         $.when.apply($, updateScriptPromisses).done(function() {
           app.info.set("app.config.version.update", true);
-//          app.nav.redirect(app.config.startPage_firstStart);
+          // app.nav.redirect(app.config.startPage_firstStart);
           dfd.resolve();
         }).fail(function() {
           dfd.reject();
@@ -855,19 +854,18 @@ $(document).ready(function() {
 
     app.config['startup'] = ((Date.now()) / 1000) - startup.startupTimestamp;
 
-    
     // cleanup
-    delete initialisation;
-    delete loadPlugins;
-    delete loadPages;
-    delete loadConfiguration;
-    delete updateFramework;
-    delete enchantPages;
-    delete waitForMobileInit;
-    delete waitForDeviceready;
-    delete startupDefinition;
-    delete startup;
-    
+//    delete initialisation;
+//    delete loadPlugins;
+//    delete loadPages;
+//    delete loadConfiguration;
+//    delete updateFramework;
+//    delete enchantPages;
+//    delete waitForMobileInit;
+//    delete waitForDeviceready;
+//    delete startupDefinition;
+//    delete startup;
+
     console.log("Lapstone started in " + app.config.startup + "seconds");
 
     // }, 200);

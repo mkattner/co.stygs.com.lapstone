@@ -636,7 +636,7 @@ var plugin_RestClient = {
       app.debug.trace("plugin_RestClient.functions.getJson(" + app.debug.arguments(arguments) + ")");
       var json, i, promise;
 
-      if (plugins.config.KeepAlive === true && app.alive.isAlive() === true) {
+      if (app.plugins.functions.pluginLoaded("KeepAlive") === true && app.alive.isAlive() === true) {
         app.debug.debug("plugin_RestClient.functions.getJson() - case: keepAlive && isAlive");
 
         // get multible json objects
