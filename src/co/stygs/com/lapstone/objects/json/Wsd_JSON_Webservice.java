@@ -2,6 +2,9 @@ package co.stygs.com.lapstone.objects.json;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Wsd_JSON_Webservice {
 
     public Wsd_JSON_Webservice() {

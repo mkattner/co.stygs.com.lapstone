@@ -1,3 +1,4 @@
+//# sourceURL=plugin_RestClient.getMultipleJsonAsync.js
 plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async) {
   app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get multible json objects; async = true");
   // the deferred object for the caller
@@ -26,16 +27,16 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
     // }
     //  
 
-//    server = plugin_RestClient.getServer(webServiceName);
-//    webServiceName = plugin_RestClient.getService(webServiceName);
+    // server = plugin_RestClient.getServer(webServiceName);
+    // webServiceName = plugin_RestClient.getService(webServiceName);
 
     app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - get webservice path from wsd file");
 
     wsd = app.rc.getWsd(webServiceName);
     app.rc.mergeWsdWithParameters(wsd, parameter);
 
-//    app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - replace parameters in path");
-//    path = plugin_RestClient.getPath(parameter, path);
+    // app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - replace parameters in path");
+    // path = plugin_RestClient.getPath(parameter, path);
 
     app.debug.debug("plugin_RestClient.getMultipleJsonAsync() - ask for the deferred promise object");
 
@@ -45,33 +46,34 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
 
     // event triggering
     app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
-    $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
+    $(document).trigger(webServiceName, [wsEventTrigger.promise(), wsd.parameters]);
     $(document).trigger("webserviceCall", [wsEventTrigger.promise(), webServiceName, wsd]);
     app.debug.webservice(webServiceName);
 
     // case: webesrvice is cacheable && webservice is cached
-    if ((cachedJson = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
+//    alert(JSON.stringify(parameter))
+    if ((cachedJson = plugin_RestClient.functions.cacheJson(webServiceName, wsd.parameters)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
       app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
 
       resultObject[webServiceName] = cachedJson;
 
       promiseArray.push($.Deferred().resolve());
       webwebServiceNamesArray.push(plugin_RestClient.cachedWebserviceIndentifyer);
-      webserviceParameterArray.push(parameter);
+      webserviceParameterArray.push(wsd.parameters);
 
       // resolve webservice event
       app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
-      wsEventTrigger.resolve(cachedJson, parameter);
+      wsEventTrigger.resolve(cachedJson, wsd.parameters);
     }
 
     // case: webservice request
     else {
       app.debug.info("plugin_RestClient - CALL: " + webServiceName);
-      promise = app.wsc.getJson(wsd, parameter, async);
+      promise = app.wsc.getJson(wsd, wsd.parameters, async);
 
       promiseArray.push(promise);
       webwebServiceNamesArray.push(webServiceName);
-      webserviceParameterArray.push(parameter);
+      webserviceParameterArray.push(wsd.parameters);
 
       promise.done(function() {
         app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);

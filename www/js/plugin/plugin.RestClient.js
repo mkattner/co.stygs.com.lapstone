@@ -1,4 +1,4 @@
-//# sourceURL=plugin.RestClient.js
+// # sourceURL=plugin.RestClient.js
 /*
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -235,7 +235,7 @@ var plugin_RestClient = {
         // TODO multiple inheritances
         tmpWsd = plugin_RestClient.functions.getWsd(wsd.extend);
         delete wsd.extend;
-        wsd = $.extend(true, wsd, tmpWsd);
+        wsd = $.extend(true, tmpWsd, wsd);
       }
       return wsd;
     },
@@ -319,6 +319,14 @@ var plugin_RestClient = {
     addWebserviceDefinitionFile: function(path) {
       app.debug.debug("plugin_RestClient.functions.addWebserviceDefinitionFile(" + app.debug.arguments(arguments) + ")");
       plugin_RestClient.loadDefinitionFile(path);
+    },
+
+    addWebservice: function(name, wsd) {
+      if (plugin_RestClient.config.webservices[name] === undefined) {
+        plugin_RestClient.config.webservices[name] = wsd;
+      } else {
+        app.debug.error("Webservice already exists: " + name);
+      }
     },
 
     /**
@@ -562,7 +570,7 @@ var plugin_RestClient = {
         });
 
       } else {
-        alert(error);
+        // alert(error);
         result = result;
       }
 
@@ -770,6 +778,9 @@ var plugin_RestClient = {
           // simple parameter with default value {parameter name}||0
           if (parameterValue.contains("||")) {
             defaultValue = parameterValue.substr(parameterValue.indexOf("||") + 2);
+            // TODO create a generic string parser
+            defaultValue = plugin_HTML5Storage.parseValue(defaultValue);
+
             parameterValue = parameterValue.substr(0, parameterValue.indexOf("||"));
           }
 
@@ -779,8 +790,7 @@ var plugin_RestClient = {
             mappedParameterKey = parameterValue.substr(1, parameterValue.length - 2);
 
             if (parameters[mappedParameterKey] !== undefined) {
-              
-              
+
               definitionObject[parameterKey] = parameters[mappedParameterKey];
             }
 

@@ -1,3 +1,4 @@
+//# sourceURL=plugin_RestClient.getMultipleJson.js
 plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
   app.debug.debug("plugin_RestClient.getMultipleJson() - get multible json objects; async = false");
 
@@ -36,11 +37,11 @@ plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
 
     // event triggering
     app.debug.info("plugin_RestClient - TRIGGER EVENT: " + webServiceName);
-    $(document).trigger(webServiceName, [wsEventTrigger.promise(), parameter]);
+    $(document).trigger(webServiceName, [wsEventTrigger.promise(), wsd.parameters]);
     $(document).trigger("webserviceCall", [wsEventTrigger.promise(), webServiceName, wsd]);
     app.debug.webservice(webServiceName);
 
-    if ((json = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
+    if ((json = plugin_RestClient.functions.cacheJson(webServiceName, wsd.parameters)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
       app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
 
       app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
@@ -51,7 +52,7 @@ plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
     else {
       app.debug.debug("plugin_RestClient.getMultipleJson() -  ask for the json file");
       app.debug.info("plugin_RestClient - CALL: " + webServiceName);
-      json = app.wsc.getJson(wsd, parameter, async);
+      json = app.wsc.getJson(wsd, wsd.parameters, async);
 
       app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
       wsEventTrigger.resolve(json);
@@ -60,7 +61,7 @@ plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
 
     app.debug.debug("plugin_RestClient.getMultipleJson() - add language wildcards wich could be defined in webservice response");
 
-    plugin_RestClient.functions.cacheJson(webServiceName, parameter, json);
+    plugin_RestClient.functions.cacheJson(webServiceName, wsd.parameters, json);
     app.debug.debug("plugin_RestClient.getMultipleJson() - add result to resultObject");
     jsonObject[webServiceName] = json;
   });

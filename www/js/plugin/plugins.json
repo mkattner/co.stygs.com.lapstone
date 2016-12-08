@@ -3,6 +3,7 @@
 	"Debug": true,
 	"Detector": true,
 	"DeviceManager": true,
+	"Feedback": true,
 	"FormInputDesigner": true,
 	"HelperFunctions": true,
 	"HTML5Storage": true,

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -164,6 +165,8 @@ public class Deploy {
 	    // copy lapstone.jar
 	    FileUtils.copyFile(new File(lapstonePath, "target/lapstone.jar"), new File(appPath, "lapstone.jar"), true);
 	    FileUtils.copyFile(new File(lapstonePath, "lapstone.txt"), new File(appPath, "lapstone.txt"), true);
+	    
+	    
 
 	    return true;
 	} catch (IOException e) {

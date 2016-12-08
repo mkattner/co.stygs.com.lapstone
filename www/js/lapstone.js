@@ -9,12 +9,14 @@
  * global error handling
  */
 window.onerror = function(message, fileURL, lineNumber, columnNumber, errorObject) {
-
-  console.log("Global ERROR:");
-  console.log("Message: " + message);
-  console.log("File: " + fileURL);
-  console.log("Line: " + lineNumber + " Column: " + columnNumber);
-
+  try {
+    console.log("Global ERROR:");
+    console.log("Message: " + message);
+    console.log("File: " + fileURL);
+    console.log("Line: " + lineNumber + " Column: " + columnNumber);
+  } catch (e) {
+    window.log("Error at window.onerror function.")
+  }
 };
 
 /**
@@ -30,12 +32,12 @@ var app = {
     jQueryMobile: null
   },
 
-//  addObject: function(name, object) {
-//    console.error("Deprecated Function!");
-//    app[name] = object;
-//  }
+  // addObject: function(name, object) {
+  // console.error("Deprecated Function!");
+  // app[name] = object;
+  // }
 
-//  ,
+  // ,
   func: function(qualifyer, func, currentObject) {
     console.log(qualifyer)
     var qualifyers, currentQualifyer;
@@ -187,14 +189,10 @@ function updateFramework() {
 
   if (window.plugin_Informator) {
 
-    var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;// currentAppVersion_int,
-    // currentLapstoneVersion_int;
+    var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;
 
-    currentAppVersion = app.config.version.app;
     currentLapstoneVersion = app.config.version.lapstone;
-
-    // currentAppVersion_int = app.config.version.app.toIntegerVersion();
-    // currentLapstoneVersion_int = app.config.version.lapstone.toIntegerVersion();
+    currentAppVersion = app.config.version.app;
 
     plugin_Informator.loadConfigurationIntoHtml5Storage({
       "app": {
@@ -209,6 +207,15 @@ function updateFramework() {
 
     if (app.config.version.update === true) {
       console.warn("update done");
+
+      if (window.plugin_Informator) {
+        app.info.set("app.config.version.update", false);
+      }
+
+      else {
+        console.log("Update mechanism doesn't works without Informator plugin.")
+      }
+
       app.notify.add.alert({
         title: app.lang.string("update done - title", "lapstone", {
           version: app.config.version.app
@@ -233,13 +240,12 @@ function updateFramework() {
       // app.info.set("app.config.version.app_int", currentAppVersion_int);
       // app.info.set("app.config.version.lapstone_int", currentLapstoneVersion_int);
 
-      // do the update before reloading
+      // RUN UPDATE SCRIPTS
       globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(response) {
         var updateScriptPromisses;
 
         updateScriptPromisses = [];
 
-        // run update scripts
         $.each(response.updateRegistry, function(index, updateObject) {
           console.log(JSON.stringify(updateObject))
 
@@ -260,11 +266,12 @@ function updateFramework() {
           }
 
         });
-        // update scrips finished
+
+        // UPDATE SCRIPTS DONE
         $.when.apply($, updateScriptPromisses).done(function() {
           app.info.set("app.config.version.update", true);
-          // app.nav.redirect(app.config.startPage_firstStart);
-          dfd.resolve();
+          location.reload();
+          // dfd.resolve();
         }).fail(function() {
           dfd.reject();
         });
@@ -620,7 +627,7 @@ $(document).bind("mobileinit", function() {
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-  // alert("cordova initialized", 30);
+//  alert("cordova initialized");
   app.config.apacheCordova = true;
   $('body').addClass("app-apache-cordova");
 }
@@ -628,11 +635,15 @@ function onDeviceReady() {
 function waitForMobileinit() {
   var dfd = $.Deferred(), interval;
 
-  if (app.config.jQueryMobile == true) {
+  // mobileinit event already received
+  if (app.config.jQueryMobile === true) {
     dfd.resolve();
-  } else {
+  }
+
+  // check every 50 milliseconds if mobileinit event was thrown
+  else {
     interval = setInterval(function() {
-      if (app.config.jQueryMobile == true) {
+      if (app.config.jQueryMobile === true) {
         dfd.resolve();
         clearInterval(interval);
       }
@@ -644,15 +655,24 @@ function waitForMobileinit() {
 
 function waitForDeviceready() {
   var dfd = $.Deferred(), interval;
-  // alert(window.cordova);
-  if (window.cordova) {
-    interval = setInterval(function() {
-      clearInterval(interval);
-      if (app.config.apacheCordova == true) {
-        dfd.resolve();
 
-      }
-    }, 50);
+  // if device is a cordova device
+  if (window.cordova) {
+
+    // deviceready event already received
+    if (app.config.apacheCordova === true) {
+      dfd.resolve();
+    }
+
+    // check every 50 milliseconds if deviceready event was thrown
+    else {
+      interval = setInterval(function() {
+        if (app.config.apacheCordova === true) {
+          clearInterval(interval);
+          dfd.resolve();
+        }
+      }, 50);
+    }
   } else {
     app.config.apacheCordova = false;
     dfd.resolve();
@@ -688,13 +708,14 @@ var initialisationPanel = {
   },
 
   hide: function() {
+    $("#LAPSTONE").remove();
     window.setTimeout(function() {
       if (app.config.apacheCordova) {
         navigator.splashscreen.hide();
       }
     }, 100);
 
-    $("#LAPSTONE").remove();
+    
   },
 
   updateProgress: function() {
@@ -787,7 +808,7 @@ var startup = {
   },
   log: function() {
     var timestamp = Date.now() / 1000;
-    console.log((timestamp - startup.timestamp).toFixed(3) + "s: " + startup.currentDefinition['status']);
+    console.log("LST " + (timestamp - startup.timestamp).toFixed(3) + "s: " + startup.currentDefinition['status']);
     startup.timestamp = timestamp;
   },
 
@@ -797,16 +818,23 @@ var startup = {
     // remove that shit, it costs 1000ms
     // delay startup for a smoother user experience
     // window.setTimeout(function() {
-    startup.log();
+
     startup.currentDefinition = startupDefinition.shift();
     if (startup.currentDefinition) {
 
       initialisationPanel.changeStatus();
       initialisationPanel.updateProgress();
+
+      startup.log();
       promise = startup.currentDefinition['function'](startup.currentDefinition['parameter']);
 
-      promise.done(startup.functionDone);
-      promise.fail(startup.functionFail);
+      promise.done(function(data) {
+        startup.functionDone(data);
+      });
+
+      promise.fail(function(error) {
+        startup.functionFail(error);
+      });
 
       // }, 50);
 
@@ -831,6 +859,7 @@ var startup = {
   },
 
   initFramework: function() {
+    startup.log();
     startup.functionDone();
 
     return startup.dfd.promise();
@@ -855,16 +884,16 @@ $(document).ready(function() {
     app.config['startup'] = ((Date.now()) / 1000) - startup.startupTimestamp;
 
     // cleanup
-//    delete initialisation;
-//    delete loadPlugins;
-//    delete loadPages;
-//    delete loadConfiguration;
-//    delete updateFramework;
-//    delete enchantPages;
-//    delete waitForMobileInit;
-//    delete waitForDeviceready;
-//    delete startupDefinition;
-//    delete startup;
+    // delete initialisation;
+    // delete loadPlugins;
+    // delete loadPages;
+    // delete loadConfiguration;
+    // delete updateFramework;
+    // delete enchantPages;
+    // delete waitForMobileInit;
+    // delete waitForDeviceready;
+    // delete startupDefinition;
+    // delete startup;
 
     console.log("Lapstone started in " + app.config.startup + "seconds");
 
@@ -886,22 +915,17 @@ $(document).ready(function() {
 
   inititalisationPromise.always(function() {
     // alert();
-    if (window.plugin_Informator) {
-      app.info.set("app.config.version.update", false);
-    }
 
-    else {
-      console.log("Update mechanism doesn't works without Informator plugin.")
-    }
   });
 
 });
 
 function handleOpenURL(url) {
   // TODO: parse the url, and do something
-  setTimeout(function() {
-    alert(url);
-  }, 0);
+  // TODO triggers when inappbrowese -> system browser is closed
+//  setTimeout(function() {
+//    alert(url);
+//  }, 0);
 }
 
 /**

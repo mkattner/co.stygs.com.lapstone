@@ -113,6 +113,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 	    // resolve dependencies
 	    System.out.println("Resolve url('') dependencies    ");
+	    currentStyle = currentStyle.replaceAll("url\\(", "url(" + url.substring(0, url.lastIndexOf("/") + 1));
 	    currentStyle = currentStyle.replaceAll("url\\(\\'", "url('" + url.substring(0, url.lastIndexOf("/") + 1));
 	    currentStyle = currentStyle.replaceAll("url\\(\\\"", "url(\"" + url.substring(0, url.lastIndexOf("/") + 1));
 

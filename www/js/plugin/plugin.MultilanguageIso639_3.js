@@ -129,6 +129,7 @@ var plugin_MultilanguageIso639_3 = {
 					//console.warn("Language - Context doesn't exist: " + context);
 					toParse = '{"' + context + '" : {}}';
 					app.debug.feedback.language(JSON.parse(toParse));
+					app.fb.send(toParse);
 					text = id;
 				} else {
 					text = plugin_MultilanguageIso639_3.dictionary[context][id];
@@ -152,7 +153,7 @@ var plugin_MultilanguageIso639_3 = {
 				// console.log('"' + id + '" : "TRANSLATION"');
 				toParse = '{"' + context + '" : {"' + id + '" : "TRANSLATION"}}';
 				app.debug.feedback.language(JSON.parse(toParse));
-
+				app.fb.send(toParse);
 				return id;
 			}
 		},

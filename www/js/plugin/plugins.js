@@ -5,6 +5,7 @@
  * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// TODO add try catch to every function that is called in plugins or pages
 app["plugins"] = {
   config: null,
   pluginNames: [],
@@ -12,32 +13,47 @@ app["plugins"] = {
     var dfd = $.Deferred();
 
     // reverse order
+
+    // 7
     startup.addFunction("                  cleanup plugins", app.plugins.cleanup, "");
+    // 6
     startup.addFunction("                  defining the plugins' events", app.plugins.callPluginEvents, "");
+    // 5
     startup.addFunction("                  calling the plugins' loaded event", app.plugins.callPluginsLoadedEvent, "");
+    // 4
     startup.addFunction("                  loading the plugins' include scripts", app.plugins.includeFiles, "");
+    // 3
     startup.addFunction("                  loading the plugins", app.plugins.loadPlugins, "");
+    // 2
     startup.addFunction("                  verifying the plugins' configuration", app.plugins.verifyPluginNames, "");
+    // 1
     startup.addFunction("                  loading the plugins' configuration", app.plugins.loadPluginConfig, "");
+
     dfd.resolve();
     return dfd.promise();
   },
 
+  /**
+   * 7
+   */
   cleanup: function() {
     var dfd = $.Deferred();
 
-//    if (delete app.plugins.contructor === false) alert();
-//    if (delete app.plugins.callPluginEvents === false) alert();
-//    if (delete app.plugins.callPluginsLoadedEvent === false) alert();
-//    if (delete app.plugins.includeFiles === false) alert();
-//    if (delete app.plugins.loadPlugins === false) alert();
-//    if (delete app.plugins.verifyPluginNames === false) alert();
-//    if (delete app.plugins.loadPluginConfig === false) alert();
+    // if (delete app.plugins.contructor === false) alert();
+    // if (delete app.plugins.callPluginEvents === false) alert();
+    // if (delete app.plugins.callPluginsLoadedEvent === false) alert();
+    // if (delete app.plugins.includeFiles === false) alert();
+    // if (delete app.plugins.loadPlugins === false) alert();
+    // if (delete app.plugins.verifyPluginNames === false) alert();
+    // if (delete app.plugins.loadPluginConfig === false) alert();
 
     dfd.resolve();
     return dfd.promise();
   },
 
+  /**
+   * 1
+   */
   loadPluginConfig: function() {
     var dfd = $.Deferred(), promise;
     if (app.config.min) {
@@ -62,6 +78,9 @@ app["plugins"] = {
     return dfd.promise();
   },
 
+  /**
+   * 2
+   */
   verifyPluginNames: function() {
     var dfd = $.Deferred();
     dfd.resolve();
