@@ -806,22 +806,23 @@ var plugin_RestClient = {
         });
       };
 
-      if (Object.keys(parameters).length > 0) {
-        // map path
-        $.each(parameters, function(parameterKey, parameterValue) {
-          wsd.url.replace("{" + parameterKey + "}", parameterValue);
-        });
+      // if (Object.keys(parameters).length > 0) {
+      
+      // map path
+      $.each(parameters, function(parameterKey, parameterValue) {
+        wsd.url.replace("{" + parameterKey + "}", parameterValue);
+      });
 
-        // map parameters
-        if (Object.keys(wsd.parameters).length > 0) {
-          map(wsd.parameters, parameters);
-        }
-
-        // map headers
-        if (Object.keys(wsd.headers).length > 0) {
-          map(wsd.headers, parameters);
-        }
+      // map parameters
+      if (Object.keys(wsd.parameters).length > 0) {
+        map(wsd.parameters, parameters);
       }
+
+      // map headers
+      if (Object.keys(wsd.headers).length > 0) {
+        map(wsd.headers, parameters);
+      }
+      // }
     },
   }
 };

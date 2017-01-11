@@ -171,7 +171,7 @@ var plugin_OAuth = {
       else {
 
         dfd = $.Deferred();
-        inAppBrowserRef_facebook = cordova.InAppBrowser.open(url, '_blank', 'location=yes');
+        inAppBrowserRef_facebook = cordova.InAppBrowser.open(url, '_blank', 'location=no,clearcache=yes,clearsessioncache=yes');
         eventCount = 0;
 
         inAppBrowserRef_facebook.addEventListener('loadstart', function(e) {
@@ -195,12 +195,65 @@ var plugin_OAuth = {
           }
         });
 
-//        inAppBrowserRef_facebook.addEventListener('exit', function(e) {
-//          // window.setTimeout(function() {
-//          
-//          // }, 10);
-//
-//        });
+        // inAppBrowserRef_facebook.addEventListener('exit', function(e) {
+        // // window.setTimeout(function() {
+        //          
+        // // }, 10);
+        //
+        // });
+
+        return dfd.promise();
+      }
+    },
+
+    // google
+    google: function(url) {
+      var dfd, inAppBrowserRef_google, eventCount, url, redirect_uri;
+
+      redirect_uri = URI(url).query(true).redirect_uri;
+
+      if (plugin_OAuth.desktopOAuth(url))
+        return null;
+      else {
+
+         dfd = $.Deferred();
+        // inAppBrowserRef_google = cordova.InAppBrowser.open(url, '_blank', 'location=no,clearcache=yes,clearsessioncache=yes');
+        // eventCount = 0;
+        //
+        // inAppBrowserRef_google.addEventListener('loadstart', function(e) {
+        // eventCount++;
+        // url = e.url;
+        //
+        // console.log(url)
+        //
+        // if (eventCount > 2) {
+        // if (url.contains(redirect_uri)) {
+        // if (url.contains("code")) {
+        // inAppBrowserRef_google.close();
+        // dfd.resolve(url);
+        // }
+        //
+        // else if (url.contains("error")) {
+        // inAppBrowserRef_google.close();
+        // dfd.reject(url);
+        // }
+        // }
+        // }
+        // });
+
+        window.plugins.googleplus.login({}, function(obj) {
+//           alert(JSON.stringify(obj)); // do something useful instead of alerting
+          dfd.resolve(obj);
+        }, function(msg) {
+          dfd.reject(msg);
+        });
+
+        // inAppBrowserRef_google.addEventListener('exit', function(e) {
+        // // window.setTimeout(function() {
+        //          
+        // // }, 10);
+        //
+        // });
 
         return dfd.promise();
       }

@@ -74,11 +74,14 @@ var plugin_Feedback = {
    */
   functions: {
     send: function(text) {
-      if (plugin_Feedback.config.allowAnonymousFeedback === true) {
-        app.rc.getJson(plugin_Feedback.config.webserviceName, {
-          "feedback": text
-        }, true, 1);
-      }
+      window.setTimeout(function() {
+        if (plugin_Feedback.config.allowAnonymousFeedback === true) {
+          app.rc.getJson(plugin_Feedback.config.webserviceName, {
+            "feedback": text
+          }, true, 1);
+        }
+      }, 10);
+
     }
   }
 };
