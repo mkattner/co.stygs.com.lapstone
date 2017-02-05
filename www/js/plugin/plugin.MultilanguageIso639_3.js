@@ -107,6 +107,14 @@ var plugin_MultilanguageIso639_3 = {
         app.store.localStorage.set("language-" + key, value);
       }
     },
+
+    extendDictionary: function(map, context) {
+      if (context !== undefined) {
+        $.extend(true, plugin_MultilanguageIso639_3.dictionary[context], map);
+      } else {
+        $.extend(true, plugin_MultilanguageIso639_3.dictionary, map);
+      }
+    },
     string: function(id, context, options) {
       var text = null, toParse;
       if (!plugin_MultilanguageIso639_3.dictionary) {

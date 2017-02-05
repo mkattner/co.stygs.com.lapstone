@@ -1,4 +1,4 @@
-//# sourceURL=plugin.HTML5Storage.js
+// # sourceURL=plugin.HTML5Storage.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com
  * 
@@ -47,14 +47,15 @@ var plugin_HTML5Storage = {
   definePluginEvents: function() {
     app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
     // data-html5-<storage id>
-    $(document).on("click", "a", function(event) {
-      app.debug.event(event);
+    var storagefilledFunction;
+
+    storagefilledFunction = function(event, $element) {
 
       app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");
 
       // event.preventDefault();
 
-      $.each($(this).attrs(), function(attributeName, attributeValue) {
+      $.each($element.attrs(), function(attributeName, attributeValue) {
 
         if (attributeName.substring(0, 11).trim() == "data-html5-") {
           app.debug.deprecated("data-html5- attribute to persist element attributes is deprecated. Use: data-app-")
@@ -69,7 +70,56 @@ var plugin_HTML5Storage = {
 
       });
       app.debug.debug("plugin_HTML5Storage.definePluginEvents() - trigger: storagefilled");
-      $(this).trigger("storagefilled");
+      $element.trigger("storagefilled");
+    };
+
+    $(document).on("touchstart", "a.click", function(event) {
+      app.debug.event(event);
+      $(this).data("fire", true);
+
+    });
+
+    $(document).on("touchmove", "a.click", function(event) {
+      app.debug.event(event);
+      $(this).data("fire", false);
+    });
+
+    $(document).on("touchend", "a.click", function(event) {
+      app.debug.event(event);
+      event.stopPropagation();
+      event.preventDefault();
+
+      var $element;
+
+      $element = $(this);
+
+      if ($element.data("fire") === true) {
+        $element.data("fire", false);
+        storagefilledFunction(event, $element);
+      }
+
+      window.setTimeout(function() {
+        $element.data("fire", true);
+      }, 300);
+    });
+
+    $(document).on("click", "a.click", function(event) {
+      app.debug.event(event);
+      event.stopPropagation();
+      event.preventDefault();
+      var $element;
+
+      $element = $(this);
+
+      if ($element.data("fire") !== false) {
+        $element.data("fire", false);
+        
+        storagefilledFunction(event, $(this));
+      }
+      
+      window.setTimeout(function() {
+        $element.data("fire", true);
+      }, 300);
     });
   },
 
@@ -503,7 +553,7 @@ var plugin_HTML5Storage = {
           return null;
         }
       },
-      
+
       removeObject: function(name) {
         name = name;
         app.debug.trace("plugin_HTML5Storage.functions.localStorage.removeObject(" + app.debug.arguments(arguments) + ")");

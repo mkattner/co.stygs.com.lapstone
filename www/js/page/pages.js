@@ -1,4 +1,4 @@
-//# sourceUrl=pages.js
+// # sourceUrl=pages.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -541,7 +541,7 @@ app["pages"] = {
 
   // a function for each event
   eventPromises: {},
-//  eventTimeouts: {},
+  // eventTimeouts: {},
   eventFunctions: {
     pageTypeSelector: function(event, $container, eventName) {
       app.debug.trace("plugin.eventFunctions.pageTypeSelector(" + event + ", " + $container + ", " + eventName + ")");
@@ -561,18 +561,18 @@ app["pages"] = {
           app.debug.debug("case: page is a common lapstone page");
 
           app.pages.eventPromises[eventName] = Array();
-//          app.pages.eventTimeouts[eventName] = null;
-// Removed, because async creator can return getJsonWith loader
-//          app.pages.eventTimeouts[eventName] = window.setTimeout(function() {
-//            app.debug.debug("app.pages.eventFunctions.lapstonePage. - show loader");
-//
-//            app.notify.loader.bubbleDiv({
-//              show: true,
-//              text: app.lang.string("page: " + $container.attr('id') + " - text", "pageloading"),
-//              headline: app.lang.string("page: " + $container.attr('id') + " - headline", "pageloading")
-//            });
-//
-//          }, 200);
+          // app.pages.eventTimeouts[eventName] = null;
+          // Removed, because async creator can return getJsonWith loader
+          // app.pages.eventTimeouts[eventName] = window.setTimeout(function() {
+          // app.debug.debug("app.pages.eventFunctions.lapstonePage. - show loader");
+          //
+          // app.notify.loader.bubbleDiv({
+          // show: true,
+          // text: app.lang.string("page: " + $container.attr('id') + " - text", "pageloading"),
+          // headline: app.lang.string("page: " + $container.attr('id') + " - headline", "pageloading")
+          // });
+          //
+          // }, 200);
 
           // app.pages.eventFunctions.everyPage[eventName](event, $container);
           eventFunctionResult = app.pages.eventFunctions.lapstonePage[eventName](event, $container);
@@ -592,8 +592,8 @@ app["pages"] = {
           }
 
           $.when.apply($, app.pages.eventPromises[eventName]).always(function() {
-//            window.clearTimeout(app.pages.eventTimeouts[eventName]);
-//            app.notify.loader.remove();
+            // window.clearTimeout(app.pages.eventTimeouts[eventName]);
+            // app.notify.loader.remove();
           });
         }
       } catch (e) {
@@ -751,11 +751,14 @@ app["pages"] = {
               window['page_' + $container.attr('id')].async.result = Array();
             }
 
-            app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()");
-
             window['page_' + $container.attr('id')].setEvents($container);
 
-            window['page_' + $container.attr('id')].async.done($container);
+            // do this if user is still on page
+            if (window['page_' + $container.attr('id')].config.name === app.pages.getCurrent().config.name) {
+              app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.done()");
+              window['page_' + $container.attr('id')].async.done($container);
+            }
+
             app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - enchant page");
 
             dfdPageCreation.resolve($container);
@@ -765,15 +768,23 @@ app["pages"] = {
           promiseOfAsyncPageLoading.fail(function(error) {
             app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - set: page.async.result: " + JSON.stringify(error));
             window['page_' + $container.attr('id')].async.result = error;
-            app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.fail()");
-            window['page_' + $container.attr('id')].async.fail($container);
+
+            // do this if user is still on page
+            if (window['page_' + $container.attr('id')].config.name === app.pages.getCurrent().config.name) {
+              app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.fail()");
+              window['page_' + $container.attr('id')].async.fail($container);
+            }
+
             dfdPageCreation.reject($container);
           });
 
           promiseOfAsyncPageLoading.always(function() {
-
-            app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.always()");
-            window['page_' + $container.attr('id')].async.always($container);
+            
+            // do this if user is still on page
+            if (window['page_' + $container.attr('id')].config.name === app.pages.getCurrent().config.name) {
+              app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.always()");
+              window['page_' + $container.attr('id')].async.always($container);
+            }
           });
 
         }

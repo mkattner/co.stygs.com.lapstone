@@ -619,7 +619,8 @@ $(document).bind("mobileinit", function() {
   $.mobile.loader.prototype.options.theme = "a";
   $.mobile.loader.prototype.options.html = "";
 
-  $.mobile.defaultPageTransition = 'slide';
+  $.mobile.defaultPageTransition = 'none';
+  $.mobile.page.prototype.options.keepNative = "input, textarea, form";
   app.config.jQueryMobile = true;
 });
 
