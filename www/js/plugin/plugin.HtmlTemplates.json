@@ -1,38 +1,38 @@
 {
-	"name":"HtmlTemplates",
-	"shortname":"template",
-	"include":[
-		
-	],
-	"templates":{
-		"JQueryMobilePopupTrialog":{
-			"content":"../files/template/JQueryMobilePopupTrialog.html",
-			"style":"../files/template/JQueryMobilePopupTrialog.css.less"
+	"name": "HtmlTemplates",
+	"shortname": "template",
+	"include": [],
+	"templates": {
+		"JQueryMobilePopupTrialog": {
+			"content": "../files/template/JQueryMobilePopupTrialog.html",
+			"style": "../files/template/JQueryMobilePopupTrialog.css.less"
 		},
-		"JQueryMobilePopupDialog":{
-			"content":"../files/template/JQueryMobilePopupDialog.html",
-			"style":"../files/template/JQueryMobilePopupDialog.css.less"
+		"JQueryMobilePopupDialog": {
+			"content": "../files/template/JQueryMobilePopupDialog.html",
+			"style": "../files/template/JQueryMobilePopupDialog.css.less"
 		},
-		"JQueryMobilePopupAlert":{
-			"content":"../files/template/JQueryMobilePopupAlert.html",
-			"style":"../files/template/JQueryMobilePopupAlert.css.less"
+		"JQueryMobilePopupAlert": {
+			"content": "../files/template/JQueryMobilePopupAlert.html",
+			"style": "../files/template/JQueryMobilePopupAlert.css.less"
 		},
-		"app-loader-bubble":{
-			"content":"../files/template/app.loader.bubble.html",
-			"style":"../files/template/app.loader.bubble.css.less"
+		"JQueryMobilePopupSimple": {
+			"content": "../files/template/JQueryMobilePopupSimple.html",
+			"style": "../files/template/JQueryMobilePopupSimple.css.less"
 		},
-		"app-loader-bubbleDiv":{
-			"content":"../files/template/app.loader.bubbleDiv.html",
-			"style":"../files/template/app.loader.bubbleDiv.css.less"
+		"app-loader-bubble": {
+			"content": "../files/template/app.loader.bubble.html",
+			"style": "../files/template/app.loader.bubble.css.less"
 		},
-		"JQueryMobilePlainPage":{
-			"content":"../files/template/JQueryMobilePlainPage.html",
-			"style":"../files/template/JQueryMobilePlainPage.css.less",
-			"elements":{
-				"content":"div[data-role=content]"
+		"app-loader-bubbleDiv": {
+			"content": "../files/template/app.loader.bubbleDiv.html",
+			"style": "../files/template/app.loader.bubbleDiv.css.less"
+		},
+		"JQueryMobilePlainPage": {
+			"content": "../files/template/JQueryMobilePlainPage.html",
+			"style": "../files/template/JQueryMobilePlainPage.css.less",
+			"elements": {
+				"content": "div[data-role=content]"
 			}
-			
 		}
-		
 	}
 }

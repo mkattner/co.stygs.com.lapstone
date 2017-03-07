@@ -93,9 +93,30 @@ var plugin_Notification = {
     });
 
     /**
+     * @listens click on #popupTrialog #btn-simple-close
+     */
+    $(document).on("storagefilled", "#popupSimple #btn-simple-close", function(event) {
+      app.debug.event(event);
+
+      $("#popupSimple").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
+
+        var callback = $(this).find("#btn-simple-close").data("callback");
+
+        if (callback) {
+          callback($("#popupSimple"));
+        }
+
+        plugin_Notification.functions.destroy.simple().done(plugin_Notification.popupShow);
+      });
+
+      $("#popupSimple").popup("close");
+    });
+
+    /**
      * @listens click on #popupAlert #btn-alert
      */
-    $(document).on("click", "#popupAlert #btn-alert", function(event) {
+    $(document).on("storagefilled", "#popupAlert #btn-alert", function(event) {
       app.debug.event(event);
 
       $("#popupAlert").one("popupafterclose", function(event, ui) {
@@ -115,9 +136,30 @@ var plugin_Notification = {
     });
 
     /**
+     * @listens click on #popupTrialog #btn-alert-close
+     */
+    $(document).on("storagefilled", "#popupAlert #btn-alert-close", function(event) {
+      app.debug.event(event);
+
+      $("#popupAlert").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
+
+        var callback = $(this).find("#btn-alert-close").data("callback");
+
+        if (callback) {
+          callback($("#popupAlert"));
+        }
+
+        plugin_Notification.functions.destroy.alert().done(plugin_Notification.popupShow);
+      });
+
+      $("#popupAlert").popup("close");
+    });
+
+    /**
      * @listens click on #popupDialog #btn-dialog-left
      */
-    $(document).on("click", "#popupDialog #btn-dialog-left", function(event) {
+    $(document).on("storagefilled", "#popupDialog #btn-dialog-left", function(event) {
       app.debug.event(event);
 
       $("#popupDialog").one("popupafterclose", function(event, ui) {
@@ -138,7 +180,7 @@ var plugin_Notification = {
     /**
      * @listens click on #popupDialog #btn-dialog-right
      */
-    $(document).on("click", "#popupDialog #btn-dialog-right", function(event) {
+    $(document).on("storagefilled", "#popupDialog #btn-dialog-right", function(event) {
       app.debug.event(event);
 
       $("#popupDialog").one("popupafterclose", function(event, ui) {
@@ -158,9 +200,30 @@ var plugin_Notification = {
     });
 
     /**
+     * @listens click on #popupTrialog #btn-dialog-close
+     */
+    $(document).on("storagefilled", "#popupDialog #btn-dialog-close", function(event) {
+      app.debug.event(event);
+
+      $("#popupDialog").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
+
+        var callback = $(this).find("#btn-dialog-close").data("callback");
+
+        if (callback) {
+          callback($("#popupDialog"));
+        }
+
+        plugin_Notification.functions.destroy.alert().done(plugin_Notification.popupShow);
+      });
+
+      $("#popupDialog").popup("close");
+    });
+
+    /**
      * @listens click on #popupTrialog #btn-trialog-right
      */
-    $(document).on("click", "#popupTrialog #btn-trialog-left", function(event) {
+    $(document).on("storagefilled", "#popupTrialog #btn-trialog-left", function(event) {
       app.debug.event(event);
 
       $("#popupTrialog").one("popupafterclose", function(event, ui) {
@@ -182,7 +245,7 @@ var plugin_Notification = {
     /**
      * @listens click on #popupTrialog #btn-trialog-right
      */
-    $(document).on("click", "#popupTrialog #btn-trialog-center", function(event) {
+    $(document).on("storagefilled", "#popupTrialog #btn-trialog-center", function(event) {
       app.debug.event(event);
 
       $("#popupTrialog").one("popupafterclose", function(event, ui) {
@@ -204,13 +267,35 @@ var plugin_Notification = {
     /**
      * @listens click on #popupTrialog #btn-trialog-right
      */
-    $(document).on("click", "#popupTrialog #btn-trialog-right", function(event) {
+    $(document).on("storagefilled", "#popupTrialog #btn-trialog-right", function(event) {
       app.debug.event(event);
 
       $("#popupTrialog").one("popupafterclose", function(event, ui) {
         app.debug.event(event);
 
         var callback = $(this).find("#btn-trialog-right").data("callback");
+
+        if (callback) {
+          callback($("#popupTrialog"));
+        }
+
+        plugin_Notification.functions.destroy.trialog().done(plugin_Notification.popupShow);
+      });
+
+      $("#popupTrialog").popup("close");
+
+    });
+
+    /**
+     * @listens click on #popupTrialog #btn-trialog-close
+     */
+    $(document).on("storagefilled", "#popupTrialog #btn-trialog-close", function(event) {
+      app.debug.event(event);
+
+      $("#popupTrialog").one("popupafterclose", function(event, ui) {
+        app.debug.event(event);
+
+        var callback = $(this).find("#btn-trialog-close").data("callback");
 
         if (callback) {
           callback($("#popupTrialog"));
@@ -267,15 +352,66 @@ var plugin_Notification = {
       }
     } else {
       switch (notification.type) {
+      case "simple":
+        plugin_Notification.functions.destroy.simple().done(function() {
+          setTimeout(function() {
+            app.template.append("[data-role=page]", "JQueryMobilePopupSimple");
+            // $("#popupSimple").data("notification", notification);
 
+            $("#popupSimple").one("popupafteropen", function(event, ui) {
+              app.debug.event(event);
+
+              $("#popupSimple #btn-simple-close").data("callback", notification.callbackButtonClose);
+            });
+
+            $("#popupSimple").one("popupcreate", function(event, ui) {
+
+              if (notification.id) $("#popupSimple").addClass("app-popup-id-" + notification.id.trim());
+
+              if (notification.width) $("#popupSimple-popup").css({
+                "width": notification.width,
+              });
+
+              if (notification.height) $("#popupSimple-popup").css({
+                "height": notification.height
+              });
+
+              if (notification.title) {
+                $("#popupSimple div[data-role=header] h1").text(notification.title);
+              }
+
+              if (typeof notification.text == "object") {
+                $("#popupSimple .popupContent").replaceWith(notification.text);
+              }
+
+              else {
+                $("#popupSimple .popupContent").html(notification.text);
+              }
+
+              $("#popupSimple").popup("open");
+            });
+
+            $("#popupSimple").popup({
+              beforeposition: function() {
+                $(this).closest(".ui-popup-container").css({
+                  "max-height": "95%",
+                  "overflow-y": "auto"
+                });
+              }
+            });
+
+          }, notification.delayInMs);
+        });
       case "alert":
         plugin_Notification.functions.destroy.alert().done(function() {
           setTimeout(function() {
             app.template.append("[data-role=page]", "JQueryMobilePopupAlert");
+            $("#popupAlert").data("notification", notification);
 
             $("#popupAlert").one("popupafteropen", function(event, ui) {
               app.debug.event(event);
 
+              $("#popupAlert #btn-alert-close").data("callback", notification.callbackButtonClose);
               $("#popupAlert #btn-alert").data("callback", notification.callbackButton);
             });
 
@@ -286,34 +422,23 @@ var plugin_Notification = {
               if (notification.width) $("#popupAlert-popup").css({
                 "width": notification.width,
               });
+              if (notification.height) $("#popupAlert-popup").css({
+                "height": notification.height
+              });
 
               if (notification.title) {
                 $("#popupAlert div[data-role=header] h1").text(notification.title);
-                $("#popupAlert div[data-role=header] h1").css("display", "block");
               }
 
-              else {
-                $("#popupAlert div[data-role=header] h1").css("display", "none");
-              }
-
-              if (notification.headline) {
-                $("#popupAlert div.ui-content h3.ui-title").text(notification.headline);
-                $("#popupAlert div.ui-content h3.ui-title").css("display", "block");
-              }
-
-              else {
-                $("#popupAlert div.ui-content h3.ui-title").css("display", "none");
-              }
-
-              $("#popupAlert #btn-alert").text(notification.button);
+              // BUTTON
+              $("#popupAlert #btn-alert").find(".buttonContent").text(notification.button);
 
               if (typeof notification.text == "object") {
-                $("#popupAlert div.ui-content p").replaceWith(notification.text);
-
+                $("#popupAlert .popupContent").replaceWith(notification.text);
               }
 
               else {
-                $("#popupAlert div.ui-content p").html(notification.text);
+                $("#popupAlert .popupContent").html(notification.text);
               }
 
               $("#popupAlert").popup("open");
@@ -337,10 +462,12 @@ var plugin_Notification = {
         plugin_Notification.functions.destroy.dialog().done(function() {
           setTimeout(function() {
             app.template.append("[data-role=page]", "JQueryMobilePopupDialog");
+            $("#popupDialog").data("notification", notification);
 
             $("#popupDialog").one("popupafteropen", function(event, ui) {
               app.debug.event(event);
 
+              $("#popupDialog #btn-dialog-close").data("callback", notification.callbackButtonClose);
               $("#popupDialog #btn-dialog-left").data("callback", notification.callbackButtonLeft);
               $("#popupDialog #btn-dialog-right").data("callback", notification.callbackButtonRight);
             });
@@ -352,34 +479,24 @@ var plugin_Notification = {
               if (notification.width) $("#popupDialog-popup").css({
                 "width": notification.width
               });
+              if (notification.height) $("#popupDialog-popup").css({
+                "height": notification.height
+              });
 
               if (notification.title) {
                 $("#popupDialog div[data-role=header] h1").text(notification.title);
-                $("#popupDialog div[data-role=header] h1").css("display", "block");
               }
 
-              else {
-                $("#popupDialog div[data-role=header] h1").css("display", "none");
-              }
-
-              if (notification.headline) {
-                $("#popupDialog div.ui-content h3.ui-title").text(notification.headline);
-                $("#popupDialog div.ui-content h3.ui-title").css("display", "block");
-              }
-
-              else {
-                $("#popupDialog div.ui-content h3.ui-title").css("display", "none");
-              }
-
-              $("#popupDialog #btn-dialog-left").text(notification.buttonLeft);
-              $("#popupDialog #btn-dialog-right").text(notification.buttonRight);
+              // BUTTONS
+              $("#popupDialog #btn-dialog-left").find(".buttonContent").text(notification.buttonLeft);
+              $("#popupDialog #btn-dialog-right").find(".buttonContent").text(notification.buttonRight);
 
               if (typeof notification.text == "object") {
-                $("#popupDialog div.ui-content p").replaceWith(notification.text);
+                $("#popupDialog .popupContent").replaceWith(notification.text);
               }
 
               else {
-                $("#popupDialog div.ui-content p").html(notification.text);
+                $("#popupDialog .popupContent").html(notification.text);
               }
 
               $("#popupDialog").popup("open");
@@ -403,10 +520,12 @@ var plugin_Notification = {
         plugin_Notification.functions.destroy.trialog().done(function() {
           setTimeout(function() {
             app.template.append("[data-role=page]", "JQueryMobilePopupTrialog");
+            $("#popupTrialog").data("notification", notification);
 
             $("#popupTrialog").one("popupafteropen", function(event, ui) {
               app.debug.event(event);
 
+              $("#popupTrialog #btn-trialog-close").data("callback", notification.callbackButtonClose);
               $("#popupTrialog #btn-trialog-left").data("callback", notification.callbackButtonLeft);
               $("#popupTrialog #btn-trialog-center").data("callback", notification.callbackButtonCenter);
               $("#popupTrialog #btn-trialog-right").data("callback", notification.callbackButtonRight);
@@ -419,35 +538,25 @@ var plugin_Notification = {
               if (notification.width) $("#popupTrialog-popup").css({
                 "width": notification.width
               });
+              if (notification.height) $("#popupTrialog-popup").css({
+                "height": notification.height
+              });
 
               if (notification.title) {
                 $("#popupTrialog div[data-role=header] h1").text(notification.title);
-                $("#popupTrialog div[data-role=header] h1").css("display", "block");
               }
 
-              else {
-                $("#popupTrialog div[data-role=header] h1").css("display", "none");
-              }
-
-              if (notification.headline) {
-                $("#popupTrialog div.ui-content h3.ui-title").text(notification.headline);
-                $("#popupTrialog div.ui-content h3.ui-title").css("display", "block");
-              }
-
-              else {
-                $("#popupTrialog div.ui-content h3.ui-title").css("display", "none");
-              }
-
-              $("#popupTrialog #btn-trialog-left").text(notification.buttonLeft);
-              $("#popupTrialog #btn-trialog-center").text(notification.buttonCenter);
-              $("#popupTrialog #btn-trialog-right").text(notification.buttonRight);
+              // BUTTONS
+              $("#popupTrialog #btn-trialog-left").find(".buttonContent").text(notification.buttonLeft);
+              $("#popupTrialog #btn-trialog-center").find(".buttonContent").text(notification.buttonCenter);
+              $("#popupTrialog #btn-trialog-right").find(".buttonContent").text(notification.buttonRight);
 
               if (typeof notification.text == "object") {
-                $("#popupTrialog div.ui-content p").replaceWith(notification.text);
+                $("#popupTrialog .popupContent").replaceWith(notification.text);
               }
 
               else {
-                $("#popupTrialog div.ui-content p").html(notification.text);
+                $("#popupTrialog .popupContent").html(notification.text);
               }
 
               $("#popupTrialog").popup("open");
@@ -493,6 +602,13 @@ var plugin_Notification = {
     push_onNotification: function(event) {
       alert(event.alert);
     },
+    /**
+     * 
+     */
+    simple: function(notification) {
+      notification.type = "simple";
+      plugin_Notification.functions.show(notification);
+    },
 
     /**
      * app.notify.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button", callbackButton: function(popup) { }, delayInMs: 0, width: "50%" });
@@ -515,9 +631,7 @@ var plugin_Notification = {
           "delayInMs": delayInMs
         };
       }
-
       notification.type = "alert";
-
       plugin_Notification.functions.show(notification);
     },
 
@@ -580,6 +694,40 @@ var plugin_Notification = {
      * popup destroy functions
      */
     destroy: {
+
+      /**
+       * destroy simple
+       */
+      simple: function() {
+        var dfd = $.Deferred();
+        if ($("#popupSimple").parent().hasClass("ui-popup-active")) {
+
+          $("#popupSimple").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
+            $("#popupSimple").off("popupafterclose");
+            $('#popupSimple').popup("destroy");
+            $('#popupSimple').remove();
+            dfd.resolve();
+          });
+
+          $("#popupSimple").popup("close");
+
+        }
+
+        else {
+          try {
+            $('#popupSimple').popup("destroy");
+          } catch (e) {
+            dfd.resolve();
+          }
+          $('#popupSimple').remove();
+          dfd.resolve();
+        }
+
+        return dfd.promise();
+      },
+
       /**
        * destroy alert
        */
@@ -601,7 +749,12 @@ var plugin_Notification = {
         }
 
         else {
-          $('#popupAlert').popup("destroy");
+          try {
+            $('#popupAlert').popup("destroy");
+          } catch (e) {
+            dfd.resolve();
+          }
+
           $('#popupAlert').remove();
           dfd.resolve();
         }
@@ -630,7 +783,11 @@ var plugin_Notification = {
         }
 
         else {
-          $('#popupDialog').popup("destroy");
+          try {
+            $('#popupDialog').popup("destroy");
+          } catch (e) {
+            dfd.resolve();
+          }
           $('#popupDialog').remove();
           dfd.resolve();
         }
@@ -659,7 +816,11 @@ var plugin_Notification = {
         }
 
         else {
-          $('#popupTrialog').popup("destroy");
+          try {
+            $('#popupTrialog').popup("destroy");
+          } catch (e) {
+            dfd.resolve();
+          }
           $('#popupTrialog').remove();
           dfd.resolve();
         }
@@ -672,7 +833,7 @@ var plugin_Notification = {
        */
       all: function() {
         var dfd = $.Deferred();
-        $.when(app.notify.destroy.alert(), app.notify.destroy.dialog(), app.notify.destroy.trialog()).done(function() {
+        $.when(app.notify.destroy.simple(), app.notify.destroy.alert(), app.notify.destroy.dialog(), app.notify.destroy.trialog()).done(function() {
           dfd.resolve()
         });
         return dfd.promise();
@@ -683,6 +844,30 @@ var plugin_Notification = {
      * popup close funtions
      */
     close: {
+      /**
+       * close simple
+       */
+      simple: function() {
+        var dfd = $.Deferred();
+        if ($("#popupSimple").parent().hasClass("ui-popup-active")) {
+
+          $("#popupSimple").on("popupafterclose", function(event, ui) {
+            app.debug.event(event);
+
+            $("#popupSimple").off("popupafterclose");
+            dfd.resolve();
+          });
+
+          $("#popupSimple").popup("close");
+
+        }
+
+        else {
+          dfd.resolve();
+        }
+
+        return dfd.promise();
+      },
 
       /**
        * close alert
@@ -764,7 +949,7 @@ var plugin_Notification = {
        */
       all: function() {
         var dfd = $.Deferred();
-        $.when(app.notify.close.alert(), app.notify.close.dialog(), app.notify.close.trialog()).done(function() {
+        $.when(app.notify.close.simple(), app.notify.close.alert(), app.notify.close.dialog(), app.notify.close.trialog()).done(function() {
           dfd.resolve()
         });
         return dfd.promise();
@@ -775,6 +960,24 @@ var plugin_Notification = {
      * popup open functions
      */
     open: {
+      /**
+       * open simple
+       */
+      simple: function() {
+        var dfd = $.Deferred();
+
+        $("#popupSimple").on("popupafteropen", function(event, ui) {
+          app.debug.event(event);
+
+          $("#popupSimple").off("popupafteropen");
+          dfd.resolve();
+        });
+
+        $("#popupSimple").popup("open");
+
+        return dfd.promise();
+      },
+
       /**
        * open alert
        */
@@ -836,6 +1039,21 @@ var plugin_Notification = {
     add: {
 
       /**
+       * 
+       */
+      simple: function(notification) {
+        // VALIDATE
+        app.debug.operation(function() {
+          if (notification.id === undefined) {
+            app.debug.error("Missing property 'id' in popup.")
+          }
+        });
+
+        notification.type = "alert";
+        plugin_Notification.notifications.push(notification);
+      },
+
+      /**
        * app.notify.add.alert({ id: "", text: "text", title: "title", headline: "headline", button: "button", callbackButton: function(popup) { }, delayInMs: 0, width: "50%", pageDelay:0 });
        */
       alert: function(text, title, headline, button, callbackButton, delayInMs) {
@@ -857,6 +1075,13 @@ var plugin_Notification = {
             "delayInMs": delayInMs
           };
         }
+
+        // VALIDATE
+        app.debug.operation(function() {
+          if (notification.id === undefined) {
+            app.debug.error("Missing property 'id' in popup.")
+          }
+        });
 
         notification.type = "alert";
 
@@ -884,6 +1109,15 @@ var plugin_Notification = {
           };
         }
 
+        // VALIDATE
+        app.debug.operation(function() {
+          if (notification.id === undefined) {
+            app.debug.error("Missing property 'id' in popup.")
+          }
+        });
+
+        notification.type = "alert";
+
         notification.type = "dialog";
 
         plugin_Notification.notifications.push(notification);
@@ -893,6 +1127,15 @@ var plugin_Notification = {
           app.debug.deprecated("Please use an object as argument.");
           return null;
         }
+
+        // VALIDATE
+        app.debug.operation(function() {
+          if (notification.id === undefined) {
+            app.debug.error("Missing property 'id' in popup.")
+          }
+        });
+
+        notification.type = "alert";
 
         notification.type = "trialog";
 

@@ -1,12 +1,23 @@
 <!-- popupDialog -->
-<div data-role="popup" id="popupDialog" data-transition="pop" data-dismissible="false" data-overlay-theme="b">
-	<div data-role="header" data-theme="a">
-		<h1>Headline</h1>
+<div data-role="popup" id="popupDialog" data-transition="none" data-dismissible="false" data-overlay-theme="b">
+	<div class="popupHeader" data-role="header" data-theme="a">
+		<h1 class="popupHeadline">Title</h1>
+		<a id="btn-dialog-close" class="click buttonClose"></a>
 	</div>
-	<div role="main" class="ui-content">
-		<h3 class="ui-title">Title</h3>
-		<p>Description</p>
-		<a href="#" id="btn-dialog-left" class="ui-btn ui-btn-inline">Cancel</a> <a href="#" id="btn-dialog-right" class="ui-btn ui-btn-inline">Delete</a>
+	<div role="main" class="popupContentContainer ui-content">
+		<div class="popupContent">Content</div>
+	</div>
+	<div class="popupFooter" data-role="footer" data-theme="a">
+		<div class="buttonContainer">
+			<a href="#" id="btn-dialog-left" class="click button">
+				<img />
+				<p class="buttonContent">Left</p>
+			</a>
+			<a href="#" id="btn-dialog-right" class="click button">
+				<img />
+				<p class="buttonContent">Right</p>
+			</a>
+		</div>
 	</div>
 </div>
 <!-- /popupDialog -->

@@ -10,12 +10,14 @@
  */
 window.onerror = function(message, fileURL, lineNumber, columnNumber, errorObject) {
   try {
+
     console.log("Global ERROR:");
     console.log("Message: " + message);
     console.log("File: " + fileURL);
     console.log("Line: " + lineNumber + " Column: " + columnNumber);
+    app.fb.send("lapstone -> global ERROR: " + message);
   } catch (e) {
-    window.log("Error at window.onerror function.")
+    console.log("Error at window.onerror function.")
   }
 };
 
@@ -521,7 +523,9 @@ var globalLoader = {
 
       // console.log(styleString)
 
-      $('head').append($("<style>").text(styleString));
+      $('head').append(function() {
+        return $("<style>").text(styleString)
+      });
       dfd.resolve(styleString);
     }).fail(function() {
       dfd.reject(arguments);
@@ -579,7 +583,9 @@ var globalLoader = {
           dfd.reject(arguments);
         }
       } else {
-        if ($("style#lapstoneStyles")[0] == undefined) $('head').append($("<style>").attr("id", "lapstoneStyles"));
+        if ($("style#lapstoneStyles")[0] == undefined) $('head').append(function() {
+          return $("<style>").attr("id", "lapstoneStyles")
+        });
 
         $("style#lapstoneStyles").before('<link rel="stylesheet/less" type="text/css" href="' + url + '">');
         dfd.resolve(data);
@@ -628,7 +634,7 @@ $(document).bind("mobileinit", function() {
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-//  alert("cordova initialized");
+  // alert("cordova initialized");
   app.config.apacheCordova = true;
   $('body').addClass("app-apache-cordova");
 }
@@ -690,7 +696,9 @@ var initialisationPanel = {
     $('title').text("...");
 
     if (app.config.min) {
-      $("head").append($("<style>").append(app.config.startupStyle));
+      $("head").append(function() {
+        return $("<style>").append(app.config.startupStyle)
+      });
       $('body').append(app.config.startupContent);
       dfd.resolve();
     }
@@ -716,7 +724,6 @@ var initialisationPanel = {
       }
     }, 100);
 
-    
   },
 
   updateProgress: function() {
@@ -924,9 +931,9 @@ $(document).ready(function() {
 function handleOpenURL(url) {
   // TODO: parse the url, and do something
   // TODO triggers when inappbrowese -> system browser is closed
-//  setTimeout(function() {
-//    alert(url);
-//  }, 0);
+  // setTimeout(function() {
+  // alert(url);
+  // }, 0);
 }
 
 /**

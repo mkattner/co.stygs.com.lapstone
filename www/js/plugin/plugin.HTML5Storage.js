@@ -47,13 +47,20 @@ var plugin_HTML5Storage = {
   definePluginEvents: function() {
     app.debug.trace("plugin_HTML5Storage.definePluginEvents()");
     // data-html5-<storage id>
-    var storagefilledFunction;
+    var storagefilledFunction, globalTimeoutBetweenClicks, clickAllowed;
+    globalTimeoutBetweenClicks = 400;
+    clickAllowed = true;
 
+    // STORAGEFILLED FUNCTION
     storagefilledFunction = function(event, $element) {
+      // if (clickAllowed === true) {
+      //
+      // clickAllowed = false;
+      // setTimeout(function() {
+      // clickAllowed = true
+      // }, globalTimeoutBetweenClicks);
 
       app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");
-
-      // event.preventDefault();
 
       $.each($element.attrs(), function(attributeName, attributeValue) {
 
@@ -61,65 +68,94 @@ var plugin_HTML5Storage = {
           app.debug.deprecated("data-html5- attribute to persist element attributes is deprecated. Use: data-app-")
           app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + attributeName + " = " + attributeValue);
           plugin_HTML5Storage.functions.localStorage.set(attributeName, attributeValue);
+          $element.data(attributeName, attributeValue);
         }
 
         else if (attributeName.substring(0, 9).trim() == "data-app-") {
           app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents() Set localStorage: " + attributeName + " = " + attributeValue);
           plugin_HTML5Storage.functions.localStorage.set(attributeName, attributeValue);
+          $element.data(attributeName, attributeValue);
         }
 
       });
       app.debug.debug("plugin_HTML5Storage.definePluginEvents() - trigger: storagefilled");
+
       $element.trigger("storagefilled");
+      // }
     };
 
+    // TOUCHSTART
     $(document).on("touchstart", "a.click", function(event) {
       app.debug.event(event);
       $(this).data("fire", true);
 
     });
 
+    // TOUCHMOVE
     $(document).on("touchmove", "a.click", function(event) {
       app.debug.event(event);
       $(this).data("fire", false);
     });
 
+    // TOUCHEND
     $(document).on("touchend", "a.click", function(event) {
       app.debug.event(event);
-      event.stopPropagation();
-      event.preventDefault();
 
-      var $element;
+      var $element, href;
 
       $element = $(this);
 
-      if ($element.data("fire") === true) {
-        $element.data("fire", false);
-        storagefilledFunction(event, $element);
+      if ((href = $element.attr("href")) !== undefined && href.length > 1) {
+        app.nav.redirect(href, $element.attr("data-transition") || "none");
       }
 
-      window.setTimeout(function() {
-        $element.data("fire", true);
-      }, 300);
+      else {
+        if ($element.data("fire") === true) {
+          $element.data("fire", false);
+          // event.stopImmediatePropagation()
+          // There is a click. Prevent everything else;
+          // event.stopPropagation();
+
+          // only prevent defaut! Nothing else! It's tested
+          event.preventDefault();
+
+          storagefilledFunction(event, $element);
+        }
+
+        // element is able to fire again after 300ms
+        window.setTimeout(function() {
+          $element.data("fire", true);
+        }, 300);
+      }
     });
 
+    // CLICK
     $(document).on("click", "a.click", function(event) {
       app.debug.event(event);
+
       event.stopPropagation();
       event.preventDefault();
+
       var $element;
 
       $element = $(this);
 
-      if ($element.data("fire") !== false) {
-        $element.data("fire", false);
-        
-        storagefilledFunction(event, $(this));
+      if ((href = $element.attr("href")) !== undefined && href.length > 1) {
+        app.nav.redirect(href, $element.attr("data-transition") || "none");
       }
-      
-      window.setTimeout(function() {
-        $element.data("fire", true);
-      }, 300);
+
+      else {
+        if ($element.data("fire") !== false) {
+          $element.data("fire", false);
+
+          storagefilledFunction(event, $element);
+        }
+
+        // element is able to fire again after 300ms
+        window.setTimeout(function() {
+          $element.data("fire", true);
+        }, 300);
+      }
     });
   },
 
@@ -178,13 +214,13 @@ var plugin_HTML5Storage = {
 
           if (keyArray[1].startsWith(plugin_HTML5Storage.type.object)) {
             app.debug.debug("plugin_HTML5Storage.setDeepX() - next element is an object; so push empty object");
-            if (!object[arrayIndex]) object.push({});
+            if (!object[arrayIndex]) object[arrayIndex] = {};
           }
 
           else if (keyArray[1].startsWith(plugin_HTML5Storage.type.array)) {
 
             app.debug.debug("plugin_HTML5Storage.setDeepX() - next element is an array; so push empty array; next key: " + keyArray[1]);
-            if (!object[arrayIndex]) object.push([]);
+            if (!object[arrayIndex]) object[arrayIndex] = [];
           }
 
           app.debug.debug("plugin_HTML5Storage.setDeepX() - call recursively for nested array");

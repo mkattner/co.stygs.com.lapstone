@@ -470,13 +470,13 @@ var plugin_RestClient = {
     getJsonWithLoader_Queue: 0,
     getJsonWithLoader: function(service, parameter, async, attempts) {
       app.debug.trace("plugin_RestClient.functions.getJsonWithLoader(" + app.debug.arguments(arguments) + ")");
-
+      app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_UniqueLoader);
       // keep alive is Activated and connection is down
       // if (plugin_RestClient.config.useKeepAlive && !app.alive.isAlive()) {
       //
       // }
 
-      var result;
+      var result, loaderHeadline, loaderText;
 
       result = plugin_RestClient.functions.getJson(service, parameter, async, attempts);
 
@@ -508,30 +508,42 @@ var plugin_RestClient = {
 
         plugin_RestClient.functions.getJsonWithLoader_Queue++;
 
-        // GENERATE LOADER TEXT
-        var loaderHeadline, loaderText;
-        loaderHeadline = "page: " + $("[data-role=page]").attr("id") + " - ";
-        loaderText = "page: " + $("[data-role=page]").attr("id") + " - ";
-        if (typeof service === "string") {
-          loaderHeadline += service + " ";
-          loaderText += service + " ";
-        } else {
-          $.each(service, function(index, serviceDefinition) {
+        // GENERATE UNIQUE LOADER TEXT
+        if (plugin_RestClient.config.global_getJsonWithLoader_UniqueLoader === true) {
+          loaderHeadline = "page: " + $("[data-role=page]").attr("id") + " - ";
+          loaderText = "page: " + $("[data-role=page]").attr("id") + " - ";
 
-            loaderHeadline += serviceDefinition[0] + " ";
-            loaderText += serviceDefinition[0] + " ";
+          // case: SINGLE ASYNC CALL
+          if (typeof service === "string") {
+            loaderHeadline += service + " ";
+            loaderText += service + " ";
+          }
 
-          });
+          // case: MULTIPLE ASYNC CALL
+          else {
+            $.each(service, function(index, serviceDefinition) {
+
+              loaderHeadline += serviceDefinition[0] + " ";
+              loaderText += serviceDefinition[0] + " ";
+
+            });
+          }
+          loaderHeadline += "- headline";
+          loaderText += "- text";
+          app.debug.flat(app.lang.string(loaderHeadline, "webservice with loader"));
+          app.debug.flat(app.lang.string(loaderText, "webservice with loader"));
         }
-        loaderHeadline += "- headline";
-        loaderText += "- text";
-        app.debug.flat(app.lang.string(loaderHeadline, "webservice with loader"));
-        app.debug.flat(app.lang.string(loaderText, "webservice with loader"));
-        // /GENERATE LOADER TEXT
+
+        // GENERATE GLOBAL LOADER TEXT
+        else {
+          loaderHeadline = "global webservice loader headline";
+          loaderText = "global webservice loader text";
+        }
+
 
         // IF there is no other WS call in queue
 
-        // SET timeout for showind the loader
+        // SET timeout for showing the loader
         if (plugin_RestClient.functions.getJsonWithLoader_Delay == null) {
           plugin_RestClient.functions.getJsonWithLoader_Delay = window.setTimeout(function() {
             plugin_RestClient.functions.getJsonWithLoader_Delay = null;
@@ -807,7 +819,7 @@ var plugin_RestClient = {
       };
 
       // if (Object.keys(parameters).length > 0) {
-      
+
       // map path
       $.each(parameters, function(parameterKey, parameterValue) {
         wsd.url.replace("{" + parameterKey + "}", parameterValue);

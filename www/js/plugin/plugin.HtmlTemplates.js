@@ -112,7 +112,7 @@ var plugin_HtmlTemplates = {
     }
 
     if ($("style#lapstoneStyles")[0] == undefined) {
-      $('head').append($("<style>").attr("id", "lapstoneStyles"));
+      $('head').append(function () { return $("<style>").attr("id", "lapstoneStyles")});
     }
 
     if (styleIsActive === false) {

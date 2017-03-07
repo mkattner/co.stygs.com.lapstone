@@ -1,4 +1,4 @@
-//# sourceURL=plugin.Debug.js
+// # sourceURL=plugin.Debug.js
 /*
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -139,21 +139,27 @@ var plugin_Debug = {
       /**
        * console level
        */
-      select = $("<div>").addClass("ui-field-contain").append($("<label>").attr({
-        "for": "selConsoleLevel"
-      }).text("console level")).append($("<select>").attr({
-        "id": "selConsoleLevel",
-        "multiple": "multiple",
-        "data-native-menu": "false"
-      }));
+      select = $("<div>").addClass("ui-field-contain").append(function() {
+        return $("<label>").attr({
+          "for": "selConsoleLevel"
+        }).text("console level")
+      }).append(function() {
+        return $("<select>").attr({
+          "id": "selConsoleLevel",
+          "multiple": "multiple",
+          "data-native-menu": "false"
+        })
+      });
 
       $.each(plugin_Debug.config.debugLevels, function(levelName, ratingValue) {
 
-        select.find("select").append($("<option>").attr({
-          value: levelName
-        }).prop({
-          "selected": (plugin_Debug.config.consoleLevel.indexOf(levelName) > -1) ? true : false
-        }).text(levelName));
+        select.find("select").append(function() {
+          return $("<option>").attr({
+            value: levelName
+          }).prop({
+            "selected": (plugin_Debug.config.consoleLevel.indexOf(levelName) > -1) ? true : false
+          }).text(levelName)
+        });
 
       });
 
@@ -162,21 +168,27 @@ var plugin_Debug = {
       /**
        * log level
        */
-      select = $("<div>").addClass("ui-field-contain").append($("<label>").attr({
-        "for": "selLogLevel"
-      }).text("log level")).append($("<select>").attr({
-        "id": "selLogLevel",
-        "multiple": "multiple",
-        "data-native-menu": "false"
-      }));
+      select = $("<div>").addClass("ui-field-contain").append(function() {
+        return $("<label>").attr({
+          "for": "selLogLevel"
+        }).text("log level")
+      }).append(function() {
+        return $("<select>").attr({
+          "id": "selLogLevel",
+          "multiple": "multiple",
+          "data-native-menu": "false"
+        })
+      });
 
       $.each(plugin_Debug.config.debugLevels, function(levelName, ratingValue) {
 
-        select.find("select").append($("<option>").attr({
-          value: levelName
-        }).prop({
-          "selected": (plugin_Debug.config.logLevel.indexOf(levelName) > -1) ? true : false
-        }).text(levelName));
+        select.find("select").append(function() {
+          return $("<option>").attr({
+            value: levelName
+          }).prop({
+            "selected": (plugin_Debug.config.logLevel.indexOf(levelName) > -1) ? true : false
+          }).text(levelName)
+        });
 
       });
 
@@ -185,9 +197,11 @@ var plugin_Debug = {
       /**
        * close button
        */
-      debugDiv.append($("<button>").attr({
-        id: "btnClose",
-      }).text("Close"));
+      debugDiv.append(function() {
+        return $("<button>").attr({
+          id: "btnClose",
+        }).text("Close")
+      });
 
       container.append(debugDiv);
 
@@ -195,19 +209,21 @@ var plugin_Debug = {
         "display": "none"
       });
 
-      container.append($("<div>").attr("id", "divDebugButton").css({
-        "position": "fixed",
-        "display": "block",
-        "z-index": "1050",
-        "top": "0px",
-        "left": "0px",
-        "height": "10px",
-        "width": "20px",
-        "background-color": "red"
-      }).on("click", function() {
-        $(this).hide();
-        $("#divDebug").show();
-      }));
+      container.append(function() {
+        return $("<div>").attr("id", "divDebugButton").css({
+          "position": "fixed",
+          "display": "block",
+          "z-index": "1050",
+          "top": "0px",
+          "left": "0px",
+          "height": "10px",
+          "width": "20px",
+          "background-color": "red"
+        }).on("click", function() {
+          $(this).hide();
+          $("#divDebug").show();
+        })
+      });
     }
   },
   /**
@@ -281,21 +297,81 @@ var plugin_Debug = {
 
     content = $("<ul>");
 
-    content.append($("<li>").append($("<p>").text("App version: ").append($("<strong>").text(app.config.version.app))));
-    content.append($("<li>").append($("<p>").text("Lapstone version: ").append($("<strong>").text(app.config.version.lapstone))));
-    content.append($("<li>").append($("<p>").text("Lapstone release version: ").append($("<strong>").text(app.config.min))));
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("App version: ").append(function() {
+          return $("<strong>").text(app.config.version.app)
+        })
+      })
+    });
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("Lapstone version: ").append(function() {
+          return $("<strong>").text(app.config.version.lapstone)
+        })
+      })
+    });
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("Lapstone release version: ").append(function() {
+          return $("<strong>").text(app.config.min)
+        })
+      })
+    });
 
-    content.append($("<li>").append($("<p>").text("jQuery version: ").append($("<strong>").text($.fn.jquery))));
-    content.append($("<li>").append($("<p>").text("jQuery mobile version: ").append($("<strong>").text($.mobile.version))));
-    content.append($("<li>").append($("<p>").text("Use apache cordova: ").append($("<strong>").text(app.config.apacheCordova))));
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("jQuery version: ").append(function() {
+          return $("<strong>").text($.fn.jquery)
+        })
+      })
+    });
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("jQuery mobile version: ").append(function() {
+          return $("<strong>").text($.mobile.version)
+        })
+      })
+    });
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("Use apache cordova: ").append(function() {
+          return $("<strong>").text(app.config.apacheCordova)
+        })
+      })
+    });
 
     // HTML Meta
-    content.append($("<li>").append($("<p>").text("User Agent: ").append($("<strong>").text(navigator.userAgent))));
-    content.append($("<li>").append($("<p>").text("HTML Viewport: ").append($("<strong>").text($("meta[name=viewport]").attr("content")))));
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("User Agent: ").append(function() {
+          return $("<strong>").text(navigator.userAgent)
+        })
+      })
+    });
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("HTML Viewport: ").append(function() {
+          return $("<strong>").text($("meta[name=viewport]").attr("content"))
+        })
+      })
+    });
     // Page
-    content.append($("<li>").append($("<p>").text("Current Page: ").append($("<strong>").text($("div[data-role=page]").attr("id")))));
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("Current Page: ").append(function() {
+          return $("<strong>").text($("div[data-role=page]").attr("id"))
+        })
+      })
+    });
     // App
-    content.append($("<li>").append($("<p>").text("Startup Time: ").append($("<strong>").text(app.config.startup + " seconds"))));
+    content.append(function() {
+      return $("<li>").append(function() {
+        return $("<p>").text("Startup Time: ").append(function() {
+          return $("<strong>").text(app.config.startup + " seconds")
+        })
+      })
+    });
 
     app.notify.dialog({
       text: content,
@@ -429,8 +505,8 @@ var plugin_Debug = {
       // log debug output
       // eventinger = event;
       this.log("          Type: " + event.type, "EVENT");
-      if ($(event.target).attr("class")) this.log("Target classes: " + $(event.target).attr("class"), "EVENT");
-      if ($(event.target).attr("id")) this.log("     Target id: " + $(event.target).attr("id"), "EVENT");
+      if ($(event.target).attr("class")) this.log("Target classes: ." + $(event.target).attr("class").split(" ").join("."), "EVENT");
+      if ($(event.target).attr("id")) this.log("     Target id: #" + $(event.target).attr("id"), "EVENT");
     },
 
     /**

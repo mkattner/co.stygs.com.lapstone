@@ -1,4 +1,4 @@
-//# sourceURL=plugin.WebServiceClient.js
+// # sourceURL=plugin.WebServiceClient.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -75,7 +75,7 @@ var plugin_WebServiceClient = {
       currentWsd = wsd;
     });
 
-    var returnValue = null, dfd = null;// , headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals, encodedValue, exeptionConfig;
+    var returnValue = null, dfd = null, jqXHR;// , headers = null, contentType, splittedData, obj, pairs, paramKey, paramValue, indexOfEquals, encodedValue, exeptionConfig;
 
     // the web service call is asynchronous; so return a dfd.promise() object
     if (async) {
@@ -224,7 +224,7 @@ var plugin_WebServiceClient = {
         plugin_WebServiceClient.wsCallHistory.push($.extend(true, {}, wsd));
       });
 
-      $.ajax({
+      jqXHR = $.ajax({
         url: wsd.url,
         data: wsd.data,// ?key=value
         dataType: wsd.dataTaype, // json
@@ -322,6 +322,13 @@ var plugin_WebServiceClient = {
       app.debug.debug("plugin_WebServiceClient.getAjax() - catch block: " + JSON.stringify(err));
       returnValue = null;
     }
+
+    if (async) {
+      dfd.notify({
+        "jqXHR": jqXHR
+      });
+    }
+
     app.debug.debug("plugin_WebServiceClient.getAjax() - Webservice returns: " + JSON.stringify(returnValue));
     return returnValue;
   },

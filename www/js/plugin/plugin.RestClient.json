@@ -8,6 +8,7 @@
 		"getSingleJsonAsync.js"
 	],
 	"useKeepAlive": true,
+	"global_getJsonWithLoader_UniqueLoader":true,
 	"global_getJsonWithLoader_Timeout": 200,
 	"global_getJsonWithLoader_Overrun": 40,
 	"wsdFiles": [

@@ -52,18 +52,6 @@ app["pages"] = {
   cleanup: function() {
     var dfd = $.Deferred();
 
-    // delete app.pages.constructor
-    // delete app.pages.loadPageConfiguration
-    // delete app.pages.onPageLoaded
-    // delete app.pages.callPluginsPagesLoaded
-    // delete app.pages.setEvents
-    // delete app.pages.globalPages
-    // delete app.pages.verifyPages
-    // delete app.pages.include
-    // delete app.pages.loadPages
-    // delete app.pages.verifyPageNames
-    // delete app.pages.loadPageConfig;
-
     dfd.resolve();
     return dfd.promise();
   },
@@ -290,7 +278,7 @@ app["pages"] = {
         $.each(app.pages.pageNames, function(key, pageName) {
           var currentPage = window['page_' + pageName];
 
-          window["app"]["page"][pageName] = window["app"]["page"][pageName] || {};
+          // window["app"]["page"][pageName] = window["app"]["page"][pageName] || {};
           window["app"]["page"][pageName] = currentPage.functions;
 
         });
@@ -313,7 +301,7 @@ app["pages"] = {
           $.each(app.pages.pageNames, function(key, pageName) {
             var currentPage = window['page_' + pageName];
 
-            window["app"]["page"][pageName] = window["app"]["page"][pageName] || {};
+            // window["app"]["page"][pageName] = window["app"]["page"][pageName] || {};
             window["app"]["page"][pageName] = currentPage.functions;
 
           });
@@ -354,13 +342,9 @@ app["pages"] = {
 
     var success = true;
     // alert("plugin page functin");
-    try {
-      $.each(app.plugins.pluginNames, function(key, value) {
-        window['plugin_' + value].afterHtmlInjectedBeforePageComputing($container);
-      });
-    } catch (e) {
-      dfd.reject(e);
-    }
+    $.each(app.plugins.pluginNames, function(key, value) {
+      window['plugin_' + value].afterHtmlInjectedBeforePageComputing($container);
+    });
     dfd.resolve();
     return dfd.promise();
 
@@ -547,57 +531,53 @@ app["pages"] = {
       app.debug.trace("plugin.eventFunctions.pageTypeSelector(" + event + ", " + $container + ", " + eventName + ")");
       app.debug.debug("PageId: " + $container.attr('id'));
 
-      try {
-        var eventFunctionResult;
+      var eventFunctionResult;
 
-        // alert($container.attr('data-type'));
-        if (window['page_' + $container.attr('id')] == undefined) {
-          // case 3: page ist not defined in pages.json
-          app.debug.debug("case: page ist not defined in pages.json");
-          alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + $container.attr('id') + "; Please have a look to your pages.json file.");
-          app.nav.redirect("index.html", "none");
-        } else {
-          // case 4: page is a common lapstone page
-          app.debug.debug("case: page is a common lapstone page");
+      // alert($container.attr('data-type'));
+      if (window['page_' + $container.attr('id')] == undefined) {
+        // case 3: page ist not defined in pages.json
+        app.debug.debug("case: page ist not defined in pages.json");
+        alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + $container.attr('id') + "; Please have a look to your pages.json file.");
+        app.nav.redirect("index.html", "none");
+      } else {
+        // case 4: page is a common lapstone page
+        app.debug.debug("case: page is a common lapstone page");
 
-          app.pages.eventPromises[eventName] = Array();
-          // app.pages.eventTimeouts[eventName] = null;
-          // Removed, because async creator can return getJsonWith loader
-          // app.pages.eventTimeouts[eventName] = window.setTimeout(function() {
-          // app.debug.debug("app.pages.eventFunctions.lapstonePage. - show loader");
-          //
-          // app.notify.loader.bubbleDiv({
-          // show: true,
-          // text: app.lang.string("page: " + $container.attr('id') + " - text", "pageloading"),
-          // headline: app.lang.string("page: " + $container.attr('id') + " - headline", "pageloading")
-          // });
-          //
-          // }, 200);
+        app.pages.eventPromises[eventName] = Array();
+        // app.pages.eventTimeouts[eventName] = null;
+        // Removed, because async creator can return getJsonWith loader
+        // app.pages.eventTimeouts[eventName] = window.setTimeout(function() {
+        // app.debug.debug("app.pages.eventFunctions.lapstonePage. - show loader");
+        //
+        // app.notify.loader.bubbleDiv({
+        // show: true,
+        // text: app.lang.string("page: " + $container.attr('id') + " - text", "pageloading"),
+        // headline: app.lang.string("page: " + $container.attr('id') + " - headline", "pageloading")
+        // });
+        //
+        // }, 200);
 
-          // app.pages.eventFunctions.everyPage[eventName](event, $container);
-          eventFunctionResult = app.pages.eventFunctions.lapstonePage[eventName](event, $container);
-          // console.log(eventFunctionResult)
-          if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
-            app.pages.eventPromises[eventName].push(eventFunctionResult);
-          }
+        // app.pages.eventFunctions.everyPage[eventName](event, $container);
+        eventFunctionResult = app.pages.eventFunctions.lapstonePage[eventName](event, $container);
+        // console.log(eventFunctionResult)
+        if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
+          app.pages.eventPromises[eventName].push(eventFunctionResult);
+        }
 
-          if (eventFunctionResult !== false) {
-            // call the global pages
-            $.each(window["page_" + $container.attr('id')].config.globalPage, function(index, globalPageName) {
-              eventFunctionResult = window["globalPage_" + globalPageName][eventName](event, $container);
-              if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
-                app.pages.eventPromises[eventName].push(eventFunctionResult);
-              }
-            });
-          }
-
-          $.when.apply($, app.pages.eventPromises[eventName]).always(function() {
-            // window.clearTimeout(app.pages.eventTimeouts[eventName]);
-            // app.notify.loader.remove();
+        if (eventFunctionResult !== false) {
+          // call the global pages
+          $.each(window["page_" + $container.attr('id')].config.globalPage, function(index, globalPageName) {
+            eventFunctionResult = window["globalPage_" + globalPageName][eventName](event, $container);
+            if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
+              app.pages.eventPromises[eventName].push(eventFunctionResult);
+            }
           });
         }
-      } catch (e) {
-        app.debug.fatal("FATAL ERROR in pages.eventFunctions.eventFunctions.pageTypeSelector(event, $container, eventName)")
+
+        $.when.apply($, app.pages.eventPromises[eventName]).always(function() {
+          // window.clearTimeout(app.pages.eventTimeouts[eventName]);
+          // app.notify.loader.remove();
+        });
       }
 
     },
@@ -605,66 +585,58 @@ app["pages"] = {
     lapstonePage: {
       pagebeforechange: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + $container + ")");
-        try {
-          window['page_' + $container.attr('id')].events.pagebeforechange(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pagebeforechange(event, $container);
       },
       pagebeforecreate: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + $container + ")");
-        try {
-          if (window['page_' + $container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
+        if (window['page_' + $container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
 
-            app.notify.add.alert({
-              "text": app.lang.string("login obligate text", "lapstone", {
-                "page": app.lang.string($container.attr('id'), "view")
-              }),
-              "title": app.lang.string("login obligate headline", "lapstone", {
-                "page": app.lang.string($container.attr('id'), "view")
-              }),
-              "button": app.lang.string("login obligate confirm", "lapstone", {
-                "page": app.lang.string($container.attr('id'), "view")
-              }),
-              "pageDelay": 1
-            });
+          app.notify.add.alert({
+            "text": app.lang.string("login obligate text", "lapstone", {
+              "page": app.lang.string($container.attr('id'), "view")
+            }),
+            "title": app.lang.string("login obligate headline", "lapstone", {
+              "page": app.lang.string($container.attr('id'), "view")
+            }),
+            "button": app.lang.string("login obligate confirm", "lapstone", {
+              "page": app.lang.string($container.attr('id'), "view")
+            }),
+            "pageDelay": 1
+          });
 
-            app.actions.logout();
-            return false;
+          app.actions.logout();
+          return false;
 
-          } else if (app.plugins.config.KeepAlive === true) {
-            app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive");
+        } else if (app.plugins.config.KeepAlive === true) {
+          app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: : WebServiceClient requires keepAlive");
 
-            if (window['page_' + $container.attr('id')].config.useKeepAlive != undefined) {
-              app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json");
+          if (window['page_' + $container.attr('id')].config.useKeepAlive != undefined) {
+            app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has keepAlive configuration in page.json");
 
-              if (window['page_' + $container.attr('id')].config.useKeepAlive) {
-                app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE");
-                if (app.alive.isAlive() === true) {
-                  app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: server isAlive");
+            if (window['page_' + $container.attr('id')].config.useKeepAlive) {
+              app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: global keepAlive is TRUE");
+              if (app.alive.isAlive() === true) {
+                app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: server isAlive");
 
-                  return app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, $container);
-                } else {
-                  app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server");
-                  app.debug.debug("Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.", 60);
-                  app.alive.badConnectionHandler();
-                  return false;
-                }
-              } else {
-                app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file");
                 return app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, $container);
+              } else {
+                app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: no connection to server");
+                app.debug.debug("Can't load page because keepAlive failed. Check your connection. You'll be redirected to the index.html page.", 60);
+                app.alive.badConnectionHandler();
+                return false;
               }
             } else {
-              app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page does not require keepAlive");
-              app.debug.debug("No useKeepAlive entry in your page_" + $container.attr('id') + ".json. Please add it.", 60);
+              app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page has NO keepAlive entry in page.json file");
               return app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, $container);
             }
           } else {
-            app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: WebServiceClient does not require keepAlive");
+            app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: Page does not require keepAlive");
+            app.debug.debug("No useKeepAlive entry in your page_" + $container.attr('id') + ".json. Please add it.", 60);
             return app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, $container);
           }
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
+        } else {
+          app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforecreate() case: WebServiceClient does not require keepAlive");
+          return app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, $container);
         }
       },
       pagebeforecreate_createPage: function(event, $container) {
@@ -779,12 +751,15 @@ app["pages"] = {
           });
 
           promiseOfAsyncPageLoading.always(function() {
-            
+
             // do this if user is still on page
             if (window['page_' + $container.attr('id')].config.name === app.pages.getCurrent().config.name) {
               app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage - call: page.async.always()");
               window['page_' + $container.attr('id')].async.always($container);
             }
+          });
+
+          promiseOfAsyncPageLoading.progress(function() {
           });
 
         }
@@ -801,7 +776,7 @@ app["pages"] = {
 
         dfdPageCreation.done(function($container) {
 
-          app.help.jQM.enhance($container);
+          // app.help.jQM.enhance($container);
         });
 
         // call plugins' page functions
@@ -818,140 +793,92 @@ app["pages"] = {
       },
       pagebeforehide: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + $container + ")");
-        try {
-          window['page_' + $container.attr('id')].events.pagebeforehide(event, $container);
+        window['page_' + $container.attr('id')].events.pagebeforehide(event, $container);
 
-          if (app.pages.refreshInterval != null) {
-            clearInterval(app.pages.refreshInterval);
-            app.pages.refreshInterval = null;
-          }
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
+        if (app.pages.refreshInterval != null) {
+          clearInterval(app.pages.refreshInterval);
+          app.pages.refreshInterval = null;
         }
       },
       pagebeforeload: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforeload(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pagebeforeload(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pagebeforeload(event, $container);
       },
       pagebeforeshow: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pagebeforeshow(event, $container);
+        window['page_' + $container.attr('id')].events.pagebeforeshow(event, $container);
 
-          if (window['page_' + $container.attr('id')].config.contentRefresh == true) {
-            app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforeshow: set refresh interval every " + window['page_' + $container.attr('id')].config.contentRefreshInterval + " ms");
+        if (window['page_' + $container.attr('id')].config.contentRefresh == true) {
+          app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforeshow: set refresh interval every " + window['page_' + $container.attr('id')].config.contentRefreshInterval + " ms");
 
-            app.pages.refreshInterval = window.setInterval(function() {
-              // $().empty();
+          app.pages.refreshInterval = window.setInterval(function() {
+            // $().empty();
 
-              $('div[data-role=content]').children().fadeOut(500).promise().then(function() {
-                $('div[data-role=content]').empty();
-                window['page_' + $container.attr('id')].creator($container);
-              });
+            $('div[data-role=content]').children().fadeOut(500).promise().then(function() {
+              $('div[data-role=content]').empty();
+              window['page_' + $container.attr('id')].creator($container);
+            });
 
-            }, window['page_' + $container.attr('id')].config.contentRefreshInterval);
-          }
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
+          }, window['page_' + $container.attr('id')].config.contentRefreshInterval);
         }
       },
       pagechange: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pagechange(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pagechange(event, $container);
       },
       pagechangefailed: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagechangefailed(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pagechangefailed(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pagechangefailed(event, $container);
       },
       pagecreate: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagecreate(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pagecreate(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pagecreate(event, $container);
       },
       pagehide: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pagehide(" + event + ", " + $container + ")");
 
-        try {
-          app.debug.debug("plugin.eventFunctions.lapstonePage.pagehide: clear page specific event delegates");
-          $("#" + $container.attr("id")).off();
-          $(document).off("#" + $container.attr("id"));
+        app.debug.debug("plugin.eventFunctions.lapstonePage.pagehide: clear page specific event delegates");
+        $("#" + $container.attr("id")).off();
+        $(document).off("#" + $container.attr("id"));
 
-          // app.debug.debug("plugin.eventFunctions.everyPage.pagehide:
-          // empty parameter object");
-          // window["page_" + $container.attr('id')]["parameter"] = {};
+        // app.debug.debug("plugin.eventFunctions.everyPage.pagehide:
+        // empty parameter object");
+        // window["page_" + $container.attr('id')]["parameter"] = {};
 
-          app.debug.debug("remove page from DOM: " + $container.attr('id'));
-          $container.remove();
-          window['page_' + $container.attr('id')].events.pagehide(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        app.debug.debug("remove page from DOM: " + $container.attr('id'));
+        $container.remove();
+        window['page_' + $container.attr('id')].events.pagehide(event, $container);
       },
       pageinit: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pageinit(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pageinit(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pageinit(event, $container);
       },
       pageload: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pageload(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pageload(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pageload(event, $container);
       },
       pageloadfailed: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pageloadfailed(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pageloadfailed(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pageloadfailed(event, $container);
       },
       pageremove: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pageremove(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pageremove(event, $container);
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pageremove(event, $container);
       },
       pageshow: function(event, $container) {
         app.debug.trace("plugin.eventFunctions.lapstonePage.pageshow(" + event + ", " + $container + ")");
 
-        try {
-          window['page_' + $container.attr('id')].events.pageshow(event, $container);
-          if (navigator.splashscreen != undefined) navigator.splashscreen.hide();
-        } catch (e) {
-          app.debug.fatal("FATAL ERROR");
-        }
+        window['page_' + $container.attr('id')].events.pageshow(event, $container);
+        if (navigator.splashscreen != undefined) navigator.splashscreen.hide();
       }
     }
   },
