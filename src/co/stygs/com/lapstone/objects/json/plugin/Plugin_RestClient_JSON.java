@@ -30,6 +30,7 @@ public class Plugin_RestClient_JSON extends APlugin_JSON {
     private Boolean useKeepAlive;
     private Integer global_getJsonWithLoader_Timeout;
     private Integer global_getJsonWithLoader_Overrun;
+    private Boolean global_getJsonWithLoader_UniqueLoader;
 
     public Integer getGlobal_getJsonWithLoader_Timeout() {
 	return global_getJsonWithLoader_Timeout;
@@ -78,6 +79,14 @@ public class Plugin_RestClient_JSON extends APlugin_JSON {
 
     public void setWebservices(Map<String, Wsd_JSON_Webservice> webservices) {
 	this.webservices = webservices;
+    }
+
+    public Boolean getGlobal_getJsonWithLoader_UniqueLoader() {
+	return global_getJsonWithLoader_UniqueLoader;
+    }
+
+    public void setGlobal_getJsonWithLoader_UniqueLoader(Boolean global_getJsonWithLoader_UniqueLoader) {
+	this.global_getJsonWithLoader_UniqueLoader = global_getJsonWithLoader_UniqueLoader;
     }
 
 }
