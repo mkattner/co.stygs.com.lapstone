@@ -56,11 +56,11 @@ public class Deploy {
 
 		    File destination = new File(pathname.getAbsolutePath().replace(www.getAbsolutePath(), www_debug.getAbsolutePath()));
 
-		    if (destination.getName().startsWith("page.lapstone")) {
-			return false;
-		    }
+		    // if (destination.getName().startsWith("page.lapstone")) {
+		    // return false;
+		    // }
 
-		    else if (destination.isDirectory()) {
+		    if (destination.isDirectory()) {
 			return true;
 		    }
 
@@ -122,34 +122,8 @@ public class Deploy {
 
 	    // ********************************************************************
 	    // overwrite plugin includes
-	    
-	    
-	    
-	    
-	    
+
 	    FileUtils.copyDirectory(new File(www, "js/plugin/include"), new File(www_debug, "js/plugin/include"), true);
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
 
 	    FileUtils.copyFile(new File(www, "js/lapstone.js"), new File(www_debug, "js/lapstone.js"));
 
@@ -165,8 +139,6 @@ public class Deploy {
 	    // copy lapstone.jar
 	    FileUtils.copyFile(new File(lapstonePath, "target/lapstone.jar"), new File(appPath, "lapstone.jar"), true);
 	    FileUtils.copyFile(new File(lapstonePath, "lapstone.txt"), new File(appPath, "lapstone.txt"), true);
-	    
-	    
 
 	    return true;
 	} catch (IOException e) {
