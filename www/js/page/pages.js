@@ -592,6 +592,7 @@ app["pages"] = {
         if (window['page_' + $container.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
 
           app.notify.add.alert({
+            "id": "loginRequired",
             "text": app.lang.string("login obligate text", "lapstone", {
               "page": app.lang.string($container.attr('id'), "view")
             }),

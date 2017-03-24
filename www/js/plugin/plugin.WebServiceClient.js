@@ -1,4 +1,4 @@
-// # sourceURL=plugin.WebServiceClient.js
+//# sourceURL=plugin.WebServiceClient.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -86,6 +86,14 @@ var plugin_WebServiceClient = {
 
     wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
     app.debug.validate(wsd.serverObject, "object")
+
+    // replace and delete url parameters
+    $.each(wsd.parameters, function(parameterName, parameterValue) {
+      if (wsd.url.occurences("{" + parameterName + "}") > 0) {
+        wsd.url = wsd.url.replaceAll("{" + parameterName + "}", parameterValue);
+        delete wsd.parameters[parameterName];
+      }
+    });
 
     wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
 
@@ -364,6 +372,63 @@ var plugin_WebServiceClient = {
 
       returnValue = plugin_WebServiceClient.getAjax(wsd, parameters, async);
       return returnValue;
+    },
+
+    getServerSideEvent: function(wsd) {
+      // case: webservice request
+      // ask for the json file
+      if (!window.EventSource) {
+        return null;
+      } else {
+        var dfd = $.Deferred();
+
+        wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
+
+        // replace and delete url parameters
+        $.each(wsd.parameters, function(parameterName, parameterValue) {
+          if (wsd.url.occurences("{" + parameterName + "}") > 0) {
+            wsd.url = wsd.url.replaceAll("{" + parameterName + "}", parameterValue);
+            delete wsd.parameters[parameterName];
+          }
+        });
+
+        wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
+
+        var source = new EventSource(wsd.url);
+
+        source.addEventListener('message', function(e) {
+          dfd.notify(JSON.parse(e.data));
+        }, false);
+
+        source.addEventListener('open', function(e) {
+        }, false);
+
+        source.addEventListener('error', function(e) {
+          if (e.readyState == EventSource.CONNECTING) {
+          }
+
+          else if (e.readyState == EventSource.OPEN) {
+            // error in open connection
+          }
+
+          else if (e.readyState == EventSource.CLOSED) {
+            // Connection was closed.
+          }
+
+          dfd.reject(e);
+        }, false);
+
+        dfd.fail(function() {
+          try {
+            source.close();
+          } catch (e) {
+            console.log(e);
+          }
+
+        });
+
+        return dfd;
+      }
     },
 
     // ask first or second or third or fourth or fifth server for the

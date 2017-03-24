@@ -1,4 +1,4 @@
-// # sourceURL=plugin.Notification.js
+//# sourceURL=plugin.Notification.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -356,14 +356,16 @@ var plugin_Notification = {
         plugin_Notification.functions.destroy.simple().done(function() {
           setTimeout(function() {
             app.template.append("[data-role=page]", "JQueryMobilePopupSimple");
-            // $("#popupSimple").data("notification", notification);
+            $("#popupSimple").data("notification", notification);
 
+            // POPUPAFTEROPEN
             $("#popupSimple").one("popupafteropen", function(event, ui) {
               app.debug.event(event);
 
               $("#popupSimple #btn-simple-close").data("callback", notification.callbackButtonClose);
             });
 
+            // POPUPCREATE
             $("#popupSimple").one("popupcreate", function(event, ui) {
 
               if (notification.id) $("#popupSimple").addClass("app-popup-id-" + notification.id.trim());
@@ -381,7 +383,7 @@ var plugin_Notification = {
               }
 
               if (typeof notification.text == "object") {
-                $("#popupSimple .popupContent").replaceWith(notification.text);
+                $("#popupSimple .popupContent").replaceWith(notification.text.clone()); // TODO why clone()???
               }
 
               else {
@@ -391,6 +393,7 @@ var plugin_Notification = {
               $("#popupSimple").popup("open");
             });
 
+            // POPUP
             $("#popupSimple").popup({
               beforeposition: function() {
                 $(this).closest(".ui-popup-container").css({
@@ -408,6 +411,7 @@ var plugin_Notification = {
             app.template.append("[data-role=page]", "JQueryMobilePopupAlert");
             $("#popupAlert").data("notification", notification);
 
+            // POPUPAFTEROPEN
             $("#popupAlert").one("popupafteropen", function(event, ui) {
               app.debug.event(event);
 
@@ -415,6 +419,7 @@ var plugin_Notification = {
               $("#popupAlert #btn-alert").data("callback", notification.callbackButton);
             });
 
+            // POPUPCREATE
             $("#popupAlert").one("popupcreate", function(event, ui) {
 
               if (notification.id) $("#popupAlert").addClass("app-popup-id-" + notification.id.trim());
@@ -444,6 +449,7 @@ var plugin_Notification = {
               $("#popupAlert").popup("open");
             });
 
+            // POPUP
             $("#popupAlert").popup({
               beforeposition: function() {
                 $(this).closest(".ui-popup-container").css({
@@ -464,6 +470,7 @@ var plugin_Notification = {
             app.template.append("[data-role=page]", "JQueryMobilePopupDialog");
             $("#popupDialog").data("notification", notification);
 
+            // POPUPAFTEROPEN
             $("#popupDialog").one("popupafteropen", function(event, ui) {
               app.debug.event(event);
 
@@ -472,6 +479,7 @@ var plugin_Notification = {
               $("#popupDialog #btn-dialog-right").data("callback", notification.callbackButtonRight);
             });
 
+            // POPUPCREATE
             $("#popupDialog").one("popupcreate", function(event, ui) {
 
               if (notification.id) $("#popupDialog").addClass("app-popup-id-" + notification.id.trim());
@@ -502,6 +510,7 @@ var plugin_Notification = {
               $("#popupDialog").popup("open");
             });
 
+            // POPUP
             $("#popupDialog").popup({
               beforeposition: function() {
                 $(this).closest(".ui-popup-container").css({
@@ -522,6 +531,7 @@ var plugin_Notification = {
             app.template.append("[data-role=page]", "JQueryMobilePopupTrialog");
             $("#popupTrialog").data("notification", notification);
 
+            // POPUPAFTEROPEN
             $("#popupTrialog").one("popupafteropen", function(event, ui) {
               app.debug.event(event);
 
@@ -531,6 +541,7 @@ var plugin_Notification = {
               $("#popupTrialog #btn-trialog-right").data("callback", notification.callbackButtonRight);
             });
 
+            // POPUPCREATE
             $("#popupTrialog").one("popupcreate", function(event, ui) {
 
               if (notification.id) $("#popupTrialog").addClass("app-popup-id-" + notification.id.trim());
@@ -562,6 +573,7 @@ var plugin_Notification = {
               $("#popupTrialog").popup("open");
             });
 
+            // POPUP
             $("#popupTrialog").popup({
               beforeposition: function() {
                 $(this).closest(".ui-popup-container").css({
@@ -605,7 +617,12 @@ var plugin_Notification = {
     /**
      * 
      */
-    simple: function(notification) {
+    simple: function(text) {
+      var notification;
+      
+      notification=text;
+      
+      
       notification.type = "simple";
       plugin_Notification.functions.show(notification);
     },
@@ -966,10 +983,10 @@ var plugin_Notification = {
       simple: function() {
         var dfd = $.Deferred();
 
-        $("#popupSimple").on("popupafteropen", function(event, ui) {
+        // POPUPAFTEROPEN
+        $("#popupSimple").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
 
-          $("#popupSimple").off("popupafteropen");
           dfd.resolve();
         });
 
@@ -984,10 +1001,9 @@ var plugin_Notification = {
       alert: function() {
         var dfd = $.Deferred();
 
-        $("#popupAlert").on("popupafteropen", function(event, ui) {
+        $("#popupAlert").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
 
-          $("#popupAlert").off("popupafteropen");
           dfd.resolve();
         });
 
@@ -1002,10 +1018,9 @@ var plugin_Notification = {
       dialog: function() {
         var dfd = $.Deferred();
 
-        $("#popupDialog").on("popupafteropen", function(event, ui) {
+        $("#popupDialog").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
 
-          $("#popupDialog").off("popupafteropen");
           dfd.resolve();
         });
 
@@ -1020,10 +1035,9 @@ var plugin_Notification = {
       trialog: function() {
         var dfd = $.Deferred();
 
-        $("#popupTrialog").on("popupafteropen", function(event, ui) {
+        $("#popupTrialog").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
 
-          $("#popupTrialog").off("popupafteropen");
           dfd.resolve();
         });
 
@@ -1049,7 +1063,7 @@ var plugin_Notification = {
           }
         });
 
-        notification.type = "alert";
+        notification.type = "simple";
         plugin_Notification.notifications.push(notification);
       },
 

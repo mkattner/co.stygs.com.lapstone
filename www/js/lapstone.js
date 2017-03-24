@@ -219,16 +219,14 @@ function updateFramework() {
       }
 
       app.notify.add.alert({
-        title: app.lang.string("update done - title", "lapstone", {
+        "id": "updateDone",
+        "title": app.lang.string("update done - title", "lapstone", {
           version: app.config.version.app
         }),
-        headline: app.lang.string("update done - headline", "lapstone", {
+        "text": app.lang.string("update done - text", "lapstone", {
           version: app.config.version.app
         }),
-        text: app.lang.string("update done - text", "lapstone", {
-          version: app.config.version.app
-        }),
-        button: app.lang.string("update done - button", "lapstone")
+        "button": app.lang.string("update done - button", "lapstone")
       });
     }
     // alert(currentAppVersion + oldAppVersion + currentLapstoneVersion +
@@ -1023,5 +1021,24 @@ function extendJsAndJquery() {
     });
 
     return integerVersion;
+  }
+
+  String.prototype.occurences = function(subString, allowOverlapping) {
+
+    string = this;
+    subString += "";
+    if (subString.length <= 0) return (string.length + 1);
+
+    var n = 0, pos = 0, step = allowOverlapping ? 1 : subString.length;
+
+    while (true) {
+      pos = string.indexOf(subString, pos);
+      if (pos >= 0) {
+        ++n;
+        pos += step;
+      } else
+        break;
+    }
+    return n;
   }
 }
