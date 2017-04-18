@@ -22,13 +22,10 @@ var plugin_MultilanguageIso639_3 = {
   },
   pluginsLoaded: function() {
     app.debug.trace(this.config.name + ".pluginsLoaded()", 11);
-    var promise;
 
-    promise = globalLoader.AsyncJsonLoader("../files/language/" + plugin_MultilanguageIso639_3.config.defaultLanguage + ".json").done(function(json) {
-      plugin_MultilanguageIso639_3.dictionary = json;
-    });
+    app.debug.validate(plugin_MultilanguageIso639_3.config.availableLanguages, "object");
 
-    return promise;
+    return plugin_MultilanguageIso639_3.loadLanguageIntoDict(plugin_MultilanguageIso639_3.config.defaultLanguage);
   },
 
   // called after all pages are loaded
@@ -52,19 +49,24 @@ var plugin_MultilanguageIso639_3 = {
 
   // private functions
   loadLanguageIntoDict: function(language) {
-    var langUri = "../files/language/" + language + ".json";
-    $.ajax({
-      dataType: "json",
-      url: langUri,
-      async: false,
-      success: function(json) {
-        app.debug.debug("Langugae successfully loaded: " + language, 3);
-        plugin_MultilanguageIso639_3.dictionary = json;
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        alert("Fatal error: Can't load language: " + langUri + " Error: " + textStatus);
-      }
+    var promise, langUri;
+
+    langUri = "../files/language/" + language + ".json";
+    promise = globalLoader.AsyncJsonLoader(langUri);
+
+    promise.done(function(json) {
+      plugin_MultilanguageIso639_3.dictionary = json;
+
+      // Change the HTML language attribute
+      $("html").attr({
+        "lang": plugin_MultilanguageIso639_3.config.availableLanguages[language][0]
+      });
+
+    }).fail(function(error) {
+      alert("Fatal error: Can't load language: " + langUri + " Error: " + JSON.stringify(error));
     });
+
+    return promise;
   },
   // public functions
   functions: {
@@ -81,18 +83,13 @@ var plugin_MultilanguageIso639_3 = {
     },
 
     languageAvailable: function(language) {
-      if (this.getAvailableLanguages().indexOf(language) != -1)
-        return true;
-      else
-        return false;
+      return this.getAvailableLanguages().hasOwnProperty(language);
     },
     changeLanguage: function(language) {
-      if (this.languageAvailable(language)) {
+      return plugin_MultilanguageIso639_3.loadLanguageIntoDict(language).done(function() {
         app.info.set("plugin_MultilanguageIso639_3.config.defaultLanguage", language);
-        return true;
-      } else {
-        return false;
-      }
+      })
+
     },
 
     addParameter: function(key, value) {

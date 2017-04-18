@@ -39,8 +39,8 @@ var plugin_Debug = {
     var dfd = $.Deferred();
 
     // validate config file
-    plugin_Debug.functions.validate(plugin_Debug.config.consoleLevel, "object");
-    plugin_Debug.functions.validate(plugin_Debug.config.logLevel, "object");
+    plugin_Debug.functions.validate(plugin_Debug.config.consoleLevel, "array");
+    plugin_Debug.functions.validate(plugin_Debug.config.logLevel, "array");
 
     dfd.resolve();
     return dfd.promise();
@@ -56,7 +56,7 @@ var plugin_Debug = {
     var dfd = $.Deferred();
 
     // add dev language to language array
-    if (window.plugin_MultilanguageIso639_3) plugin_MultilanguageIso639_3.config.availableLanguages.push("dev");
+    if (window.plugin_MultilanguageIso639_3) plugin_MultilanguageIso639_3.config.availableLanguages["dev"] = ["dev"];
 
     dfd.resolve();
     return dfd.promise();
@@ -627,16 +627,22 @@ var plugin_Debug = {
           }
         }
 
-        else if (!(typeof object === type)) {
+        else if ((typeof object === type)) {
+          if (type === "object" && !$.isPlainObject(object)) { throw new Error("Validation problem: Your object is an Array but not a Plain Object"); }
+
+          return true;
+        }
+
+        else {
           plugin_Debug.functions.fatal();
           throw new Error("Validation problem: " + typeof object + " != " + type + ". Please look at the stacktrace.");
         }
-      }
-
-      else {
+      } else {
         if (typeof object === "number" || typeof object === "boolean" || typeof object === "string") {
-          return;
-        } else if (!object) {
+          return true;
+        }
+
+        else if (!object) {
           plugin_Debug.functions.fatal();
           throw new Error("Validation problem. Please look at the stacktrace.");
         }
