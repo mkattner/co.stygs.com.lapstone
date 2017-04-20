@@ -2,7 +2,7 @@
 	"name":"DeviceManager",
 	"shortname":"dm",
 	"include":[
-		
+		"ua-parser.js"
 	],
 	"files":{
 		"android":"../files/device/android",
