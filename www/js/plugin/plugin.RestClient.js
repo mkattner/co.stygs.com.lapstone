@@ -540,7 +540,6 @@ var plugin_RestClient = {
           loaderText = "global webservice loader text";
         }
 
-
         // IF there is no other WS call in queue
 
         // SET timeout for showing the loader
@@ -788,7 +787,11 @@ var plugin_RestClient = {
           var mappedParameterKey, defaultValue;
 
           // simple parameter with default value {parameter name}||0
-          if (parameterValue.contains("||")) {
+          // test if string -> could be number | object | boolean too
+          if (typeof parameterValue === "string"
+
+          && parameterValue.contains("||")) {
+            
             defaultValue = parameterValue.substr(parameterValue.indexOf("||") + 2);
             // TODO create a generic string parser
             defaultValue = plugin_HTML5Storage.parseValue(defaultValue);
