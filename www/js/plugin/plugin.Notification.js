@@ -1,4 +1,4 @@
-//# sourceURL=plugin.Notification.js
+// # sourceURL=plugin.Notification.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -619,10 +619,9 @@ var plugin_Notification = {
      */
     simple: function(text) {
       var notification;
-      
-      notification=text;
-      
-      
+
+      notification = text;
+
       notification.type = "simple";
       plugin_Notification.functions.show(notification);
     },
@@ -981,11 +980,21 @@ var plugin_Notification = {
        * open simple
        */
       simple: function() {
-        var dfd = $.Deferred();
+        var dfd = $.Deferred(), notification = $("#popupSimple").data("notification");
 
         // POPUPAFTEROPEN
         $("#popupSimple").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
+
+          if (notification.width) $("#popupSimple-popup").css({
+            "width": notification.width,
+          });
+
+          if (notification.height) $("#popupSimple-popup").css({
+            "height": notification.height
+          });
+
+          $("#popupSimple").popup("reposition", {})
 
           dfd.resolve();
         });
@@ -999,10 +1008,20 @@ var plugin_Notification = {
        * open alert
        */
       alert: function() {
-        var dfd = $.Deferred();
+        var dfd = $.Deferred(), notification = $("#popupAlert").data("notification");
 
         $("#popupAlert").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
+
+          if (notification.width) $("#popupAlert-popup").css({
+            "width": notification.width,
+          });
+
+          if (notification.height) $("#popupAlert-popup").css({
+            "height": notification.height
+          });
+
+          $("#popupAlert").popup("reposition", {})
 
           dfd.resolve();
         });
@@ -1016,10 +1035,20 @@ var plugin_Notification = {
        * open dialog
        */
       dialog: function() {
-        var dfd = $.Deferred();
+        var dfd = $.Deferred(), notification = $("#popupDialog").data("notification");
 
         $("#popupDialog").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
+
+          if (notification.width) $("#popupDialog-popup").css({
+            "width": notification.width,
+          });
+
+          if (notification.height) $("#popupDialog-popup").css({
+            "height": notification.height
+          });
+
+          $("#popupDialog").popup("reposition", {})
 
           dfd.resolve();
         });
@@ -1033,10 +1062,20 @@ var plugin_Notification = {
        * open trialog
        */
       trialog: function() {
-        var dfd = $.Deferred();
+        var dfd = $.Deferred(), notification = $("#popupTrialog").data("notification");
 
         $("#popupTrialog").one("popupafteropen", function(event, ui) {
           app.debug.event(event);
+
+          if (notification.width) $("#popupTrialog-popup").css({
+            "width": notification.width,
+          });
+
+          if (notification.height) $("#popupTrialog-popup").css({
+            "height": notification.height
+          });
+
+          $("#popupTrialog").popup("reposition", {})
 
           dfd.resolve();
         });
