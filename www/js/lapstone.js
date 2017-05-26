@@ -1022,6 +1022,27 @@ function extendJsAndJquery() {
 
     return integerVersion;
   }
+  
+  /**
+   * "1.2.3" returns 1
+   */
+  String.prototype.majorVersion = function() {
+    return parseInt(this.split(".")[0])
+  }
+  
+  /**
+   * "1.2.3" returns 2
+   */
+  String.prototype.minorVersion = function() {
+    return parseInt(this.split(".")[1])
+  }
+  
+  /**
+   * "1.2.3" returns 3
+   */
+  String.prototype.buildVersion = function() {
+    return parseInt(this.split(".")[2])
+  }
 
   String.prototype.occurences = function(subString, allowOverlapping) {
 

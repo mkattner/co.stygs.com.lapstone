@@ -62,6 +62,9 @@ var plugin_HTML5Storage = {
 
       app.debug.debug("plugin.HTML5Storage.js plugin_HTML5Storage.definePluginEvents()");
 
+      // release all inputs
+      $("input").blur();
+      
       $.each($element.attrs(), function(attributeName, attributeValue) {
 
         if (attributeName.substring(0, 11).trim() == "data-html5-") {
@@ -80,6 +83,8 @@ var plugin_HTML5Storage = {
       });
       app.debug.debug("plugin_HTML5Storage.definePluginEvents() - trigger: storagefilled");
 
+      
+      
       $element.trigger("storagefilled");
       // }
     };
