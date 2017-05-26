@@ -559,6 +559,20 @@ var plugin_Debug = {
     operation: function(operation) {
       operation();
     },
+    
+    
+    /**
+     * Calls a function
+     * 
+     * @memberof plugin_Debug.functions
+     * @function object
+     * @param {Function}
+     *          operation - The function to call.
+     */
+    object: function(object) {
+      console.log(object)
+    },
+    
 
     /**
      * Handles the debug output on level: FATAL
