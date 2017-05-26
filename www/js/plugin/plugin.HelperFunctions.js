@@ -217,7 +217,7 @@ var plugin_HelperFunctions = {
 				object.find('[data-role=collapsible]').collapsible();
 				object.find('[data-role=controlgroup]').controlgroup();
 				object.find('[data-role=slider]').flipswitch().flipswitch("refresh");
-				object.find('[type=button], [type=submit]').button();
+				object.find('[type=button], [type=submit], [type=reset]').button();
 				object.find('[data-role=navbar]').navbar();
 				object.find('[type=text], textarea, [type=search], [type=password], [type=number], [type=file]').textinput();
 				object.find('[data-type=range]').slider().slider("refresh");
