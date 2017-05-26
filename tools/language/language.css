@@ -4,7 +4,7 @@ body {
 	padding: 0;
 }
 
-h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
+h1, h2, h3, h4, h5, h6, p, ul, ol, li, span, div, input, textarea {
 	font-weight: normal;
 	margin: 0;
 	padding: 0;
@@ -93,9 +93,8 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,div,input,textarea {
 	border-right: 1px solid #000;
 }
 
-#divFixedHeader>#divHeader>#divSecondHeader>div.column img {
-	height: 20px;
-	width: 20px;
+#divFixedHeader>#divHeader>#divSecondHeader>div.column>a {
+	padding: 5px;
 }
 
 /* - global - */
