@@ -791,7 +791,7 @@ var plugin_RestClient = {
           if (typeof parameterValue === "string"
 
           && parameterValue.contains("||")) {
-            
+
             defaultValue = parameterValue.substr(parameterValue.indexOf("||") + 2);
             // TODO create a generic string parser
             defaultValue = plugin_HTML5Storage.parseValue(defaultValue);
@@ -825,7 +825,7 @@ var plugin_RestClient = {
 
       // map path
       $.each(parameters, function(parameterKey, parameterValue) {
-        wsd.url.replace("{" + parameterKey + "}", parameterValue);
+        wsd.url = wsd.url.replace("{" + parameterKey + "}", parameterValue);
       });
 
       // map parameters
