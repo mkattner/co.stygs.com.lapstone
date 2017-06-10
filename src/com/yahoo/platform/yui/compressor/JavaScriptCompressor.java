@@ -1171,10 +1171,37 @@ public class JavaScriptCompressor {
 
 			    token = consumeToken();
 
-			    if (token.getValue().equals("trace") || token.getValue().equals("debug") || token.getValue().equals("todo") || token.getValue().equals("info")
-				    || token.getValue().equals("event") || token.getValue().equals("app") || token.getValue().equals("warn") || token.getValue().equals("error")
-				    || token.getValue().equals("fatal") || token.getValue().equals("deprecated") || token.getValue().equals("alert") || token.getValue().equals("webservice")
-				    || token.getValue().equals("validate") || token.getValue().equals("flat")|| token.getValue().equals("operation")) {
+			    if (token.getValue().equals("trace")
+
+				    || token.getValue().equals("debug")
+
+				    || token.getValue().equals("todo")
+
+				    || token.getValue().equals("info")
+
+				    || token.getValue().equals("event")
+
+				    || token.getValue().equals("app")
+
+				    || token.getValue().equals("warn")
+
+				    || token.getValue().equals("error")
+
+				    || token.getValue().equals("fatal")
+
+				    || token.getValue().equals("deprecated")
+
+				    || token.getValue().equals("alert")
+
+				    || token.getValue().equals("webservice")
+
+				    || token.getValue().equals("validate")
+
+				    || token.getValue().equals("flat")
+
+				    || token.getValue().equals("operation")
+				    
+				    || token.getValue().equals("object")) {
 
 				output += token.getValue();
 
