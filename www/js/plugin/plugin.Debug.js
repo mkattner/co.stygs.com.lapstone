@@ -55,8 +55,7 @@ var plugin_Debug = {
     app.debug.trace("plugin_Debug.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
     var dfd = $.Deferred();
 
-    // add dev language to language array
-    if (window.plugin_MultilanguageIso639_3) plugin_MultilanguageIso639_3.config.availableLanguages["dev"] = ["dev"];
+  
 
     dfd.resolve();
     return dfd.promise();
@@ -504,9 +503,12 @@ var plugin_Debug = {
     event: function(event) {
       // log debug output
       // eventinger = event;
-      this.log("          Type: " + event.type, "EVENT");
-      if ($(event.target).attr("class")) this.log("Target classes: ." + $(event.target).attr("class").split(" ").join("."), "EVENT");
-      if ($(event.target).attr("id")) this.log("     Target id: #" + $(event.target).attr("id"), "EVENT");
+                                                 this.log("            Type: " + event.type, "EVENT");
+      if ($(event.target).attr("class"))         this.log("   Event classes: ." + $(event.target).attr("class").split(" ").join("."), "EVENT");
+      if ($(event.target).attr("id"))            this.log("        Event id: #" + $(event.target).attr("id"), "EVENT");
+      if ($(event.delegateTarget).attr("class")) this.log("Delegate classes: ." + $(event.delegateTarget).attr("class").split(" ").join("."), "EVENT");
+      if ($(event.delegateTarget).attr("id"))    this.log("     Delegate id: #" + $(event.delegateTarget).attr("id"), "EVENT");
+      
     },
 
     /**

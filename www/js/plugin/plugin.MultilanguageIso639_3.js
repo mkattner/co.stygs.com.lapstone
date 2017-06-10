@@ -25,6 +25,11 @@ var plugin_MultilanguageIso639_3 = {
 
     app.debug.validate(plugin_MultilanguageIso639_3.config.availableLanguages, "object");
 
+    // add dev language to language array
+    app.debug.operation(function() {
+      plugin_MultilanguageIso639_3.config.availableLanguages["dev"] = ["dev"];
+    });
+
     return plugin_MultilanguageIso639_3.loadLanguageIntoDict(plugin_MultilanguageIso639_3.config.defaultLanguage);
   },
 
