@@ -235,7 +235,7 @@ var plugin_WebServiceClient = {
       jqXHR = $.ajax({
         url: wsd.url,
         data: wsd.data,// ?key=value
-        dataType: wsd.dataTaype, // json
+        dataType: wsd.dataType, // json
         contentType: wsd.contentType,
         async: async, // false
         method: wsd.method, // post
