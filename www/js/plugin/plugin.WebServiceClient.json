@@ -17,10 +17,10 @@
 			"active": true,
 			"pingPath": "",
 			"mappings": {
-				"post": "json",
-				"get": "query",
-				"put": "json",
-				"delete": "json"
+				"post": "application/json",
+				"get": "application/json",
+				"put": "application/json",
+				"delete": "application/json"
 			},
 			"template": {
 				"scheme": "http",
