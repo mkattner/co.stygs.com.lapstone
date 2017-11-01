@@ -41,7 +41,7 @@ var app = {
 
   // ,
   func: function(qualifyer, func, currentObject) {
-    console.log(qualifyer)
+    // console.log(qualifyer)
     var qualifyers, currentQualifyer;
 
     qualifyers = qualifyer.split('.');
@@ -1022,21 +1022,21 @@ function extendJsAndJquery() {
 
     return integerVersion;
   }
-  
+
   /**
    * "1.2.3" returns 1
    */
   String.prototype.majorVersion = function() {
     return parseInt(this.split(".")[0])
   }
-  
+
   /**
    * "1.2.3" returns 2
    */
   String.prototype.minorVersion = function() {
     return parseInt(this.split(".")[1])
   }
-  
+
   /**
    * "1.2.3" returns 3
    */

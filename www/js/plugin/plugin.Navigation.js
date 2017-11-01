@@ -1,4 +1,4 @@
-//# sourceURL=plugin.Navigation.js
+// # sourceURL=plugin.Navigation.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -180,6 +180,19 @@ var plugin_Navigation = {
       uri = URI(uri);
       if (uri.protocol() === "") uri.protocol('http');
       return uri.toString();
+    },
+
+    /**
+     * Depending on using cordova or not, this function opens a new browser window with the given parameters. If cordova with th InAppBrowser plugin is used, the function uses the
+     * 
+     * @return window reference
+     */
+    openWindow: function(url, windowName, target, windowFeatures) {
+      if (window.cordova && window.cordova.InAppBrowser) {
+        return window.cordova.InAppBrowser.open(url, traget);
+      } else {
+        return window.open(url, "material" + Math.floor((Math.random() * 1000) + 1), windowFeatures);
+      }
     }
   }
 };
