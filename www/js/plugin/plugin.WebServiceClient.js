@@ -91,7 +91,10 @@ var plugin_WebServiceClient = {
 			currentWsd = wsd;
 		});
 
-		var returnValue = null, dfd = null, jqXHR;// , headers = null,
+		var returnValue = null, dfd = null, jqXHR, $ajax_processData = true;// ,
+		// headers
+		// =
+		// null,
 		// contentType, splittedData,
 		// obj, pairs, paramKey,
 		// paramValue, indexOfEquals,
@@ -162,6 +165,7 @@ var plugin_WebServiceClient = {
 				return null;
 			} else {
 				wsd.contentType = false; // jQuery bug?
+				$ajax_processData = false;
 				wsd["data"] = wsd.parameters.formData;
 			}
 			break;
@@ -186,7 +190,8 @@ var plugin_WebServiceClient = {
 			jqXHR = $.ajax({
 				url : wsd.url,
 				data : wsd.data,// ?key=value
-				processData : true, // ??? true or false, what is better
+				processData : $ajax_processData, // ??? true or false, what
+													// is better
 				dataType : wsd.dataType, // json
 				contentType : wsd.contentType,
 				async : async, // false

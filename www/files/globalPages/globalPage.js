@@ -1,3 +1,4 @@
+//# sourceURL=globalPage.js
 var globalPage = {
 
   elements: {},

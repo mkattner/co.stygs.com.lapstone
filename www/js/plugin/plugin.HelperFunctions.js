@@ -33,6 +33,7 @@ var plugin_HelperFunctions = {
 
 	// called after all plugins are loaded
 	pluginsLoaded : function() {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_HelperFunctions.pluginsLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -43,6 +44,7 @@ var plugin_HelperFunctions = {
 	// called after all pages are loaded
 	// caller pages.js
 	pagesLoaded : function() {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_HelperFunctions.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -53,12 +55,14 @@ var plugin_HelperFunctions = {
 	// called after pluginsLoaded()
 	// caller: plugins.js
 	definePluginEvents : function() {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_HelperFunctions.definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
 	afterHtmlInjectedBeforePageComputing : function(container) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_HelperFunctions.afterHtmlInjectedBeforePageComputing()");
 
 	},
@@ -66,6 +70,7 @@ var plugin_HelperFunctions = {
 	// set the jQuery delegates
 	// caller: pages.js
 	pageSpecificEvents : function() {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_HelperFunctions.pageSpecificEvents()");
 
 	},
@@ -82,6 +87,7 @@ var plugin_HelperFunctions = {
 	functions : {
 		validate : {
 			regex : function(value, regex) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.regex()");
 
 				var success;
@@ -98,6 +104,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			firstname : function(firstname) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.firstname()");
 
 				var success, regex;
@@ -114,6 +121,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			lastname : function(lastname) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.lastname()");
 
 				var success, regex;
@@ -130,6 +138,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			username : function(username) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.username()");
 
 				var success, regex;
@@ -146,6 +155,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			email : function(email) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.email()");
 
 				var success, regex;
@@ -162,6 +172,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			website : function(website) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.website()");
 
 				var success, regex;
@@ -178,6 +189,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			password : function(password) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.password()");
 
 				var success, regex;
@@ -194,6 +206,7 @@ var plugin_HelperFunctions = {
 				return success;
 			},
 			equal : function(s1, s2) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.validate.equal()");
 				var success = false;
 				if (s1 == s2) {
@@ -204,12 +217,14 @@ var plugin_HelperFunctions = {
 		},
 		random : {
 			integer : function(digits) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.random.integer()");
 				return Math.floor((Math.random() * digits) + 1);
 			}
 		},
 		jQM : {
 			enhance : function(object) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.jQM.enhance()");
 				// http://stackoverflow.com/questions/14550396/jquery-mobile-markup-enhancement-of-dynamically-added-content
 
@@ -227,7 +242,7 @@ var plugin_HelperFunctions = {
 		},
 		navigation : {
 			redirect : function(url, transition) {
-				console.log("Deprecated Function! Use: app.nav...")
+				app.debug.deprecated("Will be removed in the next version!");
 				setTimeout(function() {
 					if (transition != undefined)
 						$.mobile.changePage(url, {
@@ -239,25 +254,26 @@ var plugin_HelperFunctions = {
 				}, 50);
 			},
 			back : function() {
-				console.warn("Deprecated Function! Use: app.nav...")
+				app.debug.deprecated("Will be removed in the next version!");
 				window.history.back();
 			},
 			forward : function() {
-				console.warn("Deprecated Function! Use: app.nav...")
+				app.debug.deprecated("Will be removed in the next version!");
 				window.history.forward();
 			},
 			reload : function() {
-				console.warn("Deprecated Function! Use: app.nav...")
+				app.debug.deprecated("Will be removed in the next version!");
 				location.reload();
 			},
 			redirectAndReload : function(url) {
-				console.warn("Deprecated Function! Use: app.nav...")
+				app.debug.deprecated("Will be removed in the next version!");
 				$.mobile.ajaxEnabled = false;
 				window.location.replace(url);
 			}
 		},
 		object : {
 			setDeep : function(el, key, value) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.object.setDeep()");
 				key = key.split('.');
 				var i = 0, n = key.length;
@@ -268,6 +284,7 @@ var plugin_HelperFunctions = {
 			},
 
 			setDeepBase64Key : function(el, key, value) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.object.setDeepBase64Key()");
 				key = key.split('.');
 				var i = 0, n = key.length;
@@ -279,6 +296,7 @@ var plugin_HelperFunctions = {
 			},
 
 			getDeep : function(el, key) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.object.getDeep()");
 				key = key.split('.');
 				var i = 0, n = key.length;
@@ -290,6 +308,7 @@ var plugin_HelperFunctions = {
 		},
 		form : {
 			serialize : function(container) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_HelperFunctions.functions.form.serialize()");
 				var returnObject = {};
 				container.find("input").each(function(key, HTMLInputElement) {

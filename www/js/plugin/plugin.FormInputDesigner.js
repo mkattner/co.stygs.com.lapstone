@@ -33,6 +33,7 @@ var plugin_FormInputDesigner = {
 		return dfd.promise();
 	},
 	pluginsLoaded : function() {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.pluginsLoaded()");
 		var dfd = $.Deferred();
 
@@ -49,6 +50,7 @@ var plugin_FormInputDesigner = {
 
 	// called after all pages are loaded
 	pagesLoaded : function() {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -56,18 +58,22 @@ var plugin_FormInputDesigner = {
 	},
 
 	definePluginEvents : function() {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.definePluginEvents()");
 	},
 
 	// called by pages.js
 	afterHtmlInjectedBeforePageComputing : function(container) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.afterHtmlInjectedBeforePageComputing()");
 	},
 	pageSpecificEvents : function(container) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.pageSpecificEvents()");
 	},
 
 	getAttributes : function(options) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.getAttributes()");
 
 		var attributes, styles;
@@ -111,7 +117,7 @@ var plugin_FormInputDesigner = {
 			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: src");
 			attributes += ' src="' + options.src + '"';
 		}
-		
+
 		if (options.hasOwnProperty("alt")) {
 			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: alt");
 			attributes += ' alt="' + options.alt + '"';
@@ -121,7 +127,7 @@ var plugin_FormInputDesigner = {
 			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: title");
 			attributes += ' title="' + options.title + '"';
 		}
-		
+
 		if (options.hasOwnProperty("disabled")) {
 			app.debug.debug("plugin_FormInputDesigner.getAttributes() - has property: disabled");
 			if (options.disabled)
@@ -158,6 +164,7 @@ var plugin_FormInputDesigner = {
 	},
 
 	getClasses : function(options) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.getClasses()");
 		var classes = "";
 		if (options.classes != undefined) {
@@ -169,6 +176,7 @@ var plugin_FormInputDesigner = {
 	},
 
 	getLabel : function(options) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.getLabel()");
 		var labelText = "", visible = "", forId = "";
 		if (options.labelText != undefined) {
@@ -184,11 +192,13 @@ var plugin_FormInputDesigner = {
 	},
 
 	wrapInContainer : function(label, input) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.wrapInContainer()");
 		return '<div class="ui-field-contain app-form-label-input-container">' + label + input + '</div>';
 	},
 
 	addClassToOptions : function(options, className) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.addClassToOptions()");
 		if (options.classes == undefined)
 			options['classes'] = new Array();
@@ -197,6 +207,7 @@ var plugin_FormInputDesigner = {
 	},
 
 	generateInput : function(options, type) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.generateInput()");
 		app.debug.deprecated("Plugin FormInputDesigner is deprecated and will be removed.");
 		options = plugin_FormInputDesigner.verifyOptions(options);
@@ -213,8 +224,8 @@ var plugin_FormInputDesigner = {
 	},
 
 	generateOutput : function(options, type) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.generateOutput()");
-		app.debug.deprecated("Plugin FormInputDesigner is deprecated and will be removed.");
 		options = plugin_FormInputDesigner.verifyOptions(options);
 		var attributes = plugin_FormInputDesigner.getAttributes(options), output;
 		if (options.text == undefined)
@@ -231,6 +242,7 @@ var plugin_FormInputDesigner = {
 		return $(output);
 	},
 	verifyOptions : function(options) {
+		app.debug.deprecated("Will be removed in the next version!");
 		app.debug.trace("plugin_FormInputDesigner.verifyOptions()");
 		if (options == undefined) {
 			options = {};
@@ -255,6 +267,7 @@ var plugin_FormInputDesigner = {
 	functions : {
 		form : {
 			form : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.form.form()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "form", attributes = plugin_FormInputDesigner.getAttributes(options), output;
@@ -270,6 +283,7 @@ var plugin_FormInputDesigner = {
 		},
 		text : {
 			hidden : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.text()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "hidden";
@@ -278,6 +292,7 @@ var plugin_FormInputDesigner = {
 			},
 
 			text : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.text()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "text";
@@ -285,6 +300,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			search : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.search()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "search";
@@ -292,6 +308,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			textarea : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.textarea()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "textarea";
@@ -299,6 +316,7 @@ var plugin_FormInputDesigner = {
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			number : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.number()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "number";
@@ -306,6 +324,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			date : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.date()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "date";
@@ -313,6 +332,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			month : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.month()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "month";
@@ -320,6 +340,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			week : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.week()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "week";
@@ -327,6 +348,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			time : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.time()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "time";
@@ -334,6 +356,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			datetime : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.datetime()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "datetime";
@@ -341,6 +364,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			telephone : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.telephone()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "telephone";
@@ -348,6 +372,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			email : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.email()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "email";
@@ -355,6 +380,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			url : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.url()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "url";
@@ -362,6 +388,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			password : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.password()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "password";
@@ -369,6 +396,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			color : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.color()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "color";
@@ -376,6 +404,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			file : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.text.file()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "file";
@@ -385,6 +414,7 @@ var plugin_FormInputDesigner = {
 		},
 		button : {
 			button : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.button.button()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "button";
@@ -392,6 +422,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			submit : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.button.submit()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "submit";
@@ -399,6 +430,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateInput(options, type);
 			},
 			reset : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.button.reset()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "reset";
@@ -408,6 +440,7 @@ var plugin_FormInputDesigner = {
 		},
 		radio : {
 			radio : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.radio.radio()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 
@@ -418,6 +451,7 @@ var plugin_FormInputDesigner = {
 		},
 		checkbox : {
 			checkbox : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.checkbox.checkbox()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "checkbox";
@@ -427,6 +461,7 @@ var plugin_FormInputDesigner = {
 		},
 		range : {
 			range : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.range.range()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "range";
@@ -436,6 +471,7 @@ var plugin_FormInputDesigner = {
 		},
 		select : {
 			multiple : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.select.select()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 
@@ -452,6 +488,7 @@ var plugin_FormInputDesigner = {
 				return $(output);
 			},
 			single : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.select.select()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var attributes = plugin_FormInputDesigner.getAttributes(options), input = '<select ' + attributes + ' ></select>', label = "", html;
@@ -466,6 +503,7 @@ var plugin_FormInputDesigner = {
 				return $(html);
 			},
 			option : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.select.option()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "option", attributes = plugin_FormInputDesigner.getAttributes(options), output;
@@ -482,6 +520,7 @@ var plugin_FormInputDesigner = {
 		collabsible : {},
 		list : {
 			thumbnail : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.list.thumbnail()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var thumbnail = '<li>';
@@ -497,12 +536,14 @@ var plugin_FormInputDesigner = {
 		slider : {},
 		navigation : {
 			navbar : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.navigation.navbar()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var attributes = plugin_FormInputDesigner.getAttributes(options), navbar = $('<div data-role="navbar" ' + attributes + '></div>');
 				return navbar;
 			},
 			panel : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.navigation.panel()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var attributes = plugin_FormInputDesigner.getAttributes(options), navbar = $('<div data-role="panel" ' + attributes + '></div>');
@@ -511,12 +552,14 @@ var plugin_FormInputDesigner = {
 		},
 		table : {
 			table : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.table.table()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var attributes = plugin_FormInputDesigner.getAttributes(options), table = '<table ' + attributes + '><thead></thead><tbody></tbody></table>';
 				return $(table);
 			},
 			th : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.table.th()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "th";
@@ -524,6 +567,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			tr : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.table.tr()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "tr";
@@ -531,6 +575,7 @@ var plugin_FormInputDesigner = {
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			td : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.table.td()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "td";
@@ -541,6 +586,7 @@ var plugin_FormInputDesigner = {
 		element : {
 
 			table : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.table()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "table";
@@ -548,6 +594,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			tr : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.tr()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "tr";
@@ -555,6 +602,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			td : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.td()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "td";
@@ -562,6 +610,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			th : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.th()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "th";
@@ -570,6 +619,7 @@ var plugin_FormInputDesigner = {
 			},
 
 			thead : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.thead()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "thead";
@@ -577,6 +627,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			tbody : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.tbody()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "tbody";
@@ -585,6 +636,7 @@ var plugin_FormInputDesigner = {
 			},
 
 			h1 : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.h1()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "h1";
@@ -592,6 +644,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			h2 : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.h2()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "h2";
@@ -599,6 +652,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			h3 : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.h3()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "h3";
@@ -606,6 +660,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			h4 : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.h4()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "h4";
@@ -613,6 +668,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			h5 : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.h4()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "h4";
@@ -620,6 +676,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			h6 : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.h4()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "h4";
@@ -627,6 +684,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			img : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.img()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "img";
@@ -634,6 +692,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			p : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.p()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "p";
@@ -641,6 +700,7 @@ var plugin_FormInputDesigner = {
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			a : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.a()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "a";
@@ -648,6 +708,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			ol : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.ol()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "ol";
@@ -655,6 +716,7 @@ var plugin_FormInputDesigner = {
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			ul : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.ul()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "ul";
@@ -662,6 +724,7 @@ var plugin_FormInputDesigner = {
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			li : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.li()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "li";
@@ -669,6 +732,7 @@ var plugin_FormInputDesigner = {
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			div : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.div()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "div";
@@ -676,6 +740,7 @@ var plugin_FormInputDesigner = {
 				return $(plugin_FormInputDesigner.generateOutput(options, type));
 			},
 			span : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.span()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "span";
@@ -683,6 +748,7 @@ var plugin_FormInputDesigner = {
 				return plugin_FormInputDesigner.generateOutput(options, type);
 			},
 			canvas : function(options) {
+				app.debug.deprecated("Will be removed in the next version!");
 				app.debug.trace("plugin_FormInputDesigner.functions.element.canvas()");
 				options = plugin_FormInputDesigner.verifyOptions(options);
 				var type = "canvas";

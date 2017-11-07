@@ -25,16 +25,45 @@
 			"template": {
 				"scheme": "http",
 				"scheme_specific_part": "://",
-				"host": "themis-dev01.backmeup.at",
+				"host": "localhost",
 				"port": 8080,
 				"path": ""
 			},
 			"first": {
 				"scheme": "http",
 				"scheme_specific_part": "://",
-				"host": "themis-dev01.backmeup.at",
+				"host": "localhost",
 				"port": 8080,
-				"path": ""
+				"path": "/REST"
+			},
+			"second": {
+				
+			},
+			"third": {
+				
+			},
+			"fouth": {
+				
+			},
+			"fifth": {
+				
+			}
+		},
+		"socket": {
+			"active": true,
+			"pingPath": "",
+			"mappings": {
+				"post": "json",
+				"get": "query",
+				"put": "json",
+				"delete": "json"
+			},
+			"first": {
+				"scheme": "ws",
+				"scheme_specific_part": "://",
+				"host": "localhost",
+				"port": 8080,
+				"path": "/websocket"
 			},
 			"second": {
 				
