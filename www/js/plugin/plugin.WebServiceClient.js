@@ -345,6 +345,7 @@ var plugin_WebServiceClient = {
 		},
 
 		getWebSocket : function(wsd) {
+			app.debug.deprecated("User new WebSocketClient plugin!");
 			if (!window.WebSocket) {
 				return null;
 			} else {
