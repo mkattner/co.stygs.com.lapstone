@@ -118,16 +118,17 @@ var plugin_Navigation = {
 		// {url:"", transition:"", reverse:""}
 		redirect : function(url, transition, reverse) {
 			app.debug.trace("plugin_Navigation.functions.redirect()");
-			setTimeout(function() {
-				if (transition != undefined && app.config.jQueryMobile === true && app.config.lapstone === true)
+			if (transition != undefined && app.config.jQueryMobile === true && app.config.lapstone === true)
+				setTimeout(function() { // WHY TIMEOUT
 					$("body").pagecontainer("change", url, {
 						transition : transition,
 						reverse : (reverse == undefined) ? false : reverse
 					});
-				else {
-					$(location).attr("href", url);
-				}
-			}, 50);
+
+				}, 50);
+			else {
+				$(location).attr("href", url);
+			}
 		},
 
 		virtual : function(url) {

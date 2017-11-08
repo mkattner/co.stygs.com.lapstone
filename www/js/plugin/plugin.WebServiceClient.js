@@ -358,8 +358,9 @@ var plugin_WebServiceClient = {
 
 				// When the connection is open, send some data to the server
 				connection.onopen = function() {
-					// connection.send('Ping'); // Send the message 'Ping' to
-					// the server
+					dfd["sendMessage"] = function(message) {
+						connection.send(message);
+					}
 				};
 
 				// Log errors
@@ -378,7 +379,7 @@ var plugin_WebServiceClient = {
 				}
 
 				dfd["sendMessage"] = function(message) {
-					connection.send(message);
+					console.log("not open");
 				}
 
 				dfd.fail(function() {
