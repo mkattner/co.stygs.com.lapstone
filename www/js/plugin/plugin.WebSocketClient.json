@@ -1,0 +1,7 @@
+{
+	"name":"WebSocketClient",
+	"shortname":"wsoc",
+	"include":[
+		
+	]
+}

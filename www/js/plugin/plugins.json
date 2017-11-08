@@ -22,5 +22,6 @@
 	"Session": true,
 	"Skin": true,
 	"WebServiceClient": true,
-	"WebServiceError": true
+	"WebServiceError": true,
+	"WebSocketClient": true
 }
