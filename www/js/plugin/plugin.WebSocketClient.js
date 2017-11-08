@@ -80,6 +80,55 @@ var plugin_WebSocketClient = {
 	 * 
 	 */
 	functions : {
+		getWebSocket : function(wsd) {
+			if (!window.WebSocket) {
+				return null;
+			} else {
+				var connection, dfd = $.Deferred();
 
+				wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
+
+				wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
+
+				connection = new WebSocket(wsd.url);
+
+				// When the connection is open, send some data to the server
+				connection.onopen = function() {
+					dfd["sendMessage"] = function(message) {
+						connection.send(message);
+					}
+				};
+
+				// Log errors
+				connection.onerror = function(error) {
+					// console.log('WebSocket Error ' + error);
+					dfd.reject(error);
+				};
+
+				// Log messages from the server
+				connection.onmessage = function(e) {
+					dfd.notify(JSON.parse(e.data));
+				};
+
+				connection.onclose = function(event) {
+					dfd.reject(event);
+				}
+
+				dfd["sendMessage"] = function(message) {
+					console.log("not open");
+				}
+
+				dfd.fail(function() {
+					try {
+						connection.close();
+					} catch (e) {
+						console.log(e);
+					}
+
+				});
+
+				return dfd;
+			}
+		}
 	}
 };
