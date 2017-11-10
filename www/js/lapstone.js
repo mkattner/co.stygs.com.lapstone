@@ -930,6 +930,11 @@ $(document).ready(function() {
 		// delete startup;
 
 		console.log("Lapstone started in " + app.config.startup + "seconds");
+		console.log("      Versions:");
+		console.log("           app: " + app.config.version.app);
+		console.log("      lapstone: " + app.config.version.lapstone);
+		console.log("        jquery: " + $.fn.jquery);
+		console.log(" jquery mobile: " + $.mobile.version);
 		app.config.lapstone = true;
 		// }, 200);
 	});
