@@ -52,7 +52,7 @@ var plugin_Informator = {
 
 		// alert(app.store.localStorage.get("informator-first-use"));
 
-		// load the plugins' configuartion into html5 storage
+		// sync the plugins' configuration with html5 storage
 		if (this.config.useHtml5Storage && this.config.savePluginConfig) {
 			app.debug.debug("plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage");
 			global = {};
@@ -80,7 +80,7 @@ var plugin_Informator = {
 
 		// validate functionality
 
-		// load the pages' configuartion into html5 storage
+		// sync the pages' configuration with html5 storage
 		if (this.config.useHtml5Storage && this.config.savePageConfig) {
 			global = {};
 			// alert("xxxxxxxx");
@@ -161,12 +161,17 @@ var plugin_Informator = {
 
 	},
 
-	loadValueIntoObject : function(locator) {
+	loadValueIntoObject : function(propertyLocation) {
 		app.debug.trace("plugin_Informator.loadValueIntoObject(" + app.debug.arguments(arguments) + ")");
-		app.debug.debug('plugin_Informator.loadValueIntoObject(' + locator + ')');
-		var propertyLocation = locator.substring(plugin_Informator.configurationPrefix.length + 1), value = app.store.localStorage.get(locator);
+		
+		var  propertyValue;
+
+		
+		propertyValue = app.store.localStorage.get(propertyLocation);
+		propertyLocation = propertyLocation.substring(plugin_Informator.configurationPrefix.length + 1);
+		
 		if (propertyLocation.indexOf("..") < 0)
-			plugin_HTML5Storage.setDeep(window, propertyLocation, value);
+			plugin_HTML5Storage.setDeep(window, propertyLocation, propertyValue);
 		else
 			app.debug.debug('plugin_Informator.loadValueIntoObject() - ".." detected');
 	},
