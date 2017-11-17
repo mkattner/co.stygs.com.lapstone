@@ -85,7 +85,7 @@ var page_badConnection = {
   setEvents: function(container) {
     app.debug.trace("page_" + this.config.name + ".setEvents()");
     $(this.config.pageId).on("connectionisalive", function(event, duration) {
-      app.help.navigation.back();
+    	app.nav.back();
     });
   },
 

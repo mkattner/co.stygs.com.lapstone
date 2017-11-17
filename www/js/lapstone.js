@@ -209,7 +209,7 @@ function updateFramework() {
 		currentLapstoneVersion = app.config.version.lapstone;
 		currentAppVersion = app.config.version.app;
 
-		plugin_Informator.loadConfigurationIntoHtml5Storage({
+		plugin_Informator.syncObjectWithHtml5Storage({
 			"app" : {
 				"config" : {
 					"version" : app.config.version

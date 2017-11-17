@@ -22,32 +22,15 @@
 				"put": "application/json",
 				"delete": "application/json"
 			},
-			"template": {
-				"scheme": "http",
-				"scheme_specific_part": "://",
-				"host": "localhost",
-				"port": 8080,
-				"path": ""
-			},
-			"first": {
-				"scheme": "http",
-				"scheme_specific_part": "://",
-				"host": "localhost",
-				"port": 8080,
-				"path": "/REST"
-			},
-			"second": {
-				
-			},
-			"third": {
-				
-			},
-			"fouth": {
-				
-			},
-			"fifth": {
-				
-			}
+			"endpoints": [
+				{
+					"scheme": "http",
+					"scheme_specific_part": "://",
+					"host": "localhost",
+					"port": 8080,
+					"path": "/REST"
+				}
+			]
 		},
 		"socket": {
 			"active": true,
@@ -58,25 +41,15 @@
 				"put": "json",
 				"delete": "json"
 			},
-			"first": {
-				"scheme": "ws",
-				"scheme_specific_part": "://",
-				"host": "localhost",
-				"port": 8080,
-				"path": "/websocket"
-			},
-			"second": {
-				
-			},
-			"third": {
-				
-			},
-			"fouth": {
-				
-			},
-			"fifth": {
-				
-			}
+			"endpoints": [
+				{
+					"scheme": "ws",
+					"scheme_specific_part": "://",
+					"host": "localhost",
+					"port": 8080,
+					"path": "/websocket"
+				}
+			]
 		}
 	}
 }

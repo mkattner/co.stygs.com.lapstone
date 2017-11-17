@@ -4,7 +4,6 @@
 	"Detector": true,
 	"DeviceManager": true,
 	"Feedback": true,
-	"HelperFunctions": true,
 	"HTML5Storage": true,
 	"HtmlTemplates": true,
 	"HtmlView": true,

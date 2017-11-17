@@ -18,234 +18,215 @@
  */
 
 var plugin_Informator = {
-        
-        
-        
-  config: null,
-  configurationPrefix: "informator-config",
 
-  constructor: function() {
-    var dfd = $.Deferred();
+	config : null,
+	configurationPrefix : "informator-config",
 
-    plugin_Informator.config.excludedPlugins.push("HtmlTemplates");
-    plugin_Informator.config.excludedPlugins.push("RestClient");
-    plugin_Informator.config.excludedPlugins.push("ImageProvider");
-    
-    dfd.resolve();
-    return dfd.promise();
-  },
+	constructor : function() {
+		var dfd = $.Deferred();
 
-  pluginsLoaded: function() {
-    app.debug.trace("plugin_Informator.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
+		plugin_Informator.config.excludedPlugins.push("HtmlTemplates");
+		plugin_Informator.config.excludedPlugins.push("RestClient");
+		plugin_Informator.config.excludedPlugins.push("ImageProvider");
 
-    var dfd, global;
+		dfd.resolve();
+		return dfd.promise();
+	},
 
-    dfd = $.Deferred();
+	pluginsLoaded : function() {
+		app.debug.trace("plugin_Informator.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 
-    // first use
-    // alert(app.store.localStorage.get("informator-first-use"));
-    if (app.store.localStorage.get("informator-first-use") === null) {
-      app.store.localStorage.set("informator-first-use", true);
-    }
+		var dfd, global;
 
-    else if (app.store.localStorage.get("informator-first-use") === true) {
-      app.store.localStorage.set("informator-first-use", false);
-    }
+		dfd = $.Deferred();
 
-    // alert(app.store.localStorage.get("informator-first-use"));
+		// first use
+		// alert(app.store.localStorage.get("informator-first-use"));
+		if (app.store.localStorage.get("informator-first-use") === null) {
+			app.store.localStorage.set("informator-first-use", true);
+		}
 
-    // load the plugins' configuartion into html5 storage
-    if (this.config.useHtml5Storage && this.config.savePluginConfig) {
-      app.debug.debug("plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage");
-      global = {};
-      $.each(app.plugins.pluginNames, function(key, value) {
-        if (plugin_Informator.config.excludedPlugins.indexOf(value) == -1) {
+		else if (app.store.localStorage.get("informator-first-use") === true) {
+			app.store.localStorage.set("informator-first-use", false);
+		}
 
-          if (global["plugin_" + value] == undefined) global["plugin_" + value] = {};
+		// alert(app.store.localStorage.get("informator-first-use"));
 
-          global["plugin_" + value]['config'] = window['plugin_' + value]['config'];
-        }
-      });
+		// load the plugins' configuartion into html5 storage
+		if (this.config.useHtml5Storage && this.config.savePluginConfig) {
+			app.debug.debug("plugin_Informator.pluginsLoaded() - case: load plugin config from html5 storage");
+			global = {};
+			$.each(app.plugins.pluginNames, function(key, value) {
+				if (plugin_Informator.config.excludedPlugins.indexOf(value) == -1) {
 
-      this.loadConfigurationIntoHtml5Storage(global);
-    }
+					if (global["plugin_" + value] == undefined)
+						global["plugin_" + value] = {};
 
-    dfd.resolve();
-    return dfd.promise();
-  },
+					global["plugin_" + value]['config'] = window['plugin_' + value]['config'];
+				}
+			});
 
-  // called after all pages are loaded
-  pagesLoaded: function() {
-    app.debug.trace("plugin_Informator.pagesLoaded(" + app.debug.arguments(arguments) + ")");
-    var dfd = $.Deferred(), global;
+			this.syncObjectWithHtml5Storage(global);
+		}
 
-    // validate functionality
+		dfd.resolve();
+		return dfd.promise();
+	},
 
-    // load the pages' configuartion into html5 storage
-    if (this.config.useHtml5Storage && this.config.savePageConfig) {
-      global = {};
-      // alert("xxxxxxxx");
-      $.each(pages.pageNames, function(key, value) {
-        if (global["page_" + value] == undefined) global["page_" + value] = {};
-        // dirty!! do not use json loader
-        global["page_" + value]['config'] = globalLoader.JsonLoader("../js/page/page." + value + ".json");
-      });
-      this.loadConfigurationIntoHtml5Storage(global);
-    }
-    dfd.resolve();
-    return dfd.promise();
-  },
+	// called after all pages are loaded
+	pagesLoaded : function() {
+		app.debug.trace("plugin_Informator.pagesLoaded(" + app.debug.arguments(arguments) + ")");
+		var dfd = $.Deferred(), global;
 
-  definePluginEvents: function() {
-    app.debug.trace("plugin_Informator.definePluginEvents(" + app.debug.arguments(arguments) + ")");
+		// validate functionality
 
-  },
+		// load the pages' configuartion into html5 storage
+		if (this.config.useHtml5Storage && this.config.savePageConfig) {
+			global = {};
+			// alert("xxxxxxxx");
+			$.each(pages.pageNames, function(key, value) {
+				if (global["page_" + value] == undefined)
+					global["page_" + value] = {};
+				// dirty!! do not use json loader
+				global["page_" + value]['config'] = globalLoader.JsonLoader("../js/page/page." + value + ".json");
+			});
+			this.syncObjectWithHtml5Storage(global);
+		}
+		dfd.resolve();
+		return dfd.promise();
+	},
 
-  // called by pages.js
-  afterHtmlInjectedBeforePageComputing: function(container) {
-    app.debug.trace("plugin_Informator.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
+	definePluginEvents : function() {
+		app.debug.trace("plugin_Informator.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
-  },
-  pageSpecificEvents: function(container) {
-    app.debug.trace("plugin_Informator.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
+	},
 
-  },
+	// called by pages.js
+	afterHtmlInjectedBeforePageComputing : function(container) {
+		app.debug.trace("plugin_Informator.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
-  // private functions
-  setDeep: function(el, key, value) {
-    app.debug.trace("plugin_Informator.setDeep(" + app.debug.arguments(arguments) + ")");
-    console.warn("Fuction is deprecated. Use: app.help.object.setDeep");
-    key = key.split('.');
-    var i = 0, n = key.length;
-    for (; i < n - 1; ++i) {
-      el = el[key[i]];
-    }
-    return el[key[i]] = value;
-  },
+	},
+	pageSpecificEvents : function(container) {
+		app.debug.trace("plugin_Informator.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
-  getDeep: function(el, key) {
-    app.debug.trace("plugin_Informator.getDeep(" + app.debug.arguments(arguments) + ")");
-    console.warn("Fuction is deprecated. Use: app.help.object.getDeep");
-    key = key.split('.');
-    var i = 0, n = key.length;
-    for (; i < n; ++i) {
-      el = el[key[i]];
-    }
-    return el;
-  },
+	},
 
-  loadConfigurationIntoHtml5Storage: function(configurationObject, start) {
-    app.debug.trace("plugin_Informator.loadConfigurationIntoHtml5Storage(" + app.debug.arguments(arguments) + ")");
-    app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage()");
-    app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - if property is in html5 storage then use this value");
-    app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - else use property from json file");
+	// private functions
 
-    if (!configurationObject || configurationObject == undefined) return;
+	syncObjectWithHtml5Storage : function(configurationObject, start) {
+		app.debug.trace("plugin_Informator.syncObjectWithHtml5Storage(" + app.debug.arguments(arguments) + ")");
+		app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage()");
+		app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - if property is in html5 storage then use this value");
+		app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - else use property from json file");
 
-    if (start == undefined) start = "";
+		if (!configurationObject || configurationObject == undefined)
+			return;
 
-    $.each(configurationObject, function(key, value) {
-      app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - compute  key/value pair");
+		if (start == undefined)
+			start = "";
 
-      var currentKey;
+		$.each(configurationObject, function(key, value) {
+			app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - compute  key/value pair");
 
-      if (typeof value != "object") {
-        app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: value != object");
+			var currentKey;
 
-        currentKey = plugin_Informator.configurationPrefix + start + "." + key;
+			if (typeof value != "object") {
+				app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - case: value != object");
 
-        if (app.store.localStorage.get(currentKey) === null) {
-          app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' doesn't exists in html5 storage");
+				currentKey = plugin_Informator.configurationPrefix + start + "." + key;
 
-          app.debug.validate(plugin_Informator.config.firstLevelReservedNames);
-          if (plugin_Informator.config.firstLevelReservedNames.indexOf(key) != -1) {
-            app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' but it's in reserved list");
-            // alert();
-          }
+				if (app.store.localStorage.get(currentKey) === null) {
+					app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - case: key '" + currentKey + "' doesn't exists in html5 storage");
 
-          else {
-            app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' write in html5 storage");
-            app.store.localStorage.set(currentKey, value);
-          }
-        } else {
-          app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: key '" + currentKey + "' exists in html5 storage");
-          plugin_Informator.loadValueIntoObject(currentKey);
-        }
-      } else {
-        app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - case: value == object");
-        app.debug.debug("plugin_Informator.loadConfigurationIntoHtml5Storage() - go recursive into object");
-        plugin_Informator.loadConfigurationIntoHtml5Storage(value, start + "." + key);
-      }
-    });
+					app.debug.validate(plugin_Informator.config.firstLevelReservedNames);
+					if (plugin_Informator.config.firstLevelReservedNames.indexOf(key) != -1) {
+						app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - case: key '" + currentKey + "' but it's in reserved list");
+						// alert();
+					}
 
-  },
+					else {
+						app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - case: key '" + currentKey + "' write in html5 storage");
+						app.store.localStorage.set(currentKey, value);
+					}
+				} else {
+					app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - case: key '" + currentKey + "' exists in html5 storage");
+					plugin_Informator.loadValueIntoObject(currentKey);
+				}
+			} else {
+				app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - case: value == object");
+				app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - go recursive into object");
+				plugin_Informator.syncObjectWithHtml5Storage(value, start + "." + key);
+			}
+		});
 
-  loadValueIntoObject: function(locator) {
-    app.debug.trace("plugin_Informator.loadValueIntoObject(" + app.debug.arguments(arguments) + ")");
-    app.debug.debug('plugin_Informator.loadValueIntoObject(' + locator + ')');
-    var propertyLocation = locator.substring(plugin_Informator.configurationPrefix.length + 1), value = app.store.localStorage.get(locator);
-    if (propertyLocation.indexOf("..") < 0)
-      app.help.object.setDeep(window, propertyLocation, value);
-    else
-      app.debug.debug('plugin_Informator.loadValueIntoObject() - ".." detected');
-  },
+	},
 
-  functions: {
-    // auch direkt die datei ���ndern
-    set: function(key, value) {
-      app.debug.trace("plugin_Informator.functions.set(" + app.debug.arguments(arguments) + ")");
+	loadValueIntoObject : function(locator) {
+		app.debug.trace("plugin_Informator.loadValueIntoObject(" + app.debug.arguments(arguments) + ")");
+		app.debug.debug('plugin_Informator.loadValueIntoObject(' + locator + ')');
+		var propertyLocation = locator.substring(plugin_Informator.configurationPrefix.length + 1), value = app.store.localStorage.get(locator);
+		if (propertyLocation.indexOf("..") < 0)
+			plugin_HTML5Storage.setDeep(window, propertyLocation, value);
+		else
+			app.debug.debug('plugin_Informator.loadValueIntoObject() - ".." detected');
+	},
 
-      if (plugin_Informator.config.useHtml5Storage) {
-        if (typeof value === "object") {
-          app.store.localStorage.setObject(plugin_Informator.configurationPrefix + "." + key, value);
-        }
+	functions : {
+		// auch direkt die datei ���ndern
+		set : function(key, value) {
+			app.debug.trace("plugin_Informator.functions.set(" + app.debug.arguments(arguments) + ")");
 
-        else {
-          app.store.localStorage.set(plugin_Informator.configurationPrefix + "." + key, value);
-        }
-      }
-      // change property
-      app.help.object.setDeep(window, key, value);
-    },
+			if (plugin_Informator.config.useHtml5Storage) {
+				if (typeof value === "object") {
+					app.store.localStorage.setObject(plugin_Informator.configurationPrefix + "." + key, value);
+				}
 
-    firstUse: function(value) {
-      app.debug.trace("plugin_Informator.functions.firstUse(" + app.debug.arguments(arguments) + ")");
+				else {
+					app.store.localStorage.set(plugin_Informator.configurationPrefix + "." + key, value);
+				}
+			}
+			// change property
+			plugin_HTML5Storage.setDeep(window, key, value);
+		},
 
-      if (value == undefined) {
-        app.debug.debug("plugin_Informator.functions.firstUse(" + value + ") - case: value == undefined");
-        app.debug.debug("plugin_Informator.functions.firstUse() - return: " + app.store.localStorage.get("informator-first-use"));
+		firstUse : function(value) {
+			app.debug.trace("plugin_Informator.functions.firstUse(" + app.debug.arguments(arguments) + ")");
 
-        if (app.store.localStorage.get("informator-first-use") === null) {
-          return true;
-        }
+			if (value == undefined) {
+				app.debug.debug("plugin_Informator.functions.firstUse(" + value + ") - case: value == undefined");
+				app.debug.debug("plugin_Informator.functions.firstUse() - return: " + app.store.localStorage.get("informator-first-use"));
 
-        else if (app.store.localStorage.get("informator-first-use") === true) {
-          return true;
-        }
+				if (app.store.localStorage.get("informator-first-use") === null) {
+					return true;
+				}
 
-        else {
-          return false;
-        }
-      }
+				else if (app.store.localStorage.get("informator-first-use") === true) {
+					return true;
+				}
 
-      else if (typeof value == "boolean") {
-        app.debug.debug("plugin_Informator.functions.firstUse(" + value + ") - case: typeof value == boolean");
-        app.debug.debug("plugin_Informator.functions.firstUse() - set firstUse to: " + value);
-        app.store.localStorage.set("informator-first-use", value);
-        if (value == false) {
-          app.debug.debug("plugin_Informator.functions.firstUse() - case: value == false");
-          // app.store.localStorage.clear();
-        }
-        app.debug.debug("plugin_Informator.functions.firstUse() - return: " + value);
-        return value;
-      }
+				else {
+					return false;
+				}
+			}
 
-      else {
-        app.debug.debug("plugin_Informator.functions.firstUse() - return: null");
-        return null;
-      }
-    }
-  // data-info-URI
+			else if (typeof value == "boolean") {
+				app.debug.debug("plugin_Informator.functions.firstUse(" + value + ") - case: typeof value == boolean");
+				app.debug.debug("plugin_Informator.functions.firstUse() - set firstUse to: " + value);
+				app.store.localStorage.set("informator-first-use", value);
+				if (value == false) {
+					app.debug.debug("plugin_Informator.functions.firstUse() - case: value == false");
+					// app.store.localStorage.clear();
+				}
+				app.debug.debug("plugin_Informator.functions.firstUse() - return: " + value);
+				return value;
+			}
 
-  }
+			else {
+				app.debug.debug("plugin_Informator.functions.firstUse() - return: null");
+				return null;
+			}
+		}
+	// data-info-URI
+
+	}
 };

@@ -6,7 +6,8 @@
 		"getMultipleJsonAsync.js",
 		"getSingleJson.js",
 		"getServerSideEvent.js",
-		"getSingleJsonAsync.js"
+		"getSingleJsonAsync.js",
+		"getWebSocket.js"
 	],
 	"useKeepAlive": true,
 	"global_getJsonWithLoader_UniqueLoader": true,

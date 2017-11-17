@@ -55,9 +55,12 @@ var plugin_WebServiceClient = {
 
 	// private methods
 	getPreferedServer : function(name) {
-		app.debug.trace("plugin_WebServiceClient.getPreferedServer()");
-		plugin_WebServiceClient.setPreferedServer(name);
-		return plugin_WebServiceClient.config.preferedServer[name];
+		// app.debug.trace("plugin_WebServiceClient.getPreferedServer()");
+		// plugin_WebServiceClient.setPreferedServer(name);
+		// return plugin_WebServiceClient.config.preferedServer[name];
+		app.debug.validate(plugin_WebServiceClient.config.server[name].endpoints, "array", "The server endpoints are defined in an array. Please have a look to the configuration template: https://github.com/mkattner/co.stygs.com.lapstone/blob/master/www/js/plugin/plugin.WebServiceClient.json")
+		// TODO add server shuffle
+		return plugin_WebServiceClient.config.server[name].endpoints[0];
 	},
 
 	// server anhand der namen speichern
@@ -191,7 +194,7 @@ var plugin_WebServiceClient = {
 				url : wsd.url,
 				data : wsd.data,// ?key=value
 				processData : $ajax_processData, // ??? true or false, what
-													// is better
+				// is better
 				dataType : wsd.dataType, // json
 				contentType : wsd.contentType,
 				async : async, // false
@@ -346,54 +349,56 @@ var plugin_WebServiceClient = {
 
 		getWebSocket : function(wsd) {
 			app.debug.deprecated("User new WebSocketClient plugin!");
-			if (!window.WebSocket) {
-				return null;
-			} else {
-				var connection, dfd = $.Deferred();
-
-				wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
-
-				wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
-
-				connection = new WebSocket(wsd.url);
-
-				// When the connection is open, send some data to the server
-				connection.onopen = function() {
-					dfd["sendMessage"] = function(message) {
-						connection.send(message);
-					}
-				};
-
-				// Log errors
-				connection.onerror = function(error) {
-					// console.log('WebSocket Error ' + error);
-					dfd.reject(error);
-				};
-
-				// Log messages from the server
-				connection.onmessage = function(e) {
-					dfd.notify(JSON.parse(e.data));
-				};
-
-				connection.onclose = function(event) {
-					dfd.reject(event);
-				}
-
-				dfd["sendMessage"] = function(message) {
-					console.log("not open");
-				}
-
-				dfd.fail(function() {
-					try {
-						connection.close();
-					} catch (e) {
-						console.log(e);
-					}
-
-				});
-
-				return dfd;
-			}
+			
+			return app.wsoc.getWebSocket(wsd);
+//			if (!window.WebSocket) {
+//				return null;
+//			} else {
+//				var connection, dfd = $.Deferred();
+//
+//				wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
+//
+//				wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
+//
+//				connection = new WebSocket(wsd.url);
+//
+//				// When the connection is open, send some data to the server
+//				connection.onopen = function() {
+//					dfd["sendMessage"] = function(message) {
+//						connection.send(message);
+//					}
+//				};
+//
+//				// Log errors
+//				connection.onerror = function(error) {
+//					// console.log('WebSocket Error ' + error);
+//					dfd.reject(error);
+//				};
+//
+//				// Log messages from the server
+//				connection.onmessage = function(e) {
+//					dfd.notify(JSON.parse(e.data));
+//				};
+//
+//				connection.onclose = function(event) {
+//					dfd.reject(event);
+//				}
+//
+//				dfd["sendMessage"] = function(message) {
+//					console.log("not open");
+//				}
+//
+//				dfd.fail(function() {
+//					try {
+//						connection.close();
+//					} catch (e) {
+//						console.log(e);
+//					}
+//
+//				});
+//
+//				return dfd;
+//			}
 		},
 
 		getServerSideEvent : function(wsd) {
@@ -506,54 +511,69 @@ var plugin_WebServiceClient = {
 		/**
 		 * 
 		 */
-		setServer : function(name, url, async) {
+		setServer : function(serverName, serverObject, async) {
 			app.debug.trace("plugin_WebServiceClient.functions.setServer()");
 
-			url = URI(url);
+			app.debug.validate(serverObject, "object");
 
-			var scheme, hostname, port, path;
+			// url = URI(url);
+			//
+			// var scheme, hostname, port, path;
+			//
+			// scheme = url.scheme();
+			// hostname = url.hostname();
+			// port = url.port();
+			// path = url.path();
+			//
+			// if (scheme === "") {
+			// app.debug.debug("plugin_WebServiceClient.functions.setServer() -
+			// case: scheme is not set");
+			// scheme = "http";
+			// }
+			//
+			// if (hostname === "") {
+			// ;
+			// }
+			//
+			// if (port === "") {
+			// app.debug.debug("plugin_WebServiceClient.functions.setServer() -
+			// case: port is not set");
+			//
+			// if (scheme === "http") {
+			// app.debug.debug("plugin_WebServiceClient.functions.setServer() -
+			// case: scheme == http - use port: 80");
+			// port = 80;
+			// }
+			//
+			// else if (scheme === "https") {
+			// app.debug.debug("plugin_WebServiceClient.functions.setServer() -
+			// case: scheme == https - use port: 443");
+			// port = 443;
+			//
+			// }
+			// }
+			//
+			// if (path === "") {
+			// app.debug.debug("plugin_WebServiceClient.functions.setServer() -
+			// case: path is not set");
+			// path = plugin_WebServiceClient.config.server[name].template.path;
+			// }
+			if (serverObject.scheme !== undefined)
+				app.info.set("plugin_WebServiceClient.config.server." + serverName + ".endpoints.0.scheme", serverObject.scheme);
 
-			scheme = url.scheme();
-			hostname = url.hostname();
-			port = url.port();
-			path = url.path();
+			if (serverObject.scheme_specific_part !== undefined)
+				app.info.set("plugin_WebServiceClient.config.server." + serverName + ".endpoints.0.scheme_specific_part", serverObject.scheme_specific_part);
 
-			if (scheme === "") {
-				app.debug.debug("plugin_WebServiceClient.functions.setServer() - case: scheme is not set");
-				scheme = "http";
-			}
+			if (serverObject.host !== undefined)
+				app.info.set("plugin_WebServiceClient.config.server." + serverName + ".endpoints.0.host", serverObject.host);
 
-			if (hostname === "") {
-				;
-			}
+			if (serverObject.port !== undefined)
+				app.info.set("plugin_WebServiceClient.config.server." + serverName + ".endpoints.0.port", serverObject.port);
 
-			if (port === "") {
-				app.debug.debug("plugin_WebServiceClient.functions.setServer() - case: port is not set");
+			if (serverObject.path !== undefined)
+				app.info.set("plugin_WebServiceClient.config.server." + serverName + ".endpoints.0.path", serverObject.path);
 
-				if (scheme === "http") {
-					app.debug.debug("plugin_WebServiceClient.functions.setServer() - case: scheme == http - use port: 80");
-					port = 80;
-				}
-
-				else if (scheme === "https") {
-					app.debug.debug("plugin_WebServiceClient.functions.setServer() - case: scheme == https - use port: 443");
-					port = 443;
-
-				}
-			}
-
-			if (path === "") {
-				app.debug.debug("plugin_WebServiceClient.functions.setServer() - case: path is not set");
-				path = plugin_WebServiceClient.config.server[name].template.path;
-			}
-
-			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.scheme", scheme);
-			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.scheme_specific_part", "://");
-			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.host", hostname);
-			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.port", port);
-			app.info.set("plugin_WebServiceClient.config.server." + name + ".first.path", path);
-
-			return this.ping(name, async);
+			return this.ping(serverName, async);
 		},
 
 		/**
@@ -569,11 +589,11 @@ var plugin_WebServiceClient = {
 		 */
 		ping : function(serverName, async) {
 			app.debug.trace("plugin_WebServiceClient.functions.ping()");
-			var path, server, url;
+			var pingPath, server, url;
 
-			path = plugin_WebServiceClient.config.server[serverName].pingPath;
+			pingPath = plugin_WebServiceClient.config.server[serverName].pingPath;
 			server = plugin_WebServiceClient.getPreferedServer(serverName);
-			url = server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path + path;
+			url = server.scheme + server.scheme_specific_part + server.host + ":" + server.port + server.path + pingPath;
 
 			if (async === true) {
 
