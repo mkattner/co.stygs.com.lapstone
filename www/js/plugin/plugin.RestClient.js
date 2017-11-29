@@ -1,4 +1,4 @@
-// # sourceURL=plugin.RestClient.js
+//# sourceURL=plugin.RestClient.js
 /*
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -393,6 +393,8 @@ var plugin_RestClient = {
 			var result, loaderHeadline, loaderText;
 
 			result = plugin_RestClient.functions.getJson(service, parameter, async, attempts);
+			loaderHeadline = "";
+			loaderText = "";
 
 			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_Timeout);
 			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_Overrun);
@@ -422,10 +424,15 @@ var plugin_RestClient = {
 
 				plugin_RestClient.functions.getJsonWithLoader_Queue++;
 
-				// GENERATE UNIQUE LOADER TEXT
-				if (plugin_RestClient.config.global_getJsonWithLoader_UniqueLoader === true) {
-					loaderHeadline = "page: " + $("[data-role=page]").attr("id") + " - ";
-					loaderText = "page: " + $("[data-role=page]").attr("id") + " - ";
+				app.debug.validate(app.rc.config.global_getJsonWithLoader_multilanguageContext);
+				app.debug.validate(app.rc.config.global_getJsonWithLoader_UniqueLoaderPageScoped);
+				app.debug.validate(app.rc.config.global_getJsonWithLoader_UniqueLoader);
+
+				// GENERATE UNIQUE LOADER TEXT and HEADLINE FOR EACH PAGE
+				// unique text for page and webservice(s)
+				if (app.rc.config.global_getJsonWithLoader_UniqueLoaderPageScoped === true) {
+					loaderHeadline += "page: " + $("[data-role=page]").attr("id") + " - ";
+					loaderText += "page: " + $("[data-role=page]").attr("id") + " - ";
 
 					// case: SINGLE ASYNC CALL
 					if (typeof service === "string") {
@@ -442,10 +449,32 @@ var plugin_RestClient = {
 
 						});
 					}
+
 					loaderHeadline += "- headline";
 					loaderText += "- text";
-					app.debug.flat(app.lang.string(loaderHeadline, "webservice with loader"));
-					app.debug.flat(app.lang.string(loaderText, "webservice with loader"));
+				}
+
+				// GENERATE UNIQUE LOADER TEXT and HEADLINE
+				else if (app.rc.config.global_getJsonWithLoader_UniqueLoader === true) {
+
+					// case: SINGLE ASYNC CALL
+					if (typeof service === "string") {
+						loaderHeadline = service;
+						loaderText = service;
+					}
+
+					// case: MULTIPLE ASYNC CALL
+					else {
+						$.each(service, function(index, serviceDefinition) {
+
+							loaderHeadline += serviceDefinition[0] + " ";
+							loaderText += serviceDefinition[0] + " ";
+
+						});
+					}
+
+					loaderHeadline += "- headline";
+					loaderText += "- text";
 				}
 
 				// GENERATE GLOBAL LOADER TEXT
@@ -453,6 +482,10 @@ var plugin_RestClient = {
 					loaderHeadline = "global webservice loader headline";
 					loaderText = "global webservice loader text";
 				}
+
+				// ADD THE STRINGS TO MULTILANGUAGE DICTIONARY
+				app.debug.flat(app.lang.string(loaderHeadline, app.rc.config.global_getJsonWithLoader_multilanguageContext));
+				app.debug.flat(app.lang.string(loaderText, app.rc.config.global_getJsonWithLoader_multilanguageContext));
 
 				// IF there is no other WS call in queue
 
@@ -466,8 +499,8 @@ var plugin_RestClient = {
 							app.debug.info("plugin_RestClient - LOADER SHOW");
 							app.notify.loader.bubbleDiv({
 								show : true,
-								headline : app.lang.string(loaderHeadline, "webservice with loader"),
-								text : app.lang.string(loaderText, "webservice with loader")
+								headline : app.lang.string(loaderHeadline, app.rc.config.global_getJsonWithLoader_multilanguageContext),
+								text : app.lang.string(loaderText, app.rc.config.global_getJsonWithLoader_multilanguageContext)
 							});
 						}
 
