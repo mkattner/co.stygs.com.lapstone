@@ -645,14 +645,16 @@ $(document).bind("mobileinit", function() {
 	$.support.cors = true;
 	$.mobile.allowCrossDomainPages = true;
 	$.mobile.page.prototype.options.domCache = false;
-
+	$.mobile.ignoreContentEnabled = true;
 	$.mobile.loader.prototype.options.text = "loading";
 	$.mobile.loader.prototype.options.textVisible = false;
 	$.mobile.loader.prototype.options.theme = "a";
 	$.mobile.loader.prototype.options.html = "";
 
 	$.mobile.defaultPageTransition = 'none';
-	$.mobile.page.prototype.options.keepNative = "input, textarea, form";
+	// TODO keep everything native and remvoe that enhance shit from jqm
+	$.mobile.page.prototype.options.keepNative = "*";
+	$.mobile.keepNative = "*";
 	app.config.jQueryMobile = true;
 });
 
