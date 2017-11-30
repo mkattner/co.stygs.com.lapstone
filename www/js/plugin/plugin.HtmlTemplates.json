@@ -31,9 +31,10 @@
 			"content": "../files/template/DefaultPopup.html",
 			"style": "../files/template/DefaultPopup.css.less",
 			"elements": {
-				"buttons": ".buttonContainer",
-				"content": ".popupContent",
-				"title": ".popupTitle"
+				"buttons": ".defaultPopupButtonContainer",
+				"content": ".defaultPopupContent",
+				"title": ".defaultPopupTitle",
+				"close": ".defaulPopupButtonClose"
 			}
 		},
 		"JQueryMobilePlainPage": {

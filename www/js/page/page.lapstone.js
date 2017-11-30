@@ -1,157 +1,184 @@
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
+ * free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions: The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 var page_lapstone = {
-  config: null,
+	config : null,
 
-  include: null,
+	include : null,
 
-  include_once: null,
+	include_once : null,
 
-  parameter: {},
+	parameter : {},
 
-  elements: null,
+	elements : null,
 
-  constructor: function() {
-    app.debug.trace("page_lapstone.constructor()");
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	constructor : function() {
+		app.debug.trace("page_lapstone.constructor()");
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  creator: function(container) {
-    app.debug.trace("page_lapstone.creator()");
+	creator : function(container) {
+		app.debug.trace("page_lapstone.creator()");
 
-    page_lapstone.elements.content.append(function() {
-      return $("<h1>").text(app.lang.string("Connect your app to a Server", "page.lapstone"))
-    });
+		page_lapstone.elements.content.append(function() {
+			return $("<h1>").text(app.lang.string("Connect your app to a Server", "page.lapstone"))
+		});
 
-    page_lapstone.elements.content.append(function() {
-      return $("<p>").text(app.lang.string("Open plugin.WebServceClient.json and edit the \"defaultServer\" and \"server\" property.", "page.lapstone"));
-    });
-    
-    page_lapstone.elements.content.append(function() {
-      return $("<p>").text(app.lang.string("Open plugin.KeepAlive.json and edit the \"server\" and \"path\" property.", "page.lapstone"));
-    }); 
-    
-    page_lapstone.elements.content.append(function() {
-      return $("<h2>").text(app.lang.string("If your Server Address differs in each App Installation then use the following functions.", "page.lapstone"))
-    });
-    
-    page_lapstone.elements.content.append(function() {
-      return $("<p>").text(app.lang.string("app.wsc.getServer(); app.wsc.setServer()", "page.lapstone"))
-    });
+		page_lapstone.elements.content.append(function() {
+			return $("<p>").text(app.lang.string("Open plugin.WebServceClient.json and edit the \"defaultServer\" and \"server\" property.", "page.lapstone"));
+		});
 
-  },
+		page_lapstone.elements.content.append(function() {
+			return $("<p>").text(app.lang.string("Open plugin.KeepAlive.json and edit the \"server\" and \"path\" property.", "page.lapstone"));
+		});
 
-  async: {
-    promise: null,
+		page_lapstone.elements.content.append(function() {
+			return $("<h2>").text(app.lang.string("If your Server Address differs in each App Installation then use the following functions.", "page.lapstone"))
+		});
 
-    result: null,
+		page_lapstone.elements.content.append(function() {
+			return $("<p>").text(app.lang.string("app.wsc.getServer(); app.wsc.setServer()", "page.lapstone"))
+		});
 
-    elements: null,
+		page_lapstone.elements.content.append(function() {
+			return $("<h1>").text("plugin.Notification - popup");
+		}).append(function() {
+			return $("<a>").attr({
+				"href" : "#"
+			}).addClass("click").text(function() {
+				return app.lang.string("show help for popup", "plugin.Notification - popup")
+			}).on("storagefilled", function(event) {
+				app.debug.event(event);
 
-    creator: function(container) {
-      app.debug.trace("page_lapstone.async.creator()");
-      var dfd = $.Deferred();
-      dfd.resolve();
-      return dfd.promise();
-    },
+				// SHOW EXAMPLE POPUP
+				app.notify.popup.help();
 
-    call: function(container) {
-      app.debug.trace("page_lapstone.async.call()");
-      return app.rc.getJson();
-    },
+			});
+		});
 
-    done: function(container) {
-      app.debug.trace("page_lapstone.async.done()");
-    },
+	},
 
-    fail: function(container) {
-      app.debug.trace("page_lapstone.async.fail()");
-      alert("WS fails: " + JSON.stringify(this.result));
-    },
+	async : {
+		promise : null,
 
-    always: function(container) {
-      app.debug.trace("page_lapstone.async.always()");
-    },
+		result : null,
 
-    abort: function(container) {
-      app.debug.trace("page_lapstone.async.abort()");
-    }
-  },
+		elements : null,
 
-  // set the jquery events
+		creator : function(container) {
+			app.debug.trace("page_lapstone.async.creator()");
+			var dfd = $.Deferred();
+			dfd.resolve();
+			return dfd.promise();
+		},
 
-  setEvents: function(container) {
-    app.debug.trace("page_lapstone.setEvents()");
+		call : function(container) {
+			app.debug.trace("page_lapstone.async.call()");
+			return app.rc.getJson();
+		},
 
-  },
+		done : function(container) {
+			app.debug.trace("page_lapstone.async.done()");
+		},
 
-  functions: {},
+		fail : function(container) {
+			app.debug.trace("page_lapstone.async.fail()");
+			alert("WS fails: " + JSON.stringify(this.result));
+		},
 
-  events: {
+		always : function(container) {
+			app.debug.trace("page_lapstone.async.always()");
+		},
 
-    pagebeforechange: function(event, container) {
-      app.debug.trace("page_lapstone.pagebeforechange()");
+		abort : function(container) {
+			app.debug.trace("page_lapstone.async.abort()");
+		}
+	},
 
-    },
+	// set the jquery events
 
-    pagebeforecreate: function(event, container) {
-      app.debug.trace("page_lapstone.pagebeforecreate()");
-    },
+	setEvents : function(container) {
+		app.debug.trace("page_lapstone.setEvents()");
 
-    pagebeforehide: function(event, container) {
-      app.debug.trace("page_lapstone.pagebeforehide()");
-    },
+	},
 
-    pagebeforeload: function(event, container) {
-      app.debug.trace("page_lapstone.pagebeforeload()");
-    },
+	functions : {},
 
-    pagebeforeshow: function(event, container) {
-      app.debug.trace("page_lapstone.pagebeforeshow()");
-    },
+	events : {
 
-    pagechange: function(event, container) {
-      app.debug.trace("page_lapstone.pagechange()");
-    },
+		pagebeforechange : function(event, container) {
+			app.debug.trace("page_lapstone.pagebeforechange()");
 
-    pagechangefailed: function(event, container) {
-      app.debug.trace("page_lapstone.pagechangefailed()");
-    },
+		},
 
-    pagecreate: function(event, container) {
-      app.debug.trace("page_lapstone.pagecreate()");
-    },
+		pagebeforecreate : function(event, container) {
+			app.debug.trace("page_lapstone.pagebeforecreate()");
+		},
 
-    pagehide: function(event, container) {
-      app.debug.trace("page_lapstone.pagehide()");
-    },
+		pagebeforehide : function(event, container) {
+			app.debug.trace("page_lapstone.pagebeforehide()");
+		},
 
-    pageinit: function(event, container) {
-      app.debug.trace("page_lapstone.pageinit()");
-    },
+		pagebeforeload : function(event, container) {
+			app.debug.trace("page_lapstone.pagebeforeload()");
+		},
 
-    pageload: function(event, container) {
-      app.debug.trace("page_lapstone.pageload()");
-    },
+		pagebeforeshow : function(event, container) {
+			app.debug.trace("page_lapstone.pagebeforeshow()");
+		},
 
-    pageloadfailed: function(event, container) {
-      app.debug.trace("page_lapstone.pageloadfailed()");
-    },
+		pagechange : function(event, container) {
+			app.debug.trace("page_lapstone.pagechange()");
+		},
 
-    pageremove: function(event, container) {
-      app.debug.trace("page_lapstone.pageremove()");
-    },
+		pagechangefailed : function(event, container) {
+			app.debug.trace("page_lapstone.pagechangefailed()");
+		},
 
-    pageshow: function(event, container) {
-      app.debug.trace("page_lapstone.pageshow()");
-    }
-  }
+		pagecreate : function(event, container) {
+			app.debug.trace("page_lapstone.pagecreate()");
+		},
+
+		pagehide : function(event, container) {
+			app.debug.trace("page_lapstone.pagehide()");
+		},
+
+		pageinit : function(event, container) {
+			app.debug.trace("page_lapstone.pageinit()");
+		},
+
+		pageload : function(event, container) {
+			app.debug.trace("page_lapstone.pageload()");
+		},
+
+		pageloadfailed : function(event, container) {
+			app.debug.trace("page_lapstone.pageloadfailed()");
+		},
+
+		pageremove : function(event, container) {
+			app.debug.trace("page_lapstone.pageremove()");
+		},
+
+		pageshow : function(event, container) {
+			app.debug.trace("page_lapstone.pageshow()");
+		}
+	}
 };

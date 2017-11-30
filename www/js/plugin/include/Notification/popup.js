@@ -1,4 +1,40 @@
+app.func("popup.add", function(templateId, templateElementsObject, buttonArray, callbackArray) {
+	app.debug.validate(templateId);
+	app.debug.validate(templateElementsObject);
+	app.debug.validate(buttonArray);
+	app.debug.validate(callbackArray);
+
+	var popup;
+
+	popup = {
+		"templateId" : templateId,
+		"templateElementsObject" : templateElementsObject,
+		"buttonArray" : buttonArray,
+		"callbackArray" : callbackArray
+	}
+
+	app.notify.popup.popupQueue = app.notify.popup.popupQueue || [];
+	app.notify.popup.popupQueue.push(popup);
+
+}, app.notify);
+
+app.func("popup.show", function() {
+	var popup;
+
+	app.notify.popup.popupQueue = app.notify.popup.popupQueue || [];
+	popup = app.notify.popup.popupQueue.pop();
+
+	if (popup)
+		app.notify.popup.open(popup.templateId, popup.templateElementsObject, popup.buttonArray, popup.callbackArray);
+
+}, app.notify);
+
 app.func("popup.open", function(templateId, templateElementsObject, buttonArray, callbackArray, $appendTo) {
+	app.debug.validate(templateId);
+	app.debug.validate(templateElementsObject);
+	app.debug.validate(buttonArray);
+	app.debug.validate(callbackArray);
+
 	var $popup;
 	$popup = app.template.get(templateId);
 
@@ -21,8 +57,95 @@ app.func("popup.open", function(templateId, templateElementsObject, buttonArray,
 			$popup["_" + elementKey]().empty().append(elementValue);
 	});
 
+	// CLOSE POPUP
+	$popup._close().addClass("click").on("storagefilled", function() {
+		app.notify.popup.close($popup);
+	});
+
+	// ADD THE BUTTONS
+	$popup._buttons().empty();
+	$.each(buttonArray, function(buttonIndex, button) {
+		$popup._buttons().append(function() {
+			app.debug.validate(callbackArray[buttonIndex]);
+			return button.addClass("click").on("storagefilled", function() {
+				var promise;
+
+				promise = callbackArray[buttonIndex]($(this), $popup);
+
+				if (typeof promise === "object") {
+					promise.always(function() {
+						app.notify.popup.close($popup);
+					});
+				} else {
+					app.notify.popup.close($popup);
+				}
+			});
+		});
+	})
+
+	return $popup;
 }, app.notify);
 
-app.func("popup.close", function() {
-	$(".app-popup").remove();
-}, app.notify)
+app.func("popup.close", function($popup) {
+	if ($popup !== undefined)
+		$popup.remove();
+
+	else
+		$(".app-popup").remove();
+
+	app.notify.popup.show();
+}, app.notify);
+
+/**
+ * 
+ */
+app.debug.operation(function() {
+	app.func("popup.help", function() {
+
+		// SHWO EXAMPLE POPUP
+		app.notify.popup.open("DefaultPopup", {
+			"title" : "app.notify.popup.show()",
+			"content" : $("<div>").append(function() {
+				return $("<h1>").text("How to use app.notify.poup:")
+			}).append(function() {
+				return $("<p>").text("It uses a html template of the HtmlTemplate plugin. You can use the builtin html template: DefaultPopup")
+			}).append(function() {
+				return $("<p>").text("To change html and style of the popup use the *.html antd the *.css.lss files.")
+			}).append(function() {
+				return $("<p>").text("For adding content and texts to the popup use the elements of the html template and the templateElementsObject argument of the popup() function.");
+			}).append(function() {
+				return $("<p>").text("To add a button to the popup use the buttonArray and callbackArray parameter of the popup() function.")
+			}).append(function() {
+				return $("<p>").text("If you have a close element in you html template, then a storagefilled handler will be attached to spimply close the popup.")
+			})
+		}, [ $("<a>").attr({
+			"href" : "#"
+		}).text("Callback and close"), $("<a>").attr({
+			"href" : "#"
+		}).text("Asynchronous callback and close") ], [ function() {
+			// do nothing
+			;
+		}, function() {
+			var dfd = $.Deferred();
+
+			app.notify.loader.show("DefaultLoader", {
+				"headline" : "Waiting",
+				"text" : "Close in one second."
+			});
+
+			window.setTimeout(function() {
+				app.notify.loader.remove();
+
+				dfd.resolve();
+			}, 1000);
+
+			return dfd.promise();
+		} ])
+	}, app.notify);
+});
+
+/**
+ * app.notify.popup.open("DefaultPopup", {"title":"My Pupup Title","content":"My
+ * Content"}, [ $("<a>").attr({"href":"#"}).text("button1"), $("<a>").attr({"href":"#"}).text("button2") ], [
+ * function(){alert("button1")}, function(){alert("button2")} ] )
+ */
