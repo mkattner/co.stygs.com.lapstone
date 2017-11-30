@@ -1,4 +1,4 @@
-// # sourceURL=plugin.OAuth.js
+//# sourceURL=plugin.OAuth.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com
  * 

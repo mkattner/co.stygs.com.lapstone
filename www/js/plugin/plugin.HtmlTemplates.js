@@ -1,4 +1,4 @@
-// # sourceURL=plugin.HtmlTemplates.js
+//# sourceURL=plugin.HtmlTemplates.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
  * free of charge, to any person obtaining a copy of this software and

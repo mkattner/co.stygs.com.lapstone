@@ -1,4 +1,4 @@
-// # sourceURL=plugin.MultilanguageIso693_3.js
+//# sourceURL=plugin.MultilanguageIso693_3.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com
  * 

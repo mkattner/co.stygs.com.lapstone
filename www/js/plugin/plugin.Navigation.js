@@ -1,4 +1,4 @@
-// # sourceURL=plugin.Navigation.js
+//# sourceURL=plugin.Navigation.js
 /**
  * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
  * free of charge, to any person obtaining a copy of this software and
