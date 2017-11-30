@@ -30,6 +30,7 @@ app.func("loader.show", function(templateId, templateElementsObject, $appendTo) 
 			$loader["_" + elementKey]().empty().append(elementValue);
 	});
 
+	return $loader;
 }, app.notify);
 
 app.func("loader.remove", function() {
