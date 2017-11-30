@@ -31,9 +31,9 @@
 			"content": "../files/template/DefaultPopup.html",
 			"style": "../files/template/DefaultPopup.css.less",
 			"elements": {
-				"buttonContainer": ".buttonContainer",
-				"popupContent": ".popupContent",
-				"popupHeader": ".popupHeader"
+				"buttons": ".buttonContainer",
+				"content": ".popupContent",
+				"title": ".popupTitle"
 			}
 		},
 		"JQueryMobilePlainPage": {
