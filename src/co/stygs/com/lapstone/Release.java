@@ -59,7 +59,6 @@ public class Release {
 
 	    // ********************************************************************
 	    // update app version
-
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    File configuration = new File(www_debug, "js/lapstone.json");
 	    LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
