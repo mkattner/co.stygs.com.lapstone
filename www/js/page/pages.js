@@ -581,25 +581,7 @@ app["pages"] = {
 				app.debug.debug("case: page is a common lapstone page");
 
 				app.pages.eventPromises[eventName] = Array();
-				// app.pages.eventTimeouts[eventName] = null;
-				// Removed, because async creator can return getJsonWith loader
-				// app.pages.eventTimeouts[eventName] =
-				// window.setTimeout(function() {
-				// app.debug.debug("app.pages.eventFunctions.lapstonePage. -
-				// show loader");
-				//
-				// app.notify.loader.bubbleDiv({
-				// show: true,
-				// text: app.lang.string("page: " + $container.attr('id') + " -
-				// text", "pageloading"),
-				// headline: app.lang.string("page: " + $container.attr('id') +
-				// " - headline", "pageloading")
-				// });
-				//
-				// }, 200);
 
-				// app.pages.eventFunctions.everyPage[eventName](event,
-				// $container);
 				eventFunctionResult = app.pages.eventFunctions.lapstonePage[eventName](event, $container);
 				// console.log(eventFunctionResult)
 				if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
