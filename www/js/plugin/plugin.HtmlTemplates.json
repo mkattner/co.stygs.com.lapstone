@@ -19,6 +19,23 @@
 			"content": "../files/template/JQueryMobilePopupSimple.html",
 			"style": "../files/template/JQueryMobilePopupSimple.css.less"
 		},
+		"DefaultLoader": {
+			"content": "../files/template/DefaultLoader.html",
+			"style": "../files/template/DefaultLoader.css.less",
+			"elements": {
+				"headline": ".headline",
+				"text": ".text"
+			}
+		},
+		"DefaultPopup": {
+			"content": "../files/template/DefaultPopup.html",
+			"style": "../files/template/DefaultPopup.css.less",
+			"elements": {
+				"buttonContainer": ".buttonContainer",
+				"popupContent": ".popupContent",
+				"popupHeader": ".popupHeader"
+			}
+		},
 		"app-loader-bubble": {
 			"content": "../files/template/app.loader.bubble.html",
 			"style": "../files/template/app.loader.bubble.css.less"
