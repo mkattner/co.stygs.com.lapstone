@@ -1,22 +1,22 @@
 {
-	"name":"Notification",
-	"shortname":"notify",
-	"include":[
-		
+	"name": "Notification",
+	"shortname": "notify",
+	"include": [
+		"loader.js",
+		"popup.js"
 	],
-	"enablePushNotifications":false,
-	"pushConfig":{
-		"pushServerURL":"https://aerogeardev-stygs.rhcloud.com/",
-		"alias":"mkattner@stygs.com",
-		"android":{
-			"senderID":"<senderID e.g Google Project ID only for android>",
-			"variantID":"770fbb6e-a743-464f-a5c1-c8b25e4a6e0b",
-			"variantSecret":"8a4ef2bd-bd64-46d0-a1a3-740a96bf6493"
+	"enablePushNotifications": false,
+	"pushConfig": {
+		"pushServerURL": "https://aerogeardev-stygs.rhcloud.com/",
+		"alias": "mkattner@stygs.com",
+		"android": {
+			"senderID": "<senderID e.g Google Project ID only for android>",
+			"variantID": "770fbb6e-a743-464f-a5c1-c8b25e4a6e0b",
+			"variantSecret": "8a4ef2bd-bd64-46d0-a1a3-740a96bf6493"
 		},
-		"ios":{
-			"variantID":"770fbb6e-a743-464f-a5c1-c8b25e4a6e0b",
-			"variantSecret":"8a4ef2bd-bd64-46d0-a1a3-740a96bf6493"
+		"ios": {
+			"variantID": "770fbb6e-a743-464f-a5c1-c8b25e4a6e0b",
+			"variantSecret": "8a4ef2bd-bd64-46d0-a1a3-740a96bf6493"
 		}
-		
 	}
 }

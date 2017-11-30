@@ -1251,16 +1251,8 @@ var plugin_Notification = {
 		 */
 		loader_isActive : false,
 		loader : {
-			/**
-			 * 
-			 */
-			show : function(id, templateName, templateParameterObject, $appendTo) {
-				app.debug.fatal("Not implemented yet!");
-			},
-			/**
-			 * 
-			 */
 			isLoaderActive : function() {
+				app.debug.deprecated();
 				return plugin_Notification.functions.loader_isActive;
 			},
 
