@@ -378,12 +378,12 @@ var plugin_RestClient = {
 			return url;
 		},
 
-		getJsonWithLoader_Overrun : null,
+		getJsonWithLoader_overrun : null,
 		getJsonWithLoader_Delay : null,
 		getJsonWithLoader_Queue : 0,
 		getJsonWithLoader : function(service, parameter, async, attempts) {
 			app.debug.trace("plugin_RestClient.functions.getJsonWithLoader(" + app.debug.arguments(arguments) + ")");
-			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_UniqueLoader);
+			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_uniqueLoader);
 			// keep alive is Activated and connection is down
 			// if (plugin_RestClient.config.useKeepAlive &&
 			// !app.alive.isAlive()) {
@@ -396,14 +396,14 @@ var plugin_RestClient = {
 			loaderHeadline = "";
 			loaderText = "";
 
-			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_Timeout);
-			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_Overrun);
+			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_timeout);
+			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_overrun);
 
-			timeoutInMs = plugin_RestClient.config.global_getJsonWithLoader_Timeout;
-			overrunInMs = plugin_RestClient.config.global_getJsonWithLoader_Overrun;
+			timeoutInMs = plugin_RestClient.config.global_getJsonWithLoader_timeout;
+			overrunInMs = plugin_RestClient.config.global_getJsonWithLoader_overrun;
 			app.debug.info("plugin_RestClient - LOADER: timeout = " + timeoutInMs + "; overrun = " + overrunInMs);
 
-			window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Overrun);
+			window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_overrun);
 			// alert(async + " - " + result);
 			// an error occured
 			if (parameter === true && result === null) {
@@ -425,12 +425,13 @@ var plugin_RestClient = {
 				plugin_RestClient.functions.getJsonWithLoader_Queue++;
 
 				app.debug.validate(app.rc.config.global_getJsonWithLoader_multilanguageContext);
-				app.debug.validate(app.rc.config.global_getJsonWithLoader_UniqueLoaderPageScoped);
-				app.debug.validate(app.rc.config.global_getJsonWithLoader_UniqueLoader);
+				app.debug.validate(app.rc.config.global_getJsonWithLoader_uniqueLoaderPageScoped);
+				app.debug.validate(app.rc.config.global_getJsonWithLoader_uniqueLoader);
+				app.debug.validate(app.rc.config.global_getJsonWithLoader_loaderTemplate);
 
 				// GENERATE UNIQUE LOADER TEXT and HEADLINE FOR EACH PAGE
 				// unique text for page and webservice(s)
-				if (app.rc.config.global_getJsonWithLoader_UniqueLoaderPageScoped === true) {
+				if (app.rc.config.global_getJsonWithLoader_uniqueLoaderPageScoped === true) {
 					loaderHeadline += "page: " + $("[data-role=page]").attr("id") + " - ";
 					loaderText += "page: " + $("[data-role=page]").attr("id") + " - ";
 
@@ -455,7 +456,7 @@ var plugin_RestClient = {
 				}
 
 				// GENERATE UNIQUE LOADER TEXT and HEADLINE
-				else if (app.rc.config.global_getJsonWithLoader_UniqueLoader === true) {
+				else if (app.rc.config.global_getJsonWithLoader_uniqueLoader === true) {
 
 					// case: SINGLE ASYNC CALL
 					if (typeof service === "string") {
@@ -493,16 +494,19 @@ var plugin_RestClient = {
 				if (plugin_RestClient.functions.getJsonWithLoader_Delay == null) {
 					plugin_RestClient.functions.getJsonWithLoader_Delay = window.setTimeout(function() {
 						plugin_RestClient.functions.getJsonWithLoader_Delay = null;
+
 						//
-						if (!app.notify.loader.isLoaderActive()) {
-							app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - show loader after timeout");
-							app.debug.info("plugin_RestClient - LOADER SHOW");
-							app.notify.loader.bubbleDiv({
-								show : true,
-								headline : app.lang.string(loaderHeadline, app.rc.config.global_getJsonWithLoader_multilanguageContext),
-								text : app.lang.string(loaderText, app.rc.config.global_getJsonWithLoader_multilanguageContext)
-							});
-						}
+						// if (!app.notify.loader.isLoaderActive()) { //
+						// REMOVED, because new loader won't be added twice
+						app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - show loader after timeout");
+						app.debug.info("plugin_RestClient - LOADER SHOW");
+
+						app.notify.loader.show(app.rc.config.global_getJsonWithLoader_loaderTemplate, {
+							"headline" : app.lang.string(loaderHeadline, app.rc.config.global_getJsonWithLoader_multilanguageContext),
+							"text" : app.lang.string(loaderText, app.rc.config.global_getJsonWithLoader_multilanguageContext)
+						});
+
+						// }
 
 					}, timeoutInMs);
 				}
@@ -517,11 +521,9 @@ var plugin_RestClient = {
 						window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Delay);
 						plugin_RestClient.functions.getJsonWithLoader_Delay = null;
 
-						plugin_RestClient.functions.getJsonWithLoader_Overrun = window.setTimeout(function() {
+						plugin_RestClient.functions.getJsonWithLoader_overrun = window.setTimeout(function() {
 							app.debug.info("plugin_RestClient - LOADER HIDE");
-							app.notify.loader.bubbleDiv({
-								show : false
-							});
+							app.notify.loader.remove();
 						}, 30);
 					}
 

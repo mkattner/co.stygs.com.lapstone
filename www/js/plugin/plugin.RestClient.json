@@ -10,11 +10,12 @@
 		"getWebSocket.js"
 	],
 	"useKeepAlive": true,
+	"global_getJsonWithLoader_loaderTemplate": "DefaultLoader",
 	"global_getJsonWithLoader_multilanguageContext": "webservice loader",
-	"global_getJsonWithLoader_UniqueLoaderPageScoped": false,
-	"global_getJsonWithLoader_UniqueLoader": true,
-	"global_getJsonWithLoader_Timeout": 200,
-	"global_getJsonWithLoader_Overrun": 40,
+	"global_getJsonWithLoader_uniqueLoaderPageScoped": false,
+	"global_getJsonWithLoader_uniqueLoader": true,
+	"global_getJsonWithLoader_timeout": 200,
+	"global_getJsonWithLoader_overrun": 40,
 	"wsdFiles": [
 		"../files/wsd/wsd.template.json"
 	],
