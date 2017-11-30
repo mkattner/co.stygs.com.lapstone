@@ -36,14 +36,6 @@
 				"popupHeader": ".popupHeader"
 			}
 		},
-		"app-loader-bubble": {
-			"content": "../files/template/app.loader.bubble.html",
-			"style": "../files/template/app.loader.bubble.css.less"
-		},
-		"app-loader-bubbleDiv": {
-			"content": "../files/template/app.loader.bubbleDiv.html",
-			"style": "../files/template/app.loader.bubbleDiv.css.less"
-		},
 		"JQueryMobilePlainPage": {
 			"content": "../files/template/JQueryMobilePlainPage.html",
 			"style": "../files/template/JQueryMobilePlainPage.css.less",
