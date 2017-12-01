@@ -67,16 +67,24 @@ app.func("popup.open", function(templateId, templateElementsObject, buttonArray,
 	$.each(buttonArray, function(buttonIndex, button) {
 		$popup._buttons().append(function() {
 			app.debug.validate(callbackArray[buttonIndex]);
+
 			return button.addClass("click").on("storagefilled", function() {
 				var promise;
 
-				promise = callbackArray[buttonIndex]($(this), $popup);
+				if (typeof callbackArray[buttonIndex] === "function") {
 
-				if (typeof promise === "object") {
-					promise.always(function() {
+					promise = callbackArray[buttonIndex]($(this), $popup);
+
+					if (typeof promise === "object") {
+						promise.always(function() {
+							app.notify.popup.close($popup);
+						});
+					} else {
 						app.notify.popup.close($popup);
-					});
-				} else {
+					}
+				}
+
+				else {
 					app.notify.popup.close($popup);
 				}
 			});
@@ -120,9 +128,11 @@ app.debug.operation(function() {
 			})
 		}, [ $("<a>").attr({
 			"href" : "#"
+		}).text("No callback and close"), $("<a>").attr({
+			"href" : "#"
 		}).text("Callback and close"), $("<a>").attr({
 			"href" : "#"
-		}).text("Asynchronous callback and close") ], [ function() {
+		}).text("Asynchronous callback and close") ], [ null, function() {
 			// do nothing
 			;
 		}, function() {
