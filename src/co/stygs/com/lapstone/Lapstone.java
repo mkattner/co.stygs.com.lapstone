@@ -37,7 +37,7 @@ public class Lapstone {
 	if (argMap.get("function") == null) {
 	    System.out.println("Missing parameter: function");
 	    PrintHelp();
-	}
+	} 
 
 	else {
 

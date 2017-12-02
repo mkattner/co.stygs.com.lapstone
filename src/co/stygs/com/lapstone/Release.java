@@ -489,11 +489,11 @@ public class Release {
 	System.out.println("Create all.pages.js file. Copy just used pages. -------------------------------------------");
 	System.out.println();
 
-	File[] pageFiles = new File(www, "js/plugin").listFiles();
+	File[] pageFiles = new File(www, "js/page").listFiles();
 	Arrays.sort(pageFiles); // we must sort the array, as the listFiles
 				  // method doesn't guarantee that the return
 				  // value is sorted. page_*.js must be
-				  // inserted before the plugins includes.
+				  // inserted before the pages includes.
 	for (File file : pageFiles) {
 	    System.out.println();
 	    System.out.println("Processing: " + file.getName());
