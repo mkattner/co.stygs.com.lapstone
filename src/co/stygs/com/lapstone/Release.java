@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -384,7 +385,12 @@ public class Release {
 	System.out.println("Create all.plugin.js file. Copy just used plugins. ----------------------------------------");
 	System.out.println();
 
-	for (File file : new File(www, "js/plugin").listFiles()) {
+	File[] pluginFiles = new File(www, "js/plugin").listFiles();
+	Arrays.sort(pluginFiles); // we must sort the array, as the listFiles
+				  // method doesn't guarantee that the return
+				  // value is sorted. plugin_*.js must be
+				  // inserted before the plugins includes. 
+	for (File file : pluginFiles) {
 	    System.out.println();
 	    System.out.println("Processing: " + file.getName());
 	    String currentFileContent;
@@ -483,7 +489,12 @@ public class Release {
 	System.out.println("Create all.pages.js file. Copy just used pages. -------------------------------------------");
 	System.out.println();
 
-	for (File file : new File(www, "js/page").listFiles()) {
+	File[] pageFiles = new File(www, "js/plugin").listFiles();
+	Arrays.sort(pageFiles); // we must sort the array, as the listFiles
+				  // method doesn't guarantee that the return
+				  // value is sorted. page_*.js must be
+				  // inserted before the plugins includes.
+	for (File file : pageFiles) {
 	    System.out.println();
 	    System.out.println("Processing: " + file.getName());
 	    String currentFileContent;
@@ -564,7 +575,7 @@ public class Release {
 	    include_onceFile.delete();
 	}
 	includeContent = "includeEverything=function(){" + includeContent + "};";
-	
+
 	allPagesContent += includeContent;
 	FileUtils.write(new File(www, "js/page/all.page.js"), allPagesContent);
 	FileUtils.deleteDirectory(new File(www, "js/page/include"));
