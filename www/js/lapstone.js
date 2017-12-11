@@ -72,7 +72,7 @@ var app = {
 };
 
 function initialisation() {
-	var dfd, promise;
+	var dfd;
 
 	dfd = $.Deferred();
 
@@ -203,11 +203,9 @@ function loadConfiguration() {
 }
 
 function updateFramework() {
-	var dfd = $.Deferred();
+	var dfd = $.Deferred(), currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;
 
 	if (window.plugin_Informator) {
-
-		var currentLapstoneVersion, oldLapstoneVersion, currentAppVersion, oldAppVersion;
 
 		currentLapstoneVersion = app.config.version.lapstone;
 		currentAppVersion = app.config.version.app;
@@ -346,8 +344,9 @@ function loadJQueryMobile() {
 
 	return dfd.promise();
 }
-
-var globalLoader = {
+// create lapstone namespace
+var globalLoader, startupDefinition, initialisationPanel, startup;
+globalLoader = {
 	globalTimeout : 10000,
 	globalAttempts : 3,
 
@@ -571,19 +570,21 @@ var globalLoader = {
 		return dfd.promise();
 	},
 
+	// StyleLoader : function(url, attempts, attempt) {
+	// var cssLink;
+	//
+	// if (!cacheAjax())
+	// cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' +
+	// new Date().getTime() + '">';
+	// else
+	// cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '">';
+	//
+	// $("head").append(cssLink);
+	// },
+
+	// TODO ??? double function
 	StyleLoader : function(url, attempts, attempt) {
-		var css, cssLink;
-
-		if (!cacheAjax())
-			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
-		else
-			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '">';
-
-		$("head").append(cssLink);
-	},
-
-	StyleLoader : function(url, attempts, attempt) {
-		var css, cssLink;
+		var cssLink;
 
 		if (!cacheAjax())
 			cssLink = '<link rel="stylesheet" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
@@ -645,14 +646,14 @@ var globalLoader = {
 	},
 
 	LessLoader : function(url, attempts, attempt) {
-		var css, cssLink;
+		var lessLink;
 
 		if (!cacheAjax())
-			cssLink = '<link rel="stylesheet/less" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
+			lessLink = '<link rel="stylesheet/less" type="text/css" href="' + url + '?_=' + new Date().getTime() + '">';
 		else
-			cssLink = '<link rel="stylesheet/less" type="text/css" href="' + url + '">';
+			lessLink = '<link rel="stylesheet/less" type="text/css" href="' + url + '">';
 
-		$("head").append(cssLink);
+		$("head").append(lessLink);
 	}
 }
 
@@ -733,9 +734,9 @@ function waitForDeviceready() {
 	return dfd.promise();
 }
 
-var initialisationPanel = {
+initialisationPanel = {
 	start : function() {
-		var dfd = $.Deferred(), doneFunction, failFunction;
+		var dfd = $.Deferred();
 
 		$('head').append("<title>");
 		$('title').text("...");
@@ -787,7 +788,7 @@ var initialisationPanel = {
 	}
 }
 
-var startupDefinition = [ {
+startupDefinition = [ {
 	"status" : "Lapstone startup: loading configuration",
 	"function" : loadConfiguration
 }, {
@@ -813,7 +814,7 @@ var startupDefinition = [ {
 	"function" : waitForMobileinit
 } ]
 
-var startup = {
+startup = {
 	currentDefinition : {
 		"status" : "----------------- Starting the Lapstone Framework",
 	// "function": waitForDeviceready,
@@ -896,7 +897,7 @@ var startup = {
 
 // jquery loaded
 $(document).ready(function() {
-	var inititalisationPromise, startupDuration;
+	var inititalisationPromise;
 
 	inititalisationPromise = startup.initFramework();
 
@@ -1018,14 +1019,14 @@ function extendJsAndJquery() {
 	}
 
 	String.prototype.pathCombine = function(path) {
-		var url, set;
+		var url, set, replace_with;
 		url = this + "/" + (path);
 		set = url.match(/([^:]\/{2,})/g); // Match (NOT ":") followed by (2 OR
 		// 3 "/")
 
 		for ( var str in set) {
 			// Modify the data you have
-			var replace_with = set[str].substr(0, 1) + '/';
+			replace_with = set[str].substr(0, 1) + '/';
 
 			// Replace the match
 			url = url.replace(set[str], replace_with);
