@@ -31,12 +31,12 @@ app.func("loader.show", function(templateId, templateElementsObject, $appendTo) 
 	});
 
 	return $loader;
-}, app.notify);
+}, plugin_Notification.functions);
 
 app.func("loader.remove", function() {
 	$(".app-loader").remove();
-}, app.notify);
+}, plugin_Notification.functions);
 
 app.func("loader.isActive", function() {
 	return ($(".app-loader").length > 0) ? true : false;
-}, app.notify)
+}, plugin_Notification.functions)

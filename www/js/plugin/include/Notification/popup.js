@@ -16,7 +16,7 @@ app.func("popup.add", function(templateId, templateElementsObject, buttonArray, 
 	app.notify.popup.popupQueue = app.notify.popup.popupQueue || [];
 	app.notify.popup.popupQueue.push(popup);
 
-}, app.notify);
+}, plugin_Notification.functions);
 
 app.func("popup.show", function() {
 	var popup;
@@ -27,7 +27,7 @@ app.func("popup.show", function() {
 	if (popup)
 		app.notify.popup.open(popup.templateId, popup.templateElementsObject, popup.buttonArray, popup.callbackArray);
 
-}, app.notify);
+}, plugin_Notification.functions);
 
 app.func("popup.open", function(templateId, templateElementsObject, buttonArray, callbackArray, $appendTo) {
 	app.debug.validate(templateId);
@@ -92,7 +92,7 @@ app.func("popup.open", function(templateId, templateElementsObject, buttonArray,
 	})
 
 	return $popup;
-}, app.notify);
+}, plugin_Notification.functions);
 
 app.func("popup.close", function($popup) {
 	if ($popup !== undefined)
@@ -102,57 +102,57 @@ app.func("popup.close", function($popup) {
 		$(".app-popup").remove();
 
 	app.notify.popup.show();
-}, app.notify);
+}, plugin_Notification.functions);
 
 /**
  * 
  */
-app.debug.operation(function() {
-	app.func("popup.help", function() {
-
-		// SHWO EXAMPLE POPUP
-		app.notify.popup.open("DefaultPopup", {
-			"title" : "app.notify.popup.show()",
-			"content" : $("<div>").append(function() {
-				return $("<h1>").text("How to use app.notify.poup:")
-			}).append(function() {
-				return $("<p>").text("It uses a html template of the HtmlTemplate plugin. You can use the builtin html template: DefaultPopup")
-			}).append(function() {
-				return $("<p>").text("To change html and style of the popup use the *.html antd the *.css.lss files.")
-			}).append(function() {
-				return $("<p>").text("For adding content and texts to the popup use the elements of the html template and the templateElementsObject argument of the popup() function.");
-			}).append(function() {
-				return $("<p>").text("To add a button to the popup use the buttonArray and callbackArray parameter of the popup() function.")
-			}).append(function() {
-				return $("<p>").text("If you have a close element in you html template, then a storagefilled handler will be attached to spimply close the popup.")
-			})
-		}, [ $("<a>").attr({
-			"href" : "#"
-		}).text("No callback and close"), $("<a>").attr({
-			"href" : "#"
-		}).text("Callback and close"), $("<a>").attr({
-			"href" : "#"
-		}).text("Asynchronous callback and close") ], [ null, function() {
-			// do nothing
-			;
-		}, function() {
-			var dfd = $.Deferred();
-
-			app.notify.loader.show("DefaultLoader", {
-				"headline" : "Waiting",
-				"text" : "Close in one second."
-			});
-
-			window.setTimeout(function() {
-				app.notify.loader.remove();
-
-				dfd.resolve();
-			}, 1000);
-
-			return dfd.promise();
-		} ])
-	}, app.notify);
-});
+//app.debug.operation(function() {
+//	app.func("popup.help", function() {
+//
+//		// SHWO EXAMPLE POPUP
+//		app.notify.popup.open("DefaultPopup", {
+//			"title" : "app.notify.popup.show()",
+//			"content" : $("<div>").append(function() {
+//				return $("<h1>").text("How to use app.notify.poup:")
+//			}).append(function() {
+//				return $("<p>").text("It uses a html template of the HtmlTemplate plugin. You can use the builtin html template: DefaultPopup")
+//			}).append(function() {
+//				return $("<p>").text("To change html and style of the popup use the *.html antd the *.css.lss files.")
+//			}).append(function() {
+//				return $("<p>").text("For adding content and texts to the popup use the elements of the html template and the templateElementsObject argument of the popup() function.");
+//			}).append(function() {
+//				return $("<p>").text("To add a button to the popup use the buttonArray and callbackArray parameter of the popup() function.")
+//			}).append(function() {
+//				return $("<p>").text("If you have a close element in you html template, then a storagefilled handler will be attached to spimply close the popup.")
+//			})
+//		}, [ $("<a>").attr({
+//			"href" : "#"
+//		}).text("No callback and close"), $("<a>").attr({
+//			"href" : "#"
+//		}).text("Callback and close"), $("<a>").attr({
+//			"href" : "#"
+//		}).text("Asynchronous callback and close") ], [ null, function() {
+//			// do nothing
+//			;
+//		}, function() {
+//			var dfd = $.Deferred();
+//
+//			app.notify.loader.show("DefaultLoader", {
+//				"headline" : "Waiting",
+//				"text" : "Close in one second."
+//			});
+//
+//			window.setTimeout(function() {
+//				app.notify.loader.remove();
+//
+//				dfd.resolve();
+//			}, 1000);
+//
+//			return dfd.promise();
+//		} ])
+//	}, plugin_Notification.functions);
+//});
 
 /**
  * app.notify.popup.open("DefaultPopup", {"title":"My Pupup Title","content":"My

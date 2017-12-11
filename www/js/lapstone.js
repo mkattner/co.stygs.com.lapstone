@@ -45,24 +45,27 @@ var app = {
 		// console.log(qualifyer)
 		var qualifyers, currentQualifyer;
 
-		qualifyers = qualifyer.split('.');
-		currentQualifyer = qualifyers.shift();
-		currentObject = currentObject || this;
+		if (currentObject === undefined) {
+			throw new Error("Can't append " + qualifyer + " function to undefined object.");
+		} else {
+			qualifyers = qualifyer.split('.');
+			currentQualifyer = qualifyers.shift();
 
-		if (qualifyers.length === 0) {
+			if (qualifyers.length === 0) {
 
-			app.debug.operation(function() {
-				if (currentObject[currentQualifyer] !== undefined) {
-					app.debug.error(qualifyer);
-				}
-			});
+				app.debug.operation(function() {
+					if (currentObject[currentQualifyer] !== undefined) {
+						app.debug.error(qualifyer);
+					}
+				});
 
-			currentObject[currentQualifyer] = func;
-		}
+				currentObject[currentQualifyer] = func;
+			}
 
-		else {
-			currentObject[currentQualifyer] = currentObject[currentQualifyer] || {};
-			app.func(qualifyers.join('.'), func, currentObject[currentQualifyer]);
+			else {
+				currentObject[currentQualifyer] = currentObject[currentQualifyer] || {};
+				app.func(qualifyers.join('.'), func, currentObject[currentQualifyer]);
+			}
 		}
 	}
 
@@ -92,7 +95,7 @@ function loadPlugins() {
 	// load the plugins file
 	promise = globalLoader.AsyncScriptLoader(url);
 	promise.done(function() {
-		startup.addFunction("                  plugin constructor", app.plugins.constructor, "");
+		startup.addFunction("                  plugin constructor", app.plugins.constructor);
 		dfd.resolve();
 	});
 	promise.fail(function() {
@@ -114,7 +117,7 @@ function loadPages() {
 	// load pages file
 	promise = globalLoader.AsyncScriptLoader(url);
 	promise.done(function() {
-		startup.addFunction("                  page constructor", app.pages.constructor, "");
+		startup.addFunction("                  page constructor", app.pages.constructor);
 		dfd.resolve();
 	});
 	promise.fail(function() {
@@ -326,7 +329,7 @@ function cacheAjax() {
 	return cache;
 }
 
-function enchantPages() {
+function loadJQueryMobile() {
 	var dfd = $.Deferred(), promise;
 
 	promise = globalLoader.AsyncScriptLoader("../ext/jQueryMobile/jquery.mobile.min.js");
@@ -384,6 +387,8 @@ var globalLoader = {
 				globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
+				console.log("             Message: " + errorThrown.message);
+				console.log("             Stack: " + errorThrown.stack);
 				dfd.reject(arguments);
 			}
 		});
@@ -406,6 +411,8 @@ var globalLoader = {
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
 				console.log("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
+				console.log("             Message: " + errorThrown.message);
+				console.log("             Stack: " + errorThrown.stack);
 			}
 		});
 		return json;
@@ -450,6 +457,8 @@ var globalLoader = {
 				globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
+				console.log("             Message: " + errorThrown.message);
+				console.log("             Stack: " + errorThrown.stack);
 				dfd.reject(arguments);
 			}
 		});
@@ -469,6 +478,8 @@ var globalLoader = {
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
 				alert("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
+				console.log("             Message: " + errorThrown.message);
+				console.log("             Stack: " + errorThrown.stack);
 
 			}
 		});
@@ -510,6 +521,8 @@ var globalLoader = {
 				globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
+				console.log("             Message: " + errorThrown.message);
+				console.log("             Stack: " + errorThrown.stack);
 				dfd.reject(arguments);
 			}
 		});
@@ -531,6 +544,8 @@ var globalLoader = {
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
 				alert("Fatal Error: Can't load TEXT. Url: " + url + " Status: " + textStatus);
+				console.log("             Message: " + errorThrown.message);
+				console.log("             Stack: " + errorThrown.stack);
 			}
 		});
 		return text;
@@ -621,6 +636,8 @@ var globalLoader = {
 				globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
+				console.log("             Message: " + errorThrown.message);
+				console.log("             Stack: " + errorThrown.stack);
 				dfd.reject(arguments);
 			}
 		});
@@ -772,52 +789,28 @@ var initialisationPanel = {
 
 var startupDefinition = [ {
 	"status" : "Lapstone startup: loading configuration",
-	"function" : loadConfiguration,
-	"parameter" : "",
-	"result" : "",
-	"image" : "configuration"
+	"function" : loadConfiguration
 }, {
 	"status" : "Lapstone startup: initialisation",
-	"function" : initialisation,
-	"parameter" : "",
-	"result" : "",
-	"image" : "start"
+	"function" : initialisation
 }, {
 	"status" : "Lapstone startup: load plugins",
-	"function" : loadPlugins,
-	"parameter" : "",
-	"result" : "",
-	"image" : "plugins"
+	"function" : loadPlugins
 }, {
 	"status" : "Lapstone startup: load pages",
-	"function" : loadPages,
-	"parameter" : "",
-	"result" : "",
-	"image" : "pages"
+	"function" : loadPages
 }, {
 	"status" : "Lapstone startup: checking for updates",
-	"function" : updateFramework,
-	"parameter" : "",
-	"result" : "",
-	"image" : "updates"
+	"function" : updateFramework
 }, {
 	"status" : "Lapstone startup: load jQueryMobile",
-	"function" : enchantPages,
-	"parameter" : "",
-	"result" : "",
-	"image" : "enchantment"
+	"function" : loadJQueryMobile
 }, {
 	"status" : "Lapstone startup: wait for apache cordova deviceready event",
-	"function" : waitForDeviceready,
-	"parameter" : "",
-	"result" : "",
-	"image" : "deviceready"
+	"function" : waitForDeviceready
 }, {
 	"status" : "Lapstone startup: wait for jQuerysmobile mobileinit event",
-	"function" : waitForMobileinit,
-	"parameter" : "",
-	"result" : "",
-	"image" : "mobileinit"
+	"function" : waitForMobileinit
 } ]
 
 var startup = {
@@ -834,12 +827,10 @@ var startup = {
 	promise : null,
 	images : {},
 
-	addFunction : function(status, func, parameter) {
+	addFunction : function(status, func) {
 		startupDefinition.unshift({
 			"status" : status,
-			"function" : func,
-			"parameter" : parameter,
-			"result" : ""
+			"function" : func
 		});
 	},
 	log : function() {
@@ -862,14 +853,14 @@ var startup = {
 			initialisationPanel.updateProgress();
 
 			startup.log();
-			promise = startup.currentDefinition['function'](startup.currentDefinition['parameter']);
+			promise = startup.currentDefinition['function']();
 
-			promise.done(function(data) {
-				startup.functionDone(data);
+			promise.done(function() {
+				startup.functionDone(arguments);
 			});
 
-			promise.fail(function(error) {
-				startup.functionFail(error);
+			promise.fail(function() {
+				startup.functionFail(arguments);
 			});
 
 			// }, 50);
@@ -880,18 +871,19 @@ var startup = {
 		}
 	},
 
-	functionFail : function(error) {
+	functionFail : function() {
 		var serializedError;
 
 		console.log(" FAILED");
 		startup.log();
 		try {
-			serializedError = JSON.stringify(error);
+			serializedError = JSON.stringify(arguments);
 			console.log("ERROR: " + serializedError);
+			consloe.log(arguments);
 		} catch (e) {
 		}
 
-		startup.dfd.reject();
+		startup.dfd.reject(arguments);
 	},
 
 	initFramework : function() {
@@ -925,7 +917,7 @@ $(document).ready(function() {
 		// delete loadPages;
 		// delete loadConfiguration;
 		// delete updateFramework;
-		// delete enchantPages;
+		// delete loadJQueryMobile;
 		// delete waitForMobileInit;
 		// delete waitForDeviceready;
 		// delete startupDefinition;
