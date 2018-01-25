@@ -76,8 +76,14 @@ app.func("popup.open", function(templateId, templateElementsObject, buttonArray,
 					promise = callbackArray[buttonIndex]($(this), $popup);
 
 					if (typeof promise === "object") {
-						promise.always(function() {
+						promise.done(function() {
 							app.notify.popup.close($popup);
+						});
+						
+						app.debug.operation(function(){
+							promise.fail(function() {
+							app.debug.app("Callback promise of popup button failed. Popup won't be closed. Close it manually.");
+						});
 						});
 					} else {
 						app.notify.popup.close($popup);
