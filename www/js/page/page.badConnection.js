@@ -1,202 +1,156 @@
 //# sourceURL=page.badConnection.js
-/*
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>
- */
-
 /**
- * @author Martin Kattner <martin.kattner@gmail.com>
+ * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
+ * free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions: The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 var page_badConnection = {
-  config: null,
+	config : null,
 
-  include: null,
+	parameter : {},
 
-  include_once: null,
-  parameter: {},
-  elements: null,
+	elements : null,
 
-  constructor: function() {
-    app.debug.debug("page_" + this.config.name + ".constructor()");
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	constructor : function() {
+		app.debug.trace("page_badConnection.constructor()");
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // load the html structure
-  creator: function(container) {
-    app.debug.trace("page_" + this.config.name + ".creator()");
-    app.template.overwrite("#" + container.attr("id"), "JQueryMobilePlainPage");
-    $.each(app.detect.classes.array(), function(key, name) {
-      if (!$('body').hasClass(key)) $('body').addClass(key);
-    });
-    var content = container.find('div[data-role=content]');
-    content.append(function() {
-      return $("<h1>").text("Bad Connection")
-    });
-    content.append(function() {
-      return $("<p>").text("Check your internet connection. You will be redirected after your connection is back again.")
-    });
+	creator : function(container) {
+		app.debug.trace("page_" + this.config.name + ".creator()");
+		$.each(app.detect.classes.array(), function(key, name) {
+			if (!$('body').hasClass(key))
+				$('body').addClass(key);
+		});
 
-  },
+		this.elements.content.append(function() {
+			return $("<div>").addClass("configuration").append(function() {
+				return $("<h1>").text("Bad Connection")
+			}).append(function() {
+				return $("<p>").text("Check your internet badConnection. You will be redirected after your badConnection is back again.")
+			});
+		})
 
-  async: {
-    promise: null,
+	},
 
-    result: null,
+	async : {
+		promise : null,
 
-    elements: null,
+		result : null,
 
-    creator: function(container) {
-      app.debug.trace("page_##template.async.creator()");
-      var dfd = $.Deferred();
-      dfd.resolve();
-      return dfd.promise();
-    },
+		elements : null,
 
-    call: function(container) {
-      app.debug.trace("page_##template.async.call()");
-      return app.rc.getJson();
-    },
+		creator : function(container) {
+			app.debug.trace("page_badConnection.async.creator()");
+			var dfd = $.Deferred();
+			dfd.resolve();
+			return dfd.promise();
+		},
 
-    done: function(container) {
-      app.debug.trace("page_##template.async.done()");
-    },
+		call : function(container) {
+			app.debug.trace("page_badConnection.async.call()");
+			return app.rc.getJson();
+		},
 
-    fail: function(container) {
-      app.debug.trace("page_##template.async.fail()");
-      alert("WS fails: " + JSON.stringify(this.result));
-    },
+		done : function(container) {
+			app.debug.trace("page_badConnection.async.done()");
+		},
 
-    always: function(container) {
-      app.debug.trace("page_##template.async.always()");
-    },
+		fail : function(container) {
+			app.debug.trace("page_badConnection.async.fail()");
+			alert("WS fails: " + JSON.stringify(this.result));
+		},
 
-    abort: function(container) {
-      app.debug.trace("page_##template.async.abort()");
-    }
-  },
+		always : function(container) {
+			app.debug.trace("page_badConnection.async.always()");
+		},
 
-  // set the jquery events
-  setEvents: function(container) {
-    app.debug.trace("page_" + this.config.name + ".setEvents()");
-    $(this.config.pageId).on("connectionisalive", function(event, duration) {
-    	app.nav.back();
-    });
-  },
+		abort : function(container) {
+			app.debug.trace("page_badConnection.async.abort()");
+		}
+	},
+	// set the jquery events
 
-  functions: {},
+	setEvents : function(container) {
+		app.debug.trace("page_badConnection.setEvents()");
 
-  events: {
+	},
 
-    // Triggered twice during the page change cyle: First prior to any page
-    // loading or transition and next after page loading completes
-    // successfully,
-    // but before the browser history has been modified by the navigation
-    // process.
-    pagebeforechange: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforechange()");
+	functions : {},
 
-    },
+	events : {
 
-    // Triggered on the page being initialized, before most plugin
-    // auto-initialization occurs.
-    pagebeforecreate: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforecreate()");
+		pagebeforechange : function(event, container) {
+			app.debug.trace("page_badConnection.pagebeforechange()");
 
-    },
+		},
 
-    // Triggered on the ���fromPage��� we are transitioning away from,
-    // before
-    // the
-    // actual transition animation is kicked off.
-    pagebeforehide: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforehide()");
+		pagebeforecreate : function(event, container) {
+			app.debug.trace("page_badConnection.pagebeforecreate()");
+		},
 
-    },
+		pagebeforehide : function(event, container) {
+			app.debug.trace("page_badConnection.pagebeforehide()");
+		},
 
-    // Triggered before any load request is made.
-    pagebeforeload: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforeload()");
+		pagebeforeload : function(event, container) {
+			app.debug.trace("page_badConnection.pagebeforeload()");
+		},
 
-    },
+		pagebeforeshow : function(event, container) {
+			app.debug.trace("page_badConnection.pagebeforeshow()");
+		},
 
-    // Triggered on the ���toPage��� we are transitioning to, before the
-    // actual
-    // transition animation is kicked off.
-    pagebeforeshow: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagebeforeshow()");
+		pagechange : function(event, container) {
+			app.debug.trace("page_badConnection.pagechange()");
+		},
 
-    },
+		pagechangefailed : function(event, container) {
+			app.debug.trace("page_badConnection.pagechangefailed()");
+		},
 
-    // This event is triggered after the changePage() request has finished
-    // loading the page into the DOM and all page transition animations have
-    // completed.
-    pagechange: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagechange()");
+		pagecreate : function(event, container) {
+			app.debug.trace("page_badConnection.pagecreate()");
+		},
 
-    },
+		pagehide : function(event, container) {
+			app.debug.trace("page_badConnection.pagehide()");
+		},
 
-    // Triggered when the changePage() request fails to load the page.
-    pagechangefailed: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagechangefailed()");
+		pageinit : function(event, container) {
+			app.debug.trace("page_badConnection.pageinit()");
+		},
 
-    },
+		pageload : function(event, container) {
+			app.debug.trace("page_badConnection.pageload()");
+		},
 
-    // Triggered when the page has been created in the DOM (via ajax or
-    // other)
-    // and after all widgets have had an opportunity to enhance the
-    // contained
-    // markup.
-    pagecreate: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagecreate()");
+		pageloadfailed : function(event, container) {
+			app.debug.trace("page_badConnection.pageloadfailed()");
+		},
 
-    },
+		pageremove : function(event, container) {
+			app.debug.trace("page_badConnection.pageremove()");
+		},
 
-    // Triggered on the ���fromPage��� after the transition animation has
-    // completed.
-    pagehide: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pagehide()");
-
-    },
-
-    // Triggered on the page being initialized, after initialization occurs.
-    pageinit: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pageinit()");
-
-    },
-
-    // Triggered after the page is successfully loaded and inserted into the
-    // DOM.
-    pageload: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pageload()");
-
-    },
-
-    // Triggered if the page load request failed.
-    pageloadfailed: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pageloadfailed()");
-
-    },
-
-    // Triggered just before the framework attempts to remove an external
-    // page
-    // from the DOM.
-    pageremove: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pageremove()");
-
-    },
-
-    // Triggered on the ���toPage��� after the transition animation has
-    // completed.
-    pageshow: function(event, container) {
-      app.debug.trace("page_" + $(container).attr('id') + ".pageshow()");
-
-    }
-  }
+		pageshow : function(event, container) {
+			app.debug.trace("page_badConnection.pageshow()");
+		}
+	}
 };
