@@ -23,7 +23,6 @@ app["pages"] = {
 	config : null,
 	pageNames : [],
 	includeOnce : [],
-	refreshInterval : null,
 
 	// history of pages
 	history : [],
@@ -168,12 +167,6 @@ app["pages"] = {
 
 				if (currentPage.config.globalPage == undefined)
 					console.warn("The page: " + pageName + " has no 'config.globalPage : []' property.");
-
-				if (currentPage.config.contentRefresh === undefined)
-					console.warn("The page: " + pageName + " has no 'config.contentRefresh' property.");
-
-				if (currentPage.config.contentRefreshInterval === undefined)
-					console.warn("The page: " + pageName + " has no 'config.contentRefreshInterval' property.");
 
 				if (currentPage.config.asyncLoading === undefined)
 					console.warn("The page: " + pageName + " has no 'config.asyncLoading' property.");
@@ -826,10 +819,6 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + $container + ")");
 				window['page_' + $container.attr('id')].events.pagebeforehide(event, $container);
 
-				if (app.pages.refreshInterval != null) {
-					clearInterval(app.pages.refreshInterval);
-					app.pages.refreshInterval = null;
-				}
 			},
 			pagebeforeload : function(event, $container) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforeload(" + event + ", " + $container + ")");
@@ -841,19 +830,6 @@ app["pages"] = {
 
 				window['page_' + $container.attr('id')].events.pagebeforeshow(event, $container);
 
-				if (window['page_' + $container.attr('id')].config.contentRefresh == true) {
-					app.debug.debug("plugin.eventFunctions.lapstonePage.pagebeforeshow: set refresh interval every " + window['page_' + $container.attr('id')].config.contentRefreshInterval + " ms");
-
-					app.pages.refreshInterval = window.setInterval(function() {
-						// $().empty();
-
-						$('div[data-role=content]').children().fadeOut(500).promise().then(function() {
-							$('div[data-role=content]').empty();
-							window['page_' + $container.attr('id')].creator($container);
-						});
-
-					}, window['page_' + $container.attr('id')].config.contentRefreshInterval);
-				}
 			},
 			pagechange : function(event, $container) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + $container + ")");
