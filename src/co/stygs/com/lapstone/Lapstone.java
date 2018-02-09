@@ -58,6 +58,10 @@ public class Lapstone {
 					PrintHelp();
 				}
 
+				else {
+					System.out.println("Deploy done!");
+				}
+
 				break;
 
 			case "release":
@@ -68,6 +72,10 @@ public class Lapstone {
 
 				else if (!Release.ReleaseLapstone(argMap)) {
 					PrintHelp();
+				}
+
+				else {
+					System.out.println("Release done!");
 				}
 
 				break;
@@ -97,6 +105,10 @@ public class Lapstone {
 					PrintHelp();
 				}
 
+				else {
+					System.out.println("Page done!");
+				}
+
 				break;
 			case "template":
 				if (argMap.get("path") == null) {
@@ -121,6 +133,10 @@ public class Lapstone {
 
 				else if (!Template.TemplateLapstone(argMap)) {
 					PrintHelp();
+				}
+
+				else {
+					System.out.println("Template done!");
 				}
 				break;
 			case "plugin":
@@ -149,6 +165,10 @@ public class Lapstone {
 					PrintHelp();
 				}
 
+				else {
+					System.out.println("Plugin done!");
+				}
+
 				break;
 
 			default:
@@ -156,6 +176,7 @@ public class Lapstone {
 				PrintHelp();
 			}
 		}
+
 	}
 
 	public static void PrintHelp() {
