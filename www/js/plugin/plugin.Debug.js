@@ -644,8 +644,19 @@ var plugin_Debug = {
 		 */
 		validate : function(object, type, message) {
 			message = message || "No specific message."
+
 			if (type) {
-				if (type === "array") {
+				if (type === "boolean") {
+					if (object === false) {
+						throw new Error("Validation problem. Please look at the stacktrace; " + message);
+					}
+
+					else if (object === true) {
+						return true;
+					}
+				}
+
+				else if (type === "array") {
 					if (!Array.isArray(object)) {
 						plugin_Debug.functions.fatal();
 						throw new Error("Validation problem. Please look at the stacktrace; " + message);

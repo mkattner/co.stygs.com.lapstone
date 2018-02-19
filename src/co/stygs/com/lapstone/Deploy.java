@@ -35,19 +35,21 @@ public class Deploy {
 			// ********************************************************************
 			// update cordova version
 			ObjectMapper objectMapper = new ObjectMapper();
-			File configuration = new File(www, "js/lapstone.json");
-			LapstoneJSON lapstoneJson;
 
-			lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
+			if (argMap.get("updateVersion") != null) {
+				File configuration = new File(www, "js/lapstone.json");
+				LapstoneJSON lapstoneJson;
 
-			String appVersion = (String) lapstoneJson.getVersion().get("lapstone");
-			Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
-			buildVersion++;
-			String newVersion = ((String) lapstoneJson.getVersion().get("lapstone")).substring(0, ((String) lapstoneJson.getVersion().get("lapstone")).lastIndexOf(".") + 1)
-					+ buildVersion.toString();
-			lapstoneJson.getVersion().put("lapstone", newVersion);
-			objectMapper.writeValue(configuration, lapstoneJson);
+				lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
+				String appVersion = (String) lapstoneJson.getVersion().get("lapstone");
+				Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
+				buildVersion++;
+				String newVersion = ((String) lapstoneJson.getVersion().get("lapstone")).substring(0, ((String) lapstoneJson.getVersion().get("lapstone")).lastIndexOf(".") + 1)
+						+ buildVersion.toString();
+				lapstoneJson.getVersion().put("lapstone", newVersion);
+				objectMapper.writeValue(configuration, lapstoneJson);
+			}
 			// ********************************************************************
 			// Copy everything if not exist
 			FileUtils.copyDirectory(www, www_debug, new FileFilter() {
