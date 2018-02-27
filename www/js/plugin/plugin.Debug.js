@@ -648,11 +648,15 @@ var plugin_Debug = {
 			if (type) {
 				if (type === "boolean") {
 					if (object === false) {
-						throw new Error("Validation problem. Please look at the stacktrace; " + message);
+						return true;
 					}
 
 					else if (object === true) {
 						return true;
+					}
+					
+					else{
+						throw new Error("Validation problem. Please look at the stacktrace; " + message);
 					}
 				}
 
