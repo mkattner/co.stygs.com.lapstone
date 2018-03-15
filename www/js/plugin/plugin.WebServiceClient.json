@@ -17,10 +17,10 @@
 			"active": true,
 			"pingPath": "",
 			"mappings": {
-				"post": "application/json",
-				"get": "application/json",
-				"put": "application/json",
-				"delete": "application/json"
+				"post": "application/json;charset=UTF-8",
+				"get": "application/json;charset=UTF-8",
+				"put": "application/json;charset=UTF-8",
+				"delete": "application/json;charset=UTF-8"
 			},
 			"endpoints": [
 				{

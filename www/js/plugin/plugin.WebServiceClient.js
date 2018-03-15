@@ -130,7 +130,7 @@ var plugin_WebServiceClient = {
 			wsd.dataType = plugin_WebServiceClient.config.server[wsd.server].mappings[wsd.method.toLowerCase()];
 		}
 
-		switch (wsd.dataType) {
+		switch (wsd.dataType.split(";")[0]) {
 
 		case "application/json":
 			app.debug.trace("plugin_WebServiceClient.getAjax() - dataType: application/json");
@@ -149,7 +149,7 @@ var plugin_WebServiceClient = {
 			wsd.contentType = "application/x-www-form-urlencoded";
 		}
 
-		switch (wsd.contentType) {
+		switch (wsd.contentType.split(";")[0]) {
 
 		case "text/plain":
 			app.debug.trace("plugin_WebServiceClient.getAjax() - contentType: text/plain");
