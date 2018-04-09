@@ -90,18 +90,25 @@ var plugin_HtmlTemplates = {
 		app.debug.trace("plugin_HtmlTemplates.pageSpecificEvents()");
 	},
 
-	parseLess : function(data) {
+	parseLess : function(data, attempt) {
 		var css;
-		try {
-			less.render(data, {
-				filename : "../files/template/xxx.less"
-			}, function(error, output) {
-				css = output.css;
-				// output.imports = array of string filenames of the imports
-				// referenced
-			});
-		} catch (e) {
-			alert(e);
+		attempt = attempt || 0;
+
+		if (attempt < 3)
+			try {
+				less.render(data, {
+					filename : "../files/template/xxx.less"
+				}, function(error, output) {
+					css = output.css;
+					// output.imports = array of string filenames of the imports
+					// referenced
+				});
+			} catch (e) {
+				attempt++;
+				css = plugin_HtmlTemplates.parseLess(data, attempt)
+			}
+		else {
+			alert("less error")
 		}
 		return css;
 	},
