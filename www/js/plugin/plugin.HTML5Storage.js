@@ -30,6 +30,10 @@ var plugin_HTML5Storage = {
 		empty : "_t_empty_"
 	},
 
+	storage : {
+		objectStorage : {}
+	},
+
 	constructor : function() {
 		var dfd = $.Deferred();
 
@@ -219,7 +223,7 @@ var plugin_HTML5Storage = {
 		currentKey = keyArray[0];
 
 		if (currentKey) {
-			app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth >0");
+			app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth > 0");
 
 			// it's an empty array
 			if (currentKey === plugin_HTML5Storage.type.array) {
@@ -240,7 +244,7 @@ var plugin_HTML5Storage = {
 
 				if (keyArray.length == 1) {
 					app.debug.debug("plugin_HTML5Storage.setDeepX() - case: depth 1; push value to array: " + value);
-					object.push(value)
+					object[arrayIndex] = value;
 				}
 
 				else {
@@ -579,6 +583,9 @@ var plugin_HTML5Storage = {
 				}
 
 				// app.store.localStorage.show();
+
+				plugin_HTML5Storage.storage.objectStorage[name] = object;
+
 				return true;
 			},
 
@@ -587,7 +594,14 @@ var plugin_HTML5Storage = {
 
 				name = name;
 
-				var object = {};
+				var object;
+
+				if ((object = plugin_HTML5Storage.storage.objectStorage[name]) !== undefined) {
+					return object;
+				} else {
+					object = {};
+				}
+
 				$.each(window.localStorage, function(key, value) {
 					var storageKey, storageValue, compNameOfLocalStorage;
 					app.debug.debug("plugin_HTML5Storage.functions.localStorage.getObject() - element: " + key + " = " + value);
@@ -607,9 +621,10 @@ var plugin_HTML5Storage = {
 					}
 				});
 
-				if (object[name] != undefined)
+				if (object[name] != undefined) {
+					plugin_HTML5Storage.storage.objectStorage[name]=object[name];
 					return object[name];
-				else {
+				} else {
 					return null;
 				}
 			},
