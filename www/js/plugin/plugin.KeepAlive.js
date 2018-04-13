@@ -81,8 +81,12 @@ var plugin_KeepAlive = {
 		app.debug.trace("plugin_KeepAlive.eventTriggering()");
 		if (!plugin_KeepAlive.config.isAlive) {
 			$("[data-role=page]").trigger("connectionisdead");
-		} else if (plugin_KeepAlive.config.isAlive) {
+			$(window).trigger("connectionisdead");
+		} 
+		
+		else if (plugin_KeepAlive.config.isAlive) {
 			$("[data-role=page]").trigger("connectionisalive");
+			$(window).trigger("connectionisalive");
 		}
 	},
 
