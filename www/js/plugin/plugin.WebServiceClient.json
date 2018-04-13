@@ -9,7 +9,7 @@
 	"useHeaderToken": false,
 	"headerToken": {
 		"key": "Authorization",
-		"value": "data-html5-themis-token"
+		"value": "data-app-token"
 	},
 	"defaultServer": "template",
 	"server": {
