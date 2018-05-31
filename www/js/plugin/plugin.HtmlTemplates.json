@@ -37,6 +37,21 @@
 				"close": ".defaulPopupButtonClose"
 			}
 		},
+		
+		
+		"DefaultPopupMini": {
+			"content": "../files/template/DefaultPopupMini.html",
+			"style": "../files/template/DefaultPopupMini.css.less",
+			"elements": {
+				"buttons": ".defaultPopupButtonContainer",
+				"content": ".defaultPopupContent",
+				"title": ".defaultPopupTitle",
+				"close": ".defaulPopupButtonClose"
+			}
+		},
+		
+		
+		
 		"JQueryMobilePlainPage": {
 			"content": "../files/template/JQueryMobilePlainPage.html",
 			"style": "../files/template/JQueryMobilePlainPage.css.less",

@@ -17,6 +17,7 @@ public class Lapstone {
 	}
 
 	// public static String workingDirectory = System.getProperty("user.dir");
+	public static Map<String, String> argMap;
 
 	public static void main(String[] args) throws Exception {
 		Compressor.logger.addHandler(new ConsoleHandler());
@@ -24,7 +25,7 @@ public class Lapstone {
 		org.apache.log4j.BasicConfigurator.configure();
 
 		System.out.println("Running LAPSTONE with parameters:");
-		Map<String, String> argMap = new HashMap<String, String>();
+		argMap = new HashMap<String, String>();
 		for (String arg : args) {
 			System.out.println(arg);
 		}
