@@ -7,9 +7,10 @@
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
 
-package com.yahoo.platform.yui.compressor;
+package com.yahoo.platform.yui.compressor.impl;
 
 import java.lang.reflect.Method;
+
 
 public class Bootstrap {
 

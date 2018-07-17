@@ -6,7 +6,7 @@
  * The copyrights embodied in the content of this file are licensed
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
-package com.yahoo.platform.yui.compressor;
+package com.yahoo.platform.yui.compressor.impl;
 
 public class JavaScriptToken {
 

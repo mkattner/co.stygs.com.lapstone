@@ -6,7 +6,7 @@
  * The copyrights embodied in the content of this file are licensed
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
-package com.yahoo.platform.yui.compressor;
+package com.yahoo.platform.yui.compressor.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 
 public class JarClassLoader extends ClassLoader {
 

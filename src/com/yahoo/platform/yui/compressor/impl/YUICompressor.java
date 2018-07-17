@@ -6,11 +6,12 @@
  * The copyrights embodied in the content of this file are licensed
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
-package com.yahoo.platform.yui.compressor;
+package com.yahoo.platform.yui.compressor.impl;
 
 import jargs.gnu.CmdLineParser;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
+
 
 import java.io.*;
 import java.nio.charset.Charset;

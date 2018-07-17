@@ -13,9 +13,10 @@ import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 
-import com.yahoo.platform.yui.compressor.CssCompressor;
-import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
-import com.yahoo.platform.yui.compressor.YUICompressor;
+import com.yahoo.platform.yui.compressor.impl.CssCompressor;
+import com.yahoo.platform.yui.compressor.impl.JavaScriptCompressor;
+import com.yahoo.platform.yui.compressor.impl.YUICompressor;
+
 
 public class Compressor {
 
@@ -75,8 +76,8 @@ public class Compressor {
 		try {
 
 			System.out.println();
-			System.out.println("Compress js: " + inputFilename);
-			System.out.println("  Rename to: " + outputFilename);
+			System.out.println("    Compress js: " + inputFilename);
+			System.out.println("      Rename to: " + outputFilename);
 
 			in = new InputStreamReader(new FileInputStream(inputFilename), o.charset);
 
@@ -86,9 +87,11 @@ public class Compressor {
 
 			out = new OutputStreamWriter(new FileOutputStream(outputFilename), o.charset);
 			compressor.compress(out, o.lineBreakPos, o.munge, o.verbose, o.preserveAllSemiColons, o.disableOptimizations);
-		}
-
-		finally {
+			System.out.println("--- Compression done!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
 		}
@@ -100,6 +103,10 @@ public class Compressor {
 		Writer out = null;
 
 		try {
+			System.out.println();
+			System.out.println("    Compress css: " + inputFilename);
+			System.out.println("       Rename to: " + outputFilename);
+
 			in = new InputStreamReader(new FileInputStream(inputFilename), o.charset);
 
 			CssCompressor compressor = new CssCompressor(in);
@@ -109,9 +116,13 @@ public class Compressor {
 
 			out = new OutputStreamWriter(new FileOutputStream(outputFilename), o.charset);
 			compressor.compress(out, 0);
-		}
 
-		finally {
+			System.out.println("--- Compression done!");
+			System.out.println();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
 		}

@@ -6,11 +6,12 @@
  * The copyrights embodied in the content of this file are licensed
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
-package com.yahoo.platform.yui.compressor;
+package com.yahoo.platform.yui.compressor.impl;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
 
 class ScriptOrFnScope {
 
