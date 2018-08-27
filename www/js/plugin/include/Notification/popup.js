@@ -84,6 +84,8 @@ app.func("popup.open", function(templateId, templateElementsObject, buttonArray,
 								app.debug.app("Callback promise of popup button failed. Popup won't be closed. Close it manually.");
 							});
 						});
+					} else if (promise === false) {
+						; // do not close popup
 					} else {
 						app.notify.popup.close($popup);
 					}

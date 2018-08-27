@@ -3,6 +3,7 @@ package co.stygs.com.lapstone.objects.json.plugin;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 
@@ -69,11 +70,16 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 			Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
 
 			System.out.println("Add: " + currentFile.getAbsolutePath());
+			if (currentFile.getAbsolutePath().contains("ext"))
+				Compressor.logger.setLevel(Level.OFF);
+			else
+				Compressor.logger.setLevel(Level.ALL);
+
 			combinedJavascript += FileUtils.readFileToString(currentFile) + "\n\n";
 
 			currentFile.delete();
 		}
-
+		Compressor.logger.setLevel(Level.ALL);
 		File allJavascriptFile = new File(www, "files/all.javascript." + lapstoneJson.getVersion().get("app") + ".js");
 		System.out.println("Wirte combined script file: " + allJavascriptFile.getAbsolutePath());
 		FileUtils.write(allJavascriptFile, combinedJavascript);
