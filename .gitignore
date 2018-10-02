@@ -39,3 +39,4 @@ log/
 target/
 
 build/
+/bin/
