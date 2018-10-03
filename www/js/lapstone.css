@@ -1,3 +1,14 @@
+@font-face {
+	font-family: 'Lapstone';
+	src: url('../js/lapstone.ttf');
+	font-weight: normal;
+	font-style: normal;
+}
+
+#LAPSTONE * {
+	font-family: "Lapstone";
+}
+
 #LAPSTONE {
 	position: fixed;
 	height: 100%;
@@ -9,7 +20,6 @@
 	z-index: 1000;
 }
 
-}
 #LAPSTONE>div#lapstone-content {
 	position: relative;
 	top: 15%;
