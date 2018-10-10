@@ -1,7 +1,6 @@
 {
-	"name":"jQueryExtend",
-	"shortname":"jExt",
-	"include":[
-		
-	]
+	"name": "jQueryExtend",
+	"shortname": "jExt",
+	"include": [],
+	"dependency": []
 }

@@ -1,7 +1,6 @@
 {
-	"name":"WebSocketClient",
-	"shortname":"wsoc",
-	"include":[
-		
-	]
+	"name": "WebSocketClient",
+	"shortname": "wsoc",
+	"include": [],
+	"dependency": []
 }

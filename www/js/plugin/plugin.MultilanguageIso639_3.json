@@ -2,6 +2,7 @@
 	"name": "MultilanguageIso639_3",
 	"shortname": "lang",
 	"include": [],
+	"dependency": [],
 	"defaultLanguage": "deu",
 	"availableLanguages": {
 		"deu": [

@@ -1,32 +1,30 @@
 {
-	"name":"WebServiceError",
-	"shortname":"wse",
-	"include":[
-		
-	],
-	"wseFiles":[
+	"name": "WebServiceError",
+	"shortname": "wse",
+	"include": [],
+	"dependency": [],
+	"wseFiles": [
 		"../files/wse/wse.http.json",
 		"../files/wse/wse.moodle.json"
 	],
-	"actions":{
-		"redirect":"",
-		"logout":"",
-		"alert":"",
-		"confirmation":""
+	"actions": {
+		"redirect": "",
+		"logout": "",
+		"alert": "",
+		"confirmation": ""
 	},
-	"errorKeys":[
+	"errorKeys": [
 		"error",
 		"status",
 		"exception"
 	],
-	"strictErrorKeys":[
+	"strictErrorKeys": [
 		"error"
 	],
-	"wse":{
-		"Template WebServiceErrorDefinition":{
-			"description":"Bad Request",
-			"action":""
+	"wse": {
+		"Template WebServiceErrorDefinition": {
+			"description": "Bad Request",
+			"action": ""
 		}
-		
 	}
 }

@@ -1,10 +1,9 @@
 {
-	"name":"Actions",
-	"shortname":"actions",
-	"include":[
-		
-	],
-	"actionFiles":[
+	"name": "Actions",
+	"shortname": "actions",
+	"include": [],
+	"dependency": [],
+	"actionFiles": [
 		"../files/actions/actions.js"
 	]
 }

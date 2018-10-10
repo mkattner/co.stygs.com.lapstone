@@ -1,8 +1,7 @@
 {
-	"name":"Detector",
-	"shortname":"detect",
-	"include":[
-		
-	],
-	"addCssClassesToBodyTag":true
+	"name": "Detector",
+	"shortname": "detect",
+	"include": [],
+	"dependency": [],
+	"addCssClassesToBodyTag": true
 }

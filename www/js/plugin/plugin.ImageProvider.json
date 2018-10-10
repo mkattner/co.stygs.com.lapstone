@@ -1,11 +1,12 @@
 {
-	"name":"ImageProvider",
-	"shortname":"img",
-	"include":[
-		
-	],
-	"imgdFiles":[
+	"name": "ImageProvider",
+	"shortname": "img",
+	"include": [],
+	"dependency": [],
+	"imgdFiles": [
 		"../files/imgd/imgd.template.json"
 	],
-	"images":{}
+	"images": {
+		
+	}
 }

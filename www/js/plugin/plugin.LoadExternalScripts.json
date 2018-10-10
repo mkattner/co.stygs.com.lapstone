@@ -1,18 +1,16 @@
 {
-	"name":"LoadExternalScripts",
-	"shortname":"load",
-	"include":[
-		
-	],
-	"styleOrdered":[
+	"name": "LoadExternalScripts",
+	"shortname": "load",
+	"include": [],
+	"dependency": [],
+	"styleOrdered": [
 		"../ext/jQueryMobile/jquery.mobile.min.css",
 		"../css/fonts.css.less",
 		"../css/global.css.less"
 	],
-	"javascriptOrdered":[
+	"javascriptOrdered": [
 		"../ext/jQueryUi/jquery-ui.min.js",
 		"../ext/jQueryUiTouchPunch/jquery.ui.touch-punch.min.js",
 		"../ext/moment/moment.js"
 	]
-	
 }

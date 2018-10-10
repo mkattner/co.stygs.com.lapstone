@@ -98,6 +98,11 @@ app["plugins"] = {
       var currentPlugin;
 
       currentPlugin = window["plugin_" + pluginName];
+
+      if (currentPlugin.config.dependency === undefined) {
+        console.error("Plugin " + pluginName + " has no dependency array in it's configuration.")
+        throw "Initialization error"
+      }
     });
 
     dfd = $.Deferred()
@@ -121,13 +126,15 @@ app["plugins"] = {
       $.each(app.plugins.config, function(pluginName, loadPlugin) {
         var currentPlugin;
 
-        currentPlugin = window["plugin_" + pluginName];
-
         if (loadPlugin) {
-          // TODO validation could be in include. Do not use it at that point.
-          app.debug.validate(currentPlugin.config.include);
+          currentPlugin = window["plugin_" + pluginName];
 
-          $.each(currentPlugin.config.include, function(index, includeFile) {
+          if (currentPlugin.config.include === undefined) {
+            console.error("Plugin " + pluginName + " has no include array in it's configuration.");
+            throw "Initialization error";
+          }
+
+          $.each(currentPlugin.config.include, function(includeIndex, includeFile) {
             pluginIncludePromises.push(globalLoader.AsyncScriptLoader("../js/plugin/include/" + pluginName + "/" + includeFile))
           });
 
@@ -176,8 +183,8 @@ app["plugins"] = {
     currentPlugin = window["plugin_" + pluginName];
 
     if (currentPlugin == undefined) {
-      alert("Fatal error: Plugin class is not defined: plugin_" + pluginName);
-      return;
+      console.error("Fatal error: Plugin class is not defined: plugin_" + pluginName);
+      throw "Initialization error";
     }
 
     promiseConfiguration = app.plugins.loadPluginConfiguration(pluginName);
@@ -185,13 +192,13 @@ app["plugins"] = {
     promiseConfiguration.done(function() { // check the config:
       // name
       if (currentPlugin.config.name == undefined) {
-        alert("Fatal error: The property 'name' is not defined in JSON file: ../js/plugin." + pluginName + ".json")
-        return false;
+        console.error("Fatal error: The property 'name' is not defined in JSON file: ../js/plugin." + pluginName + ".json")
+        throw "Initialization error";
       }
       // check the config: shortname
       if (currentPlugin.config.shortname == undefined) {
-        alert("Fatal error: The property 'shortname' is not defined in JSON file: ../js/plugin." + pluginName + ".json")
-        return false;
+        console.error("Fatal error: The property 'shortname' is not defined in JSON file: ../js/plugin." + pluginName + ".json")
+        throw "Initialization error";
       }
 
       // call the plugin's contructor
@@ -200,7 +207,7 @@ app["plugins"] = {
 
       promise.done(function() {
         // attach plugin's public functions to app object
-        app[currentPlugin.config.shortname] = window["plugin_" + pluginName].functions;
+        app[currentPlugin.config.shortname] = currentPlugin.functions;
 
         // attach plugin's configuration to the app object
         app[currentPlugin.config.shortname]["config"] = currentPlugin.config;
@@ -248,6 +255,7 @@ app["plugins"] = {
       promiseOfPromises_js.done(function() {
         dfd.resolve();
       });
+      
       promiseOfPromises_js.fail(function() {
         dfd.reject();
       });
@@ -267,6 +275,7 @@ app["plugins"] = {
         promiseOfPromises_func.done(function() {
           dfd.resolve();
         });
+        
         promiseOfPromises_func.fail(function() {
           dfd.reject()
         });

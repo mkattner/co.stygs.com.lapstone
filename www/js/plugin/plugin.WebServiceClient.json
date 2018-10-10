@@ -2,6 +2,7 @@
 	"name": "WebServiceClient",
 	"shortname": "wsc",
 	"include": [],
+	"dependency": [],
 	"defaultWebServiceTimeoutMs": 5000,
 	"defaultWebServiceMethod": "post",
 	"defaultWebServiceType": "json",

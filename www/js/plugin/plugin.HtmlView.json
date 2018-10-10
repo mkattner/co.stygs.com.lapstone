@@ -1,8 +1,7 @@
 {
-	"name":"HtmlView",
-	"shortname":"view",
-	"include":[
-		
-	],
-	"multilanguageContext":"view"
+	"name": "HtmlView",
+	"shortname": "view",
+	"include": [],
+	"dependency": [],
+	"multilanguageContext": "view"
 }

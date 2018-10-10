@@ -2,6 +2,7 @@
 	"name": "Feedback",
 	"shortname": "fb",
 	"include": [],
+	"dependency": [],
 	"allowAnonymousFeedback": false,
 	"webserviceName": "PluginFeedbackWebservice",
 	"webserviceDefinition": {

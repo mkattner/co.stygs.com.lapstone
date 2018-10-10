@@ -1,9 +1,8 @@
 {
-	"name":"Session",
-	"shortname":"sess",
-	"include":[
-		
-	],
-	"loginHtml5StorageKey":"session-loggedin",
-	"sessionHTML5StoragePrefix":"globalSession"
+	"name": "Session",
+	"shortname": "sess",
+	"include": [],
+	"dependency": [],
+	"loginHtml5StorageKey": "session-loggedin",
+	"sessionHTML5StoragePrefix": "globalSession"
 }

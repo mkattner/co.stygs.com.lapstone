@@ -9,6 +9,7 @@
 		"getSingleJsonAsync.js",
 		"getWebSocket.js"
 	],
+	"dependency": [],
 	"useKeepAlive": true,
 	"global_getJsonWithLoader_loaderTemplate": "DefaultLoader",
 	"global_getJsonWithLoader_multilanguageContext": "webservice loader",

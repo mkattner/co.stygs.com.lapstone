@@ -1,15 +1,14 @@
 {
-	"name":"OAuth",
-	"shortname":"oa",
-	"include":[
-		
-	],
-	"facebook":{
-		"error_name":"error_code",
-		"token_name":"code"
+	"name": "OAuth",
+	"shortname": "oa",
+	"include": [],
+	"dependency": [],
+	"facebook": {
+		"error_name": "error_code",
+		"token_name": "code"
 	},
-	"dropbox":{
-		"error_name":"error",
-		"token_name":"oauth_token"
+	"dropbox": {
+		"error_name": "error",
+		"token_name": "oauth_token"
 	}
 }

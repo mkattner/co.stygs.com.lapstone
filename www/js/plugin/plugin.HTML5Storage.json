@@ -1,7 +1,6 @@
 {
-	"name":"HTML5Storage",
-	"shortname":"store",
-	"include":[
-		
-	]
+	"name": "HTML5Storage",
+	"shortname": "store",
+	"include": [],
+	"dependency": []
 }

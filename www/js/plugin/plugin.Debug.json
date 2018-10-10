@@ -1,23 +1,22 @@
 {
-	"name":"Debug",
-	"shortname":"debug",
-	"include":[
-		
-	],
-	"debugDevice":true,
-	"debugLevels":{
-		"TRACE":1,
-		"DEBUG":2,
-		"TODO":3,
-		"INFO":4,
-		"EVENT":5,
-		"APP":6,
-		"WARN":7,
-		"ERROR":8,
-		"FATAL":9,
-		"OFF":10
+	"name": "Debug",
+	"shortname": "debug",
+	"include": [],
+	"dependency": [],
+	"debugDevice": true,
+	"debugLevels": {
+		"TRACE": 1,
+		"DEBUG": 2,
+		"TODO": 3,
+		"INFO": 4,
+		"EVENT": 5,
+		"APP": 6,
+		"WARN": 7,
+		"ERROR": 8,
+		"FATAL": 9,
+		"OFF": 10
 	},
-	"consoleLevel":[
+	"consoleLevel": [
 		"TODO",
 		"INFO",
 		"EVENT",
@@ -26,7 +25,7 @@
 		"ERROR",
 		"FATAL"
 	],
-	"logLevel":[
+	"logLevel": [
 		"WARN",
 		"ERROR",
 		"FATAL"

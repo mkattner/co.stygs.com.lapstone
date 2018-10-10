@@ -2,6 +2,7 @@
 	"name": "HtmlTemplates",
 	"shortname": "template",
 	"include": [],
+	"dependency": [],
 	"templates": {
 		"JQueryMobilePopupTrialog": {
 			"content": "../files/template/JQueryMobilePopupTrialog.html",
@@ -37,8 +38,6 @@
 				"close": ".defaulPopupButtonClose"
 			}
 		},
-		
-		
 		"DefaultPopupMini": {
 			"content": "../files/template/DefaultPopupMini.html",
 			"style": "../files/template/DefaultPopupMini.css.less",
@@ -49,9 +48,6 @@
 				"close": ".defaulPopupButtonClose"
 			}
 		},
-		
-		
-		
 		"JQueryMobilePlainPage": {
 			"content": "../files/template/JQueryMobilePlainPage.html",
 			"style": "../files/template/JQueryMobilePlainPage.css.less",
