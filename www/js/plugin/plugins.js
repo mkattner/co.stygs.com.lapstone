@@ -64,7 +64,7 @@ app["plugins"] = {
 
     else {
       promise = globalLoader.AsyncJsonLoader("../js/plugin/plugins.json");
-      
+
       promise.done(function(data) {
         app.plugins.config = data;
         // remove unused plugins
@@ -143,21 +143,21 @@ app["plugins"] = {
     return dfd.promise();
   },
 
-  loadPluginConfiguration: function(key) {
+  loadPluginConfiguration: function(pluginName) {
     var dfd = $.Deferred(), promise, currentPlugin;
 
-    currentPlugin = window["plugin_" + key];
+    currentPlugin = window["plugin_" + pluginName];
 
     // PRODUCTION
     if (app.config.min) {
-      currentPlugin.config = window['config_' + key];
+      currentPlugin.config = window['config_' + pluginName];
       dfd.resolve();
     }
 
     // DEVELOPMENT
     else {
 
-      promise = globalLoader.AsyncJsonLoader("../js/plugin/plugin." + key + ".json");
+      promise = globalLoader.AsyncJsonLoader("../js/plugin/plugin." + pluginName + ".json");
       promise.done(function(json) {
         currentPlugin.config = json;
         dfd.resolve();
@@ -211,6 +211,7 @@ app["plugins"] = {
 
         dfd.resolve();
       });
+
       promise.fail(function() {
         dfd.reject()
       });
@@ -225,17 +226,17 @@ app["plugins"] = {
 
   loadPlugins: function() {
     var dfd = $.Deferred(), promises_js = Array(), promiseOfPromises_js, promises_func = Array(), promiseOfPromises_func;
-    $.each(app.plugins.config, function(key, value) {
-      if (value == true) {
+    $.each(app.plugins.config, function(pluginName, loadPlugin) {
+      if (loadPlugin == true) {
 
         // PRODUCTION
         if (app.config.min) {
-          promises_js.push(app.plugins.onPluginLoaded(key));
+          promises_js.push(app.plugins.onPluginLoaded(pluginName));
         }
 
         // DEVELOPMENT
         else {
-          promises_js.push(globalLoader.AsyncScriptLoader("../js/plugin/plugin." + key + ".js"));
+          promises_js.push(globalLoader.AsyncScriptLoader("../js/plugin/plugin." + pluginName + ".js"));
         }
       }
     });
@@ -257,8 +258,8 @@ app["plugins"] = {
     else {
 
       promiseOfPromises_js.done(function() {
-        $.each(app.plugins.config, function(key, value) {
-          promises_func.push(app.plugins.onPluginLoaded(key));
+        $.each(app.plugins.config, function(pluginName, loadPlugin) {
+          promises_func.push(app.plugins.onPluginLoaded(pluginName));
         });
 
         promiseOfPromises_func = $.when.apply($, promises_func);
@@ -282,7 +283,7 @@ app["plugins"] = {
   callPluginsLoadedEvent: function() {
     var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
-    $.each(app.plugins.pluginNames, function(key, pluginName) {
+    $.each(app.plugins.pluginNames, function(pluginIndex, pluginName) {
       var currentPlugin;
 
       currentPlugin = window["plugin_" + pluginName];
@@ -305,7 +306,7 @@ app["plugins"] = {
 
   callPluginEvents: function() {
     var dfd = $.Deferred();
-    $.each(app.plugins.pluginNames, function(key, pluginName) {
+    $.each(app.plugins.pluginNames, function(pluginIndex, pluginName) {
       var currentPlugin;
 
       currentPlugin = window["plugin_" + pluginName];
