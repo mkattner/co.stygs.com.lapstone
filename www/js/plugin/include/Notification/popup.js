@@ -1,114 +1,113 @@
 app.func("popup.add", function(templateId, templateElementsObject, buttonArray, callbackArray) {
-	app.debug.validate(templateId);
-	app.debug.validate(templateElementsObject);
-	app.debug.validate(buttonArray);
-	app.debug.validate(callbackArray);
+  app.debug.validate(templateId);
+  app.debug.validate(templateElementsObject);
+  app.debug.validate(buttonArray);
+  app.debug.validate(callbackArray);
 
-	var popup;
+  var popup;
 
-	popup = {
-		"templateId" : templateId,
-		"templateElementsObject" : templateElementsObject,
-		"buttonArray" : buttonArray,
-		"callbackArray" : callbackArray
-	}
+  popup = {
+    "templateId": templateId,
+    "templateElementsObject": templateElementsObject,
+    "buttonArray": buttonArray,
+    "callbackArray": callbackArray
+  }
 
-	app.notify.popup.popupQueue = app.notify.popup.popupQueue || [];
-	app.notify.popup.popupQueue.push(popup);
+  app.notify.popup.popupQueue = app.notify.popup.popupQueue || [];
+  app.notify.popup.popupQueue.push(popup);
 
 }, plugin_Notification.functions);
 
 app.func("popup.show", function() {
-	var popup;
+  var popup;
 
-	app.notify.popup.popupQueue = app.notify.popup.popupQueue || [];
-	popup = app.notify.popup.popupQueue.pop();
+  app.notify.popup.popupQueue = app.notify.popup.popupQueue || [];
+  popup = app.notify.popup.popupQueue.pop();
 
-	if (popup)
-		app.notify.popup.open(popup.templateId, popup.templateElementsObject, popup.buttonArray, popup.callbackArray);
+  if (popup) app.notify.popup.open(popup.templateId, popup.templateElementsObject, popup.buttonArray, popup.callbackArray);
 
 }, plugin_Notification.functions);
 
 app.func("popup.open", function(templateId, templateElementsObject, buttonArray, callbackArray, $appendTo) {
-	app.debug.validate(templateId);
-	app.debug.validate(templateElementsObject);
-	app.debug.validate(buttonArray);
-	app.debug.validate(callbackArray);
+  app.debug.validate(templateId);
+  app.debug.validate(templateElementsObject);
+  app.debug.validate(buttonArray);
+  app.debug.validate(callbackArray);
 
-	var $popup;
-	$popup = app.template.get(templateId);
+  var $popup;
+  $popup = app.template.get(templateId);
 
-	// append the loader to DOM
-	if ($appendTo !== undefined) {
-		$appendTo.append($popup);
-	} else {
-		$("div[data-role=content]").append($popup);
-	}
+  // append the loader to DOM
+  if ($appendTo !== undefined) {
+    $appendTo.append($popup);
+  } else {
+    $("div[data-role=content]").append($popup);
+  }
 
-	$popup.addClass("app-popup");
+  $popup.addClass("app-popup");
 
-	// REPLACE TEMPLATE ELEMENTS IN $popup
-	$.each(templateElementsObject, function(elementKey, elementValue) {
-		// REPLACE TEXT
-		if (typeof elementValue === "string")
-			$popup["_" + elementKey]().empty().text(elementValue);
-		// REPLACE OBJECT
-		else
-			$popup["_" + elementKey]().empty().append(elementValue);
-	});
+  // REPLACE TEMPLATE ELEMENTS IN $popup
+  $.each(templateElementsObject, function(elementKey, elementValue) {
+    // REPLACE TEXT
+    if (typeof elementValue === "string")
+      $popup["_" + elementKey]().empty().text(elementValue);
+    // REPLACE OBJECT
+    else
+      $popup["_" + elementKey]().empty().append(elementValue);
+  });
 
-	// CLOSE POPUP
-	$popup._close().addClass("click").on("storagefilled", function() {
-		app.notify.popup.close($popup);
-	});
+  // CLOSE POPUP
+  $popup._close().addClass("click").on("storagefilled", function() {
+    app.notify.popup.close($popup);
+  });
 
-	// ADD THE BUTTONS
-	app.debug.validate(callbackArray.length === buttonArray.length, "boolean");
-	$popup._buttons().empty();
-	$.each(buttonArray, function(buttonIndex, button) {
-		$popup._buttons().append(function() {
-			return button.addClass("click").on("storagefilled", function() {
-				var promise;
+  // ADD THE BUTTONS
+  app.debug.validate(callbackArray.length === buttonArray.length, "boolean");
+  $popup._buttons().empty();
+  $.each(buttonArray, function(buttonIndex, button) {
+    $popup._buttons().append(function() {
+      return button.addClass("click").on("storagefilled", function() {
+        var promise;
 
-				if (typeof callbackArray[buttonIndex] === "function") {
+        if (typeof callbackArray[buttonIndex] === "function") {
 
-					promise = callbackArray[buttonIndex]($(this), $popup);
+          promise = callbackArray[buttonIndex]($(this), $popup);
 
-					if (typeof promise === "object") {
-						promise.done(function() {
-							app.notify.popup.close($popup);
-						});
+          if (typeof promise === "object") {
+            promise.done(function() {
+              app.notify.popup.close($popup);
+            });
 
-						app.debug.operation(function() {
-							promise.fail(function() {
-								app.debug.app("Callback promise of popup button failed. Popup won't be closed. Close it manually.");
-							});
-						});
-					} else if (promise === false) {
-						; // do not close popup
-					} else {
-						app.notify.popup.close($popup);
-					}
-				}
+            app.debug.operation(function() {
+              promise.fail(function() {
+                app.debug.app("Callback promise of popup button failed. Popup won't be closed. Close it manually.");
+              });
+            });
+          } else if (promise === false) {
+            ; // do not close popup
+          } else {
+            app.notify.popup.close($popup);
+          }
+        }
 
-				else {
-					app.notify.popup.close($popup);
-				}
-			});
-		});
-	})
+        else {
+          app.notify.popup.close($popup);
+        }
+      });
+    });
+  })
 
-	return $popup;
+  return $popup;
 }, plugin_Notification.functions);
 
 app.func("popup.close", function($popup) {
-	if ($popup !== undefined)
-		$popup.remove();
+  if ($popup !== undefined)
+    $popup.remove();
 
-	else
-		$(".app-popup").remove();
+  else
+    $(".app-popup").remove();
 
-	app.notify.popup.show();
+  app.notify.popup.show();
 }, plugin_Notification.functions);
 
 /**
@@ -167,7 +166,5 @@ app.func("popup.close", function($popup) {
 // }, plugin_Notification.functions);
 // });
 /**
- * app.notify.popup.open("DefaultPopup", {"title":"My Pupup Title","content":"My
- * Content"}, [ $("<a>").attr({"href":"#"}).text("button1"), $("<a>").attr({"href":"#"}).text("button2") ], [
- * function(){alert("button1")}, function(){alert("button2")} ] )
+ * app.notify.popup.open("DefaultPopup", {"title":"My Pupup Title","content":"My Content"}, [ $("<a>").attr({"href":"#"}).text("button1"), $("<a>").attr({"href":"#"}).text("button2") ], [ function(){alert("button1")}, function(){alert("button2")} ] )
  */
