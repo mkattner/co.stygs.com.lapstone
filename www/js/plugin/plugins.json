@@ -1,5 +1,6 @@
 {
 	"Actions": true,
+	"Cryptography": true,
 	"Debug": true,
 	"Detector": true,
 	"DeviceManager": true,

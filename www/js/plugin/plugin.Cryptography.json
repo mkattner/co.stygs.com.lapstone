@@ -1,0 +1,11 @@
+{
+	"name": "Cryptography",
+	"shortname": "Cryptography",
+	"include": [],
+	"dependency": [
+		"../ext/crypto/aes/aes.js",
+		"../ext/crypto/rsa/jsencrypt.js",
+		"../ext/crypto/sha1/sha1.js",
+		"../ext/crypto/sha256/sha256.js"
+	]
+}
