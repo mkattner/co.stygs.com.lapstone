@@ -57,17 +57,22 @@ app["plugins"] = {
    * 1
    */
   loadPluginConfig: function() {
-    var dfd = $.Deferred(), promise;
+    var dfd, promise;
+
+    dfd = $.Deferred()
+
     if (app.config.min) {
       app.plugins.config = config_json;
       dfd.resolve();
-    } else {
+    }
+
+    else {
       promise = globalLoader.AsyncJsonLoader("../js/plugin/plugins.json");
       promise.done(function(data) {
         app.plugins.config = data;
         // remove unused plugins
-        $.each(app.plugins.config, function(pluginName, use) {
-          if (!use) delete app.plugins.config[pluginName];
+        $.each(app.plugins.config, function(pluginName, loadPlugin) {
+          if (!loadPlugin) delete app.plugins.config[pluginName];
         });
         dfd.resolve();
       });
@@ -92,6 +97,12 @@ app["plugins"] = {
   includeDependencies: function() {
     var dfd;
 
+    $.each(app.plugins.config, function(pluginName, loaded) {
+      var currentPlugin;
+
+      currentPlugin = window['plugin_' + pluginName];
+    });
+
     dfd = $.Deferred()
 
     dfd.resolve();
@@ -100,19 +111,24 @@ app["plugins"] = {
   },
 
   includeFiles: function() {
-    var dfd = $.Deferred(), pluginIncludePromises = [], currentPlugin;
-
-    currentPlugin = window['plugin_' + pluginName];
+    var dfd = $.Deferred(), pluginIncludePromises;
 
     if (app.config.min) {
       dfd.resolve();
     }
 
     else {
-      $.each(app.plugins.config, function(pluginName, loaded) {
-        if (loaded) {
+      pluginIncludePromises = [];
+      $.each(app.plugins.config, function(pluginName, loadPlugin) {
+        var currentPlugin;
+
+        currentPlugin = window['plugin_' + pluginName];
+
+        if (loadPlugin) {
+          // TODO validation could be in include. Do not use it at that point.
           app.debug.validate(currentPlugin.config.include);
-          $.each(window['plugin_' + pluginName].config.include, function(index, includeFile) {
+          
+          $.each(currentPlugin.config.include, function(index, includeFile) {
             pluginIncludePromises.push(globalLoader.AsyncScriptLoader("../js/plugin/include/" + pluginName + "/" + includeFile))
           });
 
@@ -129,16 +145,18 @@ app["plugins"] = {
   },
 
   loadPluginConfiguration: function(key) {
-    var dfd = $.Deferred(), promise;
+    var dfd = $.Deferred(), promise, currentPlugin;
+
+    currentPlugin = window['plugin_' + key];
     // load the config into plugins
     if (app.config.min) {
-      window['plugin_' + key].config = window['config_' + key];
+      currentPlugin.config = window['config_' + key];
       dfd.resolve();
     } else {
 
       promise = globalLoader.AsyncJsonLoader("../js/plugin/plugin." + key + ".json");
       promise.done(function(json) {
-        window['plugin_' + key].config = json;
+        currentPlugin.config = json;
         dfd.resolve();
       });
       promise.fail(function() {
@@ -150,7 +168,9 @@ app["plugins"] = {
   },
 
   onPluginLoaded: function(key) {
-    var dfd = $.Deferred(), promise, promiseConfiguration;
+    var dfd = $.Deferred(), promise, promiseConfiguration, currentPlugin;
+
+    currentPlugin = window['plugin_' + key];
 
     if (window['plugin_' + key] == undefined) {
       alert("Fatal error: Plugin class is not defined: plugin_" + key);
@@ -161,12 +181,12 @@ app["plugins"] = {
 
     promiseConfiguration.done(function() { // check the config:
       // name
-      if (window['plugin_' + key].config.name == undefined) {
+      if (currentPlugin.config.name == undefined) {
         alert("Fatal error: The property 'name' is not defined in JSON file: ../js/plugin." + key + ".json")
         return false;
       }
       // check the config: shortname
-      if (window['plugin_' + key].config.shortname == undefined) {
+      if (currentPlugin.config.shortname == undefined) {
         alert("Fatal error: The property 'shortname' is not defined in JSON file: ../js/plugin." + key + ".json")
         return false;
       }
@@ -253,6 +273,9 @@ app["plugins"] = {
     var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
     $.each(app.plugins.pluginNames, function(key, value) {
+      var currentPlugin;
+
+      currentPlugin = window['plugin_' + value];
       promises.push(window['plugin_' + value].pluginsLoaded());
     });
 
@@ -272,6 +295,9 @@ app["plugins"] = {
   callPluginEvents: function() {
     var dfd = $.Deferred();
     $.each(app.plugins.pluginNames, function(key, value) {
+      var currentPlugin;
+
+      currentPlugin = window['plugin_' + value];
       // try {
       window['plugin_' + value].definePluginEvents();
       // } catch (err) {
