@@ -20,6 +20,16 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
     public Plugin_Skin_JSON() {
 	// TODO Auto-generated constructor stub
     }
+    public List<String> getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+	
+	 
+    private List<String> dependency;
 
     private Boolean useSkinPlugin;
     private String defaultSkin;

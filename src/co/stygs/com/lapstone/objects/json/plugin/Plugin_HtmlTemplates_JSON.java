@@ -1,6 +1,7 @@
 package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -65,4 +66,16 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON {
     }
 
     private Map<String, Plugin_HtmlTemplates_JSON_Template> templates;
+    
+    public List<String> getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+	
+	 
+    private List<String> dependency;
+
 }

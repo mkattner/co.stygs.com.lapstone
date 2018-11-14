@@ -1,6 +1,7 @@
 package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ public class Plugin_DeviceManager_JSON extends APlugin_JSON {
     public Plugin_DeviceManager_JSON() {
 	// TODO Auto-generated constructor stub
     }
+   
 
     public Map<String, String> getFiles() {
 	return files;
@@ -50,5 +52,16 @@ public class Plugin_DeviceManager_JSON extends APlugin_JSON {
 	}
 	return null;
     }
+
+	public List<String> getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+	
+	 
+    private List<String> dependency;
 
 }

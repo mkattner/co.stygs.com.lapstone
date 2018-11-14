@@ -53,6 +53,18 @@ public class Plugin_WebServiceError_JSON extends APlugin_JSON {
     public List<String> getErrorKeys() {
 	return errorKeys;
     }
+    
+    public List<String> getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+	
+	 
+    private List<String> dependency;
+
 
     public void setErrorKeys(List<String> errorKeys) {
 	this.errorKeys = errorKeys;

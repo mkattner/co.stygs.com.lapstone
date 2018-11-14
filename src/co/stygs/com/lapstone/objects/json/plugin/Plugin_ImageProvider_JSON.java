@@ -54,4 +54,16 @@ public class Plugin_ImageProvider_JSON extends APlugin_JSON {
 
     private List<String> imgdFiles;
     private Map<String, Map<String, String>> images;
+    
+    public List<String> getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+	
+	 
+    private List<String> dependency;
+
 }

@@ -26,6 +26,16 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	public Plugin_LoadExternalScripts_JSON() {
 		// TODO Auto-generated constructor stub
 	}
+	public List<String> getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+	
+	 
+    private List<String> dependency;
 
 	private List<String> styleOrdered;
 	private List<String> javascriptOrdered;
