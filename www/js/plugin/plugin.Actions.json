@@ -8,7 +8,6 @@
 		"confirm.js",
 		"login.js",
 		"logout.js",
-		"notifyLater.js",
 		"loginObligate.js"
 	]
 }

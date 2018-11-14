@@ -35,7 +35,6 @@ var plugin_Actions = {
 		app.debug.validate(app.actions.config.actions.includes("confirm.js"));
 		app.debug.validate(app.actions.config.actions.includes("login.js"));
 		app.debug.validate(app.actions.config.actions.includes("logout.js"));
-		app.debug.validate(app.actions.config.actions.includes("notifyLater.js"));
 		app.debug.validate(app.actions.config.actions.includes("loginObligate.js"));
 
 		var dfd, promises, promiseOfPromises;
