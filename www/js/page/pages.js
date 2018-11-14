@@ -624,10 +624,8 @@ app["pages"] = {
 
 				if (window['page_' + $currentLapstonePage.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
 
-					app.debug.validate(app.actions.notifyLater, "function");
+					app.debug.validate(app.plugins.functions.pluginLoaded("Actions"), "boolean");
 					app.actions.notifyLater();
-
-					app.debug.validate(app.actions.logout, "function");
 					app.actions.logout();
 
 					return false;
