@@ -2,12 +2,13 @@
 	"name": "Actions",
 	"shortname": "actions",
 	"dependency": [],
-	"include": [
+	"include": [],
+	"actions": [
 		"alert.js",
 		"confirm.js",
 		"login.js",
 		"logout.js",
 		"notifyLater.js",
-		"loginObligat.js"
+		"loginObligate.js"
 	]
 }

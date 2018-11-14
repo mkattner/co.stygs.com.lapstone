@@ -30,21 +30,44 @@ var plugin_Actions = {
 	pluginsLoaded : function() {
 		app.debug.trace("plugin_Actions.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 
-		var dfd;
+		// Validate the standard includes. It's obligate for every app.
+		app.debug.validate(app.actions.config.actions.includes("alert.js"));
+		app.debug.validate(app.actions.config.actions.includes("confirm.js"));
+		app.debug.validate(app.actions.config.actions.includes("login.js"));
+		app.debug.validate(app.actions.config.actions.includes("logout.js"));
+		app.debug.validate(app.actions.config.actions.includes("notifyLater.js"));
+		app.debug.validate(app.actions.config.actions.includes("loginObligate.js"));
+
+		var dfd, promises, promiseOfPromises;
 
 		dfd = $.Deferred();
+		promises = [];
 
-		// Validate the standard includes. It's obligate for every app.
-		app.debug.validate(app.actions.config.include.includes("alert.js"));
-		app.debug.validate(app.actions.config.include.includes("confirm.js"));
-		app.debug.validate(app.actions.config.include.includes("login.js"));
-		app.debug.validate(app.actions.config.include.includes("logout.js"));
-		app.debug.validate(app.actions.config.include.includes("notifyLater.js"));
-		app.debug.validate(app.actions.config.include.includes("loginObligate.js"));
+		if (app.config.min) {
+			dfd.resolve();
+		}
 
-		dfd.resolve();
+		else {
+			$.each(plugin_Actions.config.actions, function(index, actionFileUrl) {
+				promises.push(globalLoader.AsyncScriptLoader("../files/actions/" + actionFileUrl));
+			});
+
+			/**
+			 * apply promises
+			 */
+			promiseOfPromises = $.when.apply($, promises);
+
+			promiseOfPromises.done(function() {
+				dfd.resolve();
+			});
+
+			promiseOfPromises.fail(function() {
+				dfd.reject();
+			});
+		}
 
 		return dfd.promise();
+
 	},
 
 	// called after all pages are loaded
