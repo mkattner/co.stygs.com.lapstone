@@ -7,6 +7,7 @@
 		"confirm.js",
 		"login.js",
 		"logout.js",
-		"notifyLater.js"
+		"notifyLater.js",
+		"loginObligat.js"
 	]
 }

@@ -1,6 +1,6 @@
 //# sourceURL=plugin.Actions.js
 /**
- * Copyright (c) 2015 martin.kattner@stygs.com Permission is hereby granted,
+ * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted,
  * free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software
  * without restriction, including without limitation the rights to use, copy,
@@ -33,14 +33,14 @@ var plugin_Actions = {
 		var dfd;
 
 		dfd = $.Deferred();
-		
+
 		// Validate the standard includes. It's obligate for every app.
 		app.debug.validate(app.actions.config.include.includes("alert.js"));
 		app.debug.validate(app.actions.config.include.includes("confirm.js"));
 		app.debug.validate(app.actions.config.include.includes("login.js"));
 		app.debug.validate(app.actions.config.include.includes("logout.js"));
 		app.debug.validate(app.actions.config.include.includes("notifyLater.js"));
-		
+		app.debug.validate(app.actions.config.include.includes("loginObligate.js"));
 
 		dfd.resolve();
 
