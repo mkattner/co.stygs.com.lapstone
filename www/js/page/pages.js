@@ -1,20 +1,21 @@
-// # sourceURL=pages.js
+//# sourceURL=pages.js
 /**
- * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted,
- * free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the
- * Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this
- * permission notice shall be included in all copies or substantial portions of
- * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
- * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2018 martin.kattner@gmail.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions: The above copyright
+ * notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS",
+ * WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 // TODO add try catch to every function that is called in plugins or pages
@@ -423,7 +424,8 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagebeforechange', '.app-page', function(event) {
-			app.debug.trace("pages.js jQuery mobile event: pagebeforechange for: " + $(this).attr('id'));
+			app.debug.lapstone("pages.js jqm hook: pagebeforechange for: " + $(this).attr('id'));
+			app.debug.deprecated("Will be removed.")
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforechange");
 		});
 
@@ -431,7 +433,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagebeforecreate', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagebeforecreate for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagebeforecreate for: " + $(this).attr('id'));
 
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforecreate");
 			// ---
@@ -453,7 +455,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagebeforehide', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagebeforehide for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagebeforehide for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforehide");
 		});
 
@@ -461,7 +463,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagebeforeload', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagebeforeload for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagebeforeload for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforeload");
 		});
 
@@ -469,7 +471,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagebeforeshow', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagebeforeshow for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagebeforeshow for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagebeforeshow");
 		});
 
@@ -477,7 +479,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagechange', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagechange for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagechange for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagechange");
 		});
 
@@ -485,7 +487,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagechangefailed', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagechangefailed for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagechangefailed for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagechangefailed");
 		});
 
@@ -493,7 +495,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagecreate', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagecreate for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagecreate for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagecreate");
 		});
 
@@ -501,7 +503,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pagehide', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pagehide for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pagehide for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pagehide");
 		});
 
@@ -509,7 +511,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pageinit', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pageinit for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pageinit for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pageinit");
 		});
 
@@ -517,7 +519,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pageload', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pageload for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pageload for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pageload");
 		});
 
@@ -525,7 +527,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pageloadfailed', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pageloadfailed for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pageloadfailed for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pageloadfailed");
 		});
 
@@ -533,7 +535,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pageremove', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pageremove for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pageremove for: " + $(this).attr('id'));
 			app.pages.eventFunctions.pageTypeSelector(event, $(this), "pageremove");
 		});
 
@@ -541,7 +543,7 @@ app["pages"] = {
 		 * 
 		 */
 		$(document).on('pageshow', '.app-page', function(event) {
-			app.debug.trace("jQuery mobile event: pageshow for: " + $(this).attr('id'));
+			app.debug.lapstone("jqm hook: pageshow for: " + $(this).attr('id'));
 
 			app.pages.history.push($(this).attr('id'));
 
@@ -566,18 +568,21 @@ app["pages"] = {
 			currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
 
 			// alert($currentLapstonePage.attr('data-type'));
-			if (currentLapstonePage == undefined) {
+			if (currentLapstonePage === undefined) {
 				// case 3: page ist not defined in pages.json
 				app.debug.debug("case: page ist not defined in pages.json");
 				alert("plugin.eventFunctions.pageTypeSelector() - Fatal error: Can't find the page object: page_" + $currentLapstonePage.attr('id') + "; Please have a look to your pages.json file.");
 				app.nav.redirect("index.html", "none");
-			} else {
+			}
+
+			else {
 				// case 4: page is a common lapstone page
 				app.debug.debug("case: page is a common lapstone page");
 
 				app.pages.eventPromises[eventName] = Array();
 
 				eventFunctionResult = app.pages.eventFunctions.lapstonePage[eventName](event, $currentLapstonePage);
+
 				// console.log(eventFunctionResult)
 				if (eventFunctionResult && $.isFunction(eventFunctionResult.promise)) {
 					app.pages.eventPromises[eventName].push(eventFunctionResult);
@@ -610,10 +615,16 @@ app["pages"] = {
 
 		lapstonePage : {
 			pagebeforechange : function(event, $currentLapstonePage) {
+				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + $currentLapstonePage + ")");
+
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
 
-				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + $currentLapstonePage + ")");
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
+
 				currentLapstonePage.events.pagebeforechange(event, $currentLapstonePage);
 			},
 			pagebeforecreate : function(event, $currentLapstonePage) {
@@ -622,7 +633,7 @@ app["pages"] = {
 				var currentLapstonePage;
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
 
-				if (window['page_' + $currentLapstonePage.attr('id')].config.loginObligate && !app.sess.loggedIn()) {
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
 
 					app.debug.validate(app.plugins.functions.pluginLoaded("Actions"), "boolean");
 					app.actions.loginObligate();
@@ -828,7 +839,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pagebeforehide(event, $currentLapstonePage);
 
@@ -837,7 +853,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforeload(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pagebeforeload(event, $currentLapstonePage);
 			},
@@ -845,7 +866,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pagebeforeshow(event, $currentLapstonePage);
 
@@ -854,7 +880,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pagechange(event, $currentLapstonePage);
 			},
@@ -862,7 +893,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechangefailed(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pagechangefailed(event, $currentLapstonePage);
 			},
@@ -870,7 +906,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagecreate(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pagecreate(event, $currentLapstonePage);
 			},
@@ -878,7 +919,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagehide(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				app.debug.debug("plugin.eventFunctions.lapstonePage.pagehide: clear page specific event delegates");
 				$("#" + $currentLapstonePage.attr("id")).off();
@@ -897,7 +943,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageinit(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pageinit(event, $currentLapstonePage);
 			},
@@ -905,7 +956,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageload(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pageload(event, $currentLapstonePage);
 			},
@@ -913,7 +969,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageloadfailed(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pageloadfailed(event, $currentLapstonePage);
 			},
@@ -921,7 +982,12 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageremove(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
+
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
 
 				currentLapstonePage.events.pageremove(event, $currentLapstonePage);
 			},
@@ -929,11 +995,19 @@ app["pages"] = {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageshow(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
+				
 				currentLapstonePage = window['page_' + $currentLapstonePage.attr('id')];
 
+				if (currentLapstonePage.config.loginObligate === true && app.sess.loggedIn() === false) {
+					return false;
+				}
+				
 				currentLapstonePage.events.pageshow(event, $currentLapstonePage);
 				if (navigator.splashscreen != undefined)
 					navigator.splashscreen.hide();
+
+				if (app.plugins.functions.pluginLoaded("Notification") === true)
+					app.notify.popup.show();
 			}
 		}
 	},
@@ -941,4 +1015,10 @@ app["pages"] = {
 	getCurrent : function() {
 		return window["page_" + $("[data-role=page]").attr("id")];
 	}
+
 };
+
+// initialize first page when lapstone is loaded
+$(document).on("lapstone", function() {
+	$.mobile.initializePage();
+});

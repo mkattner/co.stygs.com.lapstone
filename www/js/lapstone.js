@@ -660,6 +660,7 @@ globalLoader = {
 $(document).bind("mobileinit", function() {
 	app.debug.debug("jQuery mobile initialized", 30);
 	$.mobile.ajaxEnabled = true;
+	$.mobile.autoInitializePage = false;
 	$.support.cors = true;
 	$.mobile.allowCrossDomainPages = true;
 	$.mobile.page.prototype.options.domCache = false;
@@ -907,6 +908,9 @@ $(document).ready(function() {
 
 		initialisationPanel.finish();
 
+		// lapstone is now loaded
+		app.config.lapstone = true;
+
 		// trigger the lapstone initialisation event
 		$(document).trigger("lapstone");
 
@@ -930,7 +934,7 @@ $(document).ready(function() {
 		console.log("      lapstone: " + app.config.version.lapstone);
 		console.log("        jquery: " + $.fn.jquery);
 		console.log(" jquery mobile: " + $.mobile.version);
-		app.config.lapstone = true;
+
 		// }, 200);
 	});
 

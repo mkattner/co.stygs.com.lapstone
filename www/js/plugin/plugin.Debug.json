@@ -1,10 +1,11 @@
 {
 	"name": "Debug",
 	"shortname": "debug",
-	"include": [],
+	"include": ["log.js"],
 	"dependency": [],
 	"debugDevice": true,
 	"debugLevels": {
+		"LAPSTONE": 0,
 		"TRACE": 1,
 		"DEBUG": 2,
 		"TODO": 3,
@@ -16,15 +17,6 @@
 		"FATAL": 9,
 		"OFF": 10
 	},
-	"consoleLevel": [
-		"TODO",
-		"INFO",
-		"EVENT",
-		"APP",
-		"WARN",
-		"ERROR",
-		"FATAL"
-	],
 	"logLevel": [
 		"WARN",
 		"ERROR",

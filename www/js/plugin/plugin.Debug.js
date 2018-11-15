@@ -40,9 +40,10 @@ var plugin_Debug = {
 		var dfd = $.Deferred();
 
 		// validate config file
-		plugin_Debug.functions.validate(plugin_Debug.config.consoleLevel, "array");
+		plugin_Debug.functions.validate(plugin_Debug.config.debugLevels.LAPSTONE, "number");
 		plugin_Debug.functions.validate(plugin_Debug.config.logLevel, "array");
-
+		
+		
 		dfd.resolve();
 		return dfd.promise();
 	},
@@ -56,6 +57,10 @@ var plugin_Debug = {
 		app.debug.trace("plugin_Debug.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 
+		
+		plugin_Debug.config.logLevel = app.sess.getObject("logLevel", "debug") || plugin_Debug.config.logLevel;
+
+		
 		dfd.resolve();
 		return dfd.promise();
 	},
@@ -119,9 +124,9 @@ var plugin_Debug = {
 	afterHtmlInjectedBeforePageComputing : function(container) {
 		app.debug.trace("plugin_Debug.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
-			var debugDiv, select;
+			var $debugDiv, select;
 
-			debugDiv = $("<div>").attr({
+			$debugDiv = $("<div>").attr({
 				id : "divDebug",
 				"data-enhance" : "false"
 			}).css({
@@ -131,7 +136,7 @@ var plugin_Debug = {
 				"top" : "0px",
 				"left" : "0px",
 				"padding" : "5px",
-				"min-width" : "150px",
+				"min-width" : "250px",
 				"min-height" : "50px",
 				"background-color" : "rgba(200, 200, 200, 0.7)"
 			});
@@ -150,20 +155,6 @@ var plugin_Debug = {
 					"data-native-menu" : "false"
 				})
 			});
-
-			$.each(plugin_Debug.config.debugLevels, function(levelName, ratingValue) {
-
-				select.find("select").append(function() {
-					return $("<option>").attr({
-						value : levelName
-					}).prop({
-						"selected" : (plugin_Debug.config.consoleLevel.indexOf(levelName) > -1) ? true : false
-					}).text(levelName)
-				});
-
-			});
-
-			debugDiv.append(select);
 
 			/**
 			 * log level
@@ -192,20 +183,20 @@ var plugin_Debug = {
 
 			});
 
-			debugDiv.append(select);
+			$debugDiv.append(select);
 
 			/**
 			 * close button
 			 */
-			debugDiv.append(function() {
+			$debugDiv.append(function() {
 				return $("<button>").attr({
 					id : "btnClose",
 				}).text("Close")
 			});
 
-			container.append(debugDiv);
+			container.append($debugDiv);
 
-			debugDiv.css({
+			$debugDiv.css({
 				"display" : "none"
 			});
 
@@ -236,17 +227,15 @@ var plugin_Debug = {
 	pageSpecificEvents : function(container) {
 		app.debug.trace("plugin_Debug.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
+		// is debug device
 		if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
-			$(document).on('change', '#selConsoleLevel', function() {
-				app.debug.event(event);
-
-				app.info.set("plugin_Debug.config.consoleLevel", $("#selConsoleLevel").val() || [ "OFF" ]);
-			});
 
 			$(document).on('change', '#selLogLevel', function() {
 				app.debug.event(event);
+				var levels = $("#selLogLevel").val() || [ "OFF" ];
 
-				app.info.set("plugin_Debug.config.logLevel", $("#selLogLevel").val() || [ "OFF" ]);
+				plugin_Debug.config.logLevel = levels;
+				app.sess.setObject("logLevel", levels, "debug");
 			});
 
 			$(document).on('click', '#btnClose', function() {
@@ -440,6 +429,19 @@ var plugin_Debug = {
 				plugin_RestClient.config.webservices[serviceName]['calls'] = plugin_RestClient.config.webservices[serviceName]['calls'] || 0;
 				plugin_RestClient.config.webservices[serviceName]['calls']++;
 			}
+		},
+
+		/**
+		 * Handles the debug output on level: TRACE
+		 * 
+		 * @memberof plugin_Debug.functions
+		 * @function trace
+		 * @param {String}
+		 *            output - The debug output.
+		 */
+		lapstone : function(output) {
+			// log debug output
+			this.log(output, "LAPSTONE");
 		},
 
 		/**
@@ -733,13 +735,8 @@ var plugin_Debug = {
 
 			if (plugin_Debug.config.debugDevice) {
 
-				// log to object
-				if (plugin_Debug.config.logLevel.indexOf(level) > -1) {
-					plugin_Debug.logObject.push(output);
-				}
-
 				// log to console
-				if (plugin_Debug.config.consoleLevel.indexOf(level) > -1) {
+				if (plugin_Debug.config.logLevel.indexOf(level) > -1) {
 					console.log((level + ": " + "      ").slice(0, 7) + dateString + ": " + output);
 					if (trace) {
 						// print stack trace
