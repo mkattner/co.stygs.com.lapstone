@@ -129,7 +129,7 @@ var plugin_ImageProvider = {
 
       var img, toParse;
       // alert(id + " = " + plugin_ImageProvider.config.images[id])
-      if ((img = plugin_ImageProvider.config.images[id]) == undefined) {
+      if ((img = plugin_ImageProvider.config.images[context][id]) == undefined) {
         console.warn("ImageProvider - Undefined image: " + id);
         toParse = '{"' + id + '":"PATH"}';
         app.debug.feedback.image(JSON.parse(toParse));
