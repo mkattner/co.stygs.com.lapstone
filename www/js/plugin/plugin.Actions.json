@@ -1,9 +1,13 @@
 {
 	"name": "Actions",
 	"shortname": "actions",
-	"include": [],
 	"dependency": [],
-	"actionFiles": [
-		"../files/actions/actions.js"
+	"include": [],
+	"actions": [
+		"alert.js",
+		"confirm.js",
+		"login.js",
+		"logout.js",
+		"loginObligate.js"
 	]
 }

@@ -15,7 +15,17 @@ public class Plugin_RestClient_JSON extends APlugin_JSON {
 
 	public Plugin_RestClient_JSON() {
 		// TODO Auto-generated constructor stub
+	}public List<String> getDependency() {
+		return dependency;
 	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+	
+	 
+    private List<String> dependency;
+
 
 	public List<String> getWsdFiles() {
 		return wsdFiles;
