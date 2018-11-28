@@ -1,4 +1,5 @@
 {
+	"Persistance": true,
 	"Actions": true,
 	"Cryptography": true,
 	"Debug": true,

@@ -764,8 +764,10 @@ initialisationPanel = {
 	},
 
 	hide : function() {
-		$("#LAPSTONE").remove();
+		
 		window.setTimeout(function() {
+			$("#LAPSTONE").remove();
+			
 			if (app.config.apacheCordova) {
 				navigator.splashscreen.hide();
 			}

@@ -6,17 +6,21 @@
 	"useSkinPlugin": false,
 	"defaultSkin": "modern",
 	"skins": {
+		"dev": [
+			"../css/skin/dev/fonts.css.less",
+			"../css/skin/dev/global.css.less"
+		],
 		"icon": [
-			"../css.less/skin/icon/fonts.css.less",
-			"../css.less/skin/icon/global.css.less"
+			"../css/skin/icon/fonts.css.less",
+			"../css/skin/icon/global.css.less"
 		],
 		"modern": [
-			"../css.less/skin/modern/fonts.css.less",
-			"../css.less/skin/modern/global.css.less"
+			"../css/skin/modern/fonts.css.less",
+			"../css/skin/modern/global.css.less"
 		],
 		"text": [
-			"../css.less/skin/text/fonts.css.less",
-			"../css.less/skin/text/global.css.less"
+			"../css/skin/text/fonts.css.less",
+			"../css/skin/text/global.css.less"
 		]
 	}
 }

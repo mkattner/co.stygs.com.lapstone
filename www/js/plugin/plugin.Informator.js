@@ -178,6 +178,7 @@ var plugin_Informator = {
 	functions : {
 		// auch direkt die datei ���ndern
 		set : function(key, value) {
+			app.debug.deprecated("Informator will be removed in the future");
 			app.debug.trace("plugin_Informator.functions.set(" + app.debug.arguments(arguments) + ")");
 
 			if (plugin_Informator.config.useHtml5Storage) {
@@ -194,6 +195,7 @@ var plugin_Informator = {
 		},
 
 		firstUse : function(value) {
+			app.debug.deprecated("Informator will be removed in the future");
 			app.debug.trace("plugin_Informator.functions.firstUse(" + app.debug.arguments(arguments) + ")");
 
 			if (value == undefined) {

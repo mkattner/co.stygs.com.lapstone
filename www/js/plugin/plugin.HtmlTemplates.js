@@ -26,19 +26,30 @@ var plugin_HtmlTemplates = {
 	},
 	pluginsLoaded : function() {
 		app.debug.trace("plugin_HtmlTemplates.pluginsLoaded()");
+		app.debug.validate(plugin_HtmlTemplates.config.useSkinPlugin, "boolean");
 
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
 		if (app.config.min) {
 			dfd.resolve();
 		} else {
+
 			$.each(plugin_HtmlTemplates.config.templates, function(key, template) {
+				var contentUrl, styleUrl;
 
-				app.debug.validate(template.content);
-				app.debug.validate(template.style);
+				contentUrl = template.content;
+				styleUrl = template.style;
 
-				promises.push(globalLoader.AsyncTextLoader(template.content));
-				promises.push(globalLoader.AsyncTextLoader(template.style));
+				app.debug.validate(contentUrl);
+				app.debug.validate(styleUrl);
+
+				if (plugin_HtmlTemplates.config.useSkinPlugin === true) {
+					contentUrl = contentUrl.replace("skin", app.skin.getCurrentSkin());
+					styleUrl = styleUrl.replace("skin", app.skin.getCurrentSkin());
+				}
+
+				promises.push(globalLoader.AsyncTextLoader(contentUrl));
+				promises.push(globalLoader.AsyncTextLoader(styleUrl));
 
 			});
 

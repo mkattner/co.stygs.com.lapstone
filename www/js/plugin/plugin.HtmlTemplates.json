@@ -3,6 +3,7 @@
 	"shortname": "template",
 	"include": [],
 	"dependency": [],
+	"useSkinPlugin": false,
 	"templates": {
 		"JQueryMobilePopupTrialog": {
 			"content": "../files/template/JQueryMobilePopupTrialog.html",

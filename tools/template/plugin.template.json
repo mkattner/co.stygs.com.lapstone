@@ -1,7 +1,6 @@
 {
-	"name":"##template",
-	"shortname":"##template",
-	"include":[
-		
-	]
+	"name": "##template",
+	"shortname": "##template",
+	"include": [],
+	"dependency": []
 }
