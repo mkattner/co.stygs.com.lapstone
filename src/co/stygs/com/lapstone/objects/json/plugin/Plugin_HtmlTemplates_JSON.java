@@ -76,6 +76,15 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON {
 	}
 	
 	 
+    public Boolean getUseSkinPlugin() {
+	    return useSkinPlugin;
+	}
+
+	public void setUseSkinPlugin(Boolean useSkinPlugin) {
+	    this.useSkinPlugin = useSkinPlugin;
+	}
+
     private List<String> dependency;
+    private Boolean useSkinPlugin;
 
 }
