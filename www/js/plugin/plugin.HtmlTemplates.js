@@ -31,7 +31,15 @@ var plugin_HtmlTemplates = {
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
 		if (app.config.min) {
+			$.each(plugin_HtmlTemplates.config.templates, function(key, template) {
+				if (template.useSkin === true) {
+					plugin_HtmlTemplates.config.templates[key].style = template.styles[app.skin.getCurrentSkin()]
+
+				}
+			})
+
 			dfd.resolve();
+			
 		} else {
 
 			$.each(plugin_HtmlTemplates.config.templates, function(key, template) {
@@ -40,13 +48,20 @@ var plugin_HtmlTemplates = {
 				contentUrl = template.content;
 				styleUrl = template.style;
 
-				app.debug.validate(contentUrl);
-				app.debug.validate(styleUrl);
+				app.debug.validate(contentUrl, "string");
+				app.debug.validate(styleUrl, "string");
+				app.debug.validate(template.useSkin, "boolean")
 
-				if (plugin_HtmlTemplates.config.useSkinPlugin === true) {
-					contentUrl = contentUrl.replace("skin", app.skin.getCurrentSkin());
+				if (template.useSkin === true) {
+
+					app.debug.validate(styleUrl.contains("skin"));
+
 					styleUrl = styleUrl.replace("skin", app.skin.getCurrentSkin());
 				}
+
+				app.debug.operation(function() {
+					app.debug.validate(!styleUrl.contains("skin"));
+				});
 
 				promises.push(globalLoader.AsyncTextLoader(contentUrl));
 				promises.push(globalLoader.AsyncTextLoader(styleUrl));

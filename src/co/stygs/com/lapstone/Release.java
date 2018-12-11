@@ -20,6 +20,8 @@ import co.stygs.com.lapstone.objects.json.IPlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 import co.stygs.com.lapstone.objects.json.Page_JSON;
 import co.stygs.com.lapstone.objects.json.Plugin_JSON;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helger.commons.charset.CCharset;
@@ -34,7 +36,7 @@ import com.helger.css.writer.CSSWriter;
 import com.helger.css.writer.CSSWriterSettings;
 import com.inet.lib.less.Less;
 
-public class Release {
+public class Release implements ILogger{
 
 	public static List<File> cssRegistry = new ArrayList<>();
 
@@ -44,21 +46,20 @@ public class Release {
 	// ************************************************************************
 	public static Boolean ReleaseLapstone(Map<String, String> argMap) throws Exception {
 
-		System.out.println();
-		System.out.println("Running method RELEASE() ------------------------------------------------------------------");
-		System.out.println();
+		LOGGER.debug("Running method RELEASE() ------------------------------------------------------------------");
+
 		try {
 			// initialize directories
-			File rootPath = new File(argMap.get("path"));
-			File www = new File(rootPath, "www");
-			File www_debug = new File(rootPath, "www_debug");
+			File root = new File(argMap.get("path"));
+			File www = new File(root, "www");
+			File www_debug = new File(root, "www_debug");
 
 			// ********************************************************************
 			// debug output
 
-			System.out.println("        root path: " + rootPath.getAbsolutePath());
-			System.out.println("      path to www: " + www.getAbsolutePath());
-			System.out.println("path to www_debug: " + www_debug.getAbsolutePath());
+			LOGGER.debug("     root: " + root.getAbsolutePath());
+			LOGGER.debug("      www: " + www.getAbsolutePath());
+			LOGGER.debug("www_debug: " + www_debug.getAbsolutePath());
 
 			// ********************************************************************
 			// update app version
@@ -353,7 +354,9 @@ public class Release {
 		LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
 		configuration = new File(www, "js/plugin/plugins.json");
-		Map<String, Boolean> plugins = objectMapper.readValue(configuration, HashMap.class);
+		Map<String, Boolean> plugins = objectMapper.readValue(configuration, new TypeReference<HashMap<String, String>>() {
+		});
+
 		for (String pluginName : plugins.keySet()) {
 			String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
 			try {

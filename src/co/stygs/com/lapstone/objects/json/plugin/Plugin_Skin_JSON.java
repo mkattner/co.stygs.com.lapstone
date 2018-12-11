@@ -17,86 +17,86 @@ import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
 public class Plugin_Skin_JSON extends APlugin_JSON {
 
-    public Plugin_Skin_JSON() {
-	// TODO Auto-generated constructor stub
-    }
-    public List<String> getDependency() {
+	public Plugin_Skin_JSON() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public List<String> getDependency() {
 		return dependency;
 	}
 
 	public void setDependency(List<String> dependency) {
 		this.dependency = dependency;
 	}
-	
-	 
-    private List<String> dependency;
 
-    private Boolean useSkinPlugin;
-    private String defaultSkin;
+	private List<String> dependency;
 
-    public Map<String, List<String>> getSkins() {
-	return skins;
-    }
+	private Boolean useSkinPlugin;
+	private String defaultSkin;
 
-    public void setSkins(Map<String, List<String>> skins) {
-	this.skins = skins;
-    }
-
-    private Map<String, List<String>> skins;
-
-    public Boolean getUseSkinPlugin() {
-	return useSkinPlugin;
-    }
-
-    public void setUseSkinPlugin(Boolean useSkinPlugin) {
-	this.useSkinPlugin = useSkinPlugin;
-    }
-
-    public String getDefaultSkin() {
-	return defaultSkin;
-    }
-
-    public void setDefaultSkin(String defaultSkin) {
-	this.defaultSkin = defaultSkin;
-    }
-
-    @Override
-    public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
-	ObjectMapper objectMapper = new ObjectMapper();
-	File configuration;
-	File currentFile;
-
-	configuration = new File(www, "js/plugin/plugin.Skin.json");
-	Plugin_Skin_JSON skinJson = objectMapper.readValue(configuration, Plugin_Skin_JSON.class);
-
-	if (skinJson.getUseSkinPlugin()) {
-	    for (String skin : skinJson.getSkins().keySet()) {
-		String combinedStyle = "";
-		for (String url : skinJson.getSkins().get(skin)) {
-		    currentFile = new File(www, "page/" + url);
-		    System.out.println("Add: " + currentFile.getAbsolutePath());
-
-		    String currentStyle = Less.compile(currentFile, true) + "\n\n";
-
-		    // resolve dependencies
-		    currentStyle = currentStyle.replaceAll("url\\(\\'", "url('" + url.substring(0, url.lastIndexOf("/") + 1));
-		    currentStyle = currentStyle.replaceAll("url\\(\\\"", "url(\"" + url.substring(0, url.lastIndexOf("/") + 1));
-
-		    combinedStyle += currentStyle;
-
-		    currentFile.delete();
-		}
-
-		File allSkins = new File(www, "css/skin/" + skin + "/all.skin." + skin + ".css");
-		System.out.println("Wirte combined skin file: " + allSkins.getAbsolutePath());
-		FileUtils.write(allSkins, combinedStyle);
-		System.out.println("compress skin file:       " + allSkins.getAbsolutePath());
-		Compressor.compressStylesheet(allSkins.getAbsolutePath(), allSkins.getAbsolutePath(), new StylesheetCompressorOptions());
-		Release.cssRegistry.add(allSkins);
-	    }
+	public Map<String, List<String>> getSkins() {
+		return skins;
 	}
 
-	return null;
-    }
+	public void setSkins(Map<String, List<String>> skins) {
+		this.skins = skins;
+	}
+
+	private Map<String, List<String>> skins;
+
+	public Boolean getUseSkinPlugin() {
+		return useSkinPlugin;
+	}
+
+	public void setUseSkinPlugin(Boolean useSkinPlugin) {
+		this.useSkinPlugin = useSkinPlugin;
+	}
+
+	public String getDefaultSkin() {
+		return defaultSkin;
+	}
+
+	public void setDefaultSkin(String defaultSkin) {
+		this.defaultSkin = defaultSkin;
+	}
+
+	@Override
+	public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
+		File configuration;
+		File currentFile;
+
+		configuration = new File(www, "js/plugin/plugin.Skin.json");
+		Plugin_Skin_JSON skinJson = objectMapper.readValue(configuration, Plugin_Skin_JSON.class);
+
+		if (skinJson.getUseSkinPlugin()) {
+			for (String skin : skinJson.getSkins().keySet()) {
+				String combinedStyle = "";
+				for (String url : skinJson.getSkins().get(skin)) {
+					currentFile = new File(www, "page/" + url);
+					System.out.println("Add: " + currentFile.getAbsolutePath());
+
+					String currentStyle = Less.compile(currentFile, true) + "\n\n";
+
+					// resolve dependencies
+					currentStyle = currentStyle.replaceAll("url\\(\\'", "url('" + url.substring(0, url.lastIndexOf("/") + 1));
+					currentStyle = currentStyle.replaceAll("url\\(\\\"", "url(\"" + url.substring(0, url.lastIndexOf("/") + 1));
+
+					combinedStyle += currentStyle;
+
+					currentFile.delete();
+				}
+
+				File allSkins = new File(www, "css/skin/" + skin + "/all.skin." + skin + ".css");
+				System.out.println("Wirte combined skin file: " + allSkins.getAbsolutePath());
+				FileUtils.write(allSkins, combinedStyle);
+				System.out.println("compress skin file:       " + allSkins.getAbsolutePath());
+				Compressor.compressStylesheet(allSkins.getAbsolutePath(), allSkins.getAbsolutePath(), new StylesheetCompressorOptions());
+				Release.cssRegistry.add(allSkins);
+			}
+		}
+
+		return null;
+	}
 
 }

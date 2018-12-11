@@ -764,10 +764,10 @@ initialisationPanel = {
 	},
 
 	hide : function() {
-		
+
 		window.setTimeout(function() {
 			$("#LAPSTONE").remove();
-			
+
 			if (app.config.apacheCordova) {
 				navigator.splashscreen.hide();
 			}
@@ -1021,6 +1021,12 @@ function extendJsAndJquery() {
 	if (typeof String.prototype.contains != 'function') {
 		String.prototype.contains = function(it) {
 			return this.indexOf(it) != -1;
+		};
+	}
+
+	if (typeof String.prototype.capitalizeFirstLetter != 'function') {
+		String.prototype.capitalizeFirstLetter = function() {
+			return this.charAt(0).toUpperCase() + this.slice(1);
 		};
 	}
 
