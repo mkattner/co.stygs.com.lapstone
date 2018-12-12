@@ -42,12 +42,11 @@ var plugin_Actions = {
 		dfd = $.Deferred();
 		promises = [];
 
-//		todo
-//		if (app.config.min) {
-//			dfd.resolve();
-//		}
-//
-//		else {
+		if (app.config.min) {
+			dfd.resolve();
+		}
+
+		else {
 			$.each(plugin_Actions.config.actions, function(index, actionFileUrl) {
 				promises.push(globalLoader.AsyncScriptLoader("../files/actions/" + actionFileUrl));
 			});
@@ -64,7 +63,7 @@ var plugin_Actions = {
 			promiseOfPromises.fail(function() {
 				dfd.reject();
 			});
-//		}
+		}
 
 		return dfd.promise();
 

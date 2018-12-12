@@ -125,5 +125,10 @@ public class Plugin_RestClient_JSON extends APlugin_JSON {
 	public void setGlobal_getJsonWithLoader_loaderTemplate(String global_getJsonWithLoader_loaderTemplate) {
 		this.global_getJsonWithLoader_loaderTemplate = global_getJsonWithLoader_loaderTemplate;
 	}
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

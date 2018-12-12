@@ -147,5 +147,10 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 		return null;
 	}
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

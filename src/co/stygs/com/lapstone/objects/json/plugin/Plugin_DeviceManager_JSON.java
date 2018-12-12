@@ -64,4 +64,10 @@ public class Plugin_DeviceManager_JSON extends APlugin_JSON {
 	 
     private List<String> dependency;
 
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

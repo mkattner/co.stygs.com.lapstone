@@ -92,4 +92,11 @@ public class Plugin_WebServiceError_JSON extends APlugin_JSON {
     private List<String> wseFiles;
     private Map<String, Map<String, String>> wse;
 
+
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

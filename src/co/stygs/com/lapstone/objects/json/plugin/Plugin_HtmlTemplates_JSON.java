@@ -153,4 +153,10 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 	private List<String> dependency;
 	private Boolean useSkinPlugin;
 
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

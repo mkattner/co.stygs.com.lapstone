@@ -8,14 +8,19 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
 import co.stygs.com.lapstone.Compressor.StylesheetCompressorOptions;
+import co.stygs.com.lapstone.objects.json.APlugin_JSON;
 import co.stygs.com.lapstone.objects.json.IPlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 import co.stygs.com.lapstone.objects.json.Page_JSON;
@@ -25,6 +30,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helger.commons.charset.CCharset;
+import com.helger.commons.collection.impl.MapEntry;
 import com.helger.css.ECSSVersion;
 import com.helger.css.decl.CSSDeclaration;
 import com.helger.css.decl.CSSExpression;
@@ -36,7 +42,7 @@ import com.helger.css.writer.CSSWriter;
 import com.helger.css.writer.CSSWriterSettings;
 import com.inet.lib.less.Less;
 
-public class Release implements ILogger{
+public class Release implements ILogger {
 
 	public static List<File> cssRegistry = new ArrayList<>();
 
@@ -392,105 +398,170 @@ public class Release implements ILogger{
 	}
 
 	private static void createSinglePluginFile(File www) throws Exception {
-		String allPluginsContent = "";
-		Plugin_JSON pluginConfiguration;
+		StringBuilder allPluginsContent = new StringBuilder();
+		APlugin_JSON pluginConfiguration;
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		// create map and copy just the used pages
 		System.out.println();
 		System.out.println("Create all.plugin.js file. Copy just used plugins. ----------------------------------------");
 		System.out.println();
+		// NEW
+		File currentFile;
+		currentFile = new File(www, "js/plugin/plugins.json");
+		LinkedHashMap<String, Boolean> plugins = objectMapper.readValue(currentFile, new TypeReference<LinkedHashMap<String, Boolean>>() {
+		});
 
-		File[] pluginFiles = new File(www, "js/plugin").listFiles();
-		Arrays.sort(pluginFiles); // we must sort the array, as the listFiles
-		// method doesn't guarantee that the return
-		// value is sorted. plugin_*.js must be
-		// inserted before the plugins includes.
-		for (File file : pluginFiles) {
-			System.out.println();
-			System.out.println("Processing: " + file.getName());
-			String currentFileContent;
+		currentFile = new File(www, "js/plugin/plugins.js");
+		allPluginsContent.append(FileUtils.readFileToString(currentFile));
+		currentFile.delete();
 
-			if (!file.isDirectory()) {
+		currentFile = new File(www, "js/plugin/plugins.json");
+		allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(currentFile));
+		currentFile.delete();
 
-				currentFileContent = FileUtils.readFileToString(file);
+		for (String pluginName : plugins.keySet()) {
+			// just load used plugins
+			if (Boolean.TRUE.equals(plugins.get(pluginName))) {
+				// JS
+				currentFile = new File(www, "js/plugin/plugin." + pluginName + ".js");
+				try {
+					Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
+				} catch (Exception e) {
+					throw new CompressorException(e);
+				}
+				allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentFile));
+				currentFile.delete();
 
-				// do not process hidden file
-				if (file.getName().startsWith(".")) {
-					currentFileContent = "";
+				// JSON
+				currentFile = new File(www, "js/plugin/plugin." + pluginName + ".json");
+
+				// parse JSON file to include the included files
+
+				String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
+				try {
+					System.out.println();
+					System.out.println("-----------------------------------------------------------------------------------");
+					System.out.println("Running release() method on: " + curretnClass);
+					pluginConfiguration = (APlugin_JSON) objectMapper.readValue(currentFile, Class.forName(curretnClass));
+
+				} catch (ClassNotFoundException e) {
+					pluginConfiguration = objectMapper.readValue(currentFile, Plugin_JSON.class);
 				}
 
-				// plugin management file
-				else if (file.getName().equals("plugins.js")) {
+				for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
+					File pluginIncludeFile = new File(www, "js/plugin/include/" + pluginName + "/" + pluginIncludeFileName);
+					System.out.println("Adding include file: " + pluginIncludeFile.getAbsolutePath());
+					allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile));
+					pluginIncludeFile.delete();
 				}
 
-				// plugin configuration file
-				else if (file.getName().equals("plugins.json")) {
-					currentFileContent = "var config_json = " + currentFileContent;
-				}
+				allPluginsContent.append(";\n\n" + pluginConfiguration.getAdditionalJavascript(www));
 
-				// plugin javascript files
-				else if (file.getName().endsWith("js")) {
-					String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
-					System.out.println("Identifiyer: " + jsIdentifyer);
-
-					// Minify the js file
-
-					try {
-
-						Compressor.compressJavaScript(file.getAbsolutePath(), file.getAbsolutePath(), new JavascriptCompressorOptions());
-
-					}
-
-					catch (Exception e) {
-						throw new CompressorException(e);
-					}
-
-					currentFileContent = FileUtils.readFileToString(file);
-				}
-
-				// plugin configuration files
-				else if (file.getName().endsWith("json")) {
-					String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
-					System.out.println("Identifiyer: " + jsIdentifyer);
-					currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
-
-					// parse JSON file to include the included files
-					pluginConfiguration = objectMapper.readValue(file, Plugin_JSON.class);
-					for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
-						File pluginIncludeFile = new File(www, "js/plugin/include/" + pluginConfiguration.getName() + "/" + pluginIncludeFileName);
-						System.out.println("Adding include file: " + pluginIncludeFile.getAbsolutePath());
-
-						// Minify the js include file
-
-						try {
-
-							Compressor.compressJavaScript(pluginIncludeFile.getAbsolutePath(), pluginIncludeFile.getAbsolutePath(), new JavascriptCompressorOptions());
-
-						}
-
-						catch (Exception e) {
-							throw new CompressorException(e);
-						}
-
-						currentFileContent += ";" + FileUtils.readFileToString(pluginIncludeFile);
-						pluginIncludeFile.delete();
-					}
-
-				}
-
-				// delete processed file
-				file.delete();
-
-				// add semicolon at the end of js/json file
-				if (!currentFileContent.endsWith(";"))
-					currentFileContent += ";";
-
-				currentFileContent += "\n";
-
-				allPluginsContent += currentFileContent;
+				allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentFile));
+				currentFile.delete();
 			}
+
 		}
+
+		// File[] pluginFiles = new File(www, "js/plugin").listFiles();
+		// Arrays.sort(pluginFiles); // we must sort the array, as the listFiles
+		// // method doesn't guarantee that the return
+		// // value is sorted. plugin_*.js must be
+		// // inserted before the plugins includes.
+		// for (File pluginFile : pluginFiles) {
+		// System.out.println();
+		// System.out.println("Processing: " + pluginFile.getName());
+		// String currentFileContent;
+		//
+		// if (!pluginFile.isDirectory()) {
+		//
+		// currentFileContent = FileUtils.readFileToString(pluginFile);
+		//
+		// // do not process hidden file
+		// if (pluginFile.getName().startsWith(".")) {
+		// currentFileContent = "";
+		// }
+		//
+		// // plugin management file
+		// else if (pluginFile.getName().equals("plugins.js")) {
+		// }
+		//
+		// // plugin configuration file
+		// else if (pluginFile.getName().equals("plugins.json")) {
+		// currentFileContent = "var config_json = " + currentFileContent;
+		// }
+		//
+		// // plugin javascript files
+		// else if (pluginFile.getName().endsWith("js")) {
+		// String jsIdentifyer =
+		// pluginFile.getName().substring(pluginFile.getName().indexOf(".") + 1,
+		// pluginFile.getName().indexOf(".", pluginFile.getName().indexOf(".") + 1));
+		// System.out.println("Identifiyer: " + jsIdentifyer);
+		//
+		// // Minify the js file
+		//
+		// try {
+		//
+		// Compressor.compressJavaScript(pluginFile.getAbsolutePath(),
+		// pluginFile.getAbsolutePath(), new JavascriptCompressorOptions());
+		//
+		// }
+		//
+		// catch (Exception e) {
+		// throw new CompressorException(e);
+		// }
+		//
+		// currentFileContent = FileUtils.readFileToString(pluginFile);
+		// }
+		//
+		// // plugin configuration files
+		// else if (pluginFile.getName().endsWith("json")) {
+		// String jsIdentifyer =
+		// pluginFile.getName().substring(pluginFile.getName().indexOf(".") + 1,
+		// pluginFile.getName().indexOf(".", pluginFile.getName().indexOf(".") + 1));
+		// System.out.println("Identifiyer: " + jsIdentifyer);
+		// currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
+		//
+		// // parse JSON file to include the included files
+		// pluginConfiguration = objectMapper.readValue(pluginFile, Plugin_JSON.class);
+		// for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
+		// File pluginIncludeFile = new File(www, "js/plugin/include/" +
+		// pluginConfiguration.getName() + "/" + pluginIncludeFileName);
+		// System.out.println("Adding include file: " +
+		// pluginIncludeFile.getAbsolutePath());
+		//
+		// // Minify the js include file
+		//
+		// try {
+		//
+		// Compressor.compressJavaScript(pluginIncludeFile.getAbsolutePath(),
+		// pluginIncludeFile.getAbsolutePath(), new JavascriptCompressorOptions());
+		//
+		// }
+		//
+		// catch (Exception e) {
+		// throw new CompressorException(e);
+		// }
+		//
+		// currentFileContent += ";" + FileUtils.readFileToString(pluginIncludeFile);
+		// pluginIncludeFile.delete();
+		// }
+		//
+		// }
+		//
+		// // delete processed file
+		// pluginFile.delete();
+		//
+		// // add semicolon at the end of js/json file
+		// if (!currentFileContent.endsWith(";"))
+		// currentFileContent += ";";
+		//
+		// currentFileContent += "\n";
+		//
+		// allPluginsContent += currentFileContent;
+		// }
+		// }
 		FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent);
 		FileUtils.deleteDirectory(new File(www, "js/plugin/include"));
 	}
