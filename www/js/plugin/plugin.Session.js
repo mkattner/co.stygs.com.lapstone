@@ -1,4 +1,4 @@
-//# sourceURL=plugin.Session.js
+// # sourceURL=plugin.Session.js
 /**
  * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -125,26 +125,40 @@ var plugin_Session = {
      */
     loggedIn: function(value) {
       app.debug.trace("plugin_Session.functions.loggedIn(" + app.debug.arguments(arguments) + ")");
-      var storedValue = this.getValue(plugin_Session.config.loginHtml5StorageKey);
+
+      app.debug.validate(app.sess.config.loggedIn, "boolean");
+
+      var storedValue = app.sess.config.loggedIn;// this.getValue(plugin_Session.config.loginHtml5StorageKey);
+
+      // GETTER
       if (value == undefined) {
         app.debug.debug("plugin_Session.functions.loggedIn(" + value + ") - case: value == undefined");
         app.debug.debug("plugin_Session.functions.loggedIn() - return: " + storedValue);
         if (storedValue === null || storedValue === false) {
           return false;
-        } else {
+        }
+
+        else {
           return true;
         }
-      } else if (typeof value == "boolean") {
+      }
+
+      // SETTER
+      else if (typeof value == "boolean") {
         app.debug.debug("plugin_Session.functions.loggedIn(" + value + ") - case: typeof value == boolean");
         app.debug.debug("plugin_Session.functions.loggedIn() - set loged in to: " + value);
-        this.setValue(plugin_Session.config.loginHtml5StorageKey, value);
+
+        app.persist.setPluginConfiguration("Session", "loggedIn", value);// this.setValue(plugin_Session.config.loginHtml5StorageKey, value);
+
         if (value == false) {
           app.debug.trace("plugin_Session.functions.loggedIn() - case: value == false");
           // app.store.localStorage.clear();
         }
         app.debug.trace("plugin_Session.functions.loggedIn() - return: " + value);
         return value;
-      } else {
+      }
+
+      else {
         app.debug.trace("plugin_Session.functions.loggedIn() - return: null");
         return null;
       }

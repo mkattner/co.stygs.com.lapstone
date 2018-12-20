@@ -1,134 +1,132 @@
-//# sourceURL=plugin.WebSocketClient.js
+// # sourceURL=plugin.WebSocketClient.js
 /**
  * Copyright (c) 2018 martin.kattner@gmail.com
  * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_WebSocketClient = {
-	config : null,
-	// called by plugins.js
-	constructor : function() {
-		var dfd = $.Deferred();
-		dfd.resolve();
-		return dfd.promise();
+  config: null,
+  // called by plugins.js
+  constructor: function() {
+    var dfd = $.Deferred();
+    dfd.resolve();
+    return dfd.promise();
 
-	},
+  },
 
-	// called after all plugins are loaded
-	pluginsLoaded : function() {
-		app.debug.trace("plugin_WebSocketClient.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
-		var dfd = $.Deferred();
-		dfd.resolve();
-		return dfd.promise();
+  // called after all plugins are loaded
+  pluginsLoaded: function() {
+    app.debug.trace("plugin_WebSocketClient.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
+    var dfd = $.Deferred();
+    dfd.resolve();
+    return dfd.promise();
 
-	},
+  },
 
-	// called after all pages are loaded
-	// caller pages.js
-	pagesLoaded : function() {
-		app.debug.trace("plugin_WebSocketClient.pagesLoaded(" + app.debug.arguments(arguments) + ")");
-		var dfd = $.Deferred();
-		dfd.resolve();
-		return dfd.promise();
+  // called after all pages are loaded
+  // caller pages.js
+  pagesLoaded: function() {
+    app.debug.trace("plugin_WebSocketClient.pagesLoaded(" + app.debug.arguments(arguments) + ")");
+    var dfd = $.Deferred();
+    dfd.resolve();
+    return dfd.promise();
 
-	},
+  },
 
-	// called after pluginsLoaded()
-	// caller: plugins.js
-	definePluginEvents : function() {
-		app.debug.trace("plugin_WebSocketClient.definePluginEvents(" + app.debug.arguments(arguments) + ")");
+  // called after pluginsLoaded()
+  // caller: plugins.js
+  definePluginEvents: function() {
+    app.debug.trace("plugin_WebSocketClient.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
-	},
-	// called by pages.js
-	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
-		app.debug.trace("plugin_WebSocketClient.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
+  },
+  // called by pages.js
+  // called for each page after createPage();
+  afterHtmlInjectedBeforePageComputing: function(container) {
+    app.debug.trace("plugin_WebSocketClient.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
-	},
-	// called once
-	// set the jQuery delegates
-	// caller: pages.js
-	pageSpecificEvents : function(container) {
-		app.debug.trace("plugin_WebSocketClient.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
+  },
+  // called once
+  // set the jQuery delegates
+  // caller: pages.js
+  pageSpecificEvents: function(container) {
+    app.debug.trace("plugin_WebSocketClient.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
-	},
-	// private functions
+  },
+  // private functions
 
-	// public functions
-	// called by user
-	/**
-	 * Public functions for plugin_WebSocketClient
-	 * 
-	 * @namespace plugin_WebSocketClient.functions
-	 * 
-	 */
-	functions : {
-		getWebSocket : function(wsd) {
-			if (!window.WebSocket) {
-				return null;
-			} else {
-				var connection, dfd = $.Deferred();
+  // public functions
+  // called by user
+  /**
+   * Public functions for plugin_WebSocketClient
+   * 
+   * @namespace plugin_WebSocketClient.functions
+   * 
+   */
+  functions: {
+    getWebSocket: function(wsd) {
+      if (!window.WebSocket) {
+        return null;
+      } else {
+        var connection, dfd = $.Deferred();
 
-				wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
+        wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
 
-				wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
+        wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
 
-				connection = new WebSocket(wsd.url);
+        // demo server
+        app.debug.validate(app.wsoc.config.demoMode, "boolean");
+        if (app.wsoc.config.demoMode === true) {
+          dfd = app.demo.socket(Object.assign({}, wsd));
+        }
 
-				// When the connection is open, send some data to the server
-				connection.onopen = function() {
-					dfd["sendMessage"] = function(message) {
-						connection.send(message);
-					}
-				};
+        else {
+          connection = new WebSocket(wsd.url);
 
-				// Log errors
-				connection.onerror = function(error) {
-					// console.log('WebSocket Error ' + error);
-					dfd.reject(error);
-				};
+          // When the connection is open, send some data to the server
+          connection.onopen = function() {
+            dfd["sendMessage"] = function(message) {
+              connection.send(message);
+            }
+          };
 
-				// Log messages from the server
-				connection.onmessage = function(e) {
-					dfd.notify(JSON.parse(e.data));
-				};
+          // Log errors
+          connection.onerror = function(error) {
+            // console.log('WebSocket Error ' + error);
+            dfd.reject(error);
+          };
 
-				connection.onclose = function(event) {
-					dfd.reject(event);
-				}
+          // Log messages from the server
+          connection.onmessage = function(e) {
+            dfd.notify(JSON.parse(e.data));
+          };
 
-				dfd["sendMessage"] = function(message) {
-					console.log("not open");
-				}
+          connection.onclose = function(event) {
+            dfd.reject(event);
+          }
 
-				dfd.fail(function() {
-					try {
-						connection.close();
-					} catch (e) {
-						console.log(e);
-					}
+          dfd["sendMessage"] = function(message) {
+            console.log("not open");
+          }
 
-				});
+          dfd.fail(function() {
+            try {
+              connection.close();
+            } catch (e) {
+              console.log(e);
+            }
 
-				return dfd;
-			}
-		}
-	}
+          });
+        }
+
+        return dfd;
+      }
+    }
+  }
 };

@@ -110,7 +110,7 @@ var plugin_Skin = {
 			if (this.skinAvailable(skin)) {
 				// change skin in config
 
-				app.persist.pluginConfiguration("Skin", "defaultSkin", skin)
+				app.persist.setPluginConfiguration("Skin", "defaultSkin", skin)
 
 				return true;
 			} else {

@@ -2,7 +2,7 @@
 	"name": "Session",
 	"shortname": "sess",
 	"include": [],
-	"dependency": [],
+	"dependency": [],"loggedIn":false,
 	"loginHtml5StorageKey": "session-loggedin",
 	"sessionHTML5StoragePrefix": "globalSession"
 }

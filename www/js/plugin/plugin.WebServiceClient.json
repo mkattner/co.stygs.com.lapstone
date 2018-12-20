@@ -3,6 +3,7 @@
 	"shortname": "wsc",
 	"include": [],
 	"dependency": [],
+	"demoMode": false,
 	"defaultWebServiceTimeoutMs": 5000,
 	"defaultWebServiceMethod": "post",
 	"defaultWebServiceType": "json",

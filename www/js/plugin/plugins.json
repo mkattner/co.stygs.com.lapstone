@@ -23,5 +23,7 @@
 	"Skin": true,
 	"WebServiceClient": true,
 	"WebServiceError": true,
-	"WebSocketClient": true
+	"WebSocketClient": true,
+	"Unit": true,
+	"DemoServer": true
 }

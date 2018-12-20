@@ -2,5 +2,6 @@
 	"name": "WebSocketClient",
 	"shortname": "wsoc",
 	"include": [],
-	"dependency": []
+	"dependency": [],
+	"demoMode": false
 }

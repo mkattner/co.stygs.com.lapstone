@@ -1,0 +1,9 @@
+{
+	"name": "DemoServer",
+	"shortname": "demo",
+	"include": [
+		"request.js",
+		"socket.js"
+	],
+	"dependency": []
+}
