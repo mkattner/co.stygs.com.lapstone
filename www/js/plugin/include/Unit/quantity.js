@@ -12,22 +12,40 @@
  */
 
 // METER, {value:13.12, unit:CENTIMETER}
-app.func("convert", function(scaleValue, toUnit) {
-  app.debug.validate(scaleValue, "object");
+app.func("quantity.getList", function(quantity) {
+  app.debug.validate(quantity, "string");
+  var units;
 
-  var thisUnit;
+  units = {};
 
-  thisUnit = scaleValue.unit;
+  switch (quantity) {
+    // VELOCITY = LENGTH / TIME
+    case "VELOCITY":
+      $.each(app.unit.config.e, function(unitName, unit) {
+        if (app.unit.isSiUnit(unit) === true || unit.quanity != null) {
+          return
+        };
 
-  app.debug.validate(thisUnit);
-  app.debug.validate(toUnit);
+        if (unit.numerators.length === 1 && unit.denominators.length === 1) {
+          if (app.unit.config.e[unit.numerators[0]].quantity === "LENGTH" && app.unit.config.e[unit.denominators[0]].quantity === "TIME") {
+            units[unitName] = $.extend(true, {}, unit);
+          }
+        };
+      })
 
-  thisUnit = app.unit.config.e[thisUnit] || thisUnit;
-  toUnit = app.unit.config.e[toUnit] || toUnit;
+      break;
 
-  app.debug.validate(thisUnit, "object");
-  app.debug.validate(toUnit, "object");
+    case "ANGLE":
+      $.each(app.unit.config.e, function(unitName, unit) {
+        if (unit.quantity === quantity) {
+          units[unitName] = $.extend(true, {}, unit);
+        }
+      })
+      break;
+    default:
+      throw "NotImplementedException " + quantity
 
-  return app.unit.to(thisUnit, toUnit) * scaleValue.value;
+  }
 
+  return units;
 }, plugin_Unit.functions);
