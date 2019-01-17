@@ -672,6 +672,12 @@ var plugin_Debug = {
           if (!$.isFunction(object)) { throw new Error("Validation problem. Please look at the stacktrace; " + message); }
         }
 
+        // JSOBJECT
+        else if (type === "jsobject") {
+          if (type !== "object" || $.isPlainObject(object) || $.isFunction(object)) { throw new Error("Validation problem: Your object is not a javacript object {}; " + message); }
+
+        }
+
         else if ((typeof object === type)) {
           if (type === "object" && !$.isPlainObject(object)) { throw new Error("Validation problem: Your object is an Array but not a Plain Object; " + message); }
 

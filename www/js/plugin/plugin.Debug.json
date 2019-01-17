@@ -1,7 +1,10 @@
 {
 	"name": "Debug",
 	"shortname": "debug",
-	"include": ["log.js"],
+	"include": [
+		"log.js",
+		"validate.js"
+	],
 	"dependency": [],
 	"debugDevice": true,
 	"debugLevels": {
