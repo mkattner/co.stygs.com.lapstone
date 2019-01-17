@@ -678,6 +678,14 @@ var plugin_Debug = {
 
         }
 
+        // UNDEFINED
+        else if (type === "undefined") {
+          if (object !== undefined) {
+            console.log(object);
+            throw new Error("Validation problem: Your object is not undefined; " + message);
+          }
+        }
+
         else if ((typeof object === type)) {
           if (type === "object" && !$.isPlainObject(object)) { throw new Error("Validation problem: Your object is an Array but not a Plain Object; " + message); }
 

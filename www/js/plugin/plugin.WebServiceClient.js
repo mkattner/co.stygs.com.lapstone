@@ -172,7 +172,7 @@ var plugin_WebServiceClient = {
     }
 
     // demo server
-    app.debug.validate(app.wsc.config.demoMode, "boolean");
+    app.debug.validate(app.wsc.config.demoMode, "boolean", "missing configuration: app.wsc.config.demoMode: boolean");
     if (app.wsc.config.demoMode === true) {
       returnValue = app.demo.request(Object.assign({}, wsd));
     }
@@ -198,40 +198,32 @@ var plugin_WebServiceClient = {
           crossDomain: true,
           beforeSend: function(jqXHR, settings) {
             app.debug.debug("plugin_WebServiceClient.getAjax() beforeSend: set http headers");
-            if (plugin_WebServiceClient.config.useHeaderToken) {
-              app.debug.debug("plugin_WebServiceClient.getAjax() case: plugin_WebServiceClient.config.useHeaderToken =≠ true");
-              app.debug.debug("plugin_WebServiceClient.getAjax() paramerter: " + plugin_WebServiceClient.config.headerToken.key + " = " + app.store.localStorage.get(plugin_WebServiceClient.config.headerToken.value));
 
-              jqXHR.setRequestHeader(plugin_WebServiceClient.config.headerToken.key, app.store.localStorage.get(plugin_WebServiceClient.config.headerToken.value));
+            app.debug.operation(function() {
+              window.setTimeout(function() {
+                app.debug.validate(plugin_WebServiceClient.config.useHeaderToken, "undefined", "WebServiceClient.config.useHeaderToken is outdated. use: WebServiceClient.config.<server>.useHeaderToken")
+                app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].useHeaderToken, "boolean", "required: ");
+
+                app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].headerToken, "object", "required:");
+                app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].headerToken.key, "string", "required:");
+                app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].headerToken.value, "string", "required: ");
+              }, 0);
+            })
+
+            if (plugin_WebServiceClient.config.server[wsd.server].useHeaderToken) {
+              // app.debug.debug("plugin_WebServiceClient.getAjax() case: plugin_WebServiceClient.config.useHeaderToken =≠ true");
+              // app.debug.debug("plugin_WebServiceClient.getAjax() paramerter: " + plugin_WebServiceClient.config.server[wsd.server].headerToken.key + " = " + app.store.localStorage.get(plugin_WebServiceClient.config.server[wsd.server].headerToken.value));
+
+              jqXHR.setRequestHeader(plugin_WebServiceClient.config.server[wsd.server].headerToken.key, app.store.localStorage.get(plugin_WebServiceClient.config.server[wsd.server].headerToken.value));
             }
 
+            // set headers of wsd
             if (Object.keys(wsd.headers).length > 0) {
-              // app.debug.debug("plugin_WebServiceClient.getAjax() -
-              // case:
-              // headers !== undefined");
-              // app.debug.debug("plugin_WebServiceClient.getAjax() -
-              // set
-              // additional headers");
-              // var pairs = headers.split('&'), split;
-
               $.each(wsd.headers, function(headerKey, headerValue) {
                 jqXHR.setRequestHeader(headerKey, headerValue);
               });
-              // for (i in pairs) {
-              // split = pairs[i].split('=');
-              // paramKey = split[0];
-              // paramValue = split[1];
-              //
-              // if (paramValue.indexOf('{') != -1) {
-              // paramValue = parameter[paramKey];
-              // }
-              //
-              // app.debug.debug("plugin_WebServiceClient.getAjax() -
-              // setRequestHeader(" + paramKey + ", " + paramValue +
-              // ")");
-              // jqXHR.setRequestHeader(paramKey, paramValue);
-              // }
             }
+
           },
 
           success: function(data, textStatus, jqXHR) {
