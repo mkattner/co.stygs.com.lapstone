@@ -18,6 +18,7 @@ app.func("request", function(wsd) {
 
   switch (wsd.method.toLowerCase()) {
   case "get":
+    app.debug.info("DemoServer - load demo web service: " + wsd.url);
     globalLoader.AsyncJsonLoader("../files/demo/ws/" + wsd.url)
 
     .done(function(data) {

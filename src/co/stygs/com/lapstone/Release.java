@@ -656,7 +656,7 @@ public class Release implements ILogger {
 	    } catch (Exception e) {
 		e.printStackTrace();
 		System.out.println("ERROR: NOT ABLE TO COMPRESS: " + include_onceFile.getAbsolutePath());
-		//throw new CompressorException(e);
+		// throw new CompressorException(e);
 	    }
 
 	    System.out.println("Adding include_once file: " + include_onceFile.getAbsolutePath());
@@ -685,7 +685,9 @@ public class Release implements ILogger {
 	}
 
 	catch (Exception e) {
-	    throw new CompressorException(e);
+	    LOGGER.error("Exception", e);
+	    FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPlugins));
+		
 	}
 
 	allPlugins.delete();
@@ -705,11 +707,11 @@ public class Release implements ILogger {
 	}
 
 	catch (Exception e) {
-	    
+
 	    FileUtils.copyFile(allPages, allPagesMin);
-	    
+
 	    System.out.println("ERROR: NOT ABLE TO COMPRESS: " + allPages.getAbsolutePath());
-//	    throw new CompressorException(e);
+	    // throw new CompressorException(e);
 	}
 
 	allPages.delete();
