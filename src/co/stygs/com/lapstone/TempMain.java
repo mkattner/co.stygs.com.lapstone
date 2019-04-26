@@ -10,7 +10,7 @@ public class TempMain {
 	}
 
 	public static void main(String[] args) throws IOException, CompressorException {
-		File in=new File("C:\\Users\\Martin Kattner\\GIT\\com.bsb-driveline.eye-sea.server\\app\\www_debug\\js\\plugin\\plugin.BSB.js");
+		File in=new File("C:\\temp\\in.js");
 		File out= new File("C:\\temp\\out.js");
 		
 		LapstoneCompiler.Compile(in, out);

@@ -20,8 +20,6 @@ public class Lapstone {
 	public static Map<String, String> argMap;
 
 	public static void main(String[] args) throws Exception {
-		Compressor.logger.addHandler(new ConsoleHandler());
-		Compressor.logger.setLevel(Level.ALL);
 		
 		org.apache.log4j.BasicConfigurator.configure();
 

@@ -1,18 +1,21 @@
 package co.stygs.com.lapstone;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-
-import com.google.common.collect.ImmutableList;
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.ConformanceConfig;
-import com.google.javascript.jscomp.Requirement;
-import com.google.javascript.jscomp.Result;
-import com.google.javascript.jscomp.SourceFile;
+import org.mozilla.javascript.CompilerEnvirons;
+import org.mozilla.javascript.ErrorReporter;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.Parser;
+import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.AstNode;
+import org.mozilla.javascript.ast.AstRoot;
+import org.mozilla.javascript.ast.FunctionCall;
+import org.mozilla.javascript.ast.FunctionNode;
+import org.mozilla.javascript.ast.NodeVisitor;
 
 public class LapstoneCompiler {
 
@@ -20,37 +23,60 @@ public class LapstoneCompiler {
 		// TODO Auto-generated constructor stub
 	}
 
-	private static final com.google.javascript.jscomp.Compiler GOOGLE_COMPILER;
-	private static final CompilerOptions GOOGLE_COMPILER_OPTIONS;
+	public static void Compile(File in, File out) throws IOException, CompressorException {
+		Parser parser = new Parser(new CompilerEnvirons(), new ErrorReporter() {
 
-	static {
-		GOOGLE_COMPILER = new com.google.javascript.jscomp.Compiler();
-		GOOGLE_COMPILER_OPTIONS = new CompilerOptions();
-		GOOGLE_COMPILER_OPTIONS.setPrettyPrint(true);
+			@Override
+			public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
+				// TODO Auto-generated method stub
 
-		GOOGLE_COMPILER_OPTIONS.setDefineReplacements(defineReplacements);
-		ConformanceConfig.parseFrom("");
-		
-		CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(GOOGLE_COMPILER_OPTIONS);
-		GOOGLE_COMPILER.initOptions(GOOGLE_COMPILER_OPTIONS);
+			}
+
+			@Override
+			public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		AstRoot astRoot = parser.parse(new FileReader(in), "source", 0);
+		astRoot.visit(new NodeVisitor() {
+
+			@Override
+			public boolean visit(AstNode node) {
+				// System.out.println(node.toString());
+				if (node.getType() == 38) {
+					// System.out.println("f - " + node.toString());
+
+					if (node.toSource().startsWith("app.debug.")) {
+						System.out.println("Remove: " + node.toSource());
+						try {
+							node.getParent().getParent().removeChild(node.getParent());
+							return false;
+						} catch (Exception e) {
+							System.out.println(node.toSource());
+							System.out.println(node.getParent().toSource());
+							System.out.println(node.getParent().getParent().toSource());
+							e.printStackTrace();
+						}
+					}
+				}
+
+				return true;
+			}
+		});
+
+		FileUtils.writeStringToFile(out, astRoot.toSource());
 	}
 
-	public static void Compile(File in, File out) throws IOException, CompressorException {
-
-		List<SourceFile> externs = ImmutableList.of();
-		SourceFile input = SourceFile.fromFile(in.getAbsolutePath());
-		List<SourceFile> inputs = ImmutableList.of(input);
-
-		Result result = GOOGLE_COMPILER.compile(externs, inputs, GOOGLE_COMPILER_OPTIONS);
-		
-		if(result.success) {
-			
-			FileUtils.writeStringToFile(out, GOOGLE_COMPILER.toSource());
-			
-		}else
-		{
-			throw new CompressorException();
-		}
+	public static void Css(File in, File out) throws IOException {
+		FileUtils.writeStringToFile(out, FileUtils.readFileToString(in));
 	}
 
 }

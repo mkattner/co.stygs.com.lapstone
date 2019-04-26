@@ -15,8 +15,7 @@ import com.helger.css.reader.CSSReader;
 import com.helger.css.writer.CSSWriter;
 import com.inet.lib.less.Less;
 
-import co.stygs.com.lapstone.Compressor;
-import co.stygs.com.lapstone.Compressor.JavascriptCompressorOptions;
+import co.stygs.com.lapstone.LapstoneCompiler;
 import co.stygs.com.lapstone.Release;
 import co.stygs.com.lapstone.objects.json.APlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
@@ -79,23 +78,19 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	    System.out.println("Compress: " + currentFile.getAbsolutePath());
 
 	    try {
-		Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
+//		Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
+		LapstoneCompiler.Compile(currentFile,currentFile);
 	    } catch (Exception e) {
 		e.printStackTrace();
 		System.out.println("ERROR: NOT ABLE TO COMPRESS: " + currentFile.getAbsolutePath());
 	    }
 
 	    System.out.println("Add: " + currentFile.getAbsolutePath());
-	    if (currentFile.getAbsolutePath().contains("ext"))
-		Compressor.logger.setLevel(Level.OFF);
-	    else
-		Compressor.logger.setLevel(Level.ALL);
 
 	    combinedJavascript += FileUtils.readFileToString(currentFile) + "\n\n";
 
 	    currentFile.delete();
 	}
-	Compressor.logger.setLevel(Level.ALL);
 	File allJavascriptFile = new File(www, "files/all.javascript." + lapstoneJson.getVersion().get("app") + ".js");
 	System.out.println("Wirte combined script file: " + allJavascriptFile.getAbsolutePath());
 	FileUtils.write(allJavascriptFile, combinedJavascript);
