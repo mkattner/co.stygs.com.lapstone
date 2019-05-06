@@ -21,7 +21,7 @@ public class Template {
 	public static Boolean TemplateLapstone(Map<String, String> argMap) {
 		try {
 			File appPath = new File(argMap.get("path"));
-			File lapstonePath = new File(argMap.get("lapstone"));
+			// File lapstonePath = new File(argMap.get("lapstone"));
 			final File www_debug = new File(appPath, "www_debug");
 
 			File html = new File(www_debug, "files/template/" + argMap.get("name") + ".html");
