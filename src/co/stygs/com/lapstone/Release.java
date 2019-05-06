@@ -78,6 +78,7 @@ public class Release implements ILogger {
 			// ********************************************************************
 			// copy www_debug to www
 
+			System.out.println("Delete directory: " + www.getAbsolutePath());
 			FileUtils.deleteDirectory(www);
 			FileUtils.copyDirectory(www_debug, www, true);
 
@@ -449,6 +450,10 @@ public class Release implements ILogger {
 				for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
 					File pluginIncludeFile = new File(www, "js/plugin/include/" + pluginName + "/" + pluginIncludeFileName);
 					System.out.println("Adding include file: " + pluginIncludeFile.getAbsolutePath());
+
+					// slow
+					LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile);
+
 					allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile, Lapstone.CHARSET));
 					pluginIncludeFile.delete();
 				}
@@ -462,7 +467,11 @@ public class Release implements ILogger {
 		}
 
 		FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent, Lapstone.CHARSET);
-		FileUtils.deleteDirectory(new File(www, "js/plugin/include"));
+
+		Thread.sleep(1000);
+		File includeDirectory = new File(www, "js/plugin/include");
+		System.out.println("Delete directorey: " + new File(www, "js/plugin/include").getAbsolutePath());
+		FileUtils.deleteDirectory(includeDirectory);
 	}
 
 	private static void createSinglePageFile(File www) throws Exception {
