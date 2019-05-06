@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-
 import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +27,6 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		File configuration;
-		File currentFile;
 
 		configuration = new File(www, "js/plugin/plugin.HtmlTemplates.json");
 		Plugin_HtmlTemplates_JSON htmlTemplates = objectMapper.readValue(configuration, Plugin_HtmlTemplates_JSON.class);

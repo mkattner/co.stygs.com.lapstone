@@ -4,18 +4,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -29,7 +23,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.collection.impl.MapEntry;
 import com.helger.css.ECSSVersion;
 import com.helger.css.decl.CSSDeclaration;
 import com.helger.css.decl.CSSExpression;
@@ -101,8 +94,8 @@ public class Release implements ILogger {
 			File startupStyle = new File(www, "js/lapstone.css");
 			File startupContent = new File(www, "js/lapstone.html");
 
-			lapstoneJson.setStartupContent(FileUtils.readFileToString(startupContent,Lapstone.CHARSET));
-			lapstoneJson.setStartupStyle(FileUtils.readFileToString(startupStyle,Lapstone.CHARSET));
+			lapstoneJson.setStartupContent(FileUtils.readFileToString(startupContent, Lapstone.CHARSET));
+			lapstoneJson.setStartupStyle(FileUtils.readFileToString(startupStyle, Lapstone.CHARSET));
 
 			startupStyle.delete();
 			startupContent.delete();
@@ -153,7 +146,7 @@ public class Release implements ILogger {
 				System.out.println("     write to css: " + cssFromLessFile.getAbsolutePath());
 				System.out.println();
 
-				FileUtils.write(cssFromLessFile, Less.compile(lessFile, false));
+				FileUtils.write(cssFromLessFile, Less.compile(lessFile, false), Lapstone.CHARSET);
 
 			}
 
@@ -337,7 +330,7 @@ public class Release implements ILogger {
 			LapstoneCompiler.Compile(lapstoneJsFile, lapstoneJsFile);
 
 			// slow in java, but very useful for debugging release version
-			FileUtils.writeStringToFile(lapstoneJsFile, "//# sourceURL=lapstone.js" + "\n" + FileUtils.readFileToString(lapstoneJsFile,Lapstone.CHARSET),Lapstone.CHARSET);
+			FileUtils.writeStringToFile(lapstoneJsFile, "//# sourceURL=lapstone.js" + "\n" + FileUtils.readFileToString(lapstoneJsFile, Lapstone.CHARSET), Lapstone.CHARSET);
 
 			return true;
 
@@ -351,7 +344,6 @@ public class Release implements ILogger {
 	private static void createCombinedFilesFile(File www, String newVersion) throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		File configuration;
-		File currentFile;
 
 		// PLUGIN Skin
 		// configuration = new File(www, "js/plugin/plugin.Skin.json");
@@ -415,11 +407,11 @@ public class Release implements ILogger {
 		});
 
 		currentFile = new File(www, "js/plugin/plugins.js");
-		allPluginsContent.append(FileUtils.readFileToString(currentFile,Lapstone.CHARSET));
+		allPluginsContent.append(FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
 		currentFile.delete();
 
 		currentFile = new File(www, "js/plugin/plugins.json");
-		allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(currentFile,Lapstone.CHARSET));
+		allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
 		currentFile.delete();
 
 		for (String pluginName : plugins.keySet()) {
@@ -435,7 +427,7 @@ public class Release implements ILogger {
 				} catch (Exception e) {
 					throw new CompressorException(e);
 				}
-				allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentFile,Lapstone.CHARSET));
+				allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
 				currentFile.delete();
 
 				// JSON
@@ -457,20 +449,19 @@ public class Release implements ILogger {
 				for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
 					File pluginIncludeFile = new File(www, "js/plugin/include/" + pluginName + "/" + pluginIncludeFileName);
 					System.out.println("Adding include file: " + pluginIncludeFile.getAbsolutePath());
-					allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile,Lapstone.CHARSET));
+					allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile, Lapstone.CHARSET));
 					pluginIncludeFile.delete();
 				}
 
 				allPluginsContent.append(";\n\n" + pluginConfiguration.getAdditionalJavascript(www));
 
-				allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentFile,Lapstone.CHARSET));
+				allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
 				currentFile.delete();
 			}
 
 		}
 
-
-		FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent,Lapstone.CHARSET);
+		FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent, Lapstone.CHARSET);
 		FileUtils.deleteDirectory(new File(www, "js/plugin/include"));
 	}
 
@@ -498,7 +489,7 @@ public class Release implements ILogger {
 
 			if (!file.isDirectory()) {
 
-				currentFileContent = FileUtils.readFileToString(file,Lapstone.CHARSET);
+				currentFileContent = FileUtils.readFileToString(file, Lapstone.CHARSET);
 
 				if (file.getName().startsWith(".")) {
 					currentFileContent = "";
@@ -528,7 +519,7 @@ public class Release implements ILogger {
 						throw new CompressorException(e);
 					}
 
-					currentFileContent = FileUtils.readFileToString(file,Lapstone.CHARSET);
+					currentFileContent = FileUtils.readFileToString(file, Lapstone.CHARSET);
 
 				}
 
@@ -581,9 +572,9 @@ public class Release implements ILogger {
 		includeContent = "includeEverything=function(){" + includeContent + "};";
 
 		allPagesContent += includeContent;
-		
-		FileUtils.writeStringToFile(new File(www, "js/page/all.page.js"), allPagesContent,Lapstone.CHARSET);
-		//FileUtils.deleteDirectory(new File(www, "js/page/include"));
+
+		FileUtils.writeStringToFile(new File(www, "js/page/all.page.js"), allPagesContent, Lapstone.CHARSET);
+		// FileUtils.deleteDirectory(new File(www, "js/page/include"));
 	}
 
 	private static void compressSinglePluginFile(File www, String version) throws Exception {
@@ -598,12 +589,14 @@ public class Release implements ILogger {
 			// allPluginsMin.getAbsolutePath(), o);
 			LapstoneCompiler.Compile(allPlugins, allPluginsMin);
 			// slow in java, but very useful for debugging release version
-			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPluginsMin,Lapstone.CHARSET),Lapstone.CHARSET);
+			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPluginsMin, Lapstone.CHARSET),
+					Lapstone.CHARSET);
 		}
 
 		catch (Exception e) {
 			LOGGER.error("Exception", e);
-			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPlugins,Lapstone.CHARSET),Lapstone.CHARSET);
+			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPlugins, Lapstone.CHARSET),
+					Lapstone.CHARSET);
 
 		}
 
@@ -622,7 +615,8 @@ public class Release implements ILogger {
 			LapstoneCompiler.Compile(allPages, allPagesMin);
 
 			// slow in java, but very useful for debugging release version
-			FileUtils.writeStringToFile(allPagesMin, "//# sourceURL=all.page." + version + ".js" + "\n" + FileUtils.readFileToString(allPagesMin,Lapstone.CHARSET),Lapstone.CHARSET);
+			FileUtils.writeStringToFile(allPagesMin, "//# sourceURL=all.page." + version + ".js" + "\n" + FileUtils.readFileToString(allPagesMin, Lapstone.CHARSET),
+					Lapstone.CHARSET);
 		}
 
 		catch (Exception e) {

@@ -6,9 +6,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-
 import org.apache.commons.io.FileUtils;
 
 public class Lapstone {
@@ -16,14 +13,14 @@ public class Lapstone {
 	public Lapstone() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public static final Charset CHARSET = Charset.forName("UTF-8");
 
 	// public static String workingDirectory = System.getProperty("user.dir");
 	public static Map<String, String> argMap;
 
 	public static void main(String[] args) throws Exception {
-		
+
 		org.apache.log4j.BasicConfigurator.configure();
 
 		System.out.println("Running LAPSTONE with parameters:");
@@ -189,7 +186,7 @@ public class Lapstone {
 		System.out.println();
 
 		try {
-			List<String> lines = FileUtils.readLines(new File("lapstone.txt"));
+			List<String> lines = FileUtils.readLines(new File("lapstone.txt"), Lapstone.CHARSET);
 
 			for (String line : lines) {
 				System.out.println(line);

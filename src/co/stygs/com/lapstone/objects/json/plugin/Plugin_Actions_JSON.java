@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils;
 
 import co.stygs.com.lapstone.Lapstone;
 import co.stygs.com.lapstone.objects.json.APlugin_JSON;
-import co.stygs.com.lapstone.objects.json.IPlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
 public class Plugin_Actions_JSON extends APlugin_JSON {

@@ -3,8 +3,6 @@ package co.stygs.com.lapstone.objects.json.plugin;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
-import java.util.logging.Level;
-
 import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

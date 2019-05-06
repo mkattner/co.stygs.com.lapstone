@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inet.lib.less.Less;
 
+import co.stygs.com.lapstone.Lapstone;
 import co.stygs.com.lapstone.LapstoneCompiler;
 import co.stygs.com.lapstone.Release;
 import co.stygs.com.lapstone.objects.json.APlugin_JSON;
@@ -88,9 +89,10 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 
 				File allSkins = new File(www, "css/skin/" + skin + "/all.skin." + skin + ".css");
 				System.out.println("Wirte combined skin file: " + allSkins.getAbsolutePath());
-				FileUtils.write(allSkins, combinedStyle);
+				FileUtils.write(allSkins, combinedStyle, Lapstone.CHARSET);
 				System.out.println("compress skin file:       " + allSkins.getAbsolutePath());
-//				Compressor.compressStylesheet(allSkins.getAbsolutePath(), allSkins.getAbsolutePath(), new StylesheetCompressorOptions());
+				// Compressor.compressStylesheet(allSkins.getAbsolutePath(),
+				// allSkins.getAbsolutePath(), new StylesheetCompressorOptions());
 				LapstoneCompiler.Css(allSkins, allSkins);
 				Release.cssRegistry.add(allSkins);
 			}

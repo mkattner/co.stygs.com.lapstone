@@ -3,19 +3,13 @@ package co.stygs.com.lapstone;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.Token;
 import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.ast.FunctionCall;
-import org.mozilla.javascript.ast.FunctionNode;
 import org.mozilla.javascript.ast.NodeVisitor;
 
 public class LapstoneCompiler {
