@@ -3,6 +3,7 @@ package co.stygs.com.lapstone;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -72,11 +73,11 @@ public class LapstoneCompiler {
 			}
 		});
 
-		FileUtils.writeStringToFile(out, astRoot.toSource());
+		FileUtils.writeStringToFile(out, astRoot.toSource(), Lapstone.CHARSET);
 	}
 
 	public static void Css(File in, File out) throws IOException {
-		FileUtils.writeStringToFile(out, FileUtils.readFileToString(in));
+		FileUtils.writeStringToFile(out, FileUtils.readFileToString(in, Lapstone.CHARSET), Lapstone.CHARSET);
 	}
 
 }

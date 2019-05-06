@@ -2,6 +2,7 @@ package co.stygs.com.lapstone;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,8 @@ public class Lapstone {
 	public Lapstone() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	public static final Charset CHARSET = Charset.forName("UTF-8");
 
 	// public static String workingDirectory = System.getProperty("user.dir");
 	public static Map<String, String> argMap;

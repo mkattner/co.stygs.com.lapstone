@@ -41,15 +41,15 @@ public class Plugin {
 	    File newJs = new File(www_debug, "js/plugin/plugin." + argMap.get("name") + ".js");
 	    File newJson = new File(www_debug, "js/plugin/plugin." + argMap.get("name") + ".json");
 
-	    String json = FileUtils.readFileToString(templateJson);
-	    String js = FileUtils.readFileToString(templateJs);
+	    String json = FileUtils.readFileToString(templateJson,Lapstone.CHARSET);
+	    String js = FileUtils.readFileToString(templateJs,Lapstone.CHARSET);
 
 	    json = json.replace("##template", argMap.get("name"));
 	    js = js.replace("##template", argMap.get("name"));
 
 	    // write content to new page files
-	    FileUtils.write(newJson, json, false);
-	    FileUtils.write(newJs, js, false);
+	    FileUtils.write(newJson, json,Lapstone.CHARSET, false);
+	    FileUtils.write(newJs, js,Lapstone.CHARSET, false);
 
 	    // register page
 	    File pages = new File(www_debug, "js/plugin/plugins.json");

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inet.lib.less.Less;
 
 import co.stygs.com.lapstone.ILogger;
+import co.stygs.com.lapstone.Lapstone;
 import co.stygs.com.lapstone.objects.json.APlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplates_JSON_Template;
@@ -61,7 +62,7 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 							style = Less.compile(styleFile, true);
 						} else {
 							LOGGER.trace("Process css style: " + styleFile.getAbsolutePath());
-							style = FileUtils.readFileToString(styleFile);
+							style = FileUtils.readFileToString(styleFile,Lapstone.CHARSET);
 						}
 
 						htmlTemplates.getTemplates().get(templateName).getStyles().put(skinName, style);
@@ -75,7 +76,7 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 				String content;
 
 				LOGGER.trace("Process html content: " + contentFile.getAbsolutePath());
-				content = FileUtils.readFileToString(contentFile);
+				content = FileUtils.readFileToString(contentFile,Lapstone.CHARSET);
 
 				htmlTemplates.getTemplates().get(templateName).setContent(content);
 
@@ -100,11 +101,11 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 					style = Less.compile(styleFile, true);
 				} else {
 					LOGGER.trace("Process css style: " + styleFile.getAbsolutePath());
-					style = FileUtils.readFileToString(styleFile);
+					style = FileUtils.readFileToString(styleFile,Lapstone.CHARSET);
 				}
 
 				LOGGER.trace("Process html content: " + contentFile.getAbsolutePath());
-				content = FileUtils.readFileToString(contentFile);
+				content = FileUtils.readFileToString(contentFile,Lapstone.CHARSET);
 
 				htmlTemplates.getTemplates().get(templateName).setStyle(style);
 				htmlTemplates.getTemplates().get(templateName).setContent(content);

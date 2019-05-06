@@ -25,18 +25,18 @@ public class Page {
 	    File newHtml = new File(www_debug, "page/" + argMap.get("name") + ".html");
 	    File newJson = new File(www_debug, "js/page/page." + argMap.get("name") + ".json");
 
-	    String json = FileUtils.readFileToString(templateJson);
-	    String js = FileUtils.readFileToString(templateJs);
-	    String html = FileUtils.readFileToString(templateHtml);
+	    String json = FileUtils.readFileToString(templateJson,Lapstone.CHARSET);
+	    String js = FileUtils.readFileToString(templateJs,Lapstone.CHARSET);
+	    String html = FileUtils.readFileToString(templateHtml,Lapstone.CHARSET);
 
 	    json = json.replace("##template", argMap.get("name"));
 	    js = js.replace("##template", argMap.get("name"));
 	    html = html.replace("##template", argMap.get("name"));
 
 	    // write content to new page files
-	    FileUtils.write(newJson, json, false);
-	    FileUtils.write(newJs, js, false);
-	    FileUtils.write(newHtml, html, false);
+	    FileUtils.write(newJson, json,Lapstone.CHARSET, false);
+	    FileUtils.write(newJs, js,Lapstone.CHARSET, false);
+	    FileUtils.write(newHtml, html,Lapstone.CHARSET, false);
 
 	    // register page
 	    File pages = new File(www_debug, "js/page/pages.json");

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import co.stygs.com.lapstone.Lapstone;
 import co.stygs.com.lapstone.objects.json.APlugin_JSON;
 import co.stygs.com.lapstone.objects.json.IPlugin_JSON;
 import co.stygs.com.lapstone.objects.json.LapstoneJSON;
@@ -36,7 +37,7 @@ public class Plugin_Actions_JSON extends APlugin_JSON {
 		StringBuilder sb = new StringBuilder();
 
 		for (String fileName : getActions()) {
-			sb.append("\n\n;" + FileUtils.readFileToString(new File(www, "files/actions/" + fileName)));
+			sb.append("\n\n;" + FileUtils.readFileToString(new File(www, "files/actions/" + fileName),Lapstone.CHARSET));
 		}
 		return sb.toString();
 	}

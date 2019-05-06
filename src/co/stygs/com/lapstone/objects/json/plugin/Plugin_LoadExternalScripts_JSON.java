@@ -15,6 +15,7 @@ import com.helger.css.reader.CSSReader;
 import com.helger.css.writer.CSSWriter;
 import com.inet.lib.less.Less;
 
+import co.stygs.com.lapstone.Lapstone;
 import co.stygs.com.lapstone.LapstoneCompiler;
 import co.stygs.com.lapstone.Release;
 import co.stygs.com.lapstone.objects.json.APlugin_JSON;
@@ -87,13 +88,13 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 	    System.out.println("Add: " + currentFile.getAbsolutePath());
 
-	    combinedJavascript += FileUtils.readFileToString(currentFile) + "\n\n";
+	    combinedJavascript += FileUtils.readFileToString(currentFile,Lapstone.CHARSET) + "\n\n";
 
 	    currentFile.delete();
 	}
 	File allJavascriptFile = new File(www, "files/all.javascript." + lapstoneJson.getVersion().get("app") + ".js");
 	System.out.println("Wirte combined script file: " + allJavascriptFile.getAbsolutePath());
-	FileUtils.write(allJavascriptFile, combinedJavascript);
+	FileUtils.write(allJavascriptFile, combinedJavascript,Lapstone.CHARSET);
 
 	// STYLES
 	System.out.println();
@@ -123,7 +124,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 		// currentFile.getAbsolutePath(), new
 		// StylesheetCompressorOptions());
 
-		currentStyle = FileUtils.readFileToString(currentFile) + "\n\n";
+		currentStyle = FileUtils.readFileToString(currentFile,Lapstone.CHARSET) + "\n\n";
 	    } else {
 		currentStyle = "";
 	    }
@@ -143,7 +144,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	}
 	File allStyles = new File(www, "files/all.style.css");
 	System.out.println("Wirte combined style file: " + allStyles.getAbsolutePath());
-	FileUtils.write(allStyles, combinedStyle);
+	FileUtils.write(allStyles, combinedStyle,Lapstone.CHARSET);
 	Release.cssRegistry.add(allStyles);
 
 	return null;
