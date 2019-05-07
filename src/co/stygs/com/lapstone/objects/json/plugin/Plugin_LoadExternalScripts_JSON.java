@@ -2,6 +2,7 @@ package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 
@@ -21,37 +22,31 @@ import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
 public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
+    private List<String> dependency;
+
+    private List<String> javascriptOrdered;
+
+    private List<String> styleOrdered;
+
     public Plugin_LoadExternalScripts_JSON() {
 	// TODO Auto-generated constructor stub
     }
 
+    @Override
+    public String getAdditionalJavascript(File www) throws Exception {
+	// TODO Auto-generated method stub
+	return null;
+    }
     public List<String> getDependency() {
 	return dependency;
-    }
-
-    public void setDependency(List<String> dependency) {
-	this.dependency = dependency;
-    }
-
-    private List<String> dependency;
-
-    private List<String> styleOrdered;
-    private List<String> javascriptOrdered;
-
-    public List<String> getStyleOrdered() {
-	return styleOrdered;
-    }
-
-    public void setStyleOrdered(List<String> styleOrdered) {
-	this.styleOrdered = styleOrdered;
     }
 
     public List<String> getJavascriptOrdered() {
 	return javascriptOrdered;
     }
 
-    public void setJavascriptOrdered(List<String> javascriptOrdered) {
-	this.javascriptOrdered = javascriptOrdered;
+    public List<String> getStyleOrdered() {
+	return styleOrdered;
     }
 
     @Override
@@ -88,7 +83,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 	    combinedJavascript += FileUtils.readFileToString(currentFile,Lapstone.CHARSET) + "\n\n";
 
-	    currentFile.delete();
+	    Files.delete(currentFile.toPath());
 	}
 	File allJavascriptFile = new File(www, "files/all.javascript." + lapstoneJson.getVersion().get("app") + ".js");
 	System.out.println("Wirte combined script file: " + allJavascriptFile.getAbsolutePath());
@@ -138,7 +133,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	    currentStyle = currentStyle.replaceAll("url\\(\\\"", "url(\"" + url.substring(0, url.lastIndexOf("/") + 1));
 
 	    combinedStyle += currentStyle;
-	    currentFile.delete();
+	    Files.delete(currentFile.toPath());
 	}
 	File allStyles = new File(www, "files/all.style.css");
 	System.out.println("Wirte combined style file: " + allStyles.getAbsolutePath());
@@ -148,10 +143,16 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	return null;
     }
 
-    @Override
-    public String getAdditionalJavascript(File www) throws Exception {
-	// TODO Auto-generated method stub
-	return null;
+    public void setDependency(List<String> dependency) {
+	this.dependency = dependency;
+    }
+
+    public void setJavascriptOrdered(List<String> javascriptOrdered) {
+	this.javascriptOrdered = javascriptOrdered;
+    }
+
+    public void setStyleOrdered(List<String> styleOrdered) {
+	this.styleOrdered = styleOrdered;
     }
 
 }

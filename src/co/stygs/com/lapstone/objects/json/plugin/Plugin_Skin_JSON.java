@@ -1,6 +1,7 @@
 package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -17,47 +18,37 @@ import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
 public class Plugin_Skin_JSON extends APlugin_JSON {
 
-	public Plugin_Skin_JSON() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public List<String> getDependency() {
-		return dependency;
-	}
-
-	public void setDependency(List<String> dependency) {
-		this.dependency = dependency;
-	}
+	private String defaultSkin;
 
 	private List<String> dependency;
 
-	private Boolean useSkinPlugin;
-	private String defaultSkin;
-
-	public Map<String, List<String>> getSkins() {
-		return skins;
-	}
-
-	public void setSkins(Map<String, List<String>> skins) {
-		this.skins = skins;
-	}
-
 	private Map<String, List<String>> skins;
 
-	public Boolean getUseSkinPlugin() {
-		return useSkinPlugin;
-	}
+	private Boolean useSkinPlugin;
 
-	public void setUseSkinPlugin(Boolean useSkinPlugin) {
-		this.useSkinPlugin = useSkinPlugin;
+	public Plugin_Skin_JSON() {
+		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public String getDefaultSkin() {
 		return defaultSkin;
 	}
 
-	public void setDefaultSkin(String defaultSkin) {
-		this.defaultSkin = defaultSkin;
+	public List<String> getDependency() {
+		return dependency;
+	}
+
+	public Map<String, List<String>> getSkins() {
+		return skins;
+	}
+
+	public Boolean getUseSkinPlugin() {
+		return useSkinPlugin;
 	}
 
 	@Override
@@ -84,7 +75,7 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 
 					combinedStyle += currentStyle;
 
-					currentFile.delete();
+					Files.delete(currentFile.toPath());
 				}
 
 				File allSkins = new File(www, "css/skin/" + skin + "/all.skin." + skin + ".css");
@@ -101,10 +92,20 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 		return null;
 	}
 
-	@Override
-	public String getAdditionalJavascript(File www) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public void setDefaultSkin(String defaultSkin) {
+		this.defaultSkin = defaultSkin;
+	}
+
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
+	}
+
+	public void setSkins(Map<String, List<String>> skins) {
+		this.skins = skins;
+	}
+
+	public void setUseSkinPlugin(Boolean useSkinPlugin) {
+		this.useSkinPlugin = useSkinPlugin;
 	}
 
 }
