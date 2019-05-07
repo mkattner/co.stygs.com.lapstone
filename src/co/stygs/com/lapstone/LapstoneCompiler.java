@@ -12,9 +12,21 @@ import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.AstRoot;
 import org.mozilla.javascript.ast.NodeVisitor;
 
-public class LapstoneCompiler {
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.SourceFile;
+
+public class LapstoneCompiler implements ILogger {
 
 	public static void Compile(File in, File out) throws IOException, CompressorException {
+		LOGGER.debug("Compile: " + in.getName() + " to " + out.getName());
+		Rhino(in, out);
+		Closure(out, out);
+	}
+
+	private static void Rhino(File in, File out) throws IOException, CompressorException {
+		LOGGER.debug("Rhino: " + in.getName() + " to " + out.getName());
 		String js = FileUtils.readFileToString(in, Lapstone.CHARSET);
 		try {
 			Parser parser = new Parser(new CompilerEnvirons(), new ErrorReporter() {
@@ -80,6 +92,32 @@ public class LapstoneCompiler {
 			FileUtils.writeStringToFile(out, FileUtils.readFileToString(in, Lapstone.CHARSET), Lapstone.CHARSET);
 		}
 
+	}
+
+	private static void Closure(File in, File out) throws IOException {
+		LOGGER.debug("Closure: " + in.getName() + " to " + out.getName());
+		
+		com.google.javascript.jscomp.Compiler compiler = new Compiler();
+
+		CompilerOptions options = new CompilerOptions();
+		options.setEmitUseStrict(false);
+		// Advanced mode is used here, but additional options could be set, too.
+		CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
+
+		// To get the complete set of externs, the logic in
+		// CompilerRunner.getDefaultExterns() should be used here.
+		SourceFile extern = SourceFile.fromCode("externs.js", "");
+
+		// The dummy input name "input.js" is used here so that any warnings or
+		// errors will cite line numbers in terms of input.js.
+		SourceFile input = SourceFile.fromCode("input.js", FileUtils.readFileToString(in, Lapstone.CHARSET));
+
+		// compile() returns a Result, but it is not needed here.
+		compiler.compile(extern, input, options);
+
+		// The compiler is responsible for generating the compiled code; it is not
+		// accessible via the Result.
+		FileUtils.writeStringToFile(out, compiler.toSource(), Lapstone.CHARSET);
 	}
 
 	public static void Css(File in, File out) throws IOException {
