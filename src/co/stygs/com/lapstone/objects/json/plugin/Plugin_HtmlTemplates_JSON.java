@@ -1,6 +1,7 @@
 package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 						htmlTemplates.getTemplates().get(templateName).getStyles().put(skinName, style);
 
 						LOGGER.trace("Delete: " + styleFile.getAbsolutePath());
-						styleFile.delete();
+						Files.delete(styleFile.toPath());
 					}
 				}
 				htmlTemplates.getTemplates().get(templateName).setStyle(null);
@@ -78,7 +79,7 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 				htmlTemplates.getTemplates().get(templateName).setContent(content);
 
 				LOGGER.trace("Delete: " + contentFile.getAbsolutePath());
-				contentFile.delete();
+				Files.delete(contentFile.toPath());
 			}
 
 			else {

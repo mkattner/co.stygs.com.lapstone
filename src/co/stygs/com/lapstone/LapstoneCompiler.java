@@ -20,6 +20,7 @@ public class LapstoneCompiler {
 	}
 
 	public static void Compile(File in, File out) throws IOException, CompressorException {
+		String js = FileUtils.readFileToString(in, Lapstone.CHARSET);
 		try {
 			Parser parser = new Parser(new CompilerEnvirons(), new ErrorReporter() {
 
@@ -42,7 +43,10 @@ public class LapstoneCompiler {
 				}
 			});
 
-			AstRoot astRoot = parser.parse(new FileReader(in), in.getName(), 0);
+			// Read the input file
+
+			AstRoot astRoot = parser.parse(js, in.getName(), 0);
+
 			astRoot.visit(new NodeVisitor() {
 
 				@Override
@@ -61,6 +65,7 @@ public class LapstoneCompiler {
 								System.out.println(node.getParent().toSource());
 								System.out.println(node.getParent().getParent().toSource());
 								e.printStackTrace();
+								System.out.println("Error above is not critical, but dirty.");
 							}
 						}
 					}
@@ -70,11 +75,16 @@ public class LapstoneCompiler {
 			});
 
 			FileUtils.writeStringToFile(out, astRoot.toSource(), Lapstone.CHARSET);
-		} catch (Exception e) {
+
+		}
+
+		catch (Exception e) {
 			System.out.println("Lapstone compilation error in: " + in.getAbsolutePath());
 			e.printStackTrace();
+			System.out.println("Error above is not critical, but dirty.");
 			FileUtils.writeStringToFile(out, FileUtils.readFileToString(in, Lapstone.CHARSET), Lapstone.CHARSET);
 		}
+
 	}
 
 	public static void Css(File in, File out) throws IOException {

@@ -4,12 +4,17 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -98,8 +103,8 @@ public class Release implements ILogger {
 			lapstoneJson.setStartupContent(FileUtils.readFileToString(startupContent, Lapstone.CHARSET));
 			lapstoneJson.setStartupStyle(FileUtils.readFileToString(startupStyle, Lapstone.CHARSET));
 
-			startupStyle.delete();
-			startupContent.delete();
+			Files.delete(startupStyle.toPath());
+			Files.delete(startupContent.toPath());
 
 			objectMapper.writeValue(configuration, lapstoneJson);
 
@@ -402,37 +407,39 @@ public class Release implements ILogger {
 		System.out.println("Create all.plugin.js file. Copy just used plugins. ----------------------------------------");
 		System.out.println();
 		// NEW
-		File currentFile;
-		currentFile = new File(www, "js/plugin/plugins.json");
-		LinkedHashMap<String, Boolean> plugins = objectMapper.readValue(currentFile, new TypeReference<LinkedHashMap<String, Boolean>>() {
+		File pluginJson, pluginJs, currentPluginFile;
+
+		pluginJson = new File(www, "js/plugin/plugins.json");
+		LinkedHashMap<String, Boolean> plugins = objectMapper.readValue(pluginJson, new TypeReference<LinkedHashMap<String, Boolean>>() {
 		});
 
-		currentFile = new File(www, "js/plugin/plugins.js");
-		allPluginsContent.append(FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
-		currentFile.delete();
+		pluginJs = new File(www, "js/plugin/plugins.js");
+		allPluginsContent.append(FileUtils.readFileToString(pluginJs, Lapstone.CHARSET));
+		pluginJs.delete();
 
-		currentFile = new File(www, "js/plugin/plugins.json");
-		allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
-		currentFile.delete();
+		pluginJson = new File(www, "js/plugin/plugins.json");
+		allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(pluginJson, Lapstone.CHARSET));
+		pluginJson.delete();
 
+		// for each plugin in lapstone
 		for (String pluginName : plugins.keySet()) {
 			// just load used plugins
 			if (Boolean.TRUE.equals(plugins.get(pluginName))) {
 				// JS
-				currentFile = new File(www, "js/plugin/plugin." + pluginName + ".js");
+				currentPluginFile = new File(www, "js/plugin/plugin." + pluginName + ".js");
 				try {
 					// Compressor.compressJavaScript(currentFile.getAbsolutePath(),
 					// currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
 
-					LapstoneCompiler.Compile(currentFile, currentFile);
+					LapstoneCompiler.Compile(currentPluginFile, currentPluginFile);
 				} catch (Exception e) {
 					throw new CompressorException(e);
 				}
-				allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
-				currentFile.delete();
+				allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
+				Files.delete(currentPluginFile.toPath());
 
 				// JSON
-				currentFile = new File(www, "js/plugin/plugin." + pluginName + ".json");
+				currentPluginFile = new File(www, "js/plugin/plugin." + pluginName + ".json");
 
 				// parse JSON file to include the included files
 
@@ -441,10 +448,10 @@ public class Release implements ILogger {
 					System.out.println();
 					System.out.println("-----------------------------------------------------------------------------------");
 					System.out.println("Running release() method on: " + curretnClass);
-					pluginConfiguration = (APlugin_JSON) objectMapper.readValue(currentFile, Class.forName(curretnClass));
+					pluginConfiguration = (APlugin_JSON) objectMapper.readValue(currentPluginFile, Class.forName(curretnClass));
 
 				} catch (ClassNotFoundException e) {
-					pluginConfiguration = objectMapper.readValue(currentFile, Plugin_JSON.class);
+					pluginConfiguration = objectMapper.readValue(currentPluginFile, Plugin_JSON.class);
 				}
 
 				for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
@@ -455,13 +462,14 @@ public class Release implements ILogger {
 					LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile);
 
 					allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile, Lapstone.CHARSET));
-					pluginIncludeFile.delete();
+					// pluginIncludeFile.delete();
 				}
 
 				allPluginsContent.append(";\n\n" + pluginConfiguration.getAdditionalJavascript(www));
 
-				allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentFile, Lapstone.CHARSET));
-				currentFile.delete();
+				allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
+
+				Files.delete(currentPluginFile.toPath());
 			}
 
 		}
@@ -470,8 +478,24 @@ public class Release implements ILogger {
 
 		Thread.sleep(1000);
 		File includeDirectory = new File(www, "js/plugin/include");
-		System.out.println("Delete directorey: " + new File(www, "js/plugin/include").getAbsolutePath());
-		FileUtils.deleteDirectory(includeDirectory);
+		LOGGER.debug("Delete directorey: " + new File(www, "js/plugin/include").getAbsolutePath());
+		Files.walk(includeDirectory.toPath()).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(new Consumer<File>() {
+
+			@Override
+			public void accept(File f) {
+				LOGGER.trace(f.getAbsolutePath());
+				try {
+					Files.delete(f.toPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}
+
+			}
+		});
+		;
+
+		// FileUtils.deleteDirectory(includeDirectory);
 	}
 
 	private static void createSinglePageFile(File www) throws Exception {

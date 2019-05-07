@@ -1,6 +1,7 @@
 package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class Plugin_WebServiceError_JSON extends APlugin_JSON {
 	    currentFile = new File(www, "page/" + url);
 	    Wse_JSON wseJSON = objectMapper.readValue(currentFile, Wse_JSON.class);
 	    webServiceErrorJson.getWse().putAll(wseJSON);
-	    currentFile.delete();
+	    Files.delete(currentFile.toPath());
 	}
 	objectMapper.writeValue(configuration, webServiceErrorJson);
 

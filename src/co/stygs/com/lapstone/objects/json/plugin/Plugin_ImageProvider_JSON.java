@@ -1,6 +1,7 @@
 package co.stygs.com.lapstone.objects.json.plugin;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class Plugin_ImageProvider_JSON extends APlugin_JSON {
 	    currentFile = new File(www, "page/" + url);
 	    Imgd_JSON imgdJSON = objectMapper.readValue(currentFile, Imgd_JSON.class);
 	    imageProviderJson.getImages().putAll(imgdJSON);
-	    currentFile.delete();
+	    Files.delete(currentFile.toPath());
 	}
 
 	System.out.println("Write new configuration: " + configuration.getAbsolutePath());
