@@ -4,30 +4,30 @@ import java.util.List;
 
 public abstract class APlugin_JSON implements IPlugin_JSON{
 
-    public APlugin_JSON() {
-	// TODO Auto-generated constructor stub
-    }
+    private List<String> include;
     
     private String name;
     private String shortname;
-    private List<String> include;
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getShortname() {
-        return shortname;
-    }
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
+    public APlugin_JSON() {
+	// TODO Auto-generated constructor stub
     }
     public List<String> getInclude() {
         return include;
     }
+    public String getName() {
+        return name;
+    }
+    public String getShortname() {
+        return shortname;
+    }
     public void setInclude(List<String> include) {
         this.include = include;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setShortname(String shortname) {
+        this.shortname = shortname;
     }
 
 }

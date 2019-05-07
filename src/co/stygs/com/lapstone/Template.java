@@ -13,11 +13,6 @@ import co.stygs.com.lapstone.objects.json.plugin.Plugin_HtmlTemplates_JSON;
 
 public class Template {
 
-	public Template() {
-		// TODO Auto-generated constructor stub
-
-	}
-
 	public static Boolean TemplateLapstone(Map<String, String> argMap) {
 		try {
 			File appPath = new File(argMap.get("path"));
@@ -46,6 +41,11 @@ public class Template {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public Template() {
+		// TODO Auto-generated constructor stub
+
 	}
 
 }

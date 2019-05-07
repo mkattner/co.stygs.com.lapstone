@@ -12,31 +12,35 @@ import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
 public class Plugin_DeviceManager_JSON extends APlugin_JSON {
 
+    private List<String> dependency;
+   
+
+    private Map<String, String> files;
+
+    private Map<String, String> viewport;
+
     public Plugin_DeviceManager_JSON() {
 	// TODO Auto-generated constructor stub
     }
-   
 
+    @Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+    public List<String> getDependency() {
+		return dependency;
+	}
     public Map<String, String> getFiles() {
 	return files;
-    }
-
-    public void setFiles(Map<String, String> files) {
-	this.files = files;
     }
 
     public Map<String, String> getViewport() {
 	return viewport;
     }
 
-    public void setViewport(Map<String, String> viewport) {
-	this.viewport = viewport;
-    }
-
-    private Map<String, String> files;
-    private Map<String, String> viewport;
-
-    @Override
+	@Override
     public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
 	// TODO Auto-generated method stub
 
@@ -53,21 +57,17 @@ public class Plugin_DeviceManager_JSON extends APlugin_JSON {
 	return null;
     }
 
-	public List<String> getDependency() {
-		return dependency;
-	}
-
 	public void setDependency(List<String> dependency) {
 		this.dependency = dependency;
 	}
 	
 	 
-    private List<String> dependency;
+    public void setFiles(Map<String, String> files) {
+	this.files = files;
+    }
 
-	@Override
-	public String getAdditionalJavascript(File www) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public void setViewport(Map<String, String> viewport) {
+	this.viewport = viewport;
+    }
 
 }

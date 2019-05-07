@@ -11,10 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Plugin {
 
-	public Plugin() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public static Boolean LapstonePlugin(Map<String, String> argMap) throws Exception {
 
 		switch (argMap.get("modus")) {
@@ -68,5 +64,9 @@ public class Plugin {
 			return false;
 		}
 
+	}
+
+	public Plugin() {
+		// TODO Auto-generated constructor stub
 	}
 }

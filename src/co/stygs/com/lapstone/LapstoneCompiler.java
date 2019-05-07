@@ -15,17 +15,13 @@ import org.mozilla.javascript.ast.NodeVisitor;
 
 public class LapstoneCompiler {
 
-	public LapstoneCompiler() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public static void Compile(File in, File out) throws IOException, CompressorException {
 		String js = FileUtils.readFileToString(in, Lapstone.CHARSET);
 		try {
 			Parser parser = new Parser(new CompilerEnvirons(), new ErrorReporter() {
 
 				@Override
-				public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
+				public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
 					System.out.println(sourceName + " " + line + ": " + message + " " + lineSource + " " + lineOffset);
 
 				}
@@ -37,7 +33,7 @@ public class LapstoneCompiler {
 				}
 
 				@Override
-				public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
+				public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
 					System.out.println(sourceName + " " + line + ": " + message + " " + lineSource + " " + lineOffset);
 
 				}
@@ -89,6 +85,10 @@ public class LapstoneCompiler {
 
 	public static void Css(File in, File out) throws IOException {
 		FileUtils.writeStringToFile(out, FileUtils.readFileToString(in, Lapstone.CHARSET), Lapstone.CHARSET);
+	}
+
+	public LapstoneCompiler() {
+		// TODO Auto-generated constructor stub
 	}
 
 }

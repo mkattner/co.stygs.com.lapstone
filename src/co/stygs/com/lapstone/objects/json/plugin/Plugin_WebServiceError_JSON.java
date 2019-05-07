@@ -13,8 +13,52 @@ import co.stygs.com.lapstone.objects.json.Wse_JSON;
 
 public class Plugin_WebServiceError_JSON extends APlugin_JSON {
 
+    private Map<String, String> actions;
+
+    private List<String> dependency;
+
+    private List<String> errorKeys;
+
+    private List<String> strictErrorKeys;
+
+    private Map<String, Map<String, String>> wse;
+
+    private List<String> wseFiles;
+
     public Plugin_WebServiceError_JSON() {
 	// TODO Auto-generated constructor stub
+    }
+    
+    public Map<String, String> getActions() {
+	return actions;
+    }
+
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	 
+    public List<String> getDependency() {
+		return dependency;
+	}
+
+
+    public List<String> getErrorKeys() {
+	return errorKeys;
+    }
+
+    public List<String> getStrictErrorKeys() {
+	return strictErrorKeys;
+    }
+
+    public Map<String, Map<String, String>> getWse() {
+	return wse;
+    }
+
+    public List<String> getWseFiles() {
+	return wseFiles;
     }
 
     @Override
@@ -35,69 +79,25 @@ public class Plugin_WebServiceError_JSON extends APlugin_JSON {
 	return null;
     }
 
-    public Map<String, String> getActions() {
-	return actions;
-    }
-
     public void setActions(Map<String, String> actions) {
 	this.actions = actions;
     }
-
-    public List<String> getStrictErrorKeys() {
-	return strictErrorKeys;
-    }
-
-    public void setStrictErrorKeys(List<String> strictErrorKeys) {
-	this.strictErrorKeys = strictErrorKeys;
-    }
-
-    public List<String> getErrorKeys() {
-	return errorKeys;
-    }
-    
-    public List<String> getDependency() {
-		return dependency;
-	}
-
-	public void setDependency(List<String> dependency) {
+    public void setDependency(List<String> dependency) {
 		this.dependency = dependency;
 	}
-	
-	 
-    private List<String> dependency;
-
-
     public void setErrorKeys(List<String> errorKeys) {
 	this.errorKeys = errorKeys;
     }
-
-    public List<String> getWseFiles() {
-	return wseFiles;
+    public void setStrictErrorKeys(List<String> strictErrorKeys) {
+	this.strictErrorKeys = strictErrorKeys;
     }
-
-    public void setWseFiles(List<String> wseFiles) {
-	this.wseFiles = wseFiles;
-    }
-
-    public Map<String, Map<String, String>> getWse() {
-	return wse;
-    }
-
     public void setWse(Map<String, Map<String, String>> wse) {
 	this.wse = wse;
     }
 
-    private Map<String, String> actions;
-    private List<String> strictErrorKeys;
-    private List<String> errorKeys;
-    private List<String> wseFiles;
-    private Map<String, Map<String, String>> wse;
 
-
-	@Override
-	public String getAdditionalJavascript(File www) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public void setWseFiles(List<String> wseFiles) {
+	this.wseFiles = wseFiles;
+    }
 
 }

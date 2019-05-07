@@ -9,16 +9,16 @@ public class Plugin_JSON extends APlugin_JSON {
     }
 
     @Override
-    public Boolean release(File www, LapstoneJSON lapstoneJson) {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-	@Override
 	public String getAdditionalJavascript(File www) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+    public Boolean release(File www, LapstoneJSON lapstoneJson) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
 
 }

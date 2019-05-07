@@ -13,10 +13,33 @@ import co.stygs.com.lapstone.objects.json.LapstoneJSON;
 
 public class Plugin_ImageProvider_JSON extends APlugin_JSON {
 
+    private List<String> dependency;
+
+    private Map<String, Map<String, String>> images;
+
+    private List<String> imgdFiles;
+
     public Plugin_ImageProvider_JSON() {
 	// TODO Auto-generated constructor stub
     }
 
+    @Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+    public List<String> getDependency() {
+		return dependency;
+	}
+
+    public Map<String, Map<String, String>> getImages() {
+	return images;
+    }
+    public List<String> getImgdFiles() {
+	return imgdFiles;
+    }
+    
     @Override
     public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
 	ObjectMapper objectMapper = new ObjectMapper();
@@ -37,40 +60,17 @@ public class Plugin_ImageProvider_JSON extends APlugin_JSON {
 	return null;
     }
 
-    public List<String> getImgdFiles() {
-	return imgdFiles;
-    }
-
-    public void setImgdFiles(List<String> imgdFiles) {
-	this.imgdFiles = imgdFiles;
-    }
-
-    public Map<String, Map<String, String>> getImages() {
-	return images;
-    }
-
-    public void setImages(Map<String, Map<String, String>> images) {
-	this.images = images;
-    }
-
-    private List<String> imgdFiles;
-    private Map<String, Map<String, String>> images;
-    
-    public List<String> getDependency() {
-		return dependency;
-	}
-
 	public void setDependency(List<String> dependency) {
 		this.dependency = dependency;
 	}
 	
 	 
-    private List<String> dependency;
+    public void setImages(Map<String, Map<String, String>> images) {
+	this.images = images;
+    }
 
-	@Override
-	public String getAdditionalJavascript(File www) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public void setImgdFiles(List<String> imgdFiles) {
+	this.imgdFiles = imgdFiles;
+    }
 
 }

@@ -18,8 +18,32 @@ import co.stygs.com.lapstone.objects.json.Plugin_HtmlTemplates_JSON_Template;
 
 public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 
+	private List<String> dependency;
+
+	private Map<String, Plugin_HtmlTemplates_JSON_Template> templates;
+
+	private Boolean useSkinPlugin;
+
 	public Plugin_HtmlTemplates_JSON() {
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String getAdditionalJavascript(File www) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<String> getDependency() {
+		return dependency;
+	}
+
+	public Map<String, Plugin_HtmlTemplates_JSON_Template> getTemplates() {
+		return templates;
+	}
+
+	public Boolean getUseSkinPlugin() {
+		return useSkinPlugin;
 	}
 
 	@Override
@@ -123,39 +147,15 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 		return null;
 	}
 
-	public Map<String, Plugin_HtmlTemplates_JSON_Template> getTemplates() {
-		return templates;
+	public void setDependency(List<String> dependency) {
+		this.dependency = dependency;
 	}
-
 	public void setTemplates(Map<String, Plugin_HtmlTemplates_JSON_Template> templates) {
 		this.templates = templates;
 	}
 
-	private Map<String, Plugin_HtmlTemplates_JSON_Template> templates;
-
-	public List<String> getDependency() {
-		return dependency;
-	}
-
-	public void setDependency(List<String> dependency) {
-		this.dependency = dependency;
-	}
-
-	public Boolean getUseSkinPlugin() {
-		return useSkinPlugin;
-	}
-
 	public void setUseSkinPlugin(Boolean useSkinPlugin) {
 		this.useSkinPlugin = useSkinPlugin;
-	}
-
-	private List<String> dependency;
-	private Boolean useSkinPlugin;
-
-	@Override
-	public String getAdditionalJavascript(File www) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

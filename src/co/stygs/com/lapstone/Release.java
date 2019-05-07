@@ -43,6 +43,323 @@ public class Release implements ILogger {
 
 	public static List<File> cssRegistry = new ArrayList<>();
 
+	private static void compressSinglePageFile(File www, String version) throws Exception {
+
+		File allPages = new File(www, "js/page/all.page.js");
+		File allPagesMin = new File(www, "js/page/all.page.min." + version + ".js");
+
+		try {
+
+			// Compressor.compressJavaScript(allPages.getAbsolutePath(),
+			// allPagesMin.getAbsolutePath(), o);
+			LapstoneCompiler.Compile(allPages, allPagesMin);
+
+			// slow in java, but very useful for debugging release version
+			FileUtils.writeStringToFile(allPagesMin, "//# sourceURL=all.page." + version + ".js" + "\n" + FileUtils.readFileToString(allPagesMin, Lapstone.CHARSET),
+					Lapstone.CHARSET);
+		}
+
+		catch (Exception e) {
+
+			FileUtils.copyFile(allPages, allPagesMin);
+
+			System.out.println("ERROR: NOT ABLE TO COMPRESS: " + allPages.getAbsolutePath());
+			// throw new CompressorException(e);
+		}
+
+		allPages.delete();
+
+	}
+
+	private static void compressSinglePluginFile(File www, String version) throws Exception {
+
+		File allPlugins = new File(www, "js/plugin/all.plugin.js");
+		File allPluginsMin = new File(www, "js/plugin/all.plugin.min." + version + ".js");
+
+		// FileUtils.copyFile(allPlugins, allPluginsMin);
+		try {
+
+			// Compressor.compressJavaScript(allPlugins.getAbsolutePath(),
+			// allPluginsMin.getAbsolutePath(), o);
+			LapstoneCompiler.Compile(allPlugins, allPluginsMin);
+			// slow in java, but very useful for debugging release version
+			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPluginsMin, Lapstone.CHARSET),
+					Lapstone.CHARSET);
+		}
+
+		catch (Exception e) {
+			LOGGER.error("Exception", e);
+			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPlugins, Lapstone.CHARSET),
+					Lapstone.CHARSET);
+
+		}
+
+		allPlugins.delete();
+	}
+
+	private static void createCombinedFilesFile(File www, String newVersion) throws Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
+		File configuration;
+
+		// PLUGIN Skin
+		// configuration = new File(www, "js/plugin/plugin.Skin.json");
+		// Plugin_SkinJson skinJson = objectMapper.readValue(configuration,
+		// Plugin_SkinJson.class);
+
+		configuration = new File(www, "js/lapstone.json");
+		LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
+
+		configuration = new File(www, "js/plugin/plugins.json");
+		Map<String, Boolean> plugins = objectMapper.readValue(configuration, new TypeReference<HashMap<String, String>>() {
+		});
+
+		for (String pluginName : plugins.keySet()) {
+			String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
+			try {
+				System.out.println();
+				System.out.println("-----------------------------------------------------------------------------------");
+				System.out.println("Running release() method on: " + curretnClass);
+				IPlugin_JSON plugin_JSON = (IPlugin_JSON) Class.forName(curretnClass).newInstance();
+				plugin_JSON.release(www, lapstoneJson);
+
+			} catch (ClassNotFoundException e) {
+				System.out.println("ClassNotFoundException: " + curretnClass);
+			}
+		}
+
+		// PLUGIN HtmlTemplates
+
+		// PLUGIN LoadExternalScripts
+
+		// PLUGIN RestClient
+
+		// PLUGIN WebServiceError
+
+		// ********************************************************************
+		// create single plugin file
+
+		Release.createSinglePluginFile(www);
+
+		// ********************************************************************
+		// create single page file
+
+		Release.createSinglePageFile(www);
+
+	}
+
+	private static void createSinglePageFile(File www) throws Exception {
+		String allPagesContent = "";
+		Page_JSON pageConfiguration;
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		List<File> include_onceList = new ArrayList<>();
+		// create map and copy just the used pages
+
+		System.out.println();
+		System.out.println("Create all.pages.js file. Copy just used pages. -------------------------------------------");
+		System.out.println();
+
+		File[] pageFiles = new File(www, "js/page").listFiles();
+		Arrays.sort(pageFiles); // we must sort the array, as the listFiles
+		// method doesn't guarantee that the return
+		// value is sorted. page_*.js must be
+		// inserted before the pages includes.
+		for (File file : pageFiles) {
+			System.out.println();
+			System.out.println("Processing: " + file.getName());
+			String currentFileContent;
+
+			if (!file.isDirectory()) {
+
+				currentFileContent = FileUtils.readFileToString(file, Lapstone.CHARSET);
+
+				if (file.getName().startsWith(".")) {
+					currentFileContent = "";
+				}
+
+				else if (file.getName().equals("pages.js")) {
+				}
+
+				else if (file.getName().equals("pages.json")) {
+					currentFileContent = "var config_json = " + currentFileContent;
+				}
+
+				else if (file.getName().endsWith("js")) {
+					String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
+					System.out.println("Identifiyer: " + jsIdentifyer);
+
+					// Minify the js file
+
+					try {
+
+						// Compressor.compressJavaScript(file.getAbsolutePath(), file.getAbsolutePath(),
+						// new JavascriptCompressorOptions());
+						LapstoneCompiler.Compile(file, file);
+					}
+
+					catch (Exception e) {
+						throw new CompressorException(e);
+					}
+
+					currentFileContent = FileUtils.readFileToString(file, Lapstone.CHARSET);
+
+				}
+
+				else if (file.getName().endsWith("json")) {
+					String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
+					System.out.println("Identifiyer: " + jsIdentifyer);
+					currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
+
+					// parse JSON file to include the included files
+					pageConfiguration = objectMapper.readValue(file, Page_JSON.class);
+					for (String pageIncludeFileName : pageConfiguration.getInclude_once()) {
+						File pageIncludeFile = new File(www, "js/page/include/" + pageIncludeFileName);
+
+						if (!include_onceList.contains(pageIncludeFile)) {
+							include_onceList.add(pageIncludeFile);
+						}
+					}
+				}
+
+				// delete processed file
+				file.delete();
+
+				if (!currentFileContent.endsWith(";"))
+					currentFileContent += ";";
+
+				currentFileContent += "\n";
+
+				allPagesContent += currentFileContent;
+			}
+		}
+
+		String includeContent = "";
+		for (File include_onceFile : include_onceList) {
+			// Minify the js include file
+
+			try {
+				// Compressor.compressJavaScript(include_onceFile.getAbsolutePath(),
+				// include_onceFile.getAbsolutePath(), new JavascriptCompressorOptions());
+				LapstoneCompiler.Compile(include_onceFile, include_onceFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("ERROR: NOT ABLE TO COMPRESS: " + include_onceFile.getAbsolutePath());
+				// throw new CompressorException(e);
+			}
+
+			System.out.println("Adding include_once file: " + include_onceFile.getAbsolutePath());
+			includeContent += ";" + FileUtils.readFileToString(include_onceFile, Charset.forName("UTF-8"));
+			include_onceFile.delete();
+		}
+		includeContent = "includeEverything=function(){" + includeContent + "};";
+
+		allPagesContent += includeContent;
+
+		FileUtils.writeStringToFile(new File(www, "js/page/all.page.js"), allPagesContent, Lapstone.CHARSET);
+		// FileUtils.deleteDirectory(new File(www, "js/page/include"));
+	}
+
+	private static void createSinglePluginFile(File www) throws Exception {
+		StringBuilder allPluginsContent = new StringBuilder();
+		APlugin_JSON pluginConfiguration;
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		// create map and copy just the used pages
+		System.out.println();
+		System.out.println("Create all.plugin.js file. Copy just used plugins. ----------------------------------------");
+		System.out.println();
+		// NEW
+		File pluginJson, pluginJs, currentPluginFile;
+
+		pluginJson = new File(www, "js/plugin/plugins.json");
+		LinkedHashMap<String, Boolean> plugins = objectMapper.readValue(pluginJson, new TypeReference<LinkedHashMap<String, Boolean>>() {
+		});
+
+		pluginJs = new File(www, "js/plugin/plugins.js");
+		allPluginsContent.append(FileUtils.readFileToString(pluginJs, Lapstone.CHARSET));
+		pluginJs.delete();
+
+		pluginJson = new File(www, "js/plugin/plugins.json");
+		allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(pluginJson, Lapstone.CHARSET));
+		pluginJson.delete();
+
+		// for each plugin in lapstone
+		for (String pluginName : plugins.keySet()) {
+			// just load used plugins
+			if (Boolean.TRUE.equals(plugins.get(pluginName))) {
+				// JS
+				currentPluginFile = new File(www, "js/plugin/plugin." + pluginName + ".js");
+				try {
+					// Compressor.compressJavaScript(currentFile.getAbsolutePath(),
+					// currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
+
+					LapstoneCompiler.Compile(currentPluginFile, currentPluginFile);
+				} catch (Exception e) {
+					throw new CompressorException(e);
+				}
+				allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
+				Files.delete(currentPluginFile.toPath());
+
+				// JSON
+				currentPluginFile = new File(www, "js/plugin/plugin." + pluginName + ".json");
+
+				// parse JSON file to include the included files
+
+				String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
+				try {
+					System.out.println();
+					System.out.println("-----------------------------------------------------------------------------------");
+					System.out.println("Running release() method on: " + curretnClass);
+					pluginConfiguration = (APlugin_JSON) objectMapper.readValue(currentPluginFile, Class.forName(curretnClass));
+
+				} catch (ClassNotFoundException e) {
+					pluginConfiguration = objectMapper.readValue(currentPluginFile, Plugin_JSON.class);
+				}
+
+				for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
+					File pluginIncludeFile = new File(www, "js/plugin/include/" + pluginName + "/" + pluginIncludeFileName);
+					System.out.println("Adding include file: " + pluginIncludeFile.getAbsolutePath());
+
+					// slow
+					LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile);
+
+					allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile, Lapstone.CHARSET));
+					// pluginIncludeFile.delete();
+				}
+
+				allPluginsContent.append(";\n\n" + pluginConfiguration.getAdditionalJavascript(www));
+
+				allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
+
+				Files.delete(currentPluginFile.toPath());
+			}
+
+		}
+
+		FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent, Lapstone.CHARSET);
+
+		Thread.sleep(1000);
+		File includeDirectory = new File(www, "js/plugin/include");
+		LOGGER.debug("Delete directorey: " + new File(www, "js/plugin/include").getAbsolutePath());
+		Files.walk(includeDirectory.toPath()).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(new Consumer<File>() {
+
+			@Override
+			public void accept(File f) {
+				LOGGER.trace(f.getAbsolutePath());
+				try {
+					Files.delete(f.toPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}
+
+			}
+		});
+		;
+
+		// FileUtils.deleteDirectory(includeDirectory);
+	}
+
 	// ************************************************************************
 	//
 	//
@@ -345,322 +662,5 @@ public class Release implements ILogger {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	private static void createCombinedFilesFile(File www, String newVersion) throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
-		File configuration;
-
-		// PLUGIN Skin
-		// configuration = new File(www, "js/plugin/plugin.Skin.json");
-		// Plugin_SkinJson skinJson = objectMapper.readValue(configuration,
-		// Plugin_SkinJson.class);
-
-		configuration = new File(www, "js/lapstone.json");
-		LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
-
-		configuration = new File(www, "js/plugin/plugins.json");
-		Map<String, Boolean> plugins = objectMapper.readValue(configuration, new TypeReference<HashMap<String, String>>() {
-		});
-
-		for (String pluginName : plugins.keySet()) {
-			String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
-			try {
-				System.out.println();
-				System.out.println("-----------------------------------------------------------------------------------");
-				System.out.println("Running release() method on: " + curretnClass);
-				IPlugin_JSON plugin_JSON = (IPlugin_JSON) Class.forName(curretnClass).newInstance();
-				plugin_JSON.release(www, lapstoneJson);
-
-			} catch (ClassNotFoundException e) {
-				System.out.println("ClassNotFoundException: " + curretnClass);
-			}
-		}
-
-		// PLUGIN HtmlTemplates
-
-		// PLUGIN LoadExternalScripts
-
-		// PLUGIN RestClient
-
-		// PLUGIN WebServiceError
-
-		// ********************************************************************
-		// create single plugin file
-
-		Release.createSinglePluginFile(www);
-
-		// ********************************************************************
-		// create single page file
-
-		Release.createSinglePageFile(www);
-
-	}
-
-	private static void createSinglePluginFile(File www) throws Exception {
-		StringBuilder allPluginsContent = new StringBuilder();
-		APlugin_JSON pluginConfiguration;
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		// create map and copy just the used pages
-		System.out.println();
-		System.out.println("Create all.plugin.js file. Copy just used plugins. ----------------------------------------");
-		System.out.println();
-		// NEW
-		File pluginJson, pluginJs, currentPluginFile;
-
-		pluginJson = new File(www, "js/plugin/plugins.json");
-		LinkedHashMap<String, Boolean> plugins = objectMapper.readValue(pluginJson, new TypeReference<LinkedHashMap<String, Boolean>>() {
-		});
-
-		pluginJs = new File(www, "js/plugin/plugins.js");
-		allPluginsContent.append(FileUtils.readFileToString(pluginJs, Lapstone.CHARSET));
-		pluginJs.delete();
-
-		pluginJson = new File(www, "js/plugin/plugins.json");
-		allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(pluginJson, Lapstone.CHARSET));
-		pluginJson.delete();
-
-		// for each plugin in lapstone
-		for (String pluginName : plugins.keySet()) {
-			// just load used plugins
-			if (Boolean.TRUE.equals(plugins.get(pluginName))) {
-				// JS
-				currentPluginFile = new File(www, "js/plugin/plugin." + pluginName + ".js");
-				try {
-					// Compressor.compressJavaScript(currentFile.getAbsolutePath(),
-					// currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
-
-					LapstoneCompiler.Compile(currentPluginFile, currentPluginFile);
-				} catch (Exception e) {
-					throw new CompressorException(e);
-				}
-				allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
-				Files.delete(currentPluginFile.toPath());
-
-				// JSON
-				currentPluginFile = new File(www, "js/plugin/plugin." + pluginName + ".json");
-
-				// parse JSON file to include the included files
-
-				String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
-				try {
-					System.out.println();
-					System.out.println("-----------------------------------------------------------------------------------");
-					System.out.println("Running release() method on: " + curretnClass);
-					pluginConfiguration = (APlugin_JSON) objectMapper.readValue(currentPluginFile, Class.forName(curretnClass));
-
-				} catch (ClassNotFoundException e) {
-					pluginConfiguration = objectMapper.readValue(currentPluginFile, Plugin_JSON.class);
-				}
-
-				for (String pluginIncludeFileName : pluginConfiguration.getInclude()) {
-					File pluginIncludeFile = new File(www, "js/plugin/include/" + pluginName + "/" + pluginIncludeFileName);
-					System.out.println("Adding include file: " + pluginIncludeFile.getAbsolutePath());
-
-					// slow
-					LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile);
-
-					allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile, Lapstone.CHARSET));
-					// pluginIncludeFile.delete();
-				}
-
-				allPluginsContent.append(";\n\n" + pluginConfiguration.getAdditionalJavascript(www));
-
-				allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
-
-				Files.delete(currentPluginFile.toPath());
-			}
-
-		}
-
-		FileUtils.write(new File(www, "js/plugin/all.plugin.js"), allPluginsContent, Lapstone.CHARSET);
-
-		Thread.sleep(1000);
-		File includeDirectory = new File(www, "js/plugin/include");
-		LOGGER.debug("Delete directorey: " + new File(www, "js/plugin/include").getAbsolutePath());
-		Files.walk(includeDirectory.toPath()).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(new Consumer<File>() {
-
-			@Override
-			public void accept(File f) {
-				LOGGER.trace(f.getAbsolutePath());
-				try {
-					Files.delete(f.toPath());
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.exit(-1);
-				}
-
-			}
-		});
-		;
-
-		// FileUtils.deleteDirectory(includeDirectory);
-	}
-
-	private static void createSinglePageFile(File www) throws Exception {
-		String allPagesContent = "";
-		Page_JSON pageConfiguration;
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		List<File> include_onceList = new ArrayList<>();
-		// create map and copy just the used pages
-
-		System.out.println();
-		System.out.println("Create all.pages.js file. Copy just used pages. -------------------------------------------");
-		System.out.println();
-
-		File[] pageFiles = new File(www, "js/page").listFiles();
-		Arrays.sort(pageFiles); // we must sort the array, as the listFiles
-		// method doesn't guarantee that the return
-		// value is sorted. page_*.js must be
-		// inserted before the pages includes.
-		for (File file : pageFiles) {
-			System.out.println();
-			System.out.println("Processing: " + file.getName());
-			String currentFileContent;
-
-			if (!file.isDirectory()) {
-
-				currentFileContent = FileUtils.readFileToString(file, Lapstone.CHARSET);
-
-				if (file.getName().startsWith(".")) {
-					currentFileContent = "";
-				}
-
-				else if (file.getName().equals("pages.js")) {
-				}
-
-				else if (file.getName().equals("pages.json")) {
-					currentFileContent = "var config_json = " + currentFileContent;
-				}
-
-				else if (file.getName().endsWith("js")) {
-					String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
-					System.out.println("Identifiyer: " + jsIdentifyer);
-
-					// Minify the js file
-
-					try {
-
-						// Compressor.compressJavaScript(file.getAbsolutePath(), file.getAbsolutePath(),
-						// new JavascriptCompressorOptions());
-						LapstoneCompiler.Compile(file, file);
-					}
-
-					catch (Exception e) {
-						throw new CompressorException(e);
-					}
-
-					currentFileContent = FileUtils.readFileToString(file, Lapstone.CHARSET);
-
-				}
-
-				else if (file.getName().endsWith("json")) {
-					String jsIdentifyer = file.getName().substring(file.getName().indexOf(".") + 1, file.getName().indexOf(".", file.getName().indexOf(".") + 1));
-					System.out.println("Identifiyer: " + jsIdentifyer);
-					currentFileContent = "var config_" + jsIdentifyer + "=" + currentFileContent;
-
-					// parse JSON file to include the included files
-					pageConfiguration = objectMapper.readValue(file, Page_JSON.class);
-					for (String pageIncludeFileName : pageConfiguration.getInclude_once()) {
-						File pageIncludeFile = new File(www, "js/page/include/" + pageIncludeFileName);
-
-						if (!include_onceList.contains(pageIncludeFile)) {
-							include_onceList.add(pageIncludeFile);
-						}
-					}
-				}
-
-				// delete processed file
-				file.delete();
-
-				if (!currentFileContent.endsWith(";"))
-					currentFileContent += ";";
-
-				currentFileContent += "\n";
-
-				allPagesContent += currentFileContent;
-			}
-		}
-
-		String includeContent = "";
-		for (File include_onceFile : include_onceList) {
-			// Minify the js include file
-
-			try {
-				// Compressor.compressJavaScript(include_onceFile.getAbsolutePath(),
-				// include_onceFile.getAbsolutePath(), new JavascriptCompressorOptions());
-				LapstoneCompiler.Compile(include_onceFile, include_onceFile);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("ERROR: NOT ABLE TO COMPRESS: " + include_onceFile.getAbsolutePath());
-				// throw new CompressorException(e);
-			}
-
-			System.out.println("Adding include_once file: " + include_onceFile.getAbsolutePath());
-			includeContent += ";" + FileUtils.readFileToString(include_onceFile, Charset.forName("UTF-8"));
-			include_onceFile.delete();
-		}
-		includeContent = "includeEverything=function(){" + includeContent + "};";
-
-		allPagesContent += includeContent;
-
-		FileUtils.writeStringToFile(new File(www, "js/page/all.page.js"), allPagesContent, Lapstone.CHARSET);
-		// FileUtils.deleteDirectory(new File(www, "js/page/include"));
-	}
-
-	private static void compressSinglePluginFile(File www, String version) throws Exception {
-
-		File allPlugins = new File(www, "js/plugin/all.plugin.js");
-		File allPluginsMin = new File(www, "js/plugin/all.plugin.min." + version + ".js");
-
-		// FileUtils.copyFile(allPlugins, allPluginsMin);
-		try {
-
-			// Compressor.compressJavaScript(allPlugins.getAbsolutePath(),
-			// allPluginsMin.getAbsolutePath(), o);
-			LapstoneCompiler.Compile(allPlugins, allPluginsMin);
-			// slow in java, but very useful for debugging release version
-			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPluginsMin, Lapstone.CHARSET),
-					Lapstone.CHARSET);
-		}
-
-		catch (Exception e) {
-			LOGGER.error("Exception", e);
-			FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPlugins, Lapstone.CHARSET),
-					Lapstone.CHARSET);
-
-		}
-
-		allPlugins.delete();
-	}
-
-	private static void compressSinglePageFile(File www, String version) throws Exception {
-
-		File allPages = new File(www, "js/page/all.page.js");
-		File allPagesMin = new File(www, "js/page/all.page.min." + version + ".js");
-
-		try {
-
-			// Compressor.compressJavaScript(allPages.getAbsolutePath(),
-			// allPagesMin.getAbsolutePath(), o);
-			LapstoneCompiler.Compile(allPages, allPagesMin);
-
-			// slow in java, but very useful for debugging release version
-			FileUtils.writeStringToFile(allPagesMin, "//# sourceURL=all.page." + version + ".js" + "\n" + FileUtils.readFileToString(allPagesMin, Lapstone.CHARSET),
-					Lapstone.CHARSET);
-		}
-
-		catch (Exception e) {
-
-			FileUtils.copyFile(allPages, allPagesMin);
-
-			System.out.println("ERROR: NOT ABLE TO COMPRESS: " + allPages.getAbsolutePath());
-			// throw new CompressorException(e);
-		}
-
-		allPages.delete();
-
 	}
 }

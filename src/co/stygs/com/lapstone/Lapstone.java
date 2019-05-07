@@ -10,14 +10,10 @@ import org.apache.commons.io.FileUtils;
 
 public class Lapstone {
 
-	public Lapstone() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public static final Charset CHARSET = Charset.forName("UTF-8");
-
 	// public static String workingDirectory = System.getProperty("user.dir");
 	public static Map<String, String> argMap;
+
+	public static final Charset CHARSET = Charset.forName("UTF-8");
 
 	public static void main(String[] args) throws Exception {
 
@@ -198,5 +194,9 @@ public class Lapstone {
 			System.out.println("FATAL - ERROR - ERROR - ERROR - ERROR - ERROR");
 			e.printStackTrace();
 		}
+	}
+
+	public Lapstone() {
+		// TODO Auto-generated constructor stub
 	}
 }
