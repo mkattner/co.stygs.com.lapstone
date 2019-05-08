@@ -74,7 +74,7 @@ app["plugins"] = {
 		}
 
 		else {
-			promise = globalLoader.AsyncJsonLoader("../js/plugin/plugins.json");
+			promise = lapstone.globalLoader.AsyncJsonLoader("../js/plugin/plugins.json");
 
 			promise.done(function(data) {
 				app.plugins.config = data;
@@ -147,7 +147,7 @@ app["plugins"] = {
 					}
 
 					$.each(currentPlugin.config.include, function(includeIndex, includeFile) {
-						pluginIncludePromises.push(globalLoader.AsyncScriptLoader("../js/plugin/include/" + pluginName + "/" + includeFile))
+						pluginIncludePromises.push(lapstone.globalLoader.AsyncScriptLoader("../js/plugin/include/" + pluginName + "/" + includeFile))
 					});
 
 				}
@@ -176,7 +176,7 @@ app["plugins"] = {
 		// DEVELOPMENT
 		else {
 
-			promise = globalLoader.AsyncJsonLoader("../js/plugin/plugin." + pluginName + ".json");
+			promise = lapstone.globalLoader.AsyncJsonLoader("../js/plugin/plugin." + pluginName + ".json");
 			promise.done(function(json) {
 				currentPlugin.config = json;
 				dfd.resolve();
@@ -255,7 +255,7 @@ app["plugins"] = {
 
 				// DEVELOPMENT
 				else {
-					promises_js.push(globalLoader.AsyncScriptLoader("../js/plugin/plugin." + pluginName + ".js"));
+					promises_js.push(lapstone.globalLoader.AsyncScriptLoader("../js/plugin/plugin." + pluginName + ".js"));
 				}
 			}
 		});

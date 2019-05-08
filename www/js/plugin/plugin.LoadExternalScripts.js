@@ -25,8 +25,8 @@ var plugin_LoadExternalScripts = {
     promises = Array();
 
     if (app.config.min) {
-      promises.push(globalLoader.AsyncStyleLoader("../files/all.style." + app.config.version.app + ".css"));
-      promises.push(globalLoader.AsyncScriptLoader("../files/all.javascript." + app.config.version.app + ".js"));
+      promises.push(lapstone.globalLoader.AsyncStyleLoader("../files/all.style." + app.config.version.app + ".css"));
+      promises.push(lapstone.globalLoader.AsyncScriptLoader("../files/all.javascript." + app.config.version.app + ".js"));
     }
 
     else {
@@ -115,7 +115,7 @@ var plugin_LoadExternalScripts = {
       // dumpLineNumbers: "comments",
       // relativeUrls: false,
       // };
-      globalLoader.AsyncScriptLoader("../ext/less/less.min.js").done(function() {
+      lapstone.globalLoader.AsyncScriptLoader("../ext/less/less.min.js").done(function() {
         
 //        while(less===undefined){
 //          console.log("xxx");
@@ -175,7 +175,7 @@ var plugin_LoadExternalScripts = {
 
       app.debug.debug("plugin_LoadExternalScripts.loadScriptsAsync() - LOAD url: " + url);
 
-      globalLoader.AsyncScriptLoader(url).done(function() {
+      lapstone.globalLoader.AsyncScriptLoader(url).done(function() {
         plugin_LoadExternalScripts.loadedScripts[url] = true;
 
         app.debug.debug("plugin_LoadExternalScripts.loadScriptsAsync() - DONE url: " + url);
@@ -216,11 +216,11 @@ var plugin_LoadExternalScripts = {
       app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - LOAD url: " + url);
 
       if (url.endsWith(".less")) {
-        promise = globalLoader.AsyncLessLoader(url)
+        promise = lapstone.globalLoader.AsyncLessLoader(url)
       }
 
       else if (url.endsWith(".css")) {
-        promise = globalLoader.AsyncStyleLoader(url)
+        promise = lapstone.globalLoader.AsyncStyleLoader(url)
       }
 
       promise.done(function() {
@@ -269,7 +269,7 @@ var plugin_LoadExternalScripts = {
 
       else {
         app.debug.debug("plugin_LoadExternalScripts.functions.css() - load css: " + url);
-        promise = globalLoader.AsyncStyleLoader(url);
+        promise = lapstone.globalLoader.AsyncStyleLoader(url);
 
         promise.done(function() {
           app.debug.debug("plugin_LoadExternalScripts.functions.css() - css loading done: " + url);
@@ -293,7 +293,7 @@ var plugin_LoadExternalScripts = {
 
       else {
         app.debug.debug("plugin_LoadExternalScripts.functions.less() - load css: " + url);
-        promise = globalLoader.AsyncLessLoader(url);
+        promise = lapstone.globalLoader.AsyncLessLoader(url);
 
         promise.done(function() {
           app.debug.debug("plugin_LoadExternalScripts.functions.less() - css loading done: " + url);
@@ -313,7 +313,7 @@ var plugin_LoadExternalScripts = {
 
         return $.Deferred().resolve();
       } else {
-        promise = globalLoader.AsyncScriptLoader(url);
+        promise = lapstone.globalLoader.AsyncScriptLoader(url);
 
         promise.done(function() {
           app.debug.debug("plugin_LoadExternalScripts.functions.javascript() - javascript loading done: " + url);

@@ -19,7 +19,7 @@ var plugin_ImageProvider = {
 
   loadDefinitionFile: function(path) {
     var dfd = $.Deferred(), promise;
-    promise = globalLoader.AsyncJsonLoader(path);
+    promise = lapstone.globalLoader.AsyncJsonLoader(path);
     // alert(JSON.stringify(json));
 
     promise.done(function(json) {

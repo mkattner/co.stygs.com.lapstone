@@ -29,7 +29,7 @@ app.func("request", function(wsd) {
 	switch (wsd.method.toLowerCase()) {
 	case "get":
 		app.debug.info("DemoServer - load demo web service: " + wsd.url);
-		globalLoader.AsyncJsonLoader("../files/demo/ws/" + wsd.url)
+		lapstone.globalLoader.AsyncJsonLoader("../files/demo/ws/" + wsd.url)
 
 		.done(function(data) {
 			dfd.resolve(data);
@@ -44,7 +44,7 @@ app.func("request", function(wsd) {
 		break;
 	case "post":
 		app.debug.info("DemoServer - load demo web service: " + wsd.url);
-		globalLoader.AsyncJsonLoader("../files/demo/ws/" + wsd.url)
+		lapstone.globalLoader.AsyncJsonLoader("../files/demo/ws/" + wsd.url)
 
 		.done(function(data) {
 			dfd.resolve(data);

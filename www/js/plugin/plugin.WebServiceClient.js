@@ -614,12 +614,12 @@ var plugin_WebServiceClient = {
 
 			if (async === true) {
 
-				return globalLoader.AsyncJsonLoader(url);
+				return lapstone.globalLoader.AsyncJsonLoader(url);
 			}
 
 			else {
 
-				return globalLoader.JsonLoader(url);
+				return lapstone.globalLoader.JsonLoader(url);
 			}
 		}
 	}

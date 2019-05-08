@@ -84,7 +84,7 @@ var plugin_RestClient = {
   loadDefinitionFileAsync: function(path) {
     app.debug.trace("plugin_RestClient.loadDefinitionFile()");
     var dfd = $.Deferred(), promise;
-    promise = globalLoader.AsyncJsonLoader(path);
+    promise = lapstone.globalLoader.AsyncJsonLoader(path);
 
     promise.done(function(json) {
       $.each(json, function(name, values) {
@@ -107,7 +107,7 @@ var plugin_RestClient = {
   loadDefinitionFile: function(path) {
     app.debug.trace("plugin_RestClient.loadDefinitionFile()");
     app.debug.deprecated();
-    var json = globalLoader.JsonLoader(path);
+    var json = lapstone.globalLoader.JsonLoader(path);
     app.debug.debug("plugin_RestClient.loadDefinitionFile() - add each webservice definition");
     $.each(json, function(name, values) {
       app.debug.debug("plugin_RestClient.loadDefinitionFile() - add: " + name);

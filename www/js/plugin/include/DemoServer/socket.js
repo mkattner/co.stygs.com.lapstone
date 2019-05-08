@@ -21,7 +21,7 @@ app.func("socket", function(wsd) {
 
   var intervalFunction = function() {
     app.debug.info("DemoServer - load demo web socket: " + wsd.url);
-    globalLoader.AsyncJsonLoader("../files/demo/socket/" + wsd.url + "/" + i + ".json", 1)
+    lapstone.globalLoader.AsyncJsonLoader("../files/demo/socket/" + wsd.url + "/" + i + ".json", 1)
 
     .done(function(json) {
       dfd.notify(json);

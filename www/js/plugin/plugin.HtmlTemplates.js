@@ -52,8 +52,8 @@ var plugin_HtmlTemplates = {
           app.debug.validate(!styleUrl.contains("skin"));
         });
 
-        promises.push(globalLoader.AsyncTextLoader(contentUrl));
-        promises.push(globalLoader.AsyncTextLoader(styleUrl));
+        promises.push(lapstone.globalLoader.AsyncTextLoader(contentUrl));
+        promises.push(lapstone.globalLoader.AsyncTextLoader(styleUrl));
 
       });
 

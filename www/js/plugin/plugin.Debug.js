@@ -769,7 +769,7 @@ var plugin_Debug = {
     ls: {
       cleanupWsd: function() {
         $.each(plugin_RestClient.config.wsdFiles, function(index, wsdUrl) {
-          globalLoader.AsyncJsonLoader(wsdUrl, 3).done(function(wsd) {
+          lapstone.globalLoader.AsyncJsonLoader(wsdUrl, 3).done(function(wsd) {
             var newWsdFileContent, sortMembers;
 
             // function

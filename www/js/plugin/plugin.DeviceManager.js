@@ -90,7 +90,7 @@ var plugin_DeviceManager = {
 				console.error("Unknown device!");
 			}
 
-			scriptLoading = globalLoader.AsyncScriptLoader(js);
+			scriptLoading = lapstone.globalLoader.AsyncScriptLoader(js);
 
 			scriptLoading.done(function() {
 				if (app[plugin_DeviceManager.config.shortname].current == undefined)
@@ -105,7 +105,7 @@ var plugin_DeviceManager = {
 
 			});
 			promiseArray.push(scriptLoading);
-			promiseArray.push(globalLoader.AsyncStyleLoader(css));
+			promiseArray.push(lapstone.globalLoader.AsyncStyleLoader(css));
 
 			return $.when.apply($, promiseArray);
 		} else {

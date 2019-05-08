@@ -48,7 +48,7 @@ var plugin_Actions = {
 
 		else {
 			$.each(plugin_Actions.config.actions, function(index, actionFileUrl) {
-				promises.push(globalLoader.AsyncScriptLoader("../files/actions/" + actionFileUrl));
+				promises.push(lapstone.globalLoader.AsyncScriptLoader("../files/actions/" + actionFileUrl));
 			});
 
 			/**

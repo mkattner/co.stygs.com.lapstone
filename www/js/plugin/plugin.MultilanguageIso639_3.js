@@ -67,7 +67,7 @@ var plugin_MultilanguageIso639_3 = {
 		var promise, langUri;
 
 		langUri = "../files/language/" + language + ".json";
-		promise = globalLoader.AsyncJsonLoader(langUri);
+		promise = lapstone.globalLoader.AsyncJsonLoader(langUri);
 
 		promise.done(function(json) {
 			plugin_MultilanguageIso639_3.dictionary = json;

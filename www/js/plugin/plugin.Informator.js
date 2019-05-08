@@ -88,7 +88,7 @@ var plugin_Informator = {
 				if (global["page_" + value] == undefined)
 					global["page_" + value] = {};
 				// dirty!! do not use json loader
-				global["page_" + value]['config'] = globalLoader.JsonLoader("../js/page/page." + value + ".json");
+				global["page_" + value]['config'] = lapstone.globalLoader.JsonLoader("../js/page/page." + value + ".json");
 			});
 			this.syncObjectWithHtml5Storage(global);
 		}

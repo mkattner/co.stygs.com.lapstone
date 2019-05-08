@@ -93,7 +93,7 @@ function loadPlugins() {
 	}
 
 	// load the plugins file
-	promise = globalLoader.AsyncScriptLoader(url);
+	promise = lapstone.globalLoader.AsyncScriptLoader(url);
 	promise.done(function() {
 		startup.addFunction("                  plugin constructor", app.plugins.constructor);
 		dfd.resolve();
@@ -115,7 +115,7 @@ function loadPages() {
 	}
 
 	// load pages file
-	promise = globalLoader.AsyncScriptLoader(url);
+	promise = lapstone.globalLoader.AsyncScriptLoader(url);
 	promise.done(function() {
 		startup.addFunction("                  page constructor", app.pages.constructor);
 		dfd.resolve();
@@ -130,7 +130,7 @@ function loadPages() {
 function loadConfiguration() {
 	var dfd = $.Deferred(), promise;
 
-	promise = globalLoader.AsyncJsonLoader("../js/lapstone.json");
+	promise = lapstone.globalLoader.AsyncJsonLoader("../js/lapstone.json");
 
 	promise.done(function(configuration) {
 		//
@@ -257,7 +257,7 @@ function updateFramework() {
 			// currentLapstoneVersion_int);
 
 			// RUN UPDATE SCRIPTS
-			globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(response) {
+			lapstone.globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(response) {
 				var updateScriptPromisses;
 
 				updateScriptPromisses = [];
@@ -269,7 +269,7 @@ function updateFramework() {
 						if (currentAppVersion.toIntegerVersion() >= updateObject.startWithAppVersion.toIntegerVersion() && currentAppVersion.toIntegerVersion() < updateObject.stopWithAppVersion.toIntegerVersion()) {
 							// App Update
 							console.warn("App Update: " + updateObject.description);
-							updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+							updateScriptPromisses.push(lapstone.globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
 						}
 					}
 
@@ -277,7 +277,7 @@ function updateFramework() {
 						if (currentLapstoneVersion.toIntegerVersion() >= updateObject.startWithLapstoneVersion.toIntegerVersion() && currentLapstoneVersion.toIntegerVersion() < updateObject.stopWithLapstoneVersion.toIntegerVersion()) {
 							// Lapstone Update
 							console.warn("Lapstone Update: " + updateObject.description);
-							updateScriptPromisses.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
+							updateScriptPromisses.push(lapstone.globalLoader.AsyncScriptLoader("../files/update/scripts/" + updateObject.updateScript, 1));
 						}
 					}
 
@@ -330,7 +330,7 @@ function cacheAjax() {
 function loadJQueryMobile() {
 	var dfd = $.Deferred(), promise;
 
-	promise = globalLoader.AsyncScriptLoader("../ext/jQueryMobile/jquery.mobile.min.js");
+	promise = lapstone.globalLoader.AsyncScriptLoader("../ext/jQueryMobile/jquery.mobile.min.js");
 
 	promise.done(function() {
 
@@ -345,10 +345,10 @@ function loadJQueryMobile() {
 	return dfd.promise();
 }
 // create lapstone namespace
-//var lapstone = {};
-var globalLoader, startupDefinition, initialisationPanel, startup;
+var lapstone = {};
+//var globalLoader, startupDefinition, initialisationPanel, startup;
 
-globalLoader = {
+lapstone.globalLoader = {
 	globalTimeout : 10000,
 	globalAttempts : 3,
 
@@ -361,21 +361,21 @@ globalLoader = {
 			attempt = 1;
 
 		if (attempts == undefined)
-			attempts = globalLoader.globalAttempts;
+			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
 			cache : cacheAjax(),
 			url : url,
 			async : true,
 			dataType : "json",
-			timeout : globalLoader.globalTimeout
+			timeout : lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			if (textStatus === "timeout") {
 				startup.log("Timeout while loading: " + url);
 				startup.log("It was attempt " + attempt + " of " + attempts + ".");
 				if (attempt < attempts) {
 					startup.log("So we try again.");
-					globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
+					lapstone.globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
 				} else {
 					startup.log("So the framework loading fails.");
 					dfd.reject(textStatus);
@@ -385,7 +385,7 @@ globalLoader = {
 			}
 		}).fail(function(jqXHR, textStatus, errorThrown) {
 			if (attempt < attempts) {
-				globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
+				lapstone.globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
 				console.log("             Message: " + errorThrown.message);
@@ -405,7 +405,7 @@ globalLoader = {
 			url : url,
 			async : false,
 			dataType : "json",
-			timeout : globalLoader.globalTimeout,
+			timeout : lapstone.globalLoader.globalTimeout,
 			success : function(data) {
 				// alert(JSON.stringify(data));
 				json = data;
@@ -428,21 +428,21 @@ globalLoader = {
 			attempt = 1;
 
 		if (attempts == undefined)
-			attempts = globalLoader.globalAttempts;
+			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
 			cache : cacheAjax(),
 			url : url,
 			async : true,
 			dataType : "script",
-			timeout : globalLoader.globalTimeout
+			timeout : lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			if (textStatus === "timeout") {
 				startup.log("Timeout while loading: " + url);
 				startup.log("It was attempt " + attempt + " of " + attempts + ".");
 				if (attempt < attempts) {
 					startup.log("So we try again.");
-					globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
+					lapstone.globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
 				} else {
 					startup.log("So the framework loading fails.");
 					dfd.reject(textStatus);
@@ -455,7 +455,7 @@ globalLoader = {
 			}
 		}).fail(function(jqXHR, textStatus, errorThrown) {
 			if (attempt < attempts) {
-				globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
+				lapstone.globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
 				console.log("             Message: " + errorThrown.message);
@@ -473,7 +473,7 @@ globalLoader = {
 			url : url,
 			async : false,
 			dataType : "script",
-			timeout : globalLoader.globalTimeout,
+			timeout : lapstone.globalLoader.globalTimeout,
 			success : function(data) {
 
 			},
@@ -495,21 +495,21 @@ globalLoader = {
 			attempt = 1;
 
 		if (attempts == undefined)
-			attempts = globalLoader.globalAttempts;
+			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
 			cache : cacheAjax(),
 			url : url,
 			async : true,
 			dataType : "text",
-			timeout : globalLoader.globalTimeout
+			timeout : lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			if (textStatus === "timeout") {
 				startup.log("Timeout while loading: " + url);
 				startup.log("It was attempt " + attempt + " of " + attempts + ".");
 				if (attempt < attempts) {
 					startup.log("So we try again.");
-					globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+					lapstone.globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
 				} else {
 					startup.log("So the framework loading fails.");
 					dfd.reject(textStatus);
@@ -519,7 +519,7 @@ globalLoader = {
 			}
 		}).fail(function(jqXHR, textStatus, errorThrown) {
 			if (attempt < attempts) {
-				globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+				lapstone.globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
 				console.log("             Message: " + errorThrown.message);
@@ -538,7 +538,7 @@ globalLoader = {
 			url : url,
 			async : false,
 			dataType : "text",
-			timeout : globalLoader.globalTimeout,
+			timeout : lapstone.globalLoader.globalTimeout,
 			success : function(data) {
 				// alert(JSON.stringify(data));
 				text = data;
@@ -554,7 +554,7 @@ globalLoader = {
 
 	AsyncStyleLoader : function(url, attempts, attempt) {
 		var dfd = $.Deferred();
-		globalLoader.AsyncTextLoader(url).done(function(styleString) {
+		lapstone.globalLoader.AsyncTextLoader(url).done(function(styleString) {
 
 			styleString = styleString.replaceAll("url(\"", "url(\"" + url.substring(0, url.lastIndexOf("/") + 1));
 			styleString = styleString.replaceAll("url('", "url('" + url.substring(0, url.lastIndexOf("/") + 1));
@@ -605,14 +605,14 @@ globalLoader = {
 			attempt = 1;
 
 		if (attempts == undefined)
-			attempts = globalLoader.globalAttempts;
+			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
 			cache : cacheAjax(),
 			url : url,
 			async : true,
 			dataType : "text",
-			timeout : globalLoader.globalTimeout
+			timeout : lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			// console.log("+++++++ " + JSON.stringify(jqXHR));
 			if (textStatus === "timeout") {
@@ -620,7 +620,7 @@ globalLoader = {
 				startup.log("It was attempt " + attempt + " of " + attempts + ".");
 				if (attempt < attempts) {
 					startup.log("So we try again.");
-					globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+					lapstone.globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
 				} else {
 					startup.log("So the framework loading fails.");
 					dfd.reject(arguments);
@@ -636,7 +636,7 @@ globalLoader = {
 			}
 		}).fail(function(jqXHR, textStatus, errorThrown) {
 			if (attempt < attempts) {
-				globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
+				lapstone.globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
 			} else {
 				console.log("Fatal Error: Can't load Text. Url: " + url + " Status: " + textStatus);
 				console.log("             Message: " + errorThrown.message);
@@ -753,8 +753,8 @@ initialisationPanel = {
 		}
 
 		else {
-			globalLoader.StyleLoader("../js/lapstone.css");
-			globalLoader.AsyncTextLoader('../js/lapstone.html').done(function(data) {
+			lapstone.globalLoader.StyleLoader("../js/lapstone.css");
+			lapstone.globalLoader.AsyncTextLoader('../js/lapstone.html').done(function(data) {
 
 				$('body').append(data);
 				dfd.resolve();

@@ -53,7 +53,7 @@ app["pages"] = {
 		startup.addFunction("                  loading the pages' configuration", app.pages.loadPageConfig);
 
 		// startup.addFunction(" loading the script for global pages",
-		// globalLoader.AsyncScriptLoader,
+		// lapstone.globalLoader.AsyncScriptLoader,
 		// "../files/globalPage.js");
 
 		dfd.resolve();
@@ -83,7 +83,7 @@ app["pages"] = {
 					app.debug.validate(window['page_' + pageName].config.include);
 					$.each(window['page_' + pageName].config.include_once, function(index, includeFile) {
 						if (app.pages.includeOnce.indexOf(includeFile) === -1) {
-							pageIncludePromises.push(globalLoader.AsyncScriptLoader("../js/page/include/" + includeFile));
+							pageIncludePromises.push(lapstone.globalLoader.AsyncScriptLoader("../js/page/include/" + includeFile));
 							app.pages.includeOnce.push(includeFile);
 						}
 					});
@@ -120,7 +120,7 @@ app["pages"] = {
 			app.pages.config = config_json;
 			dfd.resolve();
 		} else {
-			promise = globalLoader.AsyncJsonLoader("../js/page/pages.json");
+			promise = lapstone.globalLoader.AsyncJsonLoader("../js/page/pages.json");
 			promise.done(function(json) {
 				app.pages.config = json;
 
@@ -236,7 +236,7 @@ app["pages"] = {
 			window['page_' + key].config = window['config_' + key];
 			dfd.resolve();
 		} else {
-			promise = globalLoader.AsyncJsonLoader("../js/page/page." + key + ".json");
+			promise = lapstone.globalLoader.AsyncJsonLoader("../js/page/page." + key + ".json");
 			promise.done(function(json) {
 				window['page_' + key].config = json;
 				dfd.resolve();
@@ -296,7 +296,7 @@ app["pages"] = {
 			if (app.config.min) {
 				promises_js.push(app.pages.onPageLoaded(key));
 			} else {
-				promises_js.push(globalLoader.AsyncScriptLoader("../js/page/page." + key + ".js"));
+				promises_js.push(lapstone.globalLoader.AsyncScriptLoader("../js/page/page." + key + ".js"));
 			}
 		});
 		promiseOfPromises_js = $.when.apply($, promises_js);
@@ -398,7 +398,7 @@ app["pages"] = {
 
 		$.each(globalPageIncludes, function(index, globalPageName) {
 			// load all the globalPage files
-			promises.push(globalLoader.AsyncScriptLoader("../files/globalPages/" + globalPageName + ".js"))
+			promises.push(lapstone.globalLoader.AsyncScriptLoader("../files/globalPages/" + globalPageName + ".js"))
 		});
 
 		promiseOfPromises = $.when.apply($, promises);
