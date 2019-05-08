@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -18,6 +20,8 @@ import org.mozilla.javascript.ast.IfStatement;
 import org.mozilla.javascript.ast.NodeVisitor;
 import org.mozilla.javascript.ast.SwitchCase;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.CompilationLevel;
@@ -28,6 +32,9 @@ import com.google.javascript.jscomp.DiagnosticGroup;
 import com.google.javascript.jscomp.DiagnosticGroups;
 import com.google.javascript.jscomp.DiagnosticType;
 import com.google.javascript.jscomp.SourceFile;
+import com.google.javascript.jscomp.parsing.parser.trees.GetAccessorTree;
+
+import co.stygs.com.lapstone.objects.json.Plugin_JSON;
 
 public class LapstoneCompiler implements ILogger {
 
@@ -167,6 +174,19 @@ public class LapstoneCompiler implements ILogger {
 
 	for (File f : new File(www, "ext/externs").listFiles()) {
 	    externs.add(SourceFile.fromFile(f.getAbsolutePath(), Lapstone.CHARSET));
+	}
+
+	ObjectMapper objectMapper = new ObjectMapper();
+	LinkedHashMap<String, Boolean> plugins = objectMapper.readValue(new File(www, "js/plugin/plugins.json"), new TypeReference<LinkedHashMap<String, Boolean>>() {
+	});
+
+	for (String pluginName : plugins.keySet()) {
+	    // just load used plugins
+	    if (Boolean.TRUE.equals(plugins.get(pluginName))) {
+		File f = new File(www, "js/plugin/plugin." + pluginName + ".js");
+		if (!f.getName().equals(in.getName()))
+		    externs.add(SourceFile.fromCode(pluginName, "var plugin_" + pluginName + "={};"));
+	    }
 	}
 
 	// The dummy input name "input.js" is used here so that any warnings or

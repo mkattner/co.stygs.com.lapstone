@@ -15,9 +15,9 @@ var plugin_Notification = {config:null, notifications:[], callbackFunction:null,
   window.setTimeout(function() {
     if (plugin_Notification.config.enablePushNotifications && app.config.apacheCordova && 1 == app.sess.loggedIn()) {
       if (app.debug.debug("plugin_Notification.pagesLoaded() register device on licence and push server"), window.device) {
-        var a = app.rc.getJson("notifyme.registerDevice", {deviceId:device.uuid, contextToken:app.sess.getValue("userToken")}, !0);
+        var a = app.rc.getJson("notifyme.registerDevice", {deviceId:window.device.uuid, contextToken:app.sess.getValue("userToken")}, !0);
         a.done(function(a) {
-          void 0 != window.push ? (app.debug.debug("plugin_Notification.pagesLoaded() register device on aerogear push server"), plugin_Notification.config.pushConfig.alias = device.uuid, push.register(plugin_Notification.functions.push_onNotification, function() {
+          void 0 != window.push ? (app.debug.debug("plugin_Notification.pagesLoaded() register device on aerogear push server"), plugin_Notification.config.pushConfig.alias = device.uuid, window.push.register(plugin_Notification.functions.push_onNotification, function() {
             app.debug.debug("plugin_Notification.pagesLoaded() success: device is registered on push server");
           }, function(a) {
             app.debug.debug("plugin_Notification.pagesLoaded() error: device is not registered on push server");
@@ -482,13 +482,5 @@ var plugin_Notification = {config:null, notifications:[], callbackFunction:null,
   h.type = "dialog";
   plugin_Notification.notifications.push(h);
 }, trialog:function() {
-  if (!$.isPlainObject(notification)) {
-    return app.debug.deprecated("Please use an object as argument."), null;
-  }
-  app.debug.operation(function() {
-    void 0 === notification.id && app.debug.error("Missing property 'id' in popup.");
-  });
-  notification.type = "alert";
-  notification.type = "trialog";
-  plugin_Notification.notifications.push(notification);
+  app.debug.deprecated("removed");
 }}, loader:{}}};

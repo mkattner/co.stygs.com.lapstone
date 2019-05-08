@@ -37,7 +37,7 @@ var plugin_Navigation = {config:null, history:[], lastTransition:"none", constru
     $("body").pagecontainer("change", a, {transition:b, reverse:void 0 == c ? !1 : c});
   }, 50) : $(location).attr("href", a);
 }, virtual:function(a) {
-  app.debug.validate(pages.config.virtual);
+  app.debug.validate(app.pages.config.virtual);
 }, back:function(a) {
   app.debug.trace("plugin_Navigation.functions.back()");
   if (1 < plugin_Navigation.history.length) {

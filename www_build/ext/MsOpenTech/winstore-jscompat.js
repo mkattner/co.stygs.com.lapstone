@@ -1,174 +1,101 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc.  All rights reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-// JavaScript Dynamic Content shim for Windows Store apps
-(function () {
-
-    if (window.MSApp && MSApp.execUnsafeLocalFunction) {
-
-        // Some nodes will have an "attributes" property which shadows the Node.prototype.attributes property
-        //  and means we don't actually see the attributes of the Node (interestingly the VS debug console
-        //  appears to suffer from the same issue).
-        //
-        var Element_setAttribute = Object.getOwnPropertyDescriptor(Element.prototype, "setAttribute").value;
-        var Element_removeAttribute = Object.getOwnPropertyDescriptor(Element.prototype, "removeAttribute").value;
-        var HTMLElement_insertAdjacentHTMLPropertyDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "insertAdjacentHTML");
-        var Node_get_attributes = Object.getOwnPropertyDescriptor(Node.prototype, "attributes").get;
-        var Node_get_childNodes = Object.getOwnPropertyDescriptor(Node.prototype, "childNodes").get;
-        var detectionDiv = document.createElement("div");
-
-        function getAttributes(element) {
-            return Node_get_attributes.call(element);
+// Input 0
+'use strict';
+(function() {
+  if (window.MSApp && MSApp.execUnsafeLocalFunction) {
+    var k = function(a, c) {
+      var e = Object.getOwnPropertyDescriptor(HTMLElement.prototype, a), b = e.set;
+      Object.defineProperty(HTMLElement.prototype, a, {get:e.get, set:function(a) {
+        if (window.WinJS && window.WinJS._execUnsafe && m()) {
+          b.call(this, a);
+        } else {
+          var g = this, d = n(a, g);
+          MSApp.execUnsafeLocalFunction(function() {
+            c(e, g, d);
+          });
         }
-
-        function setAttribute(element, attribute, value) {
-            try {
-                Element_setAttribute.call(element, attribute, value);
-            } catch (e) {
-                // ignore
+      }, enumerable:e.enumerable, configurable:e.configurable});
+    }, n = function(a, c) {
+      function e(a) {
+        var b = p.call(a);
+        if (b && b.length) {
+          for (var c, f = 0, d = b.length; f < d; f++) {
+            var g = b[f], h = g.name;
+            "o" !== h[0] && "O" !== h[0] || "n" !== h[1] && "N" !== h[1] || (c = c || [], c.push({name:g.name, value:g.value}));
+          }
+          if (c) {
+            for (f = 0, d = c.length; f < d; f++) {
+              g = c[f];
+              q.call(a, g.name);
+              try {
+                r.call(a, "x-" + g.name, g.value);
+              } catch (w) {
+              }
             }
+          }
         }
-
-        function removeAttribute(element, attribute) {
-            Element_removeAttribute.call(element, attribute);
+        a = t.call(a);
+        f = 0;
+        for (d = a.length; f < d; f++) {
+          e(a[f]);
         }
-
-        function childNodes(element) {
-            return Node_get_childNodes.call(element);
+      }
+      var b = document.implementation.createHTMLDocument("cleaner");
+      l(b.documentElement);
+      MSApp.execUnsafeLocalFunction(function() {
+        u.value.call(b.documentElement, "afterbegin", a);
+      });
+      var d = b.documentElement.querySelectorAll("script");
+      Array.prototype.forEach.call(d, function(a) {
+        switch(a.type.toLowerCase()) {
+          case "":
+            a.type = "text/inert";
+            break;
+          case "text/javascript":
+          case "text/ecmascript":
+          case "text/x-javascript":
+          case "text/jscript":
+          case "text/livescript":
+          case "text/javascript1.1":
+          case "text/javascript1.2":
+          case "text/javascript1.3":
+            a.type = "text/inert-" + a.type.slice(5);
+            break;
+          case "application/javascript":
+          case "application/ecmascript":
+          case "application/x-javascript":
+            a.type = "application/inert-" + a.type.slice(12);
         }
-
-        function empty(element) {
-            while (element.childNodes.length) {
-                element.removeChild(element.lastChild);
-            }
-        }
-
-        function insertAdjacentHTML(element, position, html) {
-            HTMLElement_insertAdjacentHTMLPropertyDescriptor.value.call(element, position, html);
-        }
-        
-        function inUnsafeMode() {
-            var isUnsafe = true;
-            try {
-                detectionDiv.innerHTML = "<test/>";
-            }
-            catch (ex) {
-                isUnsafe = false;
-            }
-            
-            return isUnsafe;
-        }
-
-        function cleanse(html, targetElement) {
-            var cleaner = document.implementation.createHTMLDocument("cleaner");
-            empty(cleaner.documentElement);
-            MSApp.execUnsafeLocalFunction(function () {
-                insertAdjacentHTML(cleaner.documentElement, "afterbegin", html);
-            });
-
-            var scripts = cleaner.documentElement.querySelectorAll("script");
-            Array.prototype.forEach.call(scripts, function (script) {
-                switch (script.type.toLowerCase()) {
-                    case "":
-                        script.type = "text/inert";
-                        break;
-                    case "text/javascript":
-                    case "text/ecmascript":
-                    case "text/x-javascript":
-                    case "text/jscript":
-                    case "text/livescript":
-                    case "text/javascript1.1":
-                    case "text/javascript1.2":
-                    case "text/javascript1.3":
-                        script.type = "text/inert-" + script.type.slice("text/".length);
-                        break;
-                    case "application/javascript":
-                    case "application/ecmascript":
-                    case "application/x-javascript":
-                        script.type = "application/inert-" + script.type.slice("application/".length);
-                        break;
-
-                    default:
-                        break;
-                }
-            });
-
-            function cleanseAttributes(element) {
-                var attributes = getAttributes(element);
-                if (attributes && attributes.length) {
-                    // because the attributes collection is live it is simpler to queue up the renames
-                    var events;
-                    for (var i = 0, len = attributes.length; i < len; i++) {
-                        var attribute = attributes[i];
-                        var name = attribute.name;
-                        if ((name[0] === "o" || name[0] === "O") &&
-                            (name[1] === "n" || name[1] === "N")) {
-                            events = events || [];
-                            events.push({ name: attribute.name, value: attribute.value });
-                        }
-                    }
-                    if (events) {
-                        for (var i = 0, len = events.length; i < len; i++) {
-                            var attribute = events[i];
-                            removeAttribute(element, attribute.name);
-                            setAttribute(element, "x-" + attribute.name, attribute.value);
-                        }
-                    }
-                }
-                var children = childNodes(element);
-                for (var i = 0, len = children.length; i < len; i++) {
-                    cleanseAttributes(children[i]);
-                }
-            }
-            cleanseAttributes(cleaner.documentElement);
-
-            var cleanedNodes = [];
-
-            if (targetElement.tagName === 'HTML') {
-                cleanedNodes = Array.prototype.slice.call(document.adoptNode(cleaner.documentElement).childNodes);
-            } else {
-                if (cleaner.head) {
-                    cleanedNodes = cleanedNodes.concat(Array.prototype.slice.call(document.adoptNode(cleaner.head).childNodes));
-                }
-                if (cleaner.body) {
-                    cleanedNodes = cleanedNodes.concat(Array.prototype.slice.call(document.adoptNode(cleaner.body).childNodes));
-                }  
-            }
-
-            return cleanedNodes;
-        }
-
-        function cleansePropertySetter(property, setter) {
-            var propertyDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, property);
-            var originalSetter = propertyDescriptor.set;
-            Object.defineProperty(HTMLElement.prototype, property, {
-                get: propertyDescriptor.get,
-                set: function (value) {
-                    if(window.WinJS && window.WinJS._execUnsafe && inUnsafeMode()) {
-                        originalSetter.call(this, value);
-                    } else {
-                        var that = this;
-                        var nodes = cleanse(value, that);
-                        MSApp.execUnsafeLocalFunction(function () {
-                            setter(propertyDescriptor, that, nodes);
-                        });
-                    }
-                },
-                enumerable: propertyDescriptor.enumerable,
-                configurable: propertyDescriptor.configurable,
-            });
-        }
-        cleansePropertySetter("innerHTML", function (propertyDescriptor, target, elements) {
-            empty(target);
-            for (var i = 0, len = elements.length; i < len; i++) {
-                target.appendChild(elements[i]);
-            }
-        });
-        cleansePropertySetter("outerHTML", function (propertyDescriptor, target, elements) {
-            for (var i = 0, len = elements.length; i < len; i++) {
-                target.insertAdjacentElement("afterend", elements[i]);
-            }
-            target.parentNode.removeChild(target);
-        });
-
-    }
-
-}());
+      });
+      e(b.documentElement);
+      d = [];
+      "HTML" === c.tagName ? d = Array.prototype.slice.call(document.adoptNode(b.documentElement).childNodes) : (b.head && (d = d.concat(Array.prototype.slice.call(document.adoptNode(b.head).childNodes))), b.body && (d = d.concat(Array.prototype.slice.call(document.adoptNode(b.body).childNodes))));
+      return d;
+    }, m = function() {
+      var a = !0;
+      try {
+        v.innerHTML = "\x3ctest/\x3e";
+      } catch (c) {
+        a = !1;
+      }
+      return a;
+    }, l = function(a) {
+      for (; a.childNodes.length;) {
+        a.removeChild(a.lastChild);
+      }
+    }, r = Object.getOwnPropertyDescriptor(Element.prototype, "setAttribute").value, q = Object.getOwnPropertyDescriptor(Element.prototype, "removeAttribute").value, u = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "insertAdjacentHTML"), p = Object.getOwnPropertyDescriptor(Node.prototype, "attributes").get, t = Object.getOwnPropertyDescriptor(Node.prototype, "childNodes").get, v = document.createElement("div");
+    k("innerHTML", function(a, c, e) {
+      l(c);
+      a = 0;
+      for (var b = e.length; a < b; a++) {
+        c.appendChild(e[a]);
+      }
+    });
+    k("outerHTML", function(a, c, e) {
+      a = 0;
+      for (var b = e.length; a < b; a++) {
+        c.insertAdjacentElement("afterend", e[a]);
+      }
+      c.parentNode.removeChild(c);
+    });
+  }
+})();

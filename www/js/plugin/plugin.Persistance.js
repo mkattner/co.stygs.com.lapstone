@@ -117,7 +117,7 @@ var plugin_Persistance = {
       app.sess.setObject(pluginName, object, plugin_Persistance.config.sessionKey);
       
       // in the config
-      var pluginConfig = $.extend(true, app.plugins.getConfigByName(pluginName), object);
+      pluginConfig = $.extend(true, app.plugins.getConfigByName(pluginName), object);
 
       app.plugins.setConfigByName(pluginName, pluginConfig)
     },

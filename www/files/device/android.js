@@ -1,4 +1,4 @@
-app[plugin_DeviceManager.config.shortname]['current'] = {
+app.dm['current'] = {
 	constructor : function() {
 	},
 

@@ -153,7 +153,7 @@ var plugin_HTML5Storage = {
 			event.stopPropagation();
 			event.preventDefault();
 
-			var $element;
+			var $element, href;
 
 			$element = $(this);
 
@@ -200,10 +200,10 @@ var plugin_HTML5Storage = {
 		key = key.split('.');
 		var i = 0, n = key.length;
 		for (; i < n - 1; ++i) {
-			el = el[atob(key[i])];
+			el = el[window.atob(key[i])];
 		}
-		app.debug.debug("plugin_HTML5Storage.setDeepBase64Key - " + el[atob(key[i])] + " = " + value);
-		el[atob(key[i])] = value;
+		app.debug.debug("plugin_HTML5Storage.setDeepBase64Key - " + el[window.atob(key[i])] + " = " + value);
+		el[window.atob(key[i])] = value;
 	},
 
 	getDeep : function(el, key) {

@@ -47,9 +47,10 @@ var plugin_HTML5Storage = {config:null, type:{object:"_t_pojo_", array:"_t_array
     app.debug.event(b);
     b.stopPropagation();
     b.preventDefault();
-    var c = $(this);
-    void 0 !== (href = c.attr("href")) && 1 < href.length ? app.nav.redirect(href, c.attr("data-transition") || "none") : (!1 !== c.data("fire") && (c.data("fire", !1), a(b, c)), window.setTimeout(function() {
-      c.data("fire", !0);
+    var c;
+    var d = $(this);
+    void 0 !== (c = d.attr("href")) && 1 < c.length ? app.nav.redirect(c, d.attr("data-transition") || "none") : (!1 !== d.data("fire") && (d.data("fire", !1), a(b, d)), window.setTimeout(function() {
+      d.data("fire", !0);
     }, 300));
   });
 }, afterHtmlInjectedBeforePageComputing:function(a) {
@@ -67,10 +68,10 @@ var plugin_HTML5Storage = {config:null, type:{object:"_t_pojo_", array:"_t_array
   app.debug.trace("plugin_HTML5Storage.setDeepBase64Key(" + app.debug.arguments(arguments) + ")");
   b = b.split(".");
   for (var d = 0, e = b.length; d < e - 1; ++d) {
-    a = a[atob(b[d])];
+    a = a[window.atob(b[d])];
   }
-  app.debug.debug("plugin_HTML5Storage.setDeepBase64Key - " + a[atob(b[d])] + " \x3d " + c);
-  a[atob(b[d])] = c;
+  app.debug.debug("plugin_HTML5Storage.setDeepBase64Key - " + a[window.atob(b[d])] + " \x3d " + c);
+  a[window.atob(b[d])] = c;
 }, getDeep:function(a, b) {
   app.debug.trace("plugin_HTML5Storage.getDeep(" + app.debug.arguments(arguments) + ")");
   b = b.split(".");

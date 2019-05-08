@@ -74,16 +74,18 @@ var plugin_WebServiceError = {config:null, constructor:function() {
   var b = plugin_WebServiceError.functions.getErrorName(a);
   app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - error name: " + b + " type: " + typeof b);
   if ("string" === typeof b) {
-    for (key in app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - errors"), plugin_WebServiceError.config.wse) {
-      if (app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - condition: " + key + " \x3d\x3d " + b), key == b) {
-        return app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: error found"), {id:Math.abs(key.hashCode()), result:a, wse:plugin_WebServiceError.config.wse[key]};
+    for (c in app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - errors"), plugin_WebServiceError.config.wse) {
+      if (app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - condition: " + c + " \x3d\x3d " + b), c == b) {
+        return app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: error found"), {id:Math.abs(c.hashCode()), result:a, wse:plugin_WebServiceError.config.wse[c]};
       }
     }
   }
   if ($.isPlainObject(a)) {
-    for (key in app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: isPlainObject \x3d\x3d true"), app.debug.validate(plugin_WebServiceError.config.strictErrorKeys), plugin_WebServiceError.config.strictErrorKeys) {
-      if (errorKey = plugin_WebServiceError.config.strictErrorKeys[key], !0 === a.hasOwnProperty(errorKey)) {
-        return app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: strict error found: " + errorKey), {id:Math.abs(errorKey.hashCode()), result:a};
+    app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: isPlainObject \x3d\x3d true");
+    app.debug.validate(plugin_WebServiceError.config.strictErrorKeys);
+    for (var c in plugin_WebServiceError.config.strictErrorKeys) {
+      if (b = plugin_WebServiceError.config.strictErrorKeys[c], !0 === a.hasOwnProperty(b)) {
+        return app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: strict error found: " + b), {id:Math.abs(b.hashCode()), result:a};
       }
     }
   }
