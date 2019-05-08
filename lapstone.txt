@@ -3,6 +3,10 @@ WELCOME to the lapstone basic user manual!
 Basic usage:
 call: java -jar lapstone.jar
 
+*) Logging
+   Optional parameters:
+   -log=T|D|I|W|E|F
+
 *) Page operations:
    Modify your pages in the lapstone project.
 
