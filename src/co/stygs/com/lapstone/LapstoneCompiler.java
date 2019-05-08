@@ -180,6 +180,10 @@ public class LapstoneCompiler implements ILogger {
 	LinkedHashMap<String, Boolean> plugins = objectMapper.readValue(new File(www, "js/plugin/plugins.json"), new TypeReference<LinkedHashMap<String, Boolean>>() {
 	});
 
+	if (!in.getName().equals("lapstone.js")) {
+	    externs.add(SourceFile.fromCode("lapstone", "var lapstone={}; var app={};"));
+	}
+
 	for (String pluginName : plugins.keySet()) {
 	    // just load used plugins
 	    if (Boolean.TRUE.equals(plugins.get(pluginName))) {

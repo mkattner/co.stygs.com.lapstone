@@ -862,7 +862,7 @@ lapstone.startup = {
     try {
       serializedError = JSON.stringify(arguments);
       console.log("ERROR: " + serializedError);
-      consloe.log(arguments);
+      console.log(arguments);
     } catch (e) {
     }
 
@@ -960,7 +960,7 @@ function extendJsAndJquery() {
     length = this.length;
 
     if (length == 0) return hash;
-    for (i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
       _char = this.charCodeAt(i);
       hash = ((hash << 5) - hash) + _char;
       hash = hash & hash; // Convert to 32bit integer
@@ -1059,6 +1059,7 @@ function extendJsAndJquery() {
 
   String.prototype.occurences = function(subString, allowOverlapping) {
 
+    var string;
     string = this;
     subString += "";
     if (subString.length <= 0) return (string.length + 1);

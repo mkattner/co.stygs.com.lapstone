@@ -54,15 +54,7 @@ var plugin_OAuth = {config:null, constructor:function() {
     return null;
   }
   var b = $.Deferred();
-  var c = cordova.InAppBrowser.open(a, "_blank", "location\x3dyes");
-  $(c).on("loadstart", function(a) {
-    eventCount++;
-    if (2 < eventCount) {
-      a = a.originalEvent.url;
-      var e = /\?error=(.+)$/.exec(a);
-      /\?oauth_token=(.+)$/.exec(a) ? (c.close(), b.resolve(a.split("?")[1])) : e && (c.close(), b.reject(e));
-    }
-  });
+  cordova.InAppBrowser.open(a, "_blank", "location\x3dyes");
   return b.promise();
 }, facebook:function(a) {
   var b = URI(a).query(!0).redirect_uri;

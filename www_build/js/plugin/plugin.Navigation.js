@@ -72,5 +72,5 @@ var plugin_Navigation = {config:null, history:[], lastTransition:"none", constru
   "" === a.protocol() && a.protocol("http");
   return a.toString();
 }, openWindow:function(a, b, c, d) {
-  return window.cordova && window.cordova.InAppBrowser ? window.cordova.InAppBrowser.open(a, traget) : window.open(a, "material" + Math.floor(1000 * Math.random() + 1), d);
+  return window.cordova && window.cordova.InAppBrowser ? window.cordova.InAppBrowser.open(a, c) : window.open(a, "material" + Math.floor(1000 * Math.random() + 1), d);
 }}};

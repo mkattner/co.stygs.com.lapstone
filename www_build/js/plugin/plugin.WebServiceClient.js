@@ -30,9 +30,6 @@ var plugin_WebServiceClient = {config:null, constructor:function() {
     a + ".host", c.first.host), app.info.set("plugin_WebServiceClient.config.preferedServer." + a + ".port", c.first.port), app.info.set("plugin_WebServiceClient.config.preferedServer." + a + ".path", c.first.path));
   });
 }, getAjax:function(a, b, c) {
-  app.debug.operation(function() {
-    currentWsd = a;
-  });
   var e = null, d = null;
   b = !0;
   c && (app.debug.debug("plugin_WebServiceClient.getAjax() - case: webservice is async - create deferred object"), d = $.Deferred(), e = d.promise());
@@ -104,8 +101,8 @@ var plugin_WebServiceClient = {config:null, constructor:function() {
         app.debug.debug("plugin.WebServiceClient.js plugin_WebServiceClient.getAjax() - Webservice done: " + JSON.stringify(a));
         e = a;
         app.debug.debug("plugin_WebServiceClient.getAjax() - start exception handling");
-        !0 === app.plugins.functions.pluginLoaded("WebServiceError") ? (app.debug.debug("plugin_WebServiceClient.getAjax() - case: wse plugin is active"), !1 === (exeptionConfig = app.wse.getExceptionConfig(a)) ? void 0 != d && null != d && (app.debug.debug("plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(e)), d.resolve(e)) : void 0 != d && null != d && (app.debug.debug("plugin_WebServiceClient.getAjax() - case: exception found: " + JSON.stringify(exeptionConfig)), d.reject(exeptionConfig, 
-        c))) : void 0 != d && null != d && (console.warn("Webservice Success!: Please use the plugin.WebServiceError (wse) to compute your errors and exceptions"), d.resolve(e));
+        !0 === app.plugins.functions.pluginLoaded("WebServiceError") ? (app.debug.debug("plugin_WebServiceClient.getAjax() - case: wse plugin is active"), !1 === (a = app.wse.getExceptionConfig(a)) ? void 0 != d && null != d && (app.debug.debug("plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(e)), d.resolve(e)) : void 0 != d && null != d && (app.debug.debug("plugin_WebServiceClient.getAjax() - case: exception found: " + JSON.stringify(a)), d.reject(a, c))) : void 0 != d && 
+        null != d && (console.warn("Webservice Success!: Please use the plugin.WebServiceError (wse) to compute your errors and exceptions"), d.resolve(e));
       }, error:function(b, c, f) {
         app.debug.debug("plugin_WebServiceClient.getAjax() - error: " + f);
         app.debug.debug("plugin_WebServiceClient.getAjax() - error: " + JSON.stringify(b));
@@ -156,7 +153,7 @@ var plugin_WebServiceClient = {config:null, constructor:function() {
 }, askForPreferedServer:function() {
   app.debug.trace("plugin_WebServiceClient.functions.askForPreferedServer()");
   plugin_WebServiceClient.config.preferedServer = null;
-  return success;
+  return !0;
 }, getDefaultServerName:function() {
   app.debug.trace("plugin_WebServiceClient.functions.getDefaultServerName()");
   return plugin_WebServiceClient.config.defaultServer;

@@ -206,7 +206,7 @@ var plugin_Navigation = {
 		 */
 		openWindow : function(url, windowName, target, windowFeatures) {
 			if (window.cordova && window.cordova.InAppBrowser) {
-				return window.cordova.InAppBrowser.open(url, traget);
+				return window.cordova.InAppBrowser.open(url, target);
 			} else {
 				return window.open(url, "material" + Math.floor((Math.random() * 1000) + 1), windowFeatures);
 			}

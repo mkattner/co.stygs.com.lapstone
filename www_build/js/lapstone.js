@@ -299,7 +299,7 @@ lapstone.startup = {currentDefinition:{status:"----------------- Starting the La
   try {
     var a = JSON.stringify(arguments);
     console.log("ERROR: " + a);
-    consloe.log(arguments);
+    console.log(arguments);
   } catch (b) {
   }
   lapstone.startup.dfd.reject(arguments);
@@ -343,9 +343,9 @@ function extendJsAndJquery() {
     if (0 == b) {
       return a;
     }
-    for (i = 0; i < b; i++) {
-      var d = this.charCodeAt(i);
-      a = (a << 5) - a + d;
+    for (var d = 0; d < b; d++) {
+      var c = this.charCodeAt(d);
+      a = (a << 5) - a + c;
       a &= a;
     }
     return Math.abs(a);
@@ -392,14 +392,13 @@ function extendJsAndJquery() {
     return parseInt(this.split(".")[2]);
   };
   String.prototype.occurences = function(a, b) {
-    string = this;
     a += "";
     if (0 >= a.length) {
-      return string.length + 1;
+      return this.length + 1;
     }
     var d = 0, c = 0;
     for (b = b ? 1 : a.length;;) {
-      if (c = string.indexOf(a, c), 0 <= c) {
+      if (c = this.indexOf(a, c), 0 <= c) {
         ++d, c += b;
       } else {
         break;

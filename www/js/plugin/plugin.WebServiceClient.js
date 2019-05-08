@@ -89,10 +89,10 @@ var plugin_WebServiceClient = {
 		// app.debug.debug("plugin_WebServiceClient.getAjax() - webservice: " +
 		// url
 		// + "?" + data);
-
-		app.debug.operation(function() {
-			currentWsd = wsd;
-		});
+//
+//		app.debug.operation(function() {
+//			currentWsd = wsd;
+//		});
 
 		var returnValue = null, dfd = null, jqXHR, $ajax_processData = true;// ,
 		// headers
@@ -253,8 +253,8 @@ var plugin_WebServiceClient = {
 						app.debug.debug("plugin_WebServiceClient.getAjax() - start exception handling");
 						if (app.plugins.functions.pluginLoaded("WebServiceError") === true) {
 							app.debug.debug("plugin_WebServiceClient.getAjax() - case: wse plugin is active");
-
-							if ((exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
+							var exeptionConfig
+							if (( exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
 								if (dfd != undefined && dfd != null) {
 									app.debug.debug("plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(returnValue));
 									dfd.resolve(returnValue);
@@ -485,7 +485,7 @@ var plugin_WebServiceClient = {
 			var preferedServer = null;
 
 			plugin_WebServiceClient.config.preferedServer = preferedServer;
-			return success;
+			return true;
 		},
 
 		/**

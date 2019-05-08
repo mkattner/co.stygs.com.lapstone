@@ -67,13 +67,13 @@ var plugin_Debug = {config:null, logObject:[], feedback:{language:{}, image:{}},
   }
 }, pageSpecificEvents:function(a) {
   app.debug.trace("plugin_Debug.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
-  plugin_Debug.config.debugDevice && 0 == app.config.min && ($(document).on("change", "#selLogLevel", function() {
-    app.debug.event(event);
-    var a = $("#selLogLevel").val() || ["OFF"];
+  plugin_Debug.config.debugDevice && 0 == app.config.min && ($(document).on("change", "#selLogLevel", function(a) {
+    app.debug.event(a);
+    a = $("#selLogLevel").val() || ["OFF"];
     plugin_Debug.config.logLevel = a;
     app.sess.setObject("logLevel", a, "debug");
-  }), $(document).on("click", "#btnClose", function() {
-    app.debug.event(event);
+  }), $(document).on("click", "#btnClose", function(a) {
+    app.debug.event(a);
     $("#divDebug").hide();
     $("#divDebugButton").show();
   }));

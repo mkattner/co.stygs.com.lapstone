@@ -138,9 +138,8 @@ var plugin_RestClient = {config:null, cachedWebserviceIndentifyer:"_t_cachedWebs
   var c = d = "";
   app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_timeout);
   app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_overrun);
-  timeoutInMs = plugin_RestClient.config.global_getJsonWithLoader_timeout;
-  overrunInMs = plugin_RestClient.config.global_getJsonWithLoader_overrun;
-  app.debug.info("plugin_RestClient - LOADER: timeout \x3d " + timeoutInMs + "; overrun \x3d " + overrunInMs);
+  var h = plugin_RestClient.config.global_getJsonWithLoader_timeout;
+  app.debug.info("plugin_RestClient - LOADER: timeout \x3d " + h + "; overrun \x3d " + plugin_RestClient.config.global_getJsonWithLoader_overrun);
   window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_overrun);
   if (!0 === b && null === e || !0 === f && null === e) {
     return e = $.Deferred(), e.reject("ERROR"), e.promise();
@@ -157,7 +156,7 @@ var plugin_RestClient = {config:null, cachedWebserviceIndentifyer:"_t_cachedWebs
     app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - show loader after timeout");
     app.debug.info("plugin_RestClient - LOADER SHOW");
     app.notify.loader.show(app.rc.config.global_getJsonWithLoader_loaderTemplate, {headline:app.lang.string(d, app.rc.config.global_getJsonWithLoader_multilanguageContext), text:app.lang.string(c, app.rc.config.global_getJsonWithLoader_multilanguageContext)});
-  }, timeoutInMs)), e.always(function() {
+  }, h)), e.always(function() {
     app.debug.debug("plugin_RestClient.functions.getJsonWithLoader() - webservice call was fast enough; do not show loader;");
     plugin_RestClient.functions.getJsonWithLoader_Queue--;
     0 === plugin_RestClient.functions.getJsonWithLoader_Queue && (window.clearTimeout(plugin_RestClient.functions.getJsonWithLoader_Delay), plugin_RestClient.functions.getJsonWithLoader_Delay = null, plugin_RestClient.functions.getJsonWithLoader_overrun = window.setTimeout(function() {

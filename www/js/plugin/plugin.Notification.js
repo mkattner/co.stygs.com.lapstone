@@ -50,7 +50,7 @@ var plugin_Notification = {
           promise.done(function(resultObject) {
             if (window.push != undefined) {
               app.debug.debug("plugin_Notification.pagesLoaded() register device on aerogear push server");
-              plugin_Notification.config.pushConfig.alias = device.uuid;
+              plugin_Notification.config.pushConfig.alias = window.device.uuid;
               window.push.register(plugin_Notification.functions.push_onNotification, function() {
                 app.debug.debug("plugin_Notification.pagesLoaded() success: device is registered on push server");
               }, function(error) {

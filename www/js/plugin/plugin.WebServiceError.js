@@ -153,7 +153,7 @@ var plugin_WebServiceError = {
       app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - error name: " + errorName + " type: " + typeof errorName);
       if (typeof errorName === "string") {
         app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - errors");
-        for (key in plugin_WebServiceError.config.wse) {
+        for (var key in plugin_WebServiceError.config.wse) {
           app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - condition: " + key + " == " + errorName);
           if (key == errorName) {
             app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: error found");

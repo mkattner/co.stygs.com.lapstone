@@ -149,23 +149,23 @@ var plugin_OAuth = {
 
 				dfd = $.Deferred();
 				loginWindow = cordova.InAppBrowser.open(url, '_blank', 'location=yes');
-
-				$(loginWindow).on('loadstart', function(e) {
-					eventCount++;
-					if (eventCount > 2) {
-						var url, error, success;
-						url = e.originalEvent.url;
-						error = /\?error=(.+)$/.exec(url);
-						success = /\?oauth_token=(.+)$/.exec(url);
-						if (success) {
-							loginWindow.close();
-							dfd.resolve(url.split('?')[1]);
-						} else if (error) {
-							loginWindow.close();
-							dfd.reject(error);
-						}
-					}
-				});
+//
+//				$(loginWindow).on('loadstart', function(e) {
+//					eventCount++;
+//					if (eventCount > 2) {
+//						var url, error, success;
+//						url = e.originalEvent.url;
+//						error = /\?error=(.+)$/.exec(url);
+//						success = /\?oauth_token=(.+)$/.exec(url);
+//						if (success) {
+//							loginWindow.close();
+//							dfd.resolve(url.split('?')[1]);
+//						} else if (error) {
+//							loginWindow.close();
+//							dfd.reject(error);
+//						}
+//					}
+//				});
 				return dfd.promise();
 			}
 		},

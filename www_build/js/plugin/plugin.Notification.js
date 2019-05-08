@@ -17,7 +17,7 @@ var plugin_Notification = {config:null, notifications:[], callbackFunction:null,
       if (app.debug.debug("plugin_Notification.pagesLoaded() register device on licence and push server"), window.device) {
         var a = app.rc.getJson("notifyme.registerDevice", {deviceId:window.device.uuid, contextToken:app.sess.getValue("userToken")}, !0);
         a.done(function(a) {
-          void 0 != window.push ? (app.debug.debug("plugin_Notification.pagesLoaded() register device on aerogear push server"), plugin_Notification.config.pushConfig.alias = device.uuid, window.push.register(plugin_Notification.functions.push_onNotification, function() {
+          void 0 != window.push ? (app.debug.debug("plugin_Notification.pagesLoaded() register device on aerogear push server"), plugin_Notification.config.pushConfig.alias = window.device.uuid, window.push.register(plugin_Notification.functions.push_onNotification, function() {
             app.debug.debug("plugin_Notification.pagesLoaded() success: device is registered on push server");
           }, function(a) {
             app.debug.debug("plugin_Notification.pagesLoaded() error: device is not registered on push server");

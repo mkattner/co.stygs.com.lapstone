@@ -101,7 +101,7 @@ public class Build implements ILogger {
 
 	    objectMapper.writeValue(configuration, lapstoneJson);
 
-	    for (File f : FileUtils.listFiles(www_build, new IOFileFilter() {
+	    for (File f : FileUtils.listFiles(new File(www_build,"js"), new IOFileFilter() {
 
 		@Override
 		public boolean accept(File file) {

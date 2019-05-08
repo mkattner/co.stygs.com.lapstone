@@ -1,31 +1,103 @@
-// Input 0
-'use strict';
-var globalPage = {elements:{}, pagebeforechange:function(a, b) {
-  app.debug.event(a);
-}, pagebeforecreate:function(a, b) {
-  app.debug.event(a);
-}, pagebeforehide:function(a, b) {
-  app.debug.event(a);
-}, pagebeforeload:function(a, b) {
-  app.debug.event(a);
-}, pagebeforeshow:function(a, b) {
-  app.debug.event(a);
-}, pagechange:function(a, b) {
-  app.debug.event(a);
-}, pagechangefailed:function(a, b) {
-  app.debug.event(a);
-}, pagecreate:function(a, b) {
-  app.debug.event(a);
-}, pagehide:function(a, b) {
-  app.debug.event(a);
-}, pageinit:function(a, b) {
-  app.debug.event(a);
-}, pageload:function(a, b) {
-  app.debug.event(a);
-}, pageloadfailed:function(a, b) {
-  app.debug.event(a);
-}, pageremove:function(a, b) {
-  app.debug.event(a);
-}, pageshow:function(a, b) {
-  app.debug.event(a);
-}};
+//# sourceURL=globalPage.js
+var globalPage = {
+
+  elements: {},
+
+  /*
+   * jQuery mobile event - pagebeforechange
+   */
+  pagebeforechange: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagebeforecreate
+   */
+  pagebeforecreate: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagebeforehide
+   */
+  pagebeforehide: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagebeforeload
+   */
+  pagebeforeload: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagebeforeshow
+   */
+  pagebeforeshow: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagechange
+   */
+  pagechange: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagechangefailed
+   */
+  pagechangefailed: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagecreate
+   */
+  pagecreate: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pagehide
+   */
+  pagehide: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pageinit
+   */
+  pageinit: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pageload
+   */
+  pageload: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pageloadfailed
+   */
+  pageloadfailed: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pageremove
+   */
+  pageremove: function(event, $container) {
+    app.debug.event(event);
+  },
+
+  /*
+   * jQuery mobile event - pageshow
+   */
+  pageshow: function(event, $container) {
+    app.debug.event(event);
+  }
+}

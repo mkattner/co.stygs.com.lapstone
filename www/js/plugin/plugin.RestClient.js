@@ -394,7 +394,7 @@ var plugin_RestClient = {
       //
       // }
 
-      var result, loaderHeadline, loaderText;
+      var result, loaderHeadline, loaderText, timeoutInMs, overrunInMs;
 
       result = plugin_RestClient.functions.getJson(service, parameter, async, attempts);
       loaderHeadline = "";

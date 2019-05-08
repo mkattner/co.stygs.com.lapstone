@@ -224,7 +224,7 @@ var plugin_Debug = {
     // is debug device
     if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
 
-      $(document).on('change', '#selLogLevel', function() {
+      $(document).on('change', '#selLogLevel', function(event) {
         app.debug.event(event);
         var levels = $("#selLogLevel").val() || ["OFF"];
 
@@ -232,7 +232,7 @@ var plugin_Debug = {
         app.sess.setObject("logLevel", levels, "debug");
       });
 
-      $(document).on('click', '#btnClose', function() {
+      $(document).on('click', '#btnClose', function(event) {
         app.debug.event(event);
 
         $('#divDebug').hide();

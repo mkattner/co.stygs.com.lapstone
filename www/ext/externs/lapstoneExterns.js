@@ -1,5 +1,3 @@
-var lapstone = {};
-var app = {};
 // var plugin_Unit = {};
 // var plugin_Notification = {};
 // var plugin_DemoServer = {};
