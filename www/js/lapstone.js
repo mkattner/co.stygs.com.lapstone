@@ -345,7 +345,9 @@ function loadJQueryMobile() {
 	return dfd.promise();
 }
 // create lapstone namespace
+//var lapstone = {};
 var globalLoader, startupDefinition, initialisationPanel, startup;
+
 globalLoader = {
 	globalTimeout : 10000,
 	globalAttempts : 3,
@@ -944,13 +946,6 @@ $(document).ready(function() {
 
 		throw new Error("Initialisation problem. Please look at the stacktrace.");
 
-		if (confirm("App initialisation failed. Confirm to reload the app.")) {
-			location.reload();
-		}
-
-		else {
-			alert("App initialisation failed. Close the app and restart again");
-		}
 	});
 
 	inititalisationPromise.always(function() {

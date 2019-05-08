@@ -1,0 +1,57 @@
+{
+	"name": "WebServiceClient",
+	"shortname": "wsc",
+	"include": [],
+	"dependency": [],
+	"demoMode": false,
+	"defaultWebServiceTimeoutMs": 5000,
+	"defaultWebServiceMethod": "post",
+	"defaultWebServiceType": "json",
+	"useServerShuffle": true,
+	"useHeaderToken": false,
+	"headerToken": {
+		"key": "Authorization",
+		"value": "data-app-token"
+	},
+	"defaultServer": "template",
+	"server": {
+		"template": {
+			"active": true,
+			"pingPath": "",
+			"mappings": {
+				"post": "application/json;charset=UTF-8",
+				"get": "application/json;charset=UTF-8",
+				"put": "application/json;charset=UTF-8",
+				"delete": "application/json;charset=UTF-8"
+			},
+			"endpoints": [
+				{
+					"scheme": "http",
+					"scheme_specific_part": "://",
+					"host": "localhost",
+					"port": 8080,
+					"path": "/REST"
+				}
+			]
+		},
+		"socket": {
+			"active": true,
+			"pingPath": "",
+			"mappings": {
+				"post": "json",
+				"get": "query",
+				"put": "json",
+				"delete": "json"
+			},
+			"endpoints": [
+				{
+					"scheme": "ws",
+					"scheme_specific_part": "://",
+					"host": "localhost",
+					"port": 8080,
+					"path": "/websocket"
+				}
+			]
+		}
+	}
+}

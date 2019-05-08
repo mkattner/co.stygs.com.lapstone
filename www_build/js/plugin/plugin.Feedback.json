@@ -1,0 +1,25 @@
+{
+	"name": "Feedback",
+	"shortname": "fb",
+	"include": [],
+	"dependency": [],
+	"allowAnonymousFeedback": false,
+	"webserviceName": "PluginFeedbackWebservice",
+	"webserviceDefinition": {
+		"info": "Add description or info here.",
+		"url": "/feedback",
+		"parameters": {
+			"feedback": "{feedback}"
+		},
+		"headers": {
+			
+		},
+		"method": "POST",
+		"timeout": "15000",
+		"cacheable": false,
+		"cacheInMs": 0,
+		"server": "serverName",
+		"dataType": "application/json",
+		"contentType": "application/json"
+	}
+}

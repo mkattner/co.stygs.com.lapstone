@@ -1,0 +1,28 @@
+{
+	"name": "Debug",
+	"shortname": "debug",
+	"include": [
+		"log.js",
+		"validate.js"
+	],
+	"dependency": [],
+	"debugDevice": true,
+	"debugLevels": {
+		"LAPSTONE": 0,
+		"TRACE": 1,
+		"DEBUG": 2,
+		"TODO": 3,
+		"INFO": 4,
+		"EVENT": 5,
+		"APP": 6,
+		"WARN": 7,
+		"ERROR": 8,
+		"FATAL": 9,
+		"OFF": 10
+	},
+	"logLevel": [
+		"WARN",
+		"ERROR",
+		"FATAL"
+	]
+}

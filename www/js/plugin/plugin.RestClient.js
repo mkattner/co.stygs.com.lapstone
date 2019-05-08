@@ -354,7 +354,6 @@ var plugin_RestClient = {
         app.debug.debug("plugin_RestClient.functions.cacheJson() - case: not cacheable");
         return false;
       }
-      return null;
     },
 
     /**

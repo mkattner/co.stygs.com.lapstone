@@ -725,7 +725,7 @@ var plugin_Debug = {
      * @function log
      * @param {String}
      *          output - The debug output.
-     * @param {String} -
+     * @param {String}
      *          The debug level.
      */
     log: function(output, level, trace) {

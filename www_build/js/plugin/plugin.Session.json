@@ -1,0 +1,8 @@
+{
+	"name": "Session",
+	"shortname": "sess",
+	"include": [],
+	"dependency": [],"loggedIn":false,
+	"loginHtml5StorageKey": "session-loggedin",
+	"sessionHTML5StoragePrefix": "globalSession"
+}

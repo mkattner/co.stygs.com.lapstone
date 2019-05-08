@@ -1,0 +1,287 @@
+{
+  "name": "Unit",
+  "shortname": "unit",
+  "include": [
+    "to.js",
+    "isSiUnit.js",
+    "sameQuantity.js",
+    "convert.js", "quantity.js"
+  ],
+  "dependency": [],
+  "e": {
+    "KILO": {
+      "symbol": "kg",
+      "quantity": "MASS",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1.0
+    },
+    "MONTH": {
+      "symbol": "?",
+      "quantity": "TIME",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": null
+    },
+    "HOUR": {
+      "symbol": "h",
+      "quantity": "TIME",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 3600.0
+    },
+    "UNDEFINED": {
+      "symbol": "undefined",
+      "quantity": "UNDEFINED",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": null
+    },
+    "MILE_PER_HOUR": {
+      "symbol": "mi/h",
+      "quantity": null,
+      "denominators": [
+        "HOUR"
+      ],
+      "numerators": [
+        "MILE"
+      ],
+      "siFactor": null
+    },
+    "CUBUC_MILLIMETER": {
+      "symbol": "m^3",
+      "quantity": null,
+      "denominators": [],
+      "numerators": [
+        "MILLIMETER",
+        "MILLIMETER",
+        "MILLIMETER"
+      ],
+      "siFactor": null
+    },
+    "YEAR": {
+      "symbol": "?",
+      "quantity": "TIME",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": null
+    },
+    "NO_UNIT": {
+      "symbol": "",
+      "quantity": "UNDEFINED",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": null
+    },
+    "RADIANT": {
+      "symbol": "rad",
+      "quantity": "ANGLE",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 0.017453292519943295
+    },
+    "MINUTE": {
+      "symbol": "m",
+      "quantity": "TIME",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 60.0
+    },
+    "KILOMETER_PER_HOUR": {
+      "symbol": "km/h",
+      "quantity": null,
+      "denominators": [
+        "HOUR"
+      ],
+      "numerators": [
+        "KILOMETER"
+      ],
+      "siFactor": null
+    },
+    "RGB_HEX": {
+      "symbol": "hex",
+      "quantity": "UNDEFINED",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": null
+    },
+    "KILOMETER": {
+      "symbol": "km",
+      "quantity": "LENGTH",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1000.0
+    },
+    "MILLIMETER": {
+      "symbol": "mm",
+      "quantity": "LENGTH",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 0.001
+    },
+    "SQUARE_METER": {
+      "symbol": "m^2",
+      "quantity": null,
+      "denominators": [],
+      "numerators": [
+        "METER",
+        "METER"
+      ],
+      "siFactor": null
+    },
+    "SQUARE_MILLIMETER": {
+      "symbol": "mm^1",
+      "quantity": null,
+      "denominators": [],
+      "numerators": [
+        "MILLIMETER",
+        "MILLIMETER"
+      ],
+      "siFactor": null
+    },
+    "CENTIMETER": {
+      "symbol": "cm",
+      "quantity": "LENGTH",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 0.01
+    },
+    "CUBUC_METER": {
+      "symbol": "m^3",
+      "quantity": null,
+      "denominators": [],
+      "numerators": [
+        "METER",
+        "METER",
+        "METER"
+      ],
+      "siFactor": null
+    },
+    "KNOT": {
+      "symbol": "kn",
+      "quantity": null,
+      "denominators": [
+        "SECOND"
+      ],
+      "numerators": [
+        "NAUTICAL_MILE"
+      ],
+      "siFactor": null
+    },
+    "HERTZ": {
+      "symbol": "f",
+      "quantity": null,
+      "denominators": [
+        "PI",
+        "PI"
+      ],
+      "numerators": [
+        "RADIANT_PER_SECOND"
+      ],
+      "siFactor": null
+    },
+    "TONNE": {
+      "symbol": "t",
+      "quantity": "MASS",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1000.0
+    },
+    "METER_PER_SECOND": {
+      "symbol": "m/s",
+      "quantity": null,
+      "denominators": [
+        "SECOND"
+      ],
+      "numerators": [
+        "METER"
+      ],
+      "siFactor": null
+    },
+    "PIXEL": {
+      "symbol": "?",
+      "quantity": "UNDEFINED",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": null
+    },
+    "MILE": {
+      "symbol": "mi",
+      "quantity": "LENGTH",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1609.344
+    },
+    "CUBIC_CENTIMETER": {
+      "symbol": "m^2",
+      "quantity": null,
+      "denominators": [],
+      "numerators": [
+        "CENTIMETER",
+        "CENTIMETER",
+        "CENTIMETER"
+      ],
+      "siFactor": null
+    },
+    "METER": {
+      "symbol": "m",
+      "quantity": "LENGTH",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1.0
+    },
+    "RADIANT_PER_SECOND": {
+      "symbol": "rad/s",
+      "quantity": null,
+      "denominators": [
+        "SECOND"
+      ],
+      "numerators": [
+        "RADIANT"
+      ],
+      "siFactor": null
+    },
+    "PI": {
+      "symbol": "Pi",
+      "quantity": "CONSTANT",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 3.141592653589793
+    },
+    "SECOND": {
+      "symbol": "s",
+      "quantity": "TIME",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1.0
+    },
+    "NAUTICAL_MILE": {
+      "symbol": "nmi",
+      "quantity": "LENGTH",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1852.0
+    },
+    "MILLISECOND": {
+      "symbol": "ms",
+      "quantity": "TIME",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 0.001
+    },
+    "DEGREE": {
+      "symbol": "�",
+      "quantity": "ANGLE",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 1.0
+    },
+    "DAY": {
+      "symbol": "d",
+      "quantity": "TIME",
+      "denominators": null,
+      "numerators": null,
+      "siFactor": 86400.0
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+	"updateRegistry":[
+		{
+			"startWithAppVersion":"0.0.0",
+			"stopWithAppVersion":"9999.0.0",
+			"startWithLapstoneVersion":"0.0.0",
+			"stopWithLapstoneVersion":"9999.0.0",
+			"updateScript":"clearLocalStorage.js",
+			"description":"Clear the local storage in every case."
+		}
+		
+	]
+}

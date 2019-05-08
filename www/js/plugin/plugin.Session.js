@@ -12,7 +12,8 @@ var plugin_Session = {
   sessionIndentifyer: "_t_lapstonesession_",
   // called by plugins.js
   constructor: function() {
-    var dfd = $.Deferred();
+    var dfd, PO, PA;
+    dfd = $.Deferred();
 
     PO = function(persistenceKey, object) {
       this.persistenceKey = persistenceKey;

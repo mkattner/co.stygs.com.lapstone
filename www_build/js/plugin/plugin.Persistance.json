@@ -1,0 +1,7 @@
+{
+	"name": "Persistance",
+	"shortname": "persist",
+	"include": [],
+	"dependency": [],
+	"sessionKey": "persistance"
+}

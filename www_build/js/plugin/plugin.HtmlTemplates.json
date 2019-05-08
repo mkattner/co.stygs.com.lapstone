@@ -1,0 +1,68 @@
+{
+	"name": "HtmlTemplates",
+	"shortname": "template",
+	"include": [],
+	"dependency": [],
+	"useSkinPlugin": false,
+	"templates": {
+		"JQueryMobilePopupTrialog": {
+			"content": "../files/template/JQueryMobilePopupTrialog.html",
+			"style": "../files/template/JQueryMobilePopupTrialog.css.less",
+			"useSkin": false
+		},
+		"JQueryMobilePopupDialog": {
+			"content": "../files/template/JQueryMobilePopupDialog.html",
+			"style": "../files/template/JQueryMobilePopupDialog.css.less",
+			"useSkin": false
+		},
+		"JQueryMobilePopupAlert": {
+			"content": "../files/template/JQueryMobilePopupAlert.html",
+			"style": "../files/template/JQueryMobilePopupAlert.css.less",
+			"useSkin": false
+		},
+		"JQueryMobilePopupSimple": {
+			"content": "../files/template/JQueryMobilePopupSimple.html",
+			"style": "../files/template/JQueryMobilePopupSimple.css.less",
+			"useSkin": false
+		},
+		"DefaultLoader": {
+			"content": "../files/template/DefaultLoader.html",
+			"style": "../files/template/DefaultLoader.css.less",
+			"useSkin": false,
+			"elements": {
+				"headline": ".headline",
+				"text": ".text"
+			}
+		},
+		"DefaultPopup": {
+			"content": "../files/template/DefaultPopup.html",
+			"style": "../files/template/DefaultPopup.css.less",
+			"useSkin": false,
+			"elements": {
+				"buttons": ".defaultPopupButtonContainer",
+				"content": ".defaultPopupContent",
+				"title": ".defaultPopupTitle",
+				"close": ".defaulPopupButtonClose"
+			}
+		},
+		"DefaultPopupMini": {
+			"content": "../files/template/DefaultPopupMini.html",
+			"style": "../files/template/DefaultPopupMini.css.less",
+			"useSkin": false,
+			"elements": {
+				"buttons": ".defaultPopupButtonContainer",
+				"content": ".defaultPopupContent",
+				"title": ".defaultPopupTitle",
+				"close": ".defaulPopupButtonClose"
+			}
+		},
+		"JQueryMobilePlainPage": {
+			"content": "../files/template/JQueryMobilePlainPage.html",
+			"style": "../files/template/JQueryMobilePlainPage.css.less",
+			"useSkin": false,
+			"elements": {
+				"content": "div[data-role=content]"
+			}
+		}
+	}
+}

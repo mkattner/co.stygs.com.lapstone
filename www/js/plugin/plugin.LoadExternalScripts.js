@@ -1,15 +1,9 @@
-//# sourceURL=plugin.LoadExternalScripts.js
+// # sourceURL=plugin.LoadExternalScripts.js
 /**
- * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
- * following conditions: The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_LoadExternalScripts = {
@@ -107,19 +101,25 @@ var plugin_LoadExternalScripts = {
   // called after all pages are loaded
   pagesLoaded: function() {
     app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
-    var dfd = $.Deferred();
+    var dfd;
+
+    dfd = $.Deferred();
 
     if (!app.config.min) {
-      less = {
-        env: "development",
-        logLevel: 0,
-        async: false,
-        fileAsync: false,
-        poll: 1000,
-        dumpLineNumbers: "comments",
-        relativeUrls: false,
-      };
+      // less = {
+      // env: "development",
+      // logLevel: 0,
+      // async: false,
+      // fileAsync: false,
+      // poll: 1000,
+      // dumpLineNumbers: "comments",
+      // relativeUrls: false,
+      // };
       globalLoader.AsyncScriptLoader("../ext/less/less.min.js").done(function() {
+        
+//        while(less===undefined){
+//          console.log("xxx");
+//        }
         less.logger.addListener({
           debug: function(msg) {
             app.debug.debug(msg);
@@ -134,7 +134,11 @@ var plugin_LoadExternalScripts = {
             app.debug.error(msg);
           }
         });
-        dfd.resolve();
+        
+        
+//        window.setTimeout(function() {
+          dfd.resolve();
+//        }, 1000);
 
       }).fail(function() {
         dfd.reject();
@@ -145,7 +149,7 @@ var plugin_LoadExternalScripts = {
       dfd.resolve();
     }
 
-    dfd.resolve();
+//    dfd.resolve();
     return dfd.promise();
   },
 

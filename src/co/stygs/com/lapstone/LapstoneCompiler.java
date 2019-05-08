@@ -14,9 +14,14 @@ import org.mozilla.javascript.ast.IfStatement;
 import org.mozilla.javascript.ast.NodeVisitor;
 import org.mozilla.javascript.ast.SwitchCase;
 
+import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.ComposeWarningsGuard;
+import com.google.javascript.jscomp.DiagnosticGroup;
+import com.google.javascript.jscomp.DiagnosticGroups;
+import com.google.javascript.jscomp.DiagnosticType;
 import com.google.javascript.jscomp.SourceFile;
 
 public class LapstoneCompiler implements ILogger {
@@ -119,23 +124,42 @@ public class LapstoneCompiler implements ILogger {
 
     }
 
-    private static void Closure(File in, File out) throws IOException {
+    public static void Closure(File in, File out) throws IOException {
 	LOGGER.debug("Closure: " + in.getName() + " to " + out.getName());
 
 	com.google.javascript.jscomp.Compiler compiler = new Compiler();
 
 	CompilerOptions options = new CompilerOptions();
-	options.setEmitUseStrict(false);
+	// options.setEmitUseStrict(false);
 	// Advanced mode is used here, but additional options could be set, too.
 	CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
+	options.setPrettyPrint(true);
+	options.setPrintInputDelimiter(true);
+	options.setPreferSingleQuotes(false);
+	
+	
+//	for(DiagnosticGroup d: DiagnosticGroups.getRegisteredGroups().values()) {
+//	    options.setWarningLevel(d, CheckLevel.WARNING);
+//	}
+	
+	options.setWarningLevel(DiagnosticGroups.forName("ambiguousFunctionDecl"), CheckLevel.WARNING);
+	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
 
+	options.setWarningLevel(DiagnosticGroups.forName("checkVars"), CheckLevel.WARNING);
+//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
 	// To get the complete set of externs, the logic in
 	// CompilerRunner.getDefaultExterns() should be used here.
-	SourceFile extern = SourceFile.fromCode("externs.js", "");
+	SourceFile extern = SourceFile.fromCode("externs.js", "var app={}; var $=function(){}; var JSON={}; var alert=function(){}; var console={}; var globalLoader={}; var window={};");
 
 	// The dummy input name "input.js" is used here so that any warnings or
 	// errors will cite line numbers in terms of input.js.
-	SourceFile input = SourceFile.fromCode("input.js", FileUtils.readFileToString(in, Lapstone.CHARSET));
+	SourceFile input = SourceFile.fromCode(in.getName(), FileUtils.readFileToString(in, Lapstone.CHARSET));
 
 	// compile() returns a Result, but it is not needed here.
 	compiler.compile(extern, input, options);

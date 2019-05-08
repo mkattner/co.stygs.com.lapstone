@@ -71,7 +71,7 @@ app["pages"] = {
 		var dfd = $.Deferred(), pageIncludePromises = [];
 
 		if (app.config.min) {
-			includeEverything();
+//			includeEverything();
 			dfd.resolve();
 		}
 

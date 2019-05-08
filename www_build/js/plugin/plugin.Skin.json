@@ -1,0 +1,26 @@
+{
+	"name": "Skin",
+	"shortname": "skin",
+	"include": [],
+	"dependency": [],
+	"useSkinPlugin": false,
+	"defaultSkin": "modern",
+	"skins": {
+		"dev": [
+			"../css/skin/dev/fonts.css.less",
+			"../css/skin/dev/global.css.less"
+		],
+		"icon": [
+			"../css/skin/icon/fonts.css.less",
+			"../css/skin/icon/global.css.less"
+		],
+		"modern": [
+			"../css/skin/modern/fonts.css.less",
+			"../css/skin/modern/global.css.less"
+		],
+		"text": [
+			"../css/skin/text/fonts.css.less",
+			"../css/skin/text/global.css.less"
+		]
+	}
+}

@@ -7,6 +7,10 @@ call: java -jar lapstone.jar
    Optional parameters:
    -log=T|D|I|W|E|F
 
+*) Build project for testing
+   -function=build
+   -path=/absolute/path/to/your/lapstone/project
+
 *) Page operations:
    Modify your pages in the lapstone project.
 

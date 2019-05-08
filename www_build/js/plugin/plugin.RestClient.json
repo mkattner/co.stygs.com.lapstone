@@ -1,0 +1,44 @@
+{
+	"name": "RestClient",
+	"shortname": "rc",
+	"include": [
+		"getMultipleJson.js",
+		"getMultipleJsonAsync.js",
+		"getSingleJson.js",
+		"getServerSideEvent.js",
+		"getSingleJsonAsync.js",
+		"getWebSocket.js"
+	],
+	"dependency": [],
+	"useKeepAlive": true,
+	"global_getJsonWithLoader_loaderTemplate": "DefaultLoader",
+	"global_getJsonWithLoader_multilanguageContext": "webservice loader",
+	"global_getJsonWithLoader_uniqueLoaderPageScoped": false,
+	"global_getJsonWithLoader_uniqueLoader": true,
+	"global_getJsonWithLoader_timeout": 200,
+	"global_getJsonWithLoader_overrun": 40,
+	"wsdFiles": [
+		"../files/wsd/wsd.template.json"
+	],
+	"webservices": {
+		"template": {
+			"info": "Add description or info here.",
+			"url": "/url/url/rest.php",
+			"parameters": {
+				"parameter": "{parameter}",
+				"fixedParameter": "fixedParameter"
+			},
+			"headers": {
+				"header": "{header}",
+				"fixedHeader": "fixedHeader"
+			},
+			"method": "POST",
+			"timeout": 8000,
+			"cacheable": false,
+			"cacheInMs": 0,
+			"server": "template",
+			"dataType": "",
+			"contentType": ""
+		}
+	}
+}

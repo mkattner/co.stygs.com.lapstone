@@ -1,0 +1,37 @@
+{
+	"timeout": 
+	{
+		"description": "Timeout",
+		"action": ""
+	},
+
+	"400": 
+	{
+		"description": "Bad Request",
+		"action": ""
+	},
+
+	"401": 
+	{
+		"description": "Unauthorized",
+		"action": ""
+	},
+
+	"402": 
+	{
+		"description": "Payment Required",
+		"action": ""
+	},
+
+	"403": 
+	{
+		"description": "Unauthorized",
+		"action": ""
+	},
+
+	"500": 
+	{
+		"description": "Internal Server Error",
+		"action": ""
+	}
+}

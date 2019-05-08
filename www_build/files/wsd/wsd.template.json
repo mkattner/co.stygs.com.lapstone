@@ -1,0 +1,21 @@
+{
+	"template": {
+		"info": "Add description or info here.",
+		"url": "/url/url/rest.php",
+		"parameters": {
+			"parameter": "{parameter}",
+			"fixedParameter": "fixedParameter"
+		},
+		"headers": {
+			"header": "{header}",
+			"fixedHeader": "fixedHeader"
+		},
+		"method": "POST",
+		"timeout": 8000,
+		"cacheable": false,
+		"cacheInMs": 0,
+		"server": "template",
+		"dataType": "",
+		"contentType": ""
+	}
+}

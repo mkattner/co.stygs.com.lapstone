@@ -79,6 +79,21 @@ public class Lapstone  implements ILogger{
 	    Logger.getRootLogger().addAppender(new ConsoleAppender(layout));
 
 	    switch (argMap.get("function")) {
+	    case "build":
+
+		if (argMap.get("path") == null) {
+		    LOGGER.error("Missing parameter: -path");
+		    Lapstone.PrintHelp();
+		}
+		else if (!Build.BuildLapstone(argMap)) {
+		    PrintHelp();
+		}
+
+		else {
+		    LOGGER.info("Build done!");
+		}
+
+		break;
 	    case "deploy":
 
 		if (argMap.get("path") == null) {

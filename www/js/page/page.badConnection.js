@@ -43,7 +43,7 @@ var page_badConnection = {
 			return $("<div>").addClass("configuration").append(function() {
 				return $("<h1>").text("Bad Connection")
 			}).append(function() {
-				return $("<p>").text("Check your internet badConnection. You will be redirected after your badConnection is back again.")
+				return $("<p>").text("Check your internet badConnection. You will be redirected after your badConnection is back again.");
 			});
 		})
 

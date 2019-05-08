@@ -1,0 +1,11 @@
+{
+	"name": "Navigation",
+	"shortname": "nav",
+	"include": [],
+	"dependency": [],
+	"type": {
+		"ALERT": 1,
+		"DIALOG": 2,
+		"TRIALOG": 3
+	}
+}

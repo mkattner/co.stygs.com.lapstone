@@ -1,0 +1,13 @@
+{
+	"name": "Actions",
+	"shortname": "actions",
+	"dependency": [],
+	"include": [],
+	"actions": [
+		"alert.js",
+		"confirm.js",
+		"login.js",
+		"logout.js",
+		"loginObligate.js"
+	]
+}

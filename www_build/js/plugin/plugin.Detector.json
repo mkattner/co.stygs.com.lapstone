@@ -1,0 +1,7 @@
+{
+	"name": "Detector",
+	"shortname": "detect",
+	"include": [],
+	"dependency": [],
+	"addCssClassesToBodyTag": true
+}

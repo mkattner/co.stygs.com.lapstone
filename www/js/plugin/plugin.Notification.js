@@ -104,7 +104,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupTrialog #btn-simple-close
+		 * @event click on #popupTrialog #btn-simple-close
 		 */
 		$(document).on("storagefilled", "#popupSimple #btn-simple-close", function(event) {
 			app.debug.event(event);
@@ -125,7 +125,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupAlert #btn-alert
+		 * @event click on #popupAlert #btn-alert
 		 */
 		$(document).on("storagefilled", "#popupAlert #btn-alert", function(event) {
 			app.debug.event(event);
@@ -147,7 +147,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupTrialog #btn-alert-close
+		 * @event click on #popupTrialog #btn-alert-close
 		 */
 		$(document).on("storagefilled", "#popupAlert #btn-alert-close", function(event) {
 			app.debug.event(event);
@@ -168,7 +168,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupDialog #btn-dialog-left
+		 * @event click on #popupDialog #btn-dialog-left
 		 */
 		$(document).on("storagefilled", "#popupDialog #btn-dialog-left", function(event) {
 			app.debug.event(event);
@@ -189,7 +189,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupDialog #btn-dialog-right
+		 * @event click on #popupDialog #btn-dialog-right
 		 */
 		$(document).on("storagefilled", "#popupDialog #btn-dialog-right", function(event) {
 			app.debug.event(event);
@@ -211,7 +211,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupTrialog #btn-dialog-close
+		 * @event click on #popupTrialog #btn-dialog-close
 		 */
 		$(document).on("storagefilled", "#popupDialog #btn-dialog-close", function(event) {
 			app.debug.event(event);
@@ -232,7 +232,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupTrialog #btn-trialog-right
+		 * @event click on #popupTrialog #btn-trialog-right
 		 */
 		$(document).on("storagefilled", "#popupTrialog #btn-trialog-left", function(event) {
 			app.debug.event(event);
@@ -254,7 +254,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupTrialog #btn-trialog-right
+		 * @event click on #popupTrialog #btn-trialog-right
 		 */
 		$(document).on("storagefilled", "#popupTrialog #btn-trialog-center", function(event) {
 			app.debug.event(event);
@@ -276,7 +276,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupTrialog #btn-trialog-right
+		 * @event click on #popupTrialog #btn-trialog-right
 		 */
 		$(document).on("storagefilled", "#popupTrialog #btn-trialog-right", function(event) {
 			app.debug.event(event);
@@ -298,7 +298,7 @@ var plugin_Notification = {
 		});
 
 		/**
-		 * @listens click on #popupTrialog #btn-trialog-close
+		 * @event click on #popupTrialog #btn-trialog-close
 		 */
 		$(document).on("storagefilled", "#popupTrialog #btn-trialog-close", function(event) {
 			app.debug.event(event);
@@ -1240,11 +1240,6 @@ var plugin_Notification = {
 			}
 		},
 
-		/**
-		 * 
-		 */
-		push_onNotification : function() {
-		},
 
 		/**
 		 * 
