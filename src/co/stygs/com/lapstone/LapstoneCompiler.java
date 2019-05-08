@@ -1,9 +1,13 @@
 package co.stygs.com.lapstone;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
@@ -14,6 +18,7 @@ import org.mozilla.javascript.ast.IfStatement;
 import org.mozilla.javascript.ast.NodeVisitor;
 import org.mozilla.javascript.ast.SwitchCase;
 
+import com.google.common.collect.ImmutableList;
 import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
@@ -26,13 +31,13 @@ import com.google.javascript.jscomp.SourceFile;
 
 public class LapstoneCompiler implements ILogger {
 
-    public static void Compile(File in, File out) throws IOException, CompressorException {
+    public static void Compile(File in, File out, File www) throws IOException, CompressorException {
 	LOGGER.debug("Lapstone Compile: " + in.getName() + " to " + out.getName());
-	Rhino(in, out);
-	Closure(out, out);
+	Rhino(in, out, www);
+	Closure(out, out, www);
     }
 
-    private static void Rhino(File in, File out) throws IOException, CompressorException {
+    private static void Rhino(File in, File out, File www) throws IOException, CompressorException {
 	LOGGER.debug("Rhino: " + in.getName() + " to " + out.getName());
 	String js = FileUtils.readFileToString(in, Lapstone.CHARSET);
 	try {
@@ -124,7 +129,7 @@ public class LapstoneCompiler implements ILogger {
 
     }
 
-    public static void Closure(File in, File out) throws IOException {
+    public static void Closure(File in, File out, File www) throws IOException {
 	LOGGER.debug("Closure: " + in.getName() + " to " + out.getName());
 
 	com.google.javascript.jscomp.Compiler compiler = new Compiler();
@@ -136,33 +141,40 @@ public class LapstoneCompiler implements ILogger {
 	options.setPrettyPrint(true);
 	options.setPrintInputDelimiter(true);
 	options.setPreferSingleQuotes(false);
-	
-	
-//	for(DiagnosticGroup d: DiagnosticGroups.getRegisteredGroups().values()) {
-//	    options.setWarningLevel(d, CheckLevel.WARNING);
-//	}
-	
+
+	// for(DiagnosticGroup d: DiagnosticGroups.getRegisteredGroups().values()) {
+	// options.setWarningLevel(d, CheckLevel.WARNING);
+	// }
+
 	options.setWarningLevel(DiagnosticGroups.forName("ambiguousFunctionDecl"), CheckLevel.WARNING);
 	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
 
 	options.setWarningLevel(DiagnosticGroups.forName("checkVars"), CheckLevel.WARNING);
-//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
-//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
-//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
-//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
-//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
-//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
-//	options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+	// options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+	// options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+	// options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+	// options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+	// options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+	// options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
+	// options.setWarningLevel(DiagnosticGroups.forName("checkRegExp"), CheckLevel.WARNING);
 	// To get the complete set of externs, the logic in
 	// CompilerRunner.getDefaultExterns() should be used here.
-	SourceFile extern = SourceFile.fromCode("externs.js", "var app={}; var $=function(){}; var JSON={}; var alert=function(){}; var console={}; var globalLoader={}; var window={};");
+
+	List<SourceFile> externs = new ArrayList<>(10);
+	SourceFile extern = SourceFile.fromCode("hardCoded.js", " ");
+
+	externs.add(extern);
+
+	for (File f : new File(www, "ext/externs").listFiles()) {
+	    externs.add(SourceFile.fromFile(f.getAbsolutePath(), Lapstone.CHARSET));
+	}
 
 	// The dummy input name "input.js" is used here so that any warnings or
 	// errors will cite line numbers in terms of input.js.
 	SourceFile input = SourceFile.fromCode(in.getName(), FileUtils.readFileToString(in, Lapstone.CHARSET));
 
 	// compile() returns a Result, but it is not needed here.
-	compiler.compile(extern, input, options);
+	compiler.compile(ImmutableList.copyOf(externs), ImmutableList.of(input), options);
 
 	// The compiler is responsible for generating the compiled code; it is not
 	// accessible via the Result.

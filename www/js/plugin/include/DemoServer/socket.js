@@ -16,7 +16,6 @@ app.func("socket", function(wsd) {
 
   wsd.url = wsd.url.replace(app.wsc.getServer(wsd.server), "").replaceAll("/", "_").substring(1);
 
-  var dfd = $.Deferred();
   var i = 0;
 
   var intervalFunction = function() {

@@ -2,14 +2,14 @@
 'use strict';
 app.plugins = {config:null, pluginNames:[], constructor:function() {
   var a = $.Deferred();
-  startup.addFunction("                  cleanup plugins", app.plugins.cleanup);
-  startup.addFunction("                  defining the plugins' events", app.plugins.callPluginEvents);
-  startup.addFunction("                  calling the plugins' loaded event", app.plugins.callPluginsLoadedEvent);
-  startup.addFunction("                  loading the plugins' include scripts", app.plugins.includeFiles);
-  startup.addFunction("                  loading the plugins' include dependencies", app.plugins.includeDependencies);
-  startup.addFunction("                  loading the plugins", app.plugins.loadPlugins);
-  startup.addFunction("                  verifying the plugins' configuration", app.plugins.verifyPluginNames);
-  startup.addFunction("                  loading the plugins' configuration", app.plugins.loadPluginConfig);
+  lapstone.startup.addFunction("                  cleanup plugins", app.plugins.cleanup);
+  lapstone.startup.addFunction("                  defining the plugins' events", app.plugins.callPluginEvents);
+  lapstone.startup.addFunction("                  calling the plugins' loaded event", app.plugins.callPluginsLoadedEvent);
+  lapstone.startup.addFunction("                  loading the plugins' include scripts", app.plugins.includeFiles);
+  lapstone.startup.addFunction("                  loading the plugins' include dependencies", app.plugins.includeDependencies);
+  lapstone.startup.addFunction("                  loading the plugins", app.plugins.loadPlugins);
+  lapstone.startup.addFunction("                  verifying the plugins' configuration", app.plugins.verifyPluginNames);
+  lapstone.startup.addFunction("                  loading the plugins' configuration", app.plugins.loadPluginConfig);
   a.resolve();
   return a.promise();
 }, cleanup:function() {
@@ -21,7 +21,7 @@ app.plugins = {config:null, pluginNames:[], constructor:function() {
   if (app.config.min) {
     app.plugins.config = config_json, a.resolve();
   } else {
-    var b = globalLoader.AsyncJsonLoader("../js/plugin/plugins.json");
+    var b = lapstone.globalLoader.AsyncJsonLoader("../js/plugin/plugins.json");
     b.done(function(b) {
       app.plugins.config = b;
       $.each(app.plugins.config, function(a, b) {
@@ -60,7 +60,7 @@ app.plugins = {config:null, pluginNames:[], constructor:function() {
           throw console.error("Plugin " + a + " has no include array in it's configuration."), "Initialization error";
         }
         $.each(c.config.include, function(c, d) {
-          b.push(globalLoader.AsyncScriptLoader("../js/plugin/include/" + a + "/" + d));
+          b.push(lapstone.globalLoader.AsyncScriptLoader("../js/plugin/include/" + a + "/" + d));
         });
       }
     });
@@ -74,7 +74,7 @@ app.plugins = {config:null, pluginNames:[], constructor:function() {
 }, loadPluginConfiguration:function(a) {
   var b = $.Deferred();
   var d = window["plugin_" + a];
-  app.config.min ? (d.config = window["config_" + a], b.resolve()) : (a = globalLoader.AsyncJsonLoader("../js/plugin/plugin." + a + ".json"), a.done(function(a) {
+  app.config.min ? (d.config = window["config_" + a], b.resolve()) : (a = lapstone.globalLoader.AsyncJsonLoader("../js/plugin/plugin." + a + ".json"), a.done(function(a) {
     d.config = a;
     b.resolve();
   }), a.fail(function() {
@@ -113,7 +113,7 @@ app.plugins = {config:null, pluginNames:[], constructor:function() {
 }, loadPlugins:function() {
   var a = $.Deferred(), b = [], d = [], c;
   $.each(app.plugins.config, function(a, c) {
-    1 == c && (app.config.min ? b.push(app.plugins.onPluginLoaded(a)) : b.push(globalLoader.AsyncScriptLoader("../js/plugin/plugin." + a + ".js")));
+    1 == c && (app.config.min ? b.push(app.plugins.onPluginLoaded(a)) : b.push(lapstone.globalLoader.AsyncScriptLoader("../js/plugin/plugin." + a + ".js")));
   });
   var e = $.when.apply($, b);
   app.config.min ? e.done(function() {

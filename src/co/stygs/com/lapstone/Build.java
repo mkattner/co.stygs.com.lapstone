@@ -117,7 +117,7 @@ public class Build implements ILogger {
 		}
 	    }, DirectoryFileFilter.DIRECTORY)) {
 		System.out.println(f);
-		LapstoneCompiler.Closure(f, f);
+		LapstoneCompiler.Closure(f, f, www_debug);
 	    }
 	    return true;
 

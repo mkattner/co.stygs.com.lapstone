@@ -188,5 +188,5 @@ var plugin_WebServiceClient = {config:null, constructor:function() {
   var c = plugin_WebServiceClient.config.server[a].pingPath;
   a = plugin_WebServiceClient.getPreferedServer(a);
   c = a.scheme + a.scheme_specific_part + a.host + ":" + a.port + a.path + c;
-  return !0 === b ? globalLoader.AsyncJsonLoader(c) : globalLoader.JsonLoader(c);
+  return !0 === b ? lapstone.globalLoader.AsyncJsonLoader(c) : lapstone.globalLoader.JsonLoader(c);
 }}};

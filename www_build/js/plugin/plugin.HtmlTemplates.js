@@ -23,8 +23,8 @@ var plugin_HtmlTemplates = {config:null, constructor:function() {
       app.debug.operation(function() {
         app.debug.validate(!c.contains("skin"));
       });
-      b.push(globalLoader.AsyncTextLoader(a));
-      b.push(globalLoader.AsyncTextLoader(c));
+      b.push(lapstone.globalLoader.AsyncTextLoader(a));
+      b.push(lapstone.globalLoader.AsyncTextLoader(c));
     });
     var c = $.when.apply($, b);
     c.done(function() {

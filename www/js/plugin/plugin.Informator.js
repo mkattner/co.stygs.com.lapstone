@@ -84,7 +84,7 @@ var plugin_Informator = {
 		if (this.config.useHtml5Storage && this.config.savePageConfig) {
 			global = {};
 			// alert("xxxxxxxx");
-			$.each(pages.pageNames, function(key, value) {
+			$.each(app.pages.pageNames, function(key, value) {
 				if (global["page_" + value] == undefined)
 					global["page_" + value] = {};
 				// dirty!! do not use json loader

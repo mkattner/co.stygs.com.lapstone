@@ -6,7 +6,7 @@ app.func("socket", function(a) {
   b = $.Deferred();
   var c = 0, d = function() {
     app.debug.info("DemoServer - load demo web socket: " + a.url);
-    globalLoader.AsyncJsonLoader("../files/demo/socket/" + a.url + "/" + c + ".json", 1).done(function(a) {
+    lapstone.globalLoader.AsyncJsonLoader("../files/demo/socket/" + a.url + "/" + c + ".json", 1).done(function(a) {
       b.notify(a);
       c++;
     }).fail(function() {

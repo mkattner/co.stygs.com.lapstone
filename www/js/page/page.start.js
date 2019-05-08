@@ -126,7 +126,7 @@ var page_start = {
     // completed.
     pagehide: function(event, container) {
 
-      initialisationPanel.hide();
+      lapstone.initialisationPanel.hide();
     },
 
     // Triggered on the page being initialized, after initialization occurs.

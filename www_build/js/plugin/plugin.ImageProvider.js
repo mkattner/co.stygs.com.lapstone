@@ -6,7 +6,7 @@ var plugin_ImageProvider = {config:null, images:{}, constructor:function() {
   return a.promise();
 }, loadDefinitionFile:function(a) {
   var b = $.Deferred();
-  a = globalLoader.AsyncJsonLoader(a);
+  a = lapstone.globalLoader.AsyncJsonLoader(a);
   a.done(function(a) {
     $.each(a, function(a, b) {
       plugin_ImageProvider.config.images[a] = b;

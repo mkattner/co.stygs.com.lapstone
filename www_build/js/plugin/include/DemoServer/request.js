@@ -6,7 +6,7 @@ app.func("request", function(a) {
   switch(a.method.toLowerCase()) {
     case "get":
       app.debug.info("DemoServer - load demo web service: " + a.url);
-      globalLoader.AsyncJsonLoader("../files/demo/ws/" + a.url).done(function(a) {
+      lapstone.globalLoader.AsyncJsonLoader("../files/demo/ws/" + a.url).done(function(a) {
         b.resolve(a);
       }).fail(function(a) {
         b.reject($.extend(!0, {error:"demoServerError"}, a));
@@ -14,7 +14,7 @@ app.func("request", function(a) {
       break;
     case "post":
       app.debug.info("DemoServer - load demo web service: " + a.url);
-      globalLoader.AsyncJsonLoader("../files/demo/ws/" + a.url).done(function(a) {
+      lapstone.globalLoader.AsyncJsonLoader("../files/demo/ws/" + a.url).done(function(a) {
         b.resolve(a);
       }).fail(function(a) {
         b.reject($.extend(!0, {error:"demoServerError"}, a));

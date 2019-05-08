@@ -52,7 +52,7 @@ public class Release implements ILogger {
 
 	    // Compressor.compressJavaScript(allPages.getAbsolutePath(),
 	    // allPagesMin.getAbsolutePath(), o);
-	    LapstoneCompiler.Compile(allPages, allPagesMin);
+	    LapstoneCompiler.Compile(allPages, allPagesMin, www);
 
 	    // slow in java, but very useful for debugging release version
 	    FileUtils.writeStringToFile(allPagesMin, "//# sourceURL=all.page." + version + ".js" + "\n" + FileUtils.readFileToString(allPagesMin, Lapstone.CHARSET), Lapstone.CHARSET);
@@ -80,7 +80,7 @@ public class Release implements ILogger {
 
 	    // Compressor.compressJavaScript(allPlugins.getAbsolutePath(),
 	    // allPluginsMin.getAbsolutePath(), o);
-	    LapstoneCompiler.Compile(allPlugins, allPluginsMin);
+	    LapstoneCompiler.Compile(allPlugins, allPluginsMin, www);
 	    // slow in java, but very useful for debugging release version
 	    FileUtils.writeStringToFile(allPluginsMin, "//# sourceURL=all.plugin." + version + ".js" + "\n" + FileUtils.readFileToString(allPluginsMin, Lapstone.CHARSET), Lapstone.CHARSET);
 	}
@@ -187,7 +187,7 @@ public class Release implements ILogger {
 
 			// Compressor.compressJavaScript(file.getAbsolutePath(), file.getAbsolutePath(),
 			// new JavascriptCompressorOptions());
-			LapstoneCompiler.Compile(file, file);
+			LapstoneCompiler.Compile(file, file, www);
 		    }
 
 		    catch (Exception e) {
@@ -233,7 +233,7 @@ public class Release implements ILogger {
 	    try {
 		// Compressor.compressJavaScript(include_onceFile.getAbsolutePath(),
 		// include_onceFile.getAbsolutePath(), new JavascriptCompressorOptions());
-		LapstoneCompiler.Compile(include_onceFile, include_onceFile);
+		LapstoneCompiler.Compile(include_onceFile, include_onceFile, www);
 	    } catch (Exception e) {
 		LOGGER.error("ERROR: NOT ABLE TO COMPRESS: " + include_onceFile.getAbsolutePath(), e);
 		// throw new CompressorException(e);
@@ -283,7 +283,7 @@ public class Release implements ILogger {
 		    // Compressor.compressJavaScript(currentFile.getAbsolutePath(),
 		    // currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
 
-		    LapstoneCompiler.Compile(currentPluginFile, currentPluginFile);
+		    LapstoneCompiler.Compile(currentPluginFile, currentPluginFile, www);
 		} catch (Exception e) {
 		    throw new CompressorException(e);
 		}
@@ -309,7 +309,7 @@ public class Release implements ILogger {
 		    LOGGER.info("Adding include file: " + pluginIncludeFile.getAbsolutePath());
 
 		    // slow
-		    LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile);
+		    LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile, www);
 
 		    allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile, Lapstone.CHARSET));
 		    // pluginIncludeFile.delete();
@@ -630,7 +630,7 @@ public class Release implements ILogger {
 	    // Compressor.compressJavaScript(lapstoneJsFile.getAbsolutePath(),
 	    // lapstoneJsFile.getAbsolutePath(), new JavascriptCompressorOptions());
 
-	    LapstoneCompiler.Compile(lapstoneJsFile, lapstoneJsFile);
+	    LapstoneCompiler.Compile(lapstoneJsFile, lapstoneJsFile, www);
 
 	    // slow in java, but very useful for debugging release version
 	    FileUtils.writeStringToFile(lapstoneJsFile, "//# sourceURL=lapstone.js" + "\n" + FileUtils.readFileToString(lapstoneJsFile, Lapstone.CHARSET), Lapstone.CHARSET);

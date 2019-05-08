@@ -1,6 +1,134 @@
-// Input 0
-/*
- *****************************************************************************
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global.JSEncrypt = {})));
+}(this, (function (exports) { 'use strict';
+
+var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
+function int2char(n) {
+    return BI_RM.charAt(n);
+}
+//#region BIT_OPERATIONS
+// (public) this & a
+function op_and(x, y) {
+    return x & y;
+}
+// (public) this | a
+function op_or(x, y) {
+    return x | y;
+}
+// (public) this ^ a
+function op_xor(x, y) {
+    return x ^ y;
+}
+// (public) this & ~a
+function op_andnot(x, y) {
+    return x & ~y;
+}
+// return index of lowest 1-bit in x, x < 2^31
+function lbit(x) {
+    if (x == 0) {
+        return -1;
+    }
+    var r = 0;
+    if ((x & 0xffff) == 0) {
+        x >>= 16;
+        r += 16;
+    }
+    if ((x & 0xff) == 0) {
+        x >>= 8;
+        r += 8;
+    }
+    if ((x & 0xf) == 0) {
+        x >>= 4;
+        r += 4;
+    }
+    if ((x & 3) == 0) {
+        x >>= 2;
+        r += 2;
+    }
+    if ((x & 1) == 0) {
+        ++r;
+    }
+    return r;
+}
+// return number of 1 bits in x
+function cbit(x) {
+    var r = 0;
+    while (x != 0) {
+        x &= x - 1;
+        ++r;
+    }
+    return r;
+}
+//#endregion BIT_OPERATIONS
+
+var b64map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var b64pad = "=";
+function hex2b64(h) {
+    var i;
+    var c;
+    var ret = "";
+    for (i = 0; i + 3 <= h.length; i += 3) {
+        c = parseInt(h.substring(i, i + 3), 16);
+        ret += b64map.charAt(c >> 6) + b64map.charAt(c & 63);
+    }
+    if (i + 1 == h.length) {
+        c = parseInt(h.substring(i, i + 1), 16);
+        ret += b64map.charAt(c << 2);
+    }
+    else if (i + 2 == h.length) {
+        c = parseInt(h.substring(i, i + 2), 16);
+        ret += b64map.charAt(c >> 2) + b64map.charAt((c & 3) << 4);
+    }
+    while ((ret.length & 3) > 0) {
+        ret += b64pad;
+    }
+    return ret;
+}
+// convert a base64 string to hex
+function b64tohex(s) {
+    var ret = "";
+    var i;
+    var k = 0; // b64 state, 0-3
+    var slop = 0;
+    for (i = 0; i < s.length; ++i) {
+        if (s.charAt(i) == b64pad) {
+            break;
+        }
+        var v = b64map.indexOf(s.charAt(i));
+        if (v < 0) {
+            continue;
+        }
+        if (k == 0) {
+            ret += int2char(v >> 2);
+            slop = v & 3;
+            k = 1;
+        }
+        else if (k == 1) {
+            ret += int2char((slop << 2) | (v >> 4));
+            slop = v & 0xf;
+            k = 2;
+        }
+        else if (k == 2) {
+            ret += int2char(slop);
+            ret += int2char(v >> 2);
+            slop = v & 3;
+            k = 3;
+        }
+        else {
+            ret += int2char((slop << 2) | (v >> 4));
+            ret += int2char(v & 0xf);
+            k = 0;
+        }
+    }
+    if (k == 1) {
+        ret += int2char(slop << 2);
+    }
+    return ret;
+}
+
+/*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
@@ -13,2526 +141,5125 @@ MERCHANTABLITY OR NON-INFRINGEMENT.
 
 See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
-**************************************************************************** Copyright (c) 2011, Yahoo! Inc. All rights reserved.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+// Hex JavaScript decoder
+// Copyright (c) 2008-2013 Lapo Luchini <lapo@lapo.it>
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+/*jshint browser: true, strict: true, immed: true, latedef: true, undef: true, regexdash: false */
+var decoder;
+var Hex = {
+    decode: function (a) {
+        var i;
+        if (decoder === undefined) {
+            var hex = "0123456789ABCDEF";
+            var ignore = " \f\n\r\t\u00A0\u2028\u2029";
+            decoder = {};
+            for (i = 0; i < 16; ++i) {
+                decoder[hex.charAt(i)] = i;
+            }
+            hex = hex.toLowerCase();
+            for (i = 10; i < 16; ++i) {
+                decoder[hex.charAt(i)] = i;
+            }
+            for (i = 0; i < ignore.length; ++i) {
+                decoder[ignore.charAt(i)] = -1;
+            }
+        }
+        var out = [];
+        var bits = 0;
+        var char_count = 0;
+        for (i = 0; i < a.length; ++i) {
+            var c = a.charAt(i);
+            if (c == "=") {
+                break;
+            }
+            c = decoder[c];
+            if (c == -1) {
+                continue;
+            }
+            if (c === undefined) {
+                throw new Error("Illegal character at offset " + i);
+            }
+            bits |= c;
+            if (++char_count >= 2) {
+                out[out.length] = bits;
+                bits = 0;
+                char_count = 0;
+            }
+            else {
+                bits <<= 4;
+            }
+        }
+        if (char_count) {
+            throw new Error("Hex encoding incomplete: 4 bits missing");
+        }
+        return out;
+    }
+};
+
+// Base64 JavaScript decoder
+// Copyright (c) 2008-2013 Lapo Luchini <lapo@lapo.it>
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+/*jshint browser: true, strict: true, immed: true, latedef: true, undef: true, regexdash: false */
+var decoder$1;
+var Base64 = {
+    decode: function (a) {
+        var i;
+        if (decoder$1 === undefined) {
+            var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            var ignore = "= \f\n\r\t\u00A0\u2028\u2029";
+            decoder$1 = Object.create(null);
+            for (i = 0; i < 64; ++i) {
+                decoder$1[b64.charAt(i)] = i;
+            }
+            for (i = 0; i < ignore.length; ++i) {
+                decoder$1[ignore.charAt(i)] = -1;
+            }
+        }
+        var out = [];
+        var bits = 0;
+        var char_count = 0;
+        for (i = 0; i < a.length; ++i) {
+            var c = a.charAt(i);
+            if (c == "=") {
+                break;
+            }
+            c = decoder$1[c];
+            if (c == -1) {
+                continue;
+            }
+            if (c === undefined) {
+                throw new Error("Illegal character at offset " + i);
+            }
+            bits |= c;
+            if (++char_count >= 4) {
+                out[out.length] = (bits >> 16);
+                out[out.length] = (bits >> 8) & 0xFF;
+                out[out.length] = bits & 0xFF;
+                bits = 0;
+                char_count = 0;
+            }
+            else {
+                bits <<= 6;
+            }
+        }
+        switch (char_count) {
+            case 1:
+                throw new Error("Base64 encoding incomplete: at least 2 bits missing");
+            case 2:
+                out[out.length] = (bits >> 10);
+                break;
+            case 3:
+                out[out.length] = (bits >> 16);
+                out[out.length] = (bits >> 8) & 0xFF;
+                break;
+        }
+        return out;
+    },
+    re: /-----BEGIN [^-]+-----([A-Za-z0-9+\/=\s]+)-----END [^-]+-----|begin-base64[^\n]+\n([A-Za-z0-9+\/=\s]+)====/,
+    unarmor: function (a) {
+        var m = Base64.re.exec(a);
+        if (m) {
+            if (m[1]) {
+                a = m[1];
+            }
+            else if (m[2]) {
+                a = m[2];
+            }
+            else {
+                throw new Error("RegExp out of sync");
+            }
+        }
+        return Base64.decode(a);
+    }
+};
+
+// Big integer base-10 printing library
+// Copyright (c) 2014 Lapo Luchini <lapo@lapo.it>
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+/*jshint browser: true, strict: true, immed: true, latedef: true, undef: true, regexdash: false */
+var max = 10000000000000; // biggest integer that can still fit 2^53 when multiplied by 256
+var Int10 = /** @class */ (function () {
+    function Int10(value) {
+        this.buf = [+value || 0];
+    }
+    Int10.prototype.mulAdd = function (m, c) {
+        // assert(m <= 256)
+        var b = this.buf;
+        var l = b.length;
+        var i;
+        var t;
+        for (i = 0; i < l; ++i) {
+            t = b[i] * m + c;
+            if (t < max) {
+                c = 0;
+            }
+            else {
+                c = 0 | (t / max);
+                t -= c * max;
+            }
+            b[i] = t;
+        }
+        if (c > 0) {
+            b[i] = c;
+        }
+    };
+    Int10.prototype.sub = function (c) {
+        // assert(m <= 256)
+        var b = this.buf;
+        var l = b.length;
+        var i;
+        var t;
+        for (i = 0; i < l; ++i) {
+            t = b[i] - c;
+            if (t < 0) {
+                t += max;
+                c = 1;
+            }
+            else {
+                c = 0;
+            }
+            b[i] = t;
+        }
+        while (b[b.length - 1] === 0) {
+            b.pop();
+        }
+    };
+    Int10.prototype.toString = function (base) {
+        if ((base || 10) != 10) {
+            throw new Error("only base 10 is supported");
+        }
+        var b = this.buf;
+        var s = b[b.length - 1].toString();
+        for (var i = b.length - 2; i >= 0; --i) {
+            s += (max + b[i]).toString().substring(1);
+        }
+        return s;
+    };
+    Int10.prototype.valueOf = function () {
+        var b = this.buf;
+        var v = 0;
+        for (var i = b.length - 1; i >= 0; --i) {
+            v = v * max + b[i];
+        }
+        return v;
+    };
+    Int10.prototype.simplify = function () {
+        var b = this.buf;
+        return (b.length == 1) ? b[0] : this;
+    };
+    return Int10;
+}());
+
+// ASN.1 JavaScript decoder
+var ellipsis = "\u2026";
+var reTimeS = /^(\d\d)(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])([01]\d|2[0-3])(?:([0-5]\d)(?:([0-5]\d)(?:[.,](\d{1,3}))?)?)?(Z|[-+](?:[0]\d|1[0-2])([0-5]\d)?)?$/;
+var reTimeL = /^(\d\d\d\d)(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])([01]\d|2[0-3])(?:([0-5]\d)(?:([0-5]\d)(?:[.,](\d{1,3}))?)?)?(Z|[-+](?:[0]\d|1[0-2])([0-5]\d)?)?$/;
+function stringCut(str, len) {
+    if (str.length > len) {
+        str = str.substring(0, len) + ellipsis;
+    }
+    return str;
+}
+var Stream = /** @class */ (function () {
+    function Stream(enc, pos) {
+        this.hexDigits = "0123456789ABCDEF";
+        if (enc instanceof Stream) {
+            this.enc = enc.enc;
+            this.pos = enc.pos;
+        }
+        else {
+            // enc should be an array or a binary string
+            this.enc = enc;
+            this.pos = pos;
+        }
+    }
+    Stream.prototype.get = function (pos) {
+        if (pos === undefined) {
+            pos = this.pos++;
+        }
+        if (pos >= this.enc.length) {
+            throw new Error("Requesting byte offset " + pos + " on a stream of length " + this.enc.length);
+        }
+        return ("string" === typeof this.enc) ? this.enc.charCodeAt(pos) : this.enc[pos];
+    };
+    Stream.prototype.hexByte = function (b) {
+        return this.hexDigits.charAt((b >> 4) & 0xF) + this.hexDigits.charAt(b & 0xF);
+    };
+    Stream.prototype.hexDump = function (start, end, raw) {
+        var s = "";
+        for (var i = start; i < end; ++i) {
+            s += this.hexByte(this.get(i));
+            if (raw !== true) {
+                switch (i & 0xF) {
+                    case 0x7:
+                        s += "  ";
+                        break;
+                    case 0xF:
+                        s += "\n";
+                        break;
+                    default:
+                        s += " ";
+                }
+            }
+        }
+        return s;
+    };
+    Stream.prototype.isASCII = function (start, end) {
+        for (var i = start; i < end; ++i) {
+            var c = this.get(i);
+            if (c < 32 || c > 176) {
+                return false;
+            }
+        }
+        return true;
+    };
+    Stream.prototype.parseStringISO = function (start, end) {
+        var s = "";
+        for (var i = start; i < end; ++i) {
+            s += String.fromCharCode(this.get(i));
+        }
+        return s;
+    };
+    Stream.prototype.parseStringUTF = function (start, end) {
+        var s = "";
+        for (var i = start; i < end;) {
+            var c = this.get(i++);
+            if (c < 128) {
+                s += String.fromCharCode(c);
+            }
+            else if ((c > 191) && (c < 224)) {
+                s += String.fromCharCode(((c & 0x1F) << 6) | (this.get(i++) & 0x3F));
+            }
+            else {
+                s += String.fromCharCode(((c & 0x0F) << 12) | ((this.get(i++) & 0x3F) << 6) | (this.get(i++) & 0x3F));
+            }
+        }
+        return s;
+    };
+    Stream.prototype.parseStringBMP = function (start, end) {
+        var str = "";
+        var hi;
+        var lo;
+        for (var i = start; i < end;) {
+            hi = this.get(i++);
+            lo = this.get(i++);
+            str += String.fromCharCode((hi << 8) | lo);
+        }
+        return str;
+    };
+    Stream.prototype.parseTime = function (start, end, shortYear) {
+        var s = this.parseStringISO(start, end);
+        var m = (shortYear ? reTimeS : reTimeL).exec(s);
+        if (!m) {
+            return "Unrecognized time: " + s;
+        }
+        if (shortYear) {
+            // to avoid querying the timer, use the fixed range [1970, 2069]
+            // it will conform with ITU X.400 [-10, +40] sliding window until 2030
+            m[1] = +m[1];
+            m[1] += (+m[1] < 70) ? 2000 : 1900;
+        }
+        s = m[1] + "-" + m[2] + "-" + m[3] + " " + m[4];
+        if (m[5]) {
+            s += ":" + m[5];
+            if (m[6]) {
+                s += ":" + m[6];
+                if (m[7]) {
+                    s += "." + m[7];
+                }
+            }
+        }
+        if (m[8]) {
+            s += " UTC";
+            if (m[8] != "Z") {
+                s += m[8];
+                if (m[9]) {
+                    s += ":" + m[9];
+                }
+            }
+        }
+        return s;
+    };
+    Stream.prototype.parseInteger = function (start, end) {
+        var v = this.get(start);
+        var neg = (v > 127);
+        var pad = neg ? 255 : 0;
+        var len;
+        var s = "";
+        // skip unuseful bits (not allowed in DER)
+        while (v == pad && ++start < end) {
+            v = this.get(start);
+        }
+        len = end - start;
+        if (len === 0) {
+            return neg ? -1 : 0;
+        }
+        // show bit length of huge integers
+        if (len > 4) {
+            s = v;
+            len <<= 3;
+            while (((+s ^ pad) & 0x80) == 0) {
+                s = +s << 1;
+                --len;
+            }
+            s = "(" + len + " bit)\n";
+        }
+        // decode the integer
+        if (neg) {
+            v = v - 256;
+        }
+        var n = new Int10(v);
+        for (var i = start + 1; i < end; ++i) {
+            n.mulAdd(256, this.get(i));
+        }
+        return s + n.toString();
+    };
+    Stream.prototype.parseBitString = function (start, end, maxLength) {
+        var unusedBit = this.get(start);
+        var lenBit = ((end - start - 1) << 3) - unusedBit;
+        var intro = "(" + lenBit + " bit)\n";
+        var s = "";
+        for (var i = start + 1; i < end; ++i) {
+            var b = this.get(i);
+            var skip = (i == end - 1) ? unusedBit : 0;
+            for (var j = 7; j >= skip; --j) {
+                s += (b >> j) & 1 ? "1" : "0";
+            }
+            if (s.length > maxLength) {
+                return intro + stringCut(s, maxLength);
+            }
+        }
+        return intro + s;
+    };
+    Stream.prototype.parseOctetString = function (start, end, maxLength) {
+        if (this.isASCII(start, end)) {
+            return stringCut(this.parseStringISO(start, end), maxLength);
+        }
+        var len = end - start;
+        var s = "(" + len + " byte)\n";
+        maxLength /= 2; // we work in bytes
+        if (len > maxLength) {
+            end = start + maxLength;
+        }
+        for (var i = start; i < end; ++i) {
+            s += this.hexByte(this.get(i));
+        }
+        if (len > maxLength) {
+            s += ellipsis;
+        }
+        return s;
+    };
+    Stream.prototype.parseOID = function (start, end, maxLength) {
+        var s = "";
+        var n = new Int10();
+        var bits = 0;
+        for (var i = start; i < end; ++i) {
+            var v = this.get(i);
+            n.mulAdd(128, v & 0x7F);
+            bits += 7;
+            if (!(v & 0x80)) {
+                if (s === "") {
+                    n = n.simplify();
+                    if (n instanceof Int10) {
+                        n.sub(80);
+                        s = "2." + n.toString();
+                    }
+                    else {
+                        var m = n < 80 ? n < 40 ? 0 : 1 : 2;
+                        s = m + "." + (n - m * 40);
+                    }
+                }
+                else {
+                    s += "." + n.toString();
+                }
+                if (s.length > maxLength) {
+                    return stringCut(s, maxLength);
+                }
+                n = new Int10();
+                bits = 0;
+            }
+        }
+        if (bits > 0) {
+            s += ".incomplete";
+        }
+        return s;
+    };
+    return Stream;
+}());
+var ASN1 = /** @class */ (function () {
+    function ASN1(stream, header, length, tag, sub) {
+        if (!(tag instanceof ASN1Tag)) {
+            throw new Error("Invalid tag value.");
+        }
+        this.stream = stream;
+        this.header = header;
+        this.length = length;
+        this.tag = tag;
+        this.sub = sub;
+    }
+    ASN1.prototype.typeName = function () {
+        switch (this.tag.tagClass) {
+            case 0:// universal
+                switch (this.tag.tagNumber) {
+                    case 0x00:
+                        return "EOC";
+                    case 0x01:
+                        return "BOOLEAN";
+                    case 0x02:
+                        return "INTEGER";
+                    case 0x03:
+                        return "BIT_STRING";
+                    case 0x04:
+                        return "OCTET_STRING";
+                    case 0x05:
+                        return "NULL";
+                    case 0x06:
+                        return "OBJECT_IDENTIFIER";
+                    case 0x07:
+                        return "ObjectDescriptor";
+                    case 0x08:
+                        return "EXTERNAL";
+                    case 0x09:
+                        return "REAL";
+                    case 0x0A:
+                        return "ENUMERATED";
+                    case 0x0B:
+                        return "EMBEDDED_PDV";
+                    case 0x0C:
+                        return "UTF8String";
+                    case 0x10:
+                        return "SEQUENCE";
+                    case 0x11:
+                        return "SET";
+                    case 0x12:
+                        return "NumericString";
+                    case 0x13:
+                        return "PrintableString"; // ASCII subset
+                    case 0x14:
+                        return "TeletexString"; // aka T61String
+                    case 0x15:
+                        return "VideotexString";
+                    case 0x16:
+                        return "IA5String"; // ASCII
+                    case 0x17:
+                        return "UTCTime";
+                    case 0x18:
+                        return "GeneralizedTime";
+                    case 0x19:
+                        return "GraphicString";
+                    case 0x1A:
+                        return "VisibleString"; // ASCII subset
+                    case 0x1B:
+                        return "GeneralString";
+                    case 0x1C:
+                        return "UniversalString";
+                    case 0x1E:
+                        return "BMPString";
+                }
+                return "Universal_" + this.tag.tagNumber.toString();
+            case 1:
+                return "Application_" + this.tag.tagNumber.toString();
+            case 2:
+                return "[" + this.tag.tagNumber.toString() + "]"; // Context
+            case 3:
+                return "Private_" + this.tag.tagNumber.toString();
+        }
+    };
+    ASN1.prototype.content = function (maxLength) {
+        if (this.tag === undefined) {
+            return null;
+        }
+        if (maxLength === undefined) {
+            maxLength = Infinity;
+        }
+        var content = this.posContent();
+        var len = Math.abs(this.length);
+        if (!this.tag.isUniversal()) {
+            if (this.sub !== null) {
+                return "(" + this.sub.length + " elem)";
+            }
+            return this.stream.parseOctetString(content, content + len, maxLength);
+        }
+        switch (this.tag.tagNumber) {
+            case 0x01:// BOOLEAN
+                return (this.stream.get(content) === 0) ? "false" : "true";
+            case 0x02:// INTEGER
+                return this.stream.parseInteger(content, content + len);
+            case 0x03:// BIT_STRING
+                return this.sub ? "(" + this.sub.length + " elem)" :
+                    this.stream.parseBitString(content, content + len, maxLength);
+            case 0x04:// OCTET_STRING
+                return this.sub ? "(" + this.sub.length + " elem)" :
+                    this.stream.parseOctetString(content, content + len, maxLength);
+            // case 0x05: // NULL
+            case 0x06:// OBJECT_IDENTIFIER
+                return this.stream.parseOID(content, content + len, maxLength);
+            // case 0x07: // ObjectDescriptor
+            // case 0x08: // EXTERNAL
+            // case 0x09: // REAL
+            // case 0x0A: // ENUMERATED
+            // case 0x0B: // EMBEDDED_PDV
+            case 0x10: // SEQUENCE
+            case 0x11:// SET
+                if (this.sub !== null) {
+                    return "(" + this.sub.length + " elem)";
+                }
+                else {
+                    return "(no elem)";
+                }
+            case 0x0C:// UTF8String
+                return stringCut(this.stream.parseStringUTF(content, content + len), maxLength);
+            case 0x12: // NumericString
+            case 0x13: // PrintableString
+            case 0x14: // TeletexString
+            case 0x15: // VideotexString
+            case 0x16: // IA5String
+            // case 0x19: // GraphicString
+            case 0x1A:// VisibleString
+                // case 0x1B: // GeneralString
+                // case 0x1C: // UniversalString
+                return stringCut(this.stream.parseStringISO(content, content + len), maxLength);
+            case 0x1E:// BMPString
+                return stringCut(this.stream.parseStringBMP(content, content + len), maxLength);
+            case 0x17: // UTCTime
+            case 0x18:// GeneralizedTime
+                return this.stream.parseTime(content, content + len, (this.tag.tagNumber == 0x17));
+        }
+        return null;
+    };
+    ASN1.prototype.toString = function () {
+        return this.typeName() + "@" + this.stream.pos + "[header:" + this.header + ",length:" + this.length + ",sub:" + ((this.sub === null) ? "null" : this.sub.length) + "]";
+    };
+    ASN1.prototype.toPrettyString = function (indent) {
+        if (indent === undefined) {
+            indent = "";
+        }
+        var s = indent + this.typeName() + " @" + this.stream.pos;
+        if (this.length >= 0) {
+            s += "+";
+        }
+        s += this.length;
+        if (this.tag.tagConstructed) {
+            s += " (constructed)";
+        }
+        else if ((this.tag.isUniversal() && ((this.tag.tagNumber == 0x03) || (this.tag.tagNumber == 0x04))) && (this.sub !== null)) {
+            s += " (encapsulates)";
+        }
+        s += "\n";
+        if (this.sub !== null) {
+            indent += "  ";
+            for (var i = 0, max = this.sub.length; i < max; ++i) {
+                s += this.sub[i].toPrettyString(indent);
+            }
+        }
+        return s;
+    };
+    ASN1.prototype.posStart = function () {
+        return this.stream.pos;
+    };
+    ASN1.prototype.posContent = function () {
+        return this.stream.pos + this.header;
+    };
+    ASN1.prototype.posEnd = function () {
+        return this.stream.pos + this.header + Math.abs(this.length);
+    };
+    ASN1.prototype.toHexString = function () {
+        return this.stream.hexDump(this.posStart(), this.posEnd(), true);
+    };
+    ASN1.decodeLength = function (stream) {
+        var buf = stream.get();
+        var len = buf & 0x7F;
+        if (len == buf) {
+            return len;
+        }
+        // no reason to use Int10, as it would be a huge buffer anyways
+        if (len > 6) {
+            throw new Error("Length over 48 bits not supported at position " + (stream.pos - 1));
+        }
+        if (len === 0) {
+            return null;
+        } // undefined
+        buf = 0;
+        for (var i = 0; i < len; ++i) {
+            buf = (buf * 256) + stream.get();
+        }
+        return buf;
+    };
+    /**
+     * Retrieve the hexadecimal value (as a string) of the current ASN.1 element
+     * @returns {string}
+     * @public
+     */
+    ASN1.prototype.getHexStringValue = function () {
+        var hexString = this.toHexString();
+        var offset = this.header * 2;
+        var length = this.length * 2;
+        return hexString.substr(offset, length);
+    };
+    ASN1.decode = function (str) {
+        var stream;
+        if (!(str instanceof Stream)) {
+            stream = new Stream(str, 0);
+        }
+        else {
+            stream = str;
+        }
+        var streamStart = new Stream(stream);
+        var tag = new ASN1Tag(stream);
+        var len = ASN1.decodeLength(stream);
+        var start = stream.pos;
+        var header = start - streamStart.pos;
+        var sub = null;
+        var getSub = function () {
+            var ret = [];
+            if (len !== null) {
+                // definite length
+                var end = start + len;
+                while (stream.pos < end) {
+                    ret[ret.length] = ASN1.decode(stream);
+                }
+                if (stream.pos != end) {
+                    throw new Error("Content size is not correct for container starting at offset " + start);
+                }
+            }
+            else {
+                // undefined length
+                try {
+                    for (;;) {
+                        var s = ASN1.decode(stream);
+                        if (s.tag.isEOC()) {
+                            break;
+                        }
+                        ret[ret.length] = s;
+                    }
+                    len = start - stream.pos; // undefined lengths are represented as negative values
+                }
+                catch (e) {
+                    throw new Error("Exception while decoding undefined length content: " + e);
+                }
+            }
+            return ret;
+        };
+        if (tag.tagConstructed) {
+            // must have valid content
+            sub = getSub();
+        }
+        else if (tag.isUniversal() && ((tag.tagNumber == 0x03) || (tag.tagNumber == 0x04))) {
+            // sometimes BitString and OctetString are used to encapsulate ASN.1
+            try {
+                if (tag.tagNumber == 0x03) {
+                    if (stream.get() != 0) {
+                        throw new Error("BIT STRINGs with unused bits cannot encapsulate.");
+                    }
+                }
+                sub = getSub();
+                for (var i = 0; i < sub.length; ++i) {
+                    if (sub[i].tag.isEOC()) {
+                        throw new Error("EOC is not supposed to be actual content.");
+                    }
+                }
+            }
+            catch (e) {
+                // but silently ignore when they don't
+                sub = null;
+            }
+        }
+        if (sub === null) {
+            if (len === null) {
+                throw new Error("We can't skip over an invalid tag with undefined length at offset " + start);
+            }
+            stream.pos = start + Math.abs(len);
+        }
+        return new ASN1(streamStart, header, len, tag, sub);
+    };
+    return ASN1;
+}());
+var ASN1Tag = /** @class */ (function () {
+    function ASN1Tag(stream) {
+        var buf = stream.get();
+        this.tagClass = buf >> 6;
+        this.tagConstructed = ((buf & 0x20) !== 0);
+        this.tagNumber = buf & 0x1F;
+        if (this.tagNumber == 0x1F) {
+            var n = new Int10();
+            do {
+                buf = stream.get();
+                n.mulAdd(128, buf & 0x7F);
+            } while (buf & 0x80);
+            this.tagNumber = n.simplify();
+        }
+    }
+    ASN1Tag.prototype.isUniversal = function () {
+        return this.tagClass === 0x00;
+    };
+    ASN1Tag.prototype.isEOC = function () {
+        return this.tagClass === 0x00 && this.tagNumber === 0x00;
+    };
+    return ASN1Tag;
+}());
+
+// Copyright (c) 2005  Tom Wu
+// Bits per digit
+var dbits;
+// JavaScript engine analysis
+var canary = 0xdeadbeefcafe;
+var j_lm = ((canary & 0xffffff) == 0xefcafe);
+//#region
+var lowprimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
+var lplim = (1 << 26) / lowprimes[lowprimes.length - 1];
+//#endregion
+// (public) Constructor
+var BigInteger = /** @class */ (function () {
+    function BigInteger(a, b, c) {
+        if (a != null) {
+            if ("number" == typeof a) {
+                this.fromNumber(a, b, c);
+            }
+            else if (b == null && "string" != typeof a) {
+                this.fromString(a, 256);
+            }
+            else {
+                this.fromString(a, b);
+            }
+        }
+    }
+    //#region PUBLIC
+    // BigInteger.prototype.toString = bnToString;
+    // (public) return string representation in given radix
+    BigInteger.prototype.toString = function (b) {
+        if (this.s < 0) {
+            return "-" + this.negate().toString(b);
+        }
+        var k;
+        if (b == 16) {
+            k = 4;
+        }
+        else if (b == 8) {
+            k = 3;
+        }
+        else if (b == 2) {
+            k = 1;
+        }
+        else if (b == 32) {
+            k = 5;
+        }
+        else if (b == 4) {
+            k = 2;
+        }
+        else {
+            return this.toRadix(b);
+        }
+        var km = (1 << k) - 1;
+        var d;
+        var m = false;
+        var r = "";
+        var i = this.t;
+        var p = this.DB - (i * this.DB) % k;
+        if (i-- > 0) {
+            if (p < this.DB && (d = this[i] >> p) > 0) {
+                m = true;
+                r = int2char(d);
+            }
+            while (i >= 0) {
+                if (p < k) {
+                    d = (this[i] & ((1 << p) - 1)) << (k - p);
+                    d |= this[--i] >> (p += this.DB - k);
+                }
+                else {
+                    d = (this[i] >> (p -= k)) & km;
+                    if (p <= 0) {
+                        p += this.DB;
+                        --i;
+                    }
+                }
+                if (d > 0) {
+                    m = true;
+                }
+                if (m) {
+                    r += int2char(d);
+                }
+            }
+        }
+        return m ? r : "0";
+    };
+    // BigInteger.prototype.negate = bnNegate;
+    // (public) -this
+    BigInteger.prototype.negate = function () {
+        var r = nbi();
+        BigInteger.ZERO.subTo(this, r);
+        return r;
+    };
+    // BigInteger.prototype.abs = bnAbs;
+    // (public) |this|
+    BigInteger.prototype.abs = function () {
+        return (this.s < 0) ? this.negate() : this;
+    };
+    // BigInteger.prototype.compareTo = bnCompareTo;
+    // (public) return + if this > a, - if this < a, 0 if equal
+    BigInteger.prototype.compareTo = function (a) {
+        var r = this.s - a.s;
+        if (r != 0) {
+            return r;
+        }
+        var i = this.t;
+        r = i - a.t;
+        if (r != 0) {
+            return (this.s < 0) ? -r : r;
+        }
+        while (--i >= 0) {
+            if ((r = this[i] - a[i]) != 0) {
+                return r;
+            }
+        }
+        return 0;
+    };
+    // BigInteger.prototype.bitLength = bnBitLength;
+    // (public) return the number of bits in "this"
+    BigInteger.prototype.bitLength = function () {
+        if (this.t <= 0) {
+            return 0;
+        }
+        return this.DB * (this.t - 1) + nbits(this[this.t - 1] ^ (this.s & this.DM));
+    };
+    // BigInteger.prototype.mod = bnMod;
+    // (public) this mod a
+    BigInteger.prototype.mod = function (a) {
+        var r = nbi();
+        this.abs().divRemTo(a, null, r);
+        if (this.s < 0 && r.compareTo(BigInteger.ZERO) > 0) {
+            a.subTo(r, r);
+        }
+        return r;
+    };
+    // BigInteger.prototype.modPowInt = bnModPowInt;
+    // (public) this^e % m, 0 <= e < 2^32
+    BigInteger.prototype.modPowInt = function (e, m) {
+        var z;
+        if (e < 256 || m.isEven()) {
+            z = new Classic(m);
+        }
+        else {
+            z = new Montgomery(m);
+        }
+        return this.exp(e, z);
+    };
+    // BigInteger.prototype.clone = bnClone;
+    // (public)
+    BigInteger.prototype.clone = function () {
+        var r = nbi();
+        this.copyTo(r);
+        return r;
+    };
+    // BigInteger.prototype.intValue = bnIntValue;
+    // (public) return value as integer
+    BigInteger.prototype.intValue = function () {
+        if (this.s < 0) {
+            if (this.t == 1) {
+                return this[0] - this.DV;
+            }
+            else if (this.t == 0) {
+                return -1;
+            }
+        }
+        else if (this.t == 1) {
+            return this[0];
+        }
+        else if (this.t == 0) {
+            return 0;
+        }
+        // assumes 16 < DB < 32
+        return ((this[1] & ((1 << (32 - this.DB)) - 1)) << this.DB) | this[0];
+    };
+    // BigInteger.prototype.byteValue = bnByteValue;
+    // (public) return value as byte
+    BigInteger.prototype.byteValue = function () {
+        return (this.t == 0) ? this.s : (this[0] << 24) >> 24;
+    };
+    // BigInteger.prototype.shortValue = bnShortValue;
+    // (public) return value as short (assumes DB>=16)
+    BigInteger.prototype.shortValue = function () {
+        return (this.t == 0) ? this.s : (this[0] << 16) >> 16;
+    };
+    // BigInteger.prototype.signum = bnSigNum;
+    // (public) 0 if this == 0, 1 if this > 0
+    BigInteger.prototype.signum = function () {
+        if (this.s < 0) {
+            return -1;
+        }
+        else if (this.t <= 0 || (this.t == 1 && this[0] <= 0)) {
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    };
+    // BigInteger.prototype.toByteArray = bnToByteArray;
+    // (public) convert to bigendian byte array
+    BigInteger.prototype.toByteArray = function () {
+        var i = this.t;
+        var r = [];
+        r[0] = this.s;
+        var p = this.DB - (i * this.DB) % 8;
+        var d;
+        var k = 0;
+        if (i-- > 0) {
+            if (p < this.DB && (d = this[i] >> p) != (this.s & this.DM) >> p) {
+                r[k++] = d | (this.s << (this.DB - p));
+            }
+            while (i >= 0) {
+                if (p < 8) {
+                    d = (this[i] & ((1 << p) - 1)) << (8 - p);
+                    d |= this[--i] >> (p += this.DB - 8);
+                }
+                else {
+                    d = (this[i] >> (p -= 8)) & 0xff;
+                    if (p <= 0) {
+                        p += this.DB;
+                        --i;
+                    }
+                }
+                if ((d & 0x80) != 0) {
+                    d |= -256;
+                }
+                if (k == 0 && (this.s & 0x80) != (d & 0x80)) {
+                    ++k;
+                }
+                if (k > 0 || d != this.s) {
+                    r[k++] = d;
+                }
+            }
+        }
+        return r;
+    };
+    // BigInteger.prototype.equals = bnEquals;
+    BigInteger.prototype.equals = function (a) {
+        return (this.compareTo(a) == 0);
+    };
+    // BigInteger.prototype.min = bnMin;
+    BigInteger.prototype.min = function (a) {
+        return (this.compareTo(a) < 0) ? this : a;
+    };
+    // BigInteger.prototype.max = bnMax;
+    BigInteger.prototype.max = function (a) {
+        return (this.compareTo(a) > 0) ? this : a;
+    };
+    // BigInteger.prototype.and = bnAnd;
+    BigInteger.prototype.and = function (a) {
+        var r = nbi();
+        this.bitwiseTo(a, op_and, r);
+        return r;
+    };
+    // BigInteger.prototype.or = bnOr;
+    BigInteger.prototype.or = function (a) {
+        var r = nbi();
+        this.bitwiseTo(a, op_or, r);
+        return r;
+    };
+    // BigInteger.prototype.xor = bnXor;
+    BigInteger.prototype.xor = function (a) {
+        var r = nbi();
+        this.bitwiseTo(a, op_xor, r);
+        return r;
+    };
+    // BigInteger.prototype.andNot = bnAndNot;
+    BigInteger.prototype.andNot = function (a) {
+        var r = nbi();
+        this.bitwiseTo(a, op_andnot, r);
+        return r;
+    };
+    // BigInteger.prototype.not = bnNot;
+    // (public) ~this
+    BigInteger.prototype.not = function () {
+        var r = nbi();
+        for (var i = 0; i < this.t; ++i) {
+            r[i] = this.DM & ~this[i];
+        }
+        r.t = this.t;
+        r.s = ~this.s;
+        return r;
+    };
+    // BigInteger.prototype.shiftLeft = bnShiftLeft;
+    // (public) this << n
+    BigInteger.prototype.shiftLeft = function (n) {
+        var r = nbi();
+        if (n < 0) {
+            this.rShiftTo(-n, r);
+        }
+        else {
+            this.lShiftTo(n, r);
+        }
+        return r;
+    };
+    // BigInteger.prototype.shiftRight = bnShiftRight;
+    // (public) this >> n
+    BigInteger.prototype.shiftRight = function (n) {
+        var r = nbi();
+        if (n < 0) {
+            this.lShiftTo(-n, r);
+        }
+        else {
+            this.rShiftTo(n, r);
+        }
+        return r;
+    };
+    // BigInteger.prototype.getLowestSetBit = bnGetLowestSetBit;
+    // (public) returns index of lowest 1-bit (or -1 if none)
+    BigInteger.prototype.getLowestSetBit = function () {
+        for (var i = 0; i < this.t; ++i) {
+            if (this[i] != 0) {
+                return i * this.DB + lbit(this[i]);
+            }
+        }
+        if (this.s < 0) {
+            return this.t * this.DB;
+        }
+        return -1;
+    };
+    // BigInteger.prototype.bitCount = bnBitCount;
+    // (public) return number of set bits
+    BigInteger.prototype.bitCount = function () {
+        var r = 0;
+        var x = this.s & this.DM;
+        for (var i = 0; i < this.t; ++i) {
+            r += cbit(this[i] ^ x);
+        }
+        return r;
+    };
+    // BigInteger.prototype.testBit = bnTestBit;
+    // (public) true iff nth bit is set
+    BigInteger.prototype.testBit = function (n) {
+        var j = Math.floor(n / this.DB);
+        if (j >= this.t) {
+            return (this.s != 0);
+        }
+        return ((this[j] & (1 << (n % this.DB))) != 0);
+    };
+    // BigInteger.prototype.setBit = bnSetBit;
+    // (public) this | (1<<n)
+    BigInteger.prototype.setBit = function (n) {
+        return this.changeBit(n, op_or);
+    };
+    // BigInteger.prototype.clearBit = bnClearBit;
+    // (public) this & ~(1<<n)
+    BigInteger.prototype.clearBit = function (n) {
+        return this.changeBit(n, op_andnot);
+    };
+    // BigInteger.prototype.flipBit = bnFlipBit;
+    // (public) this ^ (1<<n)
+    BigInteger.prototype.flipBit = function (n) {
+        return this.changeBit(n, op_xor);
+    };
+    // BigInteger.prototype.add = bnAdd;
+    // (public) this + a
+    BigInteger.prototype.add = function (a) {
+        var r = nbi();
+        this.addTo(a, r);
+        return r;
+    };
+    // BigInteger.prototype.subtract = bnSubtract;
+    // (public) this - a
+    BigInteger.prototype.subtract = function (a) {
+        var r = nbi();
+        this.subTo(a, r);
+        return r;
+    };
+    // BigInteger.prototype.multiply = bnMultiply;
+    // (public) this * a
+    BigInteger.prototype.multiply = function (a) {
+        var r = nbi();
+        this.multiplyTo(a, r);
+        return r;
+    };
+    // BigInteger.prototype.divide = bnDivide;
+    // (public) this / a
+    BigInteger.prototype.divide = function (a) {
+        var r = nbi();
+        this.divRemTo(a, r, null);
+        return r;
+    };
+    // BigInteger.prototype.remainder = bnRemainder;
+    // (public) this % a
+    BigInteger.prototype.remainder = function (a) {
+        var r = nbi();
+        this.divRemTo(a, null, r);
+        return r;
+    };
+    // BigInteger.prototype.divideAndRemainder = bnDivideAndRemainder;
+    // (public) [this/a,this%a]
+    BigInteger.prototype.divideAndRemainder = function (a) {
+        var q = nbi();
+        var r = nbi();
+        this.divRemTo(a, q, r);
+        return [q, r];
+    };
+    // BigInteger.prototype.modPow = bnModPow;
+    // (public) this^e % m (HAC 14.85)
+    BigInteger.prototype.modPow = function (e, m) {
+        var i = e.bitLength();
+        var k;
+        var r = nbv(1);
+        var z;
+        if (i <= 0) {
+            return r;
+        }
+        else if (i < 18) {
+            k = 1;
+        }
+        else if (i < 48) {
+            k = 3;
+        }
+        else if (i < 144) {
+            k = 4;
+        }
+        else if (i < 768) {
+            k = 5;
+        }
+        else {
+            k = 6;
+        }
+        if (i < 8) {
+            z = new Classic(m);
+        }
+        else if (m.isEven()) {
+            z = new Barrett(m);
+        }
+        else {
+            z = new Montgomery(m);
+        }
+        // precomputation
+        var g = [];
+        var n = 3;
+        var k1 = k - 1;
+        var km = (1 << k) - 1;
+        g[1] = z.convert(this);
+        if (k > 1) {
+            var g2 = nbi();
+            z.sqrTo(g[1], g2);
+            while (n <= km) {
+                g[n] = nbi();
+                z.mulTo(g2, g[n - 2], g[n]);
+                n += 2;
+            }
+        }
+        var j = e.t - 1;
+        var w;
+        var is1 = true;
+        var r2 = nbi();
+        var t;
+        i = nbits(e[j]) - 1;
+        while (j >= 0) {
+            if (i >= k1) {
+                w = (e[j] >> (i - k1)) & km;
+            }
+            else {
+                w = (e[j] & ((1 << (i + 1)) - 1)) << (k1 - i);
+                if (j > 0) {
+                    w |= e[j - 1] >> (this.DB + i - k1);
+                }
+            }
+            n = k;
+            while ((w & 1) == 0) {
+                w >>= 1;
+                --n;
+            }
+            if ((i -= n) < 0) {
+                i += this.DB;
+                --j;
+            }
+            if (is1) {
+                g[w].copyTo(r);
+                is1 = false;
+            }
+            else {
+                while (n > 1) {
+                    z.sqrTo(r, r2);
+                    z.sqrTo(r2, r);
+                    n -= 2;
+                }
+                if (n > 0) {
+                    z.sqrTo(r, r2);
+                }
+                else {
+                    t = r;
+                    r = r2;
+                    r2 = t;
+                }
+                z.mulTo(r2, g[w], r);
+            }
+            while (j >= 0 && (e[j] & (1 << i)) == 0) {
+                z.sqrTo(r, r2);
+                t = r;
+                r = r2;
+                r2 = t;
+                if (--i < 0) {
+                    i = this.DB - 1;
+                    --j;
+                }
+            }
+        }
+        return z.revert(r);
+    };
+    // BigInteger.prototype.modInverse = bnModInverse;
+    // (public) 1/this % m (HAC 14.61)
+    BigInteger.prototype.modInverse = function (m) {
+        var ac = m.isEven();
+        if ((this.isEven() && ac) || m.signum() == 0) {
+            return BigInteger.ZERO;
+        }
+        var u = m.clone();
+        var v = this.clone();
+        var a = nbv(1);
+        var b = nbv(0);
+        var c = nbv(0);
+        var d = nbv(1);
+        while (u.signum() != 0) {
+            while (u.isEven()) {
+                u.rShiftTo(1, u);
+                if (ac) {
+                    if (!a.isEven() || !b.isEven()) {
+                        a.addTo(this, a);
+                        b.subTo(m, b);
+                    }
+                    a.rShiftTo(1, a);
+                }
+                else if (!b.isEven()) {
+                    b.subTo(m, b);
+                }
+                b.rShiftTo(1, b);
+            }
+            while (v.isEven()) {
+                v.rShiftTo(1, v);
+                if (ac) {
+                    if (!c.isEven() || !d.isEven()) {
+                        c.addTo(this, c);
+                        d.subTo(m, d);
+                    }
+                    c.rShiftTo(1, c);
+                }
+                else if (!d.isEven()) {
+                    d.subTo(m, d);
+                }
+                d.rShiftTo(1, d);
+            }
+            if (u.compareTo(v) >= 0) {
+                u.subTo(v, u);
+                if (ac) {
+                    a.subTo(c, a);
+                }
+                b.subTo(d, b);
+            }
+            else {
+                v.subTo(u, v);
+                if (ac) {
+                    c.subTo(a, c);
+                }
+                d.subTo(b, d);
+            }
+        }
+        if (v.compareTo(BigInteger.ONE) != 0) {
+            return BigInteger.ZERO;
+        }
+        if (d.compareTo(m) >= 0) {
+            return d.subtract(m);
+        }
+        if (d.signum() < 0) {
+            d.addTo(m, d);
+        }
+        else {
+            return d;
+        }
+        if (d.signum() < 0) {
+            return d.add(m);
+        }
+        else {
+            return d;
+        }
+    };
+    // BigInteger.prototype.pow = bnPow;
+    // (public) this^e
+    BigInteger.prototype.pow = function (e) {
+        return this.exp(e, new NullExp());
+    };
+    // BigInteger.prototype.gcd = bnGCD;
+    // (public) gcd(this,a) (HAC 14.54)
+    BigInteger.prototype.gcd = function (a) {
+        var x = (this.s < 0) ? this.negate() : this.clone();
+        var y = (a.s < 0) ? a.negate() : a.clone();
+        if (x.compareTo(y) < 0) {
+            var t = x;
+            x = y;
+            y = t;
+        }
+        var i = x.getLowestSetBit();
+        var g = y.getLowestSetBit();
+        if (g < 0) {
+            return x;
+        }
+        if (i < g) {
+            g = i;
+        }
+        if (g > 0) {
+            x.rShiftTo(g, x);
+            y.rShiftTo(g, y);
+        }
+        while (x.signum() > 0) {
+            if ((i = x.getLowestSetBit()) > 0) {
+                x.rShiftTo(i, x);
+            }
+            if ((i = y.getLowestSetBit()) > 0) {
+                y.rShiftTo(i, y);
+            }
+            if (x.compareTo(y) >= 0) {
+                x.subTo(y, x);
+                x.rShiftTo(1, x);
+            }
+            else {
+                y.subTo(x, y);
+                y.rShiftTo(1, y);
+            }
+        }
+        if (g > 0) {
+            y.lShiftTo(g, y);
+        }
+        return y;
+    };
+    // BigInteger.prototype.isProbablePrime = bnIsProbablePrime;
+    // (public) test primality with certainty >= 1-.5^t
+    BigInteger.prototype.isProbablePrime = function (t) {
+        var i;
+        var x = this.abs();
+        if (x.t == 1 && x[0] <= lowprimes[lowprimes.length - 1]) {
+            for (i = 0; i < lowprimes.length; ++i) {
+                if (x[0] == lowprimes[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (x.isEven()) {
+            return false;
+        }
+        i = 1;
+        while (i < lowprimes.length) {
+            var m = lowprimes[i];
+            var j = i + 1;
+            while (j < lowprimes.length && m < lplim) {
+                m *= lowprimes[j++];
+            }
+            m = x.modInt(m);
+            while (i < j) {
+                if (m % lowprimes[i++] == 0) {
+                    return false;
+                }
+            }
+        }
+        return x.millerRabin(t);
+    };
+    //#endregion PUBLIC
+    //#region PROTECTED
+    // BigInteger.prototype.copyTo = bnpCopyTo;
+    // (protected) copy this to r
+    BigInteger.prototype.copyTo = function (r) {
+        for (var i = this.t - 1; i >= 0; --i) {
+            r[i] = this[i];
+        }
+        r.t = this.t;
+        r.s = this.s;
+    };
+    // BigInteger.prototype.fromInt = bnpFromInt;
+    // (protected) set from integer value x, -DV <= x < DV
+    BigInteger.prototype.fromInt = function (x) {
+        this.t = 1;
+        this.s = (x < 0) ? -1 : 0;
+        if (x > 0) {
+            this[0] = x;
+        }
+        else if (x < -1) {
+            this[0] = x + this.DV;
+        }
+        else {
+            this.t = 0;
+        }
+    };
+    // BigInteger.prototype.fromString = bnpFromString;
+    // (protected) set from string and radix
+    BigInteger.prototype.fromString = function (s, b) {
+        var k;
+        if (b == 16) {
+            k = 4;
+        }
+        else if (b == 8) {
+            k = 3;
+        }
+        else if (b == 256) {
+            k = 8;
+            /* byte array */
+        }
+        else if (b == 2) {
+            k = 1;
+        }
+        else if (b == 32) {
+            k = 5;
+        }
+        else if (b == 4) {
+            k = 2;
+        }
+        else {
+            this.fromRadix(s, b);
+            return;
+        }
+        this.t = 0;
+        this.s = 0;
+        var i = s.length;
+        var mi = false;
+        var sh = 0;
+        while (--i >= 0) {
+            var x = (k == 8) ? (+s[i]) & 0xff : intAt(s, i);
+            if (x < 0) {
+                if (s.charAt(i) == "-") {
+                    mi = true;
+                }
+                continue;
+            }
+            mi = false;
+            if (sh == 0) {
+                this[this.t++] = x;
+            }
+            else if (sh + k > this.DB) {
+                this[this.t - 1] |= (x & ((1 << (this.DB - sh)) - 1)) << sh;
+                this[this.t++] = (x >> (this.DB - sh));
+            }
+            else {
+                this[this.t - 1] |= x << sh;
+            }
+            sh += k;
+            if (sh >= this.DB) {
+                sh -= this.DB;
+            }
+        }
+        if (k == 8 && ((+s[0]) & 0x80) != 0) {
+            this.s = -1;
+            if (sh > 0) {
+                this[this.t - 1] |= ((1 << (this.DB - sh)) - 1) << sh;
+            }
+        }
+        this.clamp();
+        if (mi) {
+            BigInteger.ZERO.subTo(this, this);
+        }
+    };
+    // BigInteger.prototype.clamp = bnpClamp;
+    // (protected) clamp off excess high words
+    BigInteger.prototype.clamp = function () {
+        var c = this.s & this.DM;
+        while (this.t > 0 && this[this.t - 1] == c) {
+            --this.t;
+        }
+    };
+    // BigInteger.prototype.dlShiftTo = bnpDLShiftTo;
+    // (protected) r = this << n*DB
+    BigInteger.prototype.dlShiftTo = function (n, r) {
+        var i;
+        for (i = this.t - 1; i >= 0; --i) {
+            r[i + n] = this[i];
+        }
+        for (i = n - 1; i >= 0; --i) {
+            r[i] = 0;
+        }
+        r.t = this.t + n;
+        r.s = this.s;
+    };
+    // BigInteger.prototype.drShiftTo = bnpDRShiftTo;
+    // (protected) r = this >> n*DB
+    BigInteger.prototype.drShiftTo = function (n, r) {
+        for (var i = n; i < this.t; ++i) {
+            r[i - n] = this[i];
+        }
+        r.t = Math.max(this.t - n, 0);
+        r.s = this.s;
+    };
+    // BigInteger.prototype.lShiftTo = bnpLShiftTo;
+    // (protected) r = this << n
+    BigInteger.prototype.lShiftTo = function (n, r) {
+        var bs = n % this.DB;
+        var cbs = this.DB - bs;
+        var bm = (1 << cbs) - 1;
+        var ds = Math.floor(n / this.DB);
+        var c = (this.s << bs) & this.DM;
+        for (var i = this.t - 1; i >= 0; --i) {
+            r[i + ds + 1] = (this[i] >> cbs) | c;
+            c = (this[i] & bm) << bs;
+        }
+        for (var i = ds - 1; i >= 0; --i) {
+            r[i] = 0;
+        }
+        r[ds] = c;
+        r.t = this.t + ds + 1;
+        r.s = this.s;
+        r.clamp();
+    };
+    // BigInteger.prototype.rShiftTo = bnpRShiftTo;
+    // (protected) r = this >> n
+    BigInteger.prototype.rShiftTo = function (n, r) {
+        r.s = this.s;
+        var ds = Math.floor(n / this.DB);
+        if (ds >= this.t) {
+            r.t = 0;
+            return;
+        }
+        var bs = n % this.DB;
+        var cbs = this.DB - bs;
+        var bm = (1 << bs) - 1;
+        r[0] = this[ds] >> bs;
+        for (var i = ds + 1; i < this.t; ++i) {
+            r[i - ds - 1] |= (this[i] & bm) << cbs;
+            r[i - ds] = this[i] >> bs;
+        }
+        if (bs > 0) {
+            r[this.t - ds - 1] |= (this.s & bm) << cbs;
+        }
+        r.t = this.t - ds;
+        r.clamp();
+    };
+    // BigInteger.prototype.subTo = bnpSubTo;
+    // (protected) r = this - a
+    BigInteger.prototype.subTo = function (a, r) {
+        var i = 0;
+        var c = 0;
+        var m = Math.min(a.t, this.t);
+        while (i < m) {
+            c += this[i] - a[i];
+            r[i++] = c & this.DM;
+            c >>= this.DB;
+        }
+        if (a.t < this.t) {
+            c -= a.s;
+            while (i < this.t) {
+                c += this[i];
+                r[i++] = c & this.DM;
+                c >>= this.DB;
+            }
+            c += this.s;
+        }
+        else {
+            c += this.s;
+            while (i < a.t) {
+                c -= a[i];
+                r[i++] = c & this.DM;
+                c >>= this.DB;
+            }
+            c -= a.s;
+        }
+        r.s = (c < 0) ? -1 : 0;
+        if (c < -1) {
+            r[i++] = this.DV + c;
+        }
+        else if (c > 0) {
+            r[i++] = c;
+        }
+        r.t = i;
+        r.clamp();
+    };
+    // BigInteger.prototype.multiplyTo = bnpMultiplyTo;
+    // (protected) r = this * a, r != this,a (HAC 14.12)
+    // "this" should be the larger one if appropriate.
+    BigInteger.prototype.multiplyTo = function (a, r) {
+        var x = this.abs();
+        var y = a.abs();
+        var i = x.t;
+        r.t = i + y.t;
+        while (--i >= 0) {
+            r[i] = 0;
+        }
+        for (i = 0; i < y.t; ++i) {
+            r[i + x.t] = x.am(0, y[i], r, i, 0, x.t);
+        }
+        r.s = 0;
+        r.clamp();
+        if (this.s != a.s) {
+            BigInteger.ZERO.subTo(r, r);
+        }
+    };
+    // BigInteger.prototype.squareTo = bnpSquareTo;
+    // (protected) r = this^2, r != this (HAC 14.16)
+    BigInteger.prototype.squareTo = function (r) {
+        var x = this.abs();
+        var i = r.t = 2 * x.t;
+        while (--i >= 0) {
+            r[i] = 0;
+        }
+        for (i = 0; i < x.t - 1; ++i) {
+            var c = x.am(i, x[i], r, 2 * i, 0, 1);
+            if ((r[i + x.t] += x.am(i + 1, 2 * x[i], r, 2 * i + 1, c, x.t - i - 1)) >= x.DV) {
+                r[i + x.t] -= x.DV;
+                r[i + x.t + 1] = 1;
+            }
+        }
+        if (r.t > 0) {
+            r[r.t - 1] += x.am(i, x[i], r, 2 * i, 0, 1);
+        }
+        r.s = 0;
+        r.clamp();
+    };
+    // BigInteger.prototype.divRemTo = bnpDivRemTo;
+    // (protected) divide this by m, quotient and remainder to q, r (HAC 14.20)
+    // r != q, this != m.  q or r may be null.
+    BigInteger.prototype.divRemTo = function (m, q, r) {
+        var pm = m.abs();
+        if (pm.t <= 0) {
+            return;
+        }
+        var pt = this.abs();
+        if (pt.t < pm.t) {
+            if (q != null) {
+                q.fromInt(0);
+            }
+            if (r != null) {
+                this.copyTo(r);
+            }
+            return;
+        }
+        if (r == null) {
+            r = nbi();
+        }
+        var y = nbi();
+        var ts = this.s;
+        var ms = m.s;
+        var nsh = this.DB - nbits(pm[pm.t - 1]); // normalize modulus
+        if (nsh > 0) {
+            pm.lShiftTo(nsh, y);
+            pt.lShiftTo(nsh, r);
+        }
+        else {
+            pm.copyTo(y);
+            pt.copyTo(r);
+        }
+        var ys = y.t;
+        var y0 = y[ys - 1];
+        if (y0 == 0) {
+            return;
+        }
+        var yt = y0 * (1 << this.F1) + ((ys > 1) ? y[ys - 2] >> this.F2 : 0);
+        var d1 = this.FV / yt;
+        var d2 = (1 << this.F1) / yt;
+        var e = 1 << this.F2;
+        var i = r.t;
+        var j = i - ys;
+        var t = (q == null) ? nbi() : q;
+        y.dlShiftTo(j, t);
+        if (r.compareTo(t) >= 0) {
+            r[r.t++] = 1;
+            r.subTo(t, r);
+        }
+        BigInteger.ONE.dlShiftTo(ys, t);
+        t.subTo(y, y); // "negative" y so we can replace sub with am later
+        while (y.t < ys) {
+            y[y.t++] = 0;
+        }
+        while (--j >= 0) {
+            // Estimate quotient digit
+            var qd = (r[--i] == y0) ? this.DM : Math.floor(r[i] * d1 + (r[i - 1] + e) * d2);
+            if ((r[i] += y.am(0, qd, r, j, 0, ys)) < qd) {
+                y.dlShiftTo(j, t);
+                r.subTo(t, r);
+                while (r[i] < --qd) {
+                    r.subTo(t, r);
+                }
+            }
+        }
+        if (q != null) {
+            r.drShiftTo(ys, q);
+            if (ts != ms) {
+                BigInteger.ZERO.subTo(q, q);
+            }
+        }
+        r.t = ys;
+        r.clamp();
+        if (nsh > 0) {
+            r.rShiftTo(nsh, r);
+        } // Denormalize remainder
+        if (ts < 0) {
+            BigInteger.ZERO.subTo(r, r);
+        }
+    };
+    // BigInteger.prototype.invDigit = bnpInvDigit;
+    // (protected) return "-1/this % 2^DB"; useful for Mont. reduction
+    // justification:
+    //         xy == 1 (mod m)
+    //         xy =  1+km
+    //   xy(2-xy) = (1+km)(1-km)
+    // x[y(2-xy)] = 1-k^2m^2
+    // x[y(2-xy)] == 1 (mod m^2)
+    // if y is 1/x mod m, then y(2-xy) is 1/x mod m^2
+    // should reduce x and y(2-xy) by m^2 at each step to keep size bounded.
+    // JS multiply "overflows" differently from C/C++, so care is needed here.
+    BigInteger.prototype.invDigit = function () {
+        if (this.t < 1) {
+            return 0;
+        }
+        var x = this[0];
+        if ((x & 1) == 0) {
+            return 0;
+        }
+        var y = x & 3; // y == 1/x mod 2^2
+        y = (y * (2 - (x & 0xf) * y)) & 0xf; // y == 1/x mod 2^4
+        y = (y * (2 - (x & 0xff) * y)) & 0xff; // y == 1/x mod 2^8
+        y = (y * (2 - (((x & 0xffff) * y) & 0xffff))) & 0xffff; // y == 1/x mod 2^16
+        // last step - calculate inverse mod DV directly;
+        // assumes 16 < DB <= 32 and assumes ability to handle 48-bit ints
+        y = (y * (2 - x * y % this.DV)) % this.DV; // y == 1/x mod 2^dbits
+        // we really want the negative inverse, and -DV < y < DV
+        return (y > 0) ? this.DV - y : -y;
+    };
+    // BigInteger.prototype.isEven = bnpIsEven;
+    // (protected) true iff this is even
+    BigInteger.prototype.isEven = function () {
+        return ((this.t > 0) ? (this[0] & 1) : this.s) == 0;
+    };
+    // BigInteger.prototype.exp = bnpExp;
+    // (protected) this^e, e < 2^32, doing sqr and mul with "r" (HAC 14.79)
+    BigInteger.prototype.exp = function (e, z) {
+        if (e > 0xffffffff || e < 1) {
+            return BigInteger.ONE;
+        }
+        var r = nbi();
+        var r2 = nbi();
+        var g = z.convert(this);
+        var i = nbits(e) - 1;
+        g.copyTo(r);
+        while (--i >= 0) {
+            z.sqrTo(r, r2);
+            if ((e & (1 << i)) > 0) {
+                z.mulTo(r2, g, r);
+            }
+            else {
+                var t = r;
+                r = r2;
+                r2 = t;
+            }
+        }
+        return z.revert(r);
+    };
+    // BigInteger.prototype.chunkSize = bnpChunkSize;
+    // (protected) return x s.t. r^x < DV
+    BigInteger.prototype.chunkSize = function (r) {
+        return Math.floor(Math.LN2 * this.DB / Math.log(r));
+    };
+    // BigInteger.prototype.toRadix = bnpToRadix;
+    // (protected) convert to radix string
+    BigInteger.prototype.toRadix = function (b) {
+        if (b == null) {
+            b = 10;
+        }
+        if (this.signum() == 0 || b < 2 || b > 36) {
+            return "0";
+        }
+        var cs = this.chunkSize(b);
+        var a = Math.pow(b, cs);
+        var d = nbv(a);
+        var y = nbi();
+        var z = nbi();
+        var r = "";
+        this.divRemTo(d, y, z);
+        while (y.signum() > 0) {
+            r = (a + z.intValue()).toString(b).substr(1) + r;
+            y.divRemTo(d, y, z);
+        }
+        return z.intValue().toString(b) + r;
+    };
+    // BigInteger.prototype.fromRadix = bnpFromRadix;
+    // (protected) convert from radix string
+    BigInteger.prototype.fromRadix = function (s, b) {
+        this.fromInt(0);
+        if (b == null) {
+            b = 10;
+        }
+        var cs = this.chunkSize(b);
+        var d = Math.pow(b, cs);
+        var mi = false;
+        var j = 0;
+        var w = 0;
+        for (var i = 0; i < s.length; ++i) {
+            var x = intAt(s, i);
+            if (x < 0) {
+                if (s.charAt(i) == "-" && this.signum() == 0) {
+                    mi = true;
+                }
+                continue;
+            }
+            w = b * w + x;
+            if (++j >= cs) {
+                this.dMultiply(d);
+                this.dAddOffset(w, 0);
+                j = 0;
+                w = 0;
+            }
+        }
+        if (j > 0) {
+            this.dMultiply(Math.pow(b, j));
+            this.dAddOffset(w, 0);
+        }
+        if (mi) {
+            BigInteger.ZERO.subTo(this, this);
+        }
+    };
+    // BigInteger.prototype.fromNumber = bnpFromNumber;
+    // (protected) alternate constructor
+    BigInteger.prototype.fromNumber = function (a, b, c) {
+        if ("number" == typeof b) {
+            // new BigInteger(int,int,RNG)
+            if (a < 2) {
+                this.fromInt(1);
+            }
+            else {
+                this.fromNumber(a, c);
+                if (!this.testBit(a - 1)) {
+                    // force MSB set
+                    this.bitwiseTo(BigInteger.ONE.shiftLeft(a - 1), op_or, this);
+                }
+                if (this.isEven()) {
+                    this.dAddOffset(1, 0);
+                } // force odd
+                while (!this.isProbablePrime(b)) {
+                    this.dAddOffset(2, 0);
+                    if (this.bitLength() > a) {
+                        this.subTo(BigInteger.ONE.shiftLeft(a - 1), this);
+                    }
+                }
+            }
+        }
+        else {
+            // new BigInteger(int,RNG)
+            var x = [];
+            var t = a & 7;
+            x.length = (a >> 3) + 1;
+            b.nextBytes(x);
+            if (t > 0) {
+                x[0] &= ((1 << t) - 1);
+            }
+            else {
+                x[0] = 0;
+            }
+            this.fromString(x, 256);
+        }
+    };
+    // BigInteger.prototype.bitwiseTo = bnpBitwiseTo;
+    // (protected) r = this op a (bitwise)
+    BigInteger.prototype.bitwiseTo = function (a, op, r) {
+        var i;
+        var f;
+        var m = Math.min(a.t, this.t);
+        for (i = 0; i < m; ++i) {
+            r[i] = op(this[i], a[i]);
+        }
+        if (a.t < this.t) {
+            f = a.s & this.DM;
+            for (i = m; i < this.t; ++i) {
+                r[i] = op(this[i], f);
+            }
+            r.t = this.t;
+        }
+        else {
+            f = this.s & this.DM;
+            for (i = m; i < a.t; ++i) {
+                r[i] = op(f, a[i]);
+            }
+            r.t = a.t;
+        }
+        r.s = op(this.s, a.s);
+        r.clamp();
+    };
+    // BigInteger.prototype.changeBit = bnpChangeBit;
+    // (protected) this op (1<<n)
+    BigInteger.prototype.changeBit = function (n, op) {
+        var r = BigInteger.ONE.shiftLeft(n);
+        this.bitwiseTo(r, op, r);
+        return r;
+    };
+    // BigInteger.prototype.addTo = bnpAddTo;
+    // (protected) r = this + a
+    BigInteger.prototype.addTo = function (a, r) {
+        var i = 0;
+        var c = 0;
+        var m = Math.min(a.t, this.t);
+        while (i < m) {
+            c += this[i] + a[i];
+            r[i++] = c & this.DM;
+            c >>= this.DB;
+        }
+        if (a.t < this.t) {
+            c += a.s;
+            while (i < this.t) {
+                c += this[i];
+                r[i++] = c & this.DM;
+                c >>= this.DB;
+            }
+            c += this.s;
+        }
+        else {
+            c += this.s;
+            while (i < a.t) {
+                c += a[i];
+                r[i++] = c & this.DM;
+                c >>= this.DB;
+            }
+            c += a.s;
+        }
+        r.s = (c < 0) ? -1 : 0;
+        if (c > 0) {
+            r[i++] = c;
+        }
+        else if (c < -1) {
+            r[i++] = this.DV + c;
+        }
+        r.t = i;
+        r.clamp();
+    };
+    // BigInteger.prototype.dMultiply = bnpDMultiply;
+    // (protected) this *= n, this >= 0, 1 < n < DV
+    BigInteger.prototype.dMultiply = function (n) {
+        this[this.t] = this.am(0, n - 1, this, 0, 0, this.t);
+        ++this.t;
+        this.clamp();
+    };
+    // BigInteger.prototype.dAddOffset = bnpDAddOffset;
+    // (protected) this += n << w words, this >= 0
+    BigInteger.prototype.dAddOffset = function (n, w) {
+        if (n == 0) {
+            return;
+        }
+        while (this.t <= w) {
+            this[this.t++] = 0;
+        }
+        this[w] += n;
+        while (this[w] >= this.DV) {
+            this[w] -= this.DV;
+            if (++w >= this.t) {
+                this[this.t++] = 0;
+            }
+            ++this[w];
+        }
+    };
+    // BigInteger.prototype.multiplyLowerTo = bnpMultiplyLowerTo;
+    // (protected) r = lower n words of "this * a", a.t <= n
+    // "this" should be the larger one if appropriate.
+    BigInteger.prototype.multiplyLowerTo = function (a, n, r) {
+        var i = Math.min(this.t + a.t, n);
+        r.s = 0; // assumes a,this >= 0
+        r.t = i;
+        while (i > 0) {
+            r[--i] = 0;
+        }
+        for (var j = r.t - this.t; i < j; ++i) {
+            r[i + this.t] = this.am(0, a[i], r, i, 0, this.t);
+        }
+        for (var j = Math.min(a.t, n); i < j; ++i) {
+            this.am(0, a[i], r, i, 0, n - i);
+        }
+        r.clamp();
+    };
+    // BigInteger.prototype.multiplyUpperTo = bnpMultiplyUpperTo;
+    // (protected) r = "this * a" without lower n words, n > 0
+    // "this" should be the larger one if appropriate.
+    BigInteger.prototype.multiplyUpperTo = function (a, n, r) {
+        --n;
+        var i = r.t = this.t + a.t - n;
+        r.s = 0; // assumes a,this >= 0
+        while (--i >= 0) {
+            r[i] = 0;
+        }
+        for (i = Math.max(n - this.t, 0); i < a.t; ++i) {
+            r[this.t + i - n] = this.am(n - i, a[i], r, 0, 0, this.t + i - n);
+        }
+        r.clamp();
+        r.drShiftTo(1, r);
+    };
+    // BigInteger.prototype.modInt = bnpModInt;
+    // (protected) this % n, n < 2^26
+    BigInteger.prototype.modInt = function (n) {
+        if (n <= 0) {
+            return 0;
+        }
+        var d = this.DV % n;
+        var r = (this.s < 0) ? n - 1 : 0;
+        if (this.t > 0) {
+            if (d == 0) {
+                r = this[0] % n;
+            }
+            else {
+                for (var i = this.t - 1; i >= 0; --i) {
+                    r = (d * r + this[i]) % n;
+                }
+            }
+        }
+        return r;
+    };
+    // BigInteger.prototype.millerRabin = bnpMillerRabin;
+    // (protected) true if probably prime (HAC 4.24, Miller-Rabin)
+    BigInteger.prototype.millerRabin = function (t) {
+        var n1 = this.subtract(BigInteger.ONE);
+        var k = n1.getLowestSetBit();
+        if (k <= 0) {
+            return false;
+        }
+        var r = n1.shiftRight(k);
+        t = (t + 1) >> 1;
+        if (t > lowprimes.length) {
+            t = lowprimes.length;
+        }
+        var a = nbi();
+        for (var i = 0; i < t; ++i) {
+            // Pick bases at random, instead of starting at 2
+            a.fromInt(lowprimes[Math.floor(Math.random() * lowprimes.length)]);
+            var y = a.modPow(r, this);
+            if (y.compareTo(BigInteger.ONE) != 0 && y.compareTo(n1) != 0) {
+                var j = 1;
+                while (j++ < k && y.compareTo(n1) != 0) {
+                    y = y.modPowInt(2, this);
+                    if (y.compareTo(BigInteger.ONE) == 0) {
+                        return false;
+                    }
+                }
+                if (y.compareTo(n1) != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+    // BigInteger.prototype.square = bnSquare;
+    // (public) this^2
+    BigInteger.prototype.square = function () {
+        var r = nbi();
+        this.squareTo(r);
+        return r;
+    };
+    //#region ASYNC
+    // Public API method
+    BigInteger.prototype.gcda = function (a, callback) {
+        var x = (this.s < 0) ? this.negate() : this.clone();
+        var y = (a.s < 0) ? a.negate() : a.clone();
+        if (x.compareTo(y) < 0) {
+            var t = x;
+            x = y;
+            y = t;
+        }
+        var i = x.getLowestSetBit();
+        var g = y.getLowestSetBit();
+        if (g < 0) {
+            callback(x);
+            return;
+        }
+        if (i < g) {
+            g = i;
+        }
+        if (g > 0) {
+            x.rShiftTo(g, x);
+            y.rShiftTo(g, y);
+        }
+        // Workhorse of the algorithm, gets called 200 - 800 times per 512 bit keygen.
+        var gcda1 = function () {
+            if ((i = x.getLowestSetBit()) > 0) {
+                x.rShiftTo(i, x);
+            }
+            if ((i = y.getLowestSetBit()) > 0) {
+                y.rShiftTo(i, y);
+            }
+            if (x.compareTo(y) >= 0) {
+                x.subTo(y, x);
+                x.rShiftTo(1, x);
+            }
+            else {
+                y.subTo(x, y);
+                y.rShiftTo(1, y);
+            }
+            if (!(x.signum() > 0)) {
+                if (g > 0) {
+                    y.lShiftTo(g, y);
+                }
+                setTimeout(function () { callback(y); }, 0); // escape
+            }
+            else {
+                setTimeout(gcda1, 0);
+            }
+        };
+        setTimeout(gcda1, 10);
+    };
+    // (protected) alternate constructor
+    BigInteger.prototype.fromNumberAsync = function (a, b, c, callback) {
+        if ("number" == typeof b) {
+            if (a < 2) {
+                this.fromInt(1);
+            }
+            else {
+                this.fromNumber(a, c);
+                if (!this.testBit(a - 1)) {
+                    this.bitwiseTo(BigInteger.ONE.shiftLeft(a - 1), op_or, this);
+                }
+                if (this.isEven()) {
+                    this.dAddOffset(1, 0);
+                }
+                var bnp_1 = this;
+                var bnpfn1_1 = function () {
+                    bnp_1.dAddOffset(2, 0);
+                    if (bnp_1.bitLength() > a) {
+                        bnp_1.subTo(BigInteger.ONE.shiftLeft(a - 1), bnp_1);
+                    }
+                    if (bnp_1.isProbablePrime(b)) {
+                        setTimeout(function () { callback(); }, 0); // escape
+                    }
+                    else {
+                        setTimeout(bnpfn1_1, 0);
+                    }
+                };
+                setTimeout(bnpfn1_1, 0);
+            }
+        }
+        else {
+            var x = [];
+            var t = a & 7;
+            x.length = (a >> 3) + 1;
+            b.nextBytes(x);
+            if (t > 0) {
+                x[0] &= ((1 << t) - 1);
+            }
+            else {
+                x[0] = 0;
+            }
+            this.fromString(x, 256);
+        }
+    };
+    return BigInteger;
+}());
+//#region REDUCERS
+//#region NullExp
+var NullExp = /** @class */ (function () {
+    function NullExp() {
+    }
+    // NullExp.prototype.convert = nNop;
+    NullExp.prototype.convert = function (x) {
+        return x;
+    };
+    // NullExp.prototype.revert = nNop;
+    NullExp.prototype.revert = function (x) {
+        return x;
+    };
+    // NullExp.prototype.mulTo = nMulTo;
+    NullExp.prototype.mulTo = function (x, y, r) {
+        x.multiplyTo(y, r);
+    };
+    // NullExp.prototype.sqrTo = nSqrTo;
+    NullExp.prototype.sqrTo = function (x, r) {
+        x.squareTo(r);
+    };
+    return NullExp;
+}());
+// Modular reduction using "classic" algorithm
+var Classic = /** @class */ (function () {
+    function Classic(m) {
+        this.m = m;
+    }
+    // Classic.prototype.convert = cConvert;
+    Classic.prototype.convert = function (x) {
+        if (x.s < 0 || x.compareTo(this.m) >= 0) {
+            return x.mod(this.m);
+        }
+        else {
+            return x;
+        }
+    };
+    // Classic.prototype.revert = cRevert;
+    Classic.prototype.revert = function (x) {
+        return x;
+    };
+    // Classic.prototype.reduce = cReduce;
+    Classic.prototype.reduce = function (x) {
+        x.divRemTo(this.m, null, x);
+    };
+    // Classic.prototype.mulTo = cMulTo;
+    Classic.prototype.mulTo = function (x, y, r) {
+        x.multiplyTo(y, r);
+        this.reduce(r);
+    };
+    // Classic.prototype.sqrTo = cSqrTo;
+    Classic.prototype.sqrTo = function (x, r) {
+        x.squareTo(r);
+        this.reduce(r);
+    };
+    return Classic;
+}());
+//#endregion
+//#region Montgomery
+// Montgomery reduction
+var Montgomery = /** @class */ (function () {
+    function Montgomery(m) {
+        this.m = m;
+        this.mp = m.invDigit();
+        this.mpl = this.mp & 0x7fff;
+        this.mph = this.mp >> 15;
+        this.um = (1 << (m.DB - 15)) - 1;
+        this.mt2 = 2 * m.t;
+    }
+    // Montgomery.prototype.convert = montConvert;
+    // xR mod m
+    Montgomery.prototype.convert = function (x) {
+        var r = nbi();
+        x.abs().dlShiftTo(this.m.t, r);
+        r.divRemTo(this.m, null, r);
+        if (x.s < 0 && r.compareTo(BigInteger.ZERO) > 0) {
+            this.m.subTo(r, r);
+        }
+        return r;
+    };
+    // Montgomery.prototype.revert = montRevert;
+    // x/R mod m
+    Montgomery.prototype.revert = function (x) {
+        var r = nbi();
+        x.copyTo(r);
+        this.reduce(r);
+        return r;
+    };
+    // Montgomery.prototype.reduce = montReduce;
+    // x = x/R mod m (HAC 14.32)
+    Montgomery.prototype.reduce = function (x) {
+        while (x.t <= this.mt2) {
+            // pad x so am has enough room later
+            x[x.t++] = 0;
+        }
+        for (var i = 0; i < this.m.t; ++i) {
+            // faster way of calculating u0 = x[i]*mp mod DV
+            var j = x[i] & 0x7fff;
+            var u0 = (j * this.mpl + (((j * this.mph + (x[i] >> 15) * this.mpl) & this.um) << 15)) & x.DM;
+            // use am to combine the multiply-shift-add into one call
+            j = i + this.m.t;
+            x[j] += this.m.am(0, u0, x, i, 0, this.m.t);
+            // propagate carry
+            while (x[j] >= x.DV) {
+                x[j] -= x.DV;
+                x[++j]++;
+            }
+        }
+        x.clamp();
+        x.drShiftTo(this.m.t, x);
+        if (x.compareTo(this.m) >= 0) {
+            x.subTo(this.m, x);
+        }
+    };
+    // Montgomery.prototype.mulTo = montMulTo;
+    // r = "xy/R mod m"; x,y != r
+    Montgomery.prototype.mulTo = function (x, y, r) {
+        x.multiplyTo(y, r);
+        this.reduce(r);
+    };
+    // Montgomery.prototype.sqrTo = montSqrTo;
+    // r = "x^2/R mod m"; x != r
+    Montgomery.prototype.sqrTo = function (x, r) {
+        x.squareTo(r);
+        this.reduce(r);
+    };
+    return Montgomery;
+}());
+//#endregion Montgomery
+//#region Barrett
+// Barrett modular reduction
+var Barrett = /** @class */ (function () {
+    function Barrett(m) {
+        this.m = m;
+        // setup Barrett
+        this.r2 = nbi();
+        this.q3 = nbi();
+        BigInteger.ONE.dlShiftTo(2 * m.t, this.r2);
+        this.mu = this.r2.divide(m);
+    }
+    // Barrett.prototype.convert = barrettConvert;
+    Barrett.prototype.convert = function (x) {
+        if (x.s < 0 || x.t > 2 * this.m.t) {
+            return x.mod(this.m);
+        }
+        else if (x.compareTo(this.m) < 0) {
+            return x;
+        }
+        else {
+            var r = nbi();
+            x.copyTo(r);
+            this.reduce(r);
+            return r;
+        }
+    };
+    // Barrett.prototype.revert = barrettRevert;
+    Barrett.prototype.revert = function (x) {
+        return x;
+    };
+    // Barrett.prototype.reduce = barrettReduce;
+    // x = x mod m (HAC 14.42)
+    Barrett.prototype.reduce = function (x) {
+        x.drShiftTo(this.m.t - 1, this.r2);
+        if (x.t > this.m.t + 1) {
+            x.t = this.m.t + 1;
+            x.clamp();
+        }
+        this.mu.multiplyUpperTo(this.r2, this.m.t + 1, this.q3);
+        this.m.multiplyLowerTo(this.q3, this.m.t + 1, this.r2);
+        while (x.compareTo(this.r2) < 0) {
+            x.dAddOffset(1, this.m.t + 1);
+        }
+        x.subTo(this.r2, x);
+        while (x.compareTo(this.m) >= 0) {
+            x.subTo(this.m, x);
+        }
+    };
+    // Barrett.prototype.mulTo = barrettMulTo;
+    // r = x*y mod m; x,y != r
+    Barrett.prototype.mulTo = function (x, y, r) {
+        x.multiplyTo(y, r);
+        this.reduce(r);
+    };
+    // Barrett.prototype.sqrTo = barrettSqrTo;
+    // r = x^2 mod m; x != r
+    Barrett.prototype.sqrTo = function (x, r) {
+        x.squareTo(r);
+        this.reduce(r);
+    };
+    return Barrett;
+}());
+//#endregion
+//#endregion REDUCERS
+// return new, unset BigInteger
+function nbi() { return new BigInteger(null); }
+function parseBigInt(str, r) {
+    return new BigInteger(str, r);
+}
+// am: Compute w_j += (x*this_i), propagate carries,
+// c is initial carry, returns final carry.
+// c < 3*dvalue, x < 2*dvalue, this_i < dvalue
+// We need to select the fastest one that works in this environment.
+// am1: use a single mult and divide to get the high bits,
+// max digit bits should be 26 because
+// max internal value = 2*dvalue^2-2*dvalue (< 2^53)
+function am1(i, x, w, j, c, n) {
+    while (--n >= 0) {
+        var v = x * this[i++] + w[j] + c;
+        c = Math.floor(v / 0x4000000);
+        w[j++] = v & 0x3ffffff;
+    }
+    return c;
+}
+// am2 avoids a big mult-and-extract completely.
+// Max digit bits should be <= 30 because we do bitwise ops
+// on values up to 2*hdvalue^2-hdvalue-1 (< 2^31)
+function am2(i, x, w, j, c, n) {
+    var xl = x & 0x7fff;
+    var xh = x >> 15;
+    while (--n >= 0) {
+        var l = this[i] & 0x7fff;
+        var h = this[i++] >> 15;
+        var m = xh * l + h * xl;
+        l = xl * l + ((m & 0x7fff) << 15) + w[j] + (c & 0x3fffffff);
+        c = (l >>> 30) + (m >>> 15) + xh * h + (c >>> 30);
+        w[j++] = l & 0x3fffffff;
+    }
+    return c;
+}
+// Alternately, set max digit bits to 28 since some
+// browsers slow down when dealing with 32-bit numbers.
+function am3(i, x, w, j, c, n) {
+    var xl = x & 0x3fff;
+    var xh = x >> 14;
+    while (--n >= 0) {
+        var l = this[i] & 0x3fff;
+        var h = this[i++] >> 14;
+        var m = xh * l + h * xl;
+        l = xl * l + ((m & 0x3fff) << 14) + w[j] + c;
+        c = (l >> 28) + (m >> 14) + xh * h;
+        w[j++] = l & 0xfffffff;
+    }
+    return c;
+}
+if (j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
+    BigInteger.prototype.am = am2;
+    dbits = 30;
+}
+else if (j_lm && (navigator.appName != "Netscape")) {
+    BigInteger.prototype.am = am1;
+    dbits = 26;
+}
+else {
+    BigInteger.prototype.am = am3;
+    dbits = 28;
+}
+BigInteger.prototype.DB = dbits;
+BigInteger.prototype.DM = ((1 << dbits) - 1);
+BigInteger.prototype.DV = (1 << dbits);
+var BI_FP = 52;
+BigInteger.prototype.FV = Math.pow(2, BI_FP);
+BigInteger.prototype.F1 = BI_FP - dbits;
+BigInteger.prototype.F2 = 2 * dbits - BI_FP;
+// Digit conversions
+var BI_RC = [];
+var rr;
+var vv;
+rr = "0".charCodeAt(0);
+for (vv = 0; vv <= 9; ++vv) {
+    BI_RC[rr++] = vv;
+}
+rr = "a".charCodeAt(0);
+for (vv = 10; vv < 36; ++vv) {
+    BI_RC[rr++] = vv;
+}
+rr = "A".charCodeAt(0);
+for (vv = 10; vv < 36; ++vv) {
+    BI_RC[rr++] = vv;
+}
+function intAt(s, i) {
+    var c = BI_RC[s.charCodeAt(i)];
+    return (c == null) ? -1 : c;
+}
+// return bigint initialized to value
+function nbv(i) {
+    var r = nbi();
+    r.fromInt(i);
+    return r;
+}
+// returns bit length of the integer x
+function nbits(x) {
+    var r = 1;
+    var t;
+    if ((t = x >>> 16) != 0) {
+        x = t;
+        r += 16;
+    }
+    if ((t = x >> 8) != 0) {
+        x = t;
+        r += 8;
+    }
+    if ((t = x >> 4) != 0) {
+        x = t;
+        r += 4;
+    }
+    if ((t = x >> 2) != 0) {
+        x = t;
+        r += 2;
+    }
+    if ((t = x >> 1) != 0) {
+        x = t;
+        r += 1;
+    }
+    return r;
+}
+// "constants"
+BigInteger.ZERO = nbv(0);
+BigInteger.ONE = nbv(1);
+
+// prng4.js - uses Arcfour as a PRNG
+var Arcfour = /** @class */ (function () {
+    function Arcfour() {
+        this.i = 0;
+        this.j = 0;
+        this.S = [];
+    }
+    // Arcfour.prototype.init = ARC4init;
+    // Initialize arcfour context from key, an array of ints, each from [0..255]
+    Arcfour.prototype.init = function (key) {
+        var i;
+        var j;
+        var t;
+        for (i = 0; i < 256; ++i) {
+            this.S[i] = i;
+        }
+        j = 0;
+        for (i = 0; i < 256; ++i) {
+            j = (j + this.S[i] + key[i % key.length]) & 255;
+            t = this.S[i];
+            this.S[i] = this.S[j];
+            this.S[j] = t;
+        }
+        this.i = 0;
+        this.j = 0;
+    };
+    // Arcfour.prototype.next = ARC4next;
+    Arcfour.prototype.next = function () {
+        var t;
+        this.i = (this.i + 1) & 255;
+        this.j = (this.j + this.S[this.i]) & 255;
+        t = this.S[this.i];
+        this.S[this.i] = this.S[this.j];
+        this.S[this.j] = t;
+        return this.S[(t + this.S[this.i]) & 255];
+    };
+    return Arcfour;
+}());
+// Plug in your RNG constructor here
+function prng_newstate() {
+    return new Arcfour();
+}
+// Pool size must be a multiple of 4 and greater than 32.
+// An array of bytes the size of the pool will be passed to init()
+var rng_psize = 256;
+
+// Random number generator - requires a PRNG backend, e.g. prng4.js
+var rng_state;
+var rng_pool = null;
+var rng_pptr;
+// Initialize the pool with junk if needed.
+if (rng_pool == null) {
+    rng_pool = [];
+    rng_pptr = 0;
+    var t = void 0;
+    if (window.crypto && window.crypto.getRandomValues) {
+        // Extract entropy (2048 bits) from RNG if available
+        var z = new Uint32Array(256);
+        window.crypto.getRandomValues(z);
+        for (t = 0; t < z.length; ++t) {
+            rng_pool[rng_pptr++] = z[t] & 255;
+        }
+    }
+    // Use mouse events for entropy, if we do not have enough entropy by the time
+    // we need it, entropy will be generated by Math.random.
+    var onMouseMoveListener_1 = function (ev) {
+        this.count = this.count || 0;
+        if (this.count >= 256 || rng_pptr >= rng_psize) {
+            if (window.removeEventListener) {
+                window.removeEventListener("mousemove", onMouseMoveListener_1, false);
+            }
+            else if (window.detachEvent) {
+                window.detachEvent("onmousemove", onMouseMoveListener_1);
+            }
+            return;
+        }
+        try {
+            var mouseCoordinates = ev.x + ev.y;
+            rng_pool[rng_pptr++] = mouseCoordinates & 255;
+            this.count += 1;
+        }
+        catch (e) {
+            // Sometimes Firefox will deny permission to access event properties for some reason. Ignore.
+        }
+    };
+    if (window.addEventListener) {
+        window.addEventListener("mousemove", onMouseMoveListener_1, false);
+    }
+    else if (window.attachEvent) {
+        window.attachEvent("onmousemove", onMouseMoveListener_1);
+    }
+}
+function rng_get_byte() {
+    if (rng_state == null) {
+        rng_state = prng_newstate();
+        // At this point, we may not have collected enough entropy.  If not, fall back to Math.random
+        while (rng_pptr < rng_psize) {
+            var random = Math.floor(65536 * Math.random());
+            rng_pool[rng_pptr++] = random & 255;
+        }
+        rng_state.init(rng_pool);
+        for (rng_pptr = 0; rng_pptr < rng_pool.length; ++rng_pptr) {
+            rng_pool[rng_pptr] = 0;
+        }
+        rng_pptr = 0;
+    }
+    // TODO: allow reseeding after first request
+    return rng_state.next();
+}
+var SecureRandom = /** @class */ (function () {
+    function SecureRandom() {
+    }
+    SecureRandom.prototype.nextBytes = function (ba) {
+        for (var i = 0; i < ba.length; ++i) {
+            ba[i] = rng_get_byte();
+        }
+    };
+    return SecureRandom;
+}());
+
+// Depends on jsbn.js and rng.js
+// function linebrk(s,n) {
+//   var ret = "";
+//   var i = 0;
+//   while(i + n < s.length) {
+//     ret += s.substring(i,i+n) + "\n";
+//     i += n;
+//   }
+//   return ret + s.substring(i,s.length);
+// }
+// function byte2Hex(b) {
+//   if(b < 0x10)
+//     return "0" + b.toString(16);
+//   else
+//     return b.toString(16);
+// }
+// PKCS#1 (type 2, random) pad input string s to n bytes, and return a bigint
+function pkcs1pad2(s, n) {
+    if (n < s.length + 11) {
+        console.error("Message too long for RSA");
+        return null;
+    }
+    var ba = [];
+    var i = s.length - 1;
+    while (i >= 0 && n > 0) {
+        var c = s.charCodeAt(i--);
+        if (c < 128) {
+            ba[--n] = c;
+        }
+        else if ((c > 127) && (c < 2048)) {
+            ba[--n] = (c & 63) | 128;
+            ba[--n] = (c >> 6) | 192;
+        }
+        else {
+            ba[--n] = (c & 63) | 128;
+            ba[--n] = ((c >> 6) & 63) | 128;
+            ba[--n] = (c >> 12) | 224;
+        }
+    }
+    ba[--n] = 0;
+    var rng = new SecureRandom();
+    var x = [];
+    while (n > 2) {
+        x[0] = 0;
+        while (x[0] == 0) {
+            rng.nextBytes(x);
+        }
+        ba[--n] = x[0];
+    }
+    ba[--n] = 2;
+    ba[--n] = 0;
+    return new BigInteger(ba);
+}
+// "empty" RSA key constructor
+var RSAKey = /** @class */ (function () {
+    function RSAKey() {
+        this.n = null;
+        this.e = 0;
+        this.d = null;
+        this.p = null;
+        this.q = null;
+        this.dmp1 = null;
+        this.dmq1 = null;
+        this.coeff = null;
+    }
+    //#region PROTECTED
+    // protected
+    // RSAKey.prototype.doPublic = RSADoPublic;
+    // Perform raw public operation on "x": return x^e (mod n)
+    RSAKey.prototype.doPublic = function (x) {
+        return x.modPowInt(this.e, this.n);
+    };
+    // RSAKey.prototype.doPrivate = RSADoPrivate;
+    // Perform raw private operation on "x": return x^d (mod n)
+    RSAKey.prototype.doPrivate = function (x) {
+        if (this.p == null || this.q == null) {
+            return x.modPow(this.d, this.n);
+        }
+        // TODO: re-calculate any missing CRT params
+        var xp = x.mod(this.p).modPow(this.dmp1, this.p);
+        var xq = x.mod(this.q).modPow(this.dmq1, this.q);
+        while (xp.compareTo(xq) < 0) {
+            xp = xp.add(this.p);
+        }
+        return xp.subtract(xq).multiply(this.coeff).mod(this.p).multiply(this.q).add(xq);
+    };
+    //#endregion PROTECTED
+    //#region PUBLIC
+    // RSAKey.prototype.setPublic = RSASetPublic;
+    // Set the public key fields N and e from hex strings
+    RSAKey.prototype.setPublic = function (N, E) {
+        if (N != null && E != null && N.length > 0 && E.length > 0) {
+            this.n = parseBigInt(N, 16);
+            this.e = parseInt(E, 16);
+        }
+        else {
+            console.error("Invalid RSA public key");
+        }
+    };
+    // RSAKey.prototype.encrypt = RSAEncrypt;
+    // Return the PKCS#1 RSA encryption of "text" as an even-length hex string
+    RSAKey.prototype.encrypt = function (text) {
+        var m = pkcs1pad2(text, (this.n.bitLength() + 7) >> 3);
+        if (m == null) {
+            return null;
+        }
+        var c = this.doPublic(m);
+        if (c == null) {
+            return null;
+        }
+        var h = c.toString(16);
+        if ((h.length & 1) == 0) {
+            return h;
+        }
+        else {
+            return "0" + h;
+        }
+    };
+    // RSAKey.prototype.setPrivate = RSASetPrivate;
+    // Set the private key fields N, e, and d from hex strings
+    RSAKey.prototype.setPrivate = function (N, E, D) {
+        if (N != null && E != null && N.length > 0 && E.length > 0) {
+            this.n = parseBigInt(N, 16);
+            this.e = parseInt(E, 16);
+            this.d = parseBigInt(D, 16);
+        }
+        else {
+            console.error("Invalid RSA private key");
+        }
+    };
+    // RSAKey.prototype.setPrivateEx = RSASetPrivateEx;
+    // Set the private key fields N, e, d and CRT params from hex strings
+    RSAKey.prototype.setPrivateEx = function (N, E, D, P, Q, DP, DQ, C) {
+        if (N != null && E != null && N.length > 0 && E.length > 0) {
+            this.n = parseBigInt(N, 16);
+            this.e = parseInt(E, 16);
+            this.d = parseBigInt(D, 16);
+            this.p = parseBigInt(P, 16);
+            this.q = parseBigInt(Q, 16);
+            this.dmp1 = parseBigInt(DP, 16);
+            this.dmq1 = parseBigInt(DQ, 16);
+            this.coeff = parseBigInt(C, 16);
+        }
+        else {
+            console.error("Invalid RSA private key");
+        }
+    };
+    // RSAKey.prototype.generate = RSAGenerate;
+    // Generate a new random private key B bits long, using public expt E
+    RSAKey.prototype.generate = function (B, E) {
+        var rng = new SecureRandom();
+        var qs = B >> 1;
+        this.e = parseInt(E, 16);
+        var ee = new BigInteger(E, 16);
+        for (;;) {
+            for (;;) {
+                this.p = new BigInteger(B - qs, 1, rng);
+                if (this.p.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && this.p.isProbablePrime(10)) {
+                    break;
+                }
+            }
+            for (;;) {
+                this.q = new BigInteger(qs, 1, rng);
+                if (this.q.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && this.q.isProbablePrime(10)) {
+                    break;
+                }
+            }
+            if (this.p.compareTo(this.q) <= 0) {
+                var t = this.p;
+                this.p = this.q;
+                this.q = t;
+            }
+            var p1 = this.p.subtract(BigInteger.ONE);
+            var q1 = this.q.subtract(BigInteger.ONE);
+            var phi = p1.multiply(q1);
+            if (phi.gcd(ee).compareTo(BigInteger.ONE) == 0) {
+                this.n = this.p.multiply(this.q);
+                this.d = ee.modInverse(phi);
+                this.dmp1 = this.d.mod(p1);
+                this.dmq1 = this.d.mod(q1);
+                this.coeff = this.q.modInverse(this.p);
+                break;
+            }
+        }
+    };
+    // RSAKey.prototype.decrypt = RSADecrypt;
+    // Return the PKCS#1 RSA decryption of "ctext".
+    // "ctext" is an even-length hex string and the output is a plain string.
+    RSAKey.prototype.decrypt = function (ctext) {
+        var c = parseBigInt(ctext, 16);
+        var m = this.doPrivate(c);
+        if (m == null) {
+            return null;
+        }
+        return pkcs1unpad2(m, (this.n.bitLength() + 7) >> 3);
+    };
+    // Generate a new random private key B bits long, using public expt E
+    RSAKey.prototype.generateAsync = function (B, E, callback) {
+        var rng = new SecureRandom();
+        var qs = B >> 1;
+        this.e = parseInt(E, 16);
+        var ee = new BigInteger(E, 16);
+        var rsa = this;
+        // These functions have non-descript names because they were originally for(;;) loops.
+        // I don't know about cryptography to give them better names than loop1-4.
+        var loop1 = function () {
+            var loop4 = function () {
+                if (rsa.p.compareTo(rsa.q) <= 0) {
+                    var t = rsa.p;
+                    rsa.p = rsa.q;
+                    rsa.q = t;
+                }
+                var p1 = rsa.p.subtract(BigInteger.ONE);
+                var q1 = rsa.q.subtract(BigInteger.ONE);
+                var phi = p1.multiply(q1);
+                if (phi.gcd(ee).compareTo(BigInteger.ONE) == 0) {
+                    rsa.n = rsa.p.multiply(rsa.q);
+                    rsa.d = ee.modInverse(phi);
+                    rsa.dmp1 = rsa.d.mod(p1);
+                    rsa.dmq1 = rsa.d.mod(q1);
+                    rsa.coeff = rsa.q.modInverse(rsa.p);
+                    setTimeout(function () { callback(); }, 0); // escape
+                }
+                else {
+                    setTimeout(loop1, 0);
+                }
+            };
+            var loop3 = function () {
+                rsa.q = nbi();
+                rsa.q.fromNumberAsync(qs, 1, rng, function () {
+                    rsa.q.subtract(BigInteger.ONE).gcda(ee, function (r) {
+                        if (r.compareTo(BigInteger.ONE) == 0 && rsa.q.isProbablePrime(10)) {
+                            setTimeout(loop4, 0);
+                        }
+                        else {
+                            setTimeout(loop3, 0);
+                        }
+                    });
+                });
+            };
+            var loop2 = function () {
+                rsa.p = nbi();
+                rsa.p.fromNumberAsync(B - qs, 1, rng, function () {
+                    rsa.p.subtract(BigInteger.ONE).gcda(ee, function (r) {
+                        if (r.compareTo(BigInteger.ONE) == 0 && rsa.p.isProbablePrime(10)) {
+                            setTimeout(loop3, 0);
+                        }
+                        else {
+                            setTimeout(loop2, 0);
+                        }
+                    });
+                });
+            };
+            setTimeout(loop2, 0);
+        };
+        setTimeout(loop1, 0);
+    };
+    return RSAKey;
+}());
+// Undo PKCS#1 (type 2, random) padding and, if valid, return the plaintext
+function pkcs1unpad2(d, n) {
+    var b = d.toByteArray();
+    var i = 0;
+    while (i < b.length && b[i] == 0) {
+        ++i;
+    }
+    if (b.length - i != n - 1 || b[i] != 2) {
+        return null;
+    }
+    ++i;
+    while (b[i] != 0) {
+        if (++i >= b.length) {
+            return null;
+        }
+    }
+    var ret = "";
+    while (++i < b.length) {
+        var c = b[i] & 255;
+        if (c < 128) {
+            ret += String.fromCharCode(c);
+        }
+        else if ((c > 191) && (c < 224)) {
+            ret += String.fromCharCode(((c & 31) << 6) | (b[i + 1] & 63));
+            ++i;
+        }
+        else {
+            ret += String.fromCharCode(((c & 15) << 12) | ((b[i + 1] & 63) << 6) | (b[i + 2] & 63));
+            i += 2;
+        }
+    }
+    return ret;
+}
+// Return the PKCS#1 RSA encryption of "text" as a Base64-encoded string
+// function RSAEncryptB64(text) {
+//  var h = this.encrypt(text);
+//  if(h) return hex2b64(h); else return null;
+// }
+// public
+// RSAKey.prototype.encrypt_b64 = RSAEncryptB64;
+
+/*!
+Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
 version: 2.9.0
- <a href="https://kjur.github.io/jsrsasign/license/">MIT License</a>
 */
-'use strict';
-(function(D, E) {
-  "object" === typeof exports && "undefined" !== typeof module ? E(exports) : "function" === typeof define && define.amd ? define(["exports"], E) : E(D.JSEncrypt = {});
-})(this, function(D) {
-  function E(b, a) {
-    return b & a;
-  }
-  function H(b, a) {
-    return b | a;
-  }
-  function Q(b, a) {
-    return b ^ a;
-  }
-  function R(b, a) {
-    return b & ~a;
-  }
-  function M(b) {
-    var a, c = "";
-    for (a = 0; a + 3 <= b.length; a += 3) {
-      var d = parseInt(b.substring(a, a + 3), 16);
-      c += "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(d >> 6) + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(d & 63);
-    }
-    a + 1 == b.length ? (d = parseInt(b.substring(a, a + 1), 16), c += "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(d << 2)) : a + 2 == b.length && (d = parseInt(b.substring(a, a + 2), 16), c += "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(d >> 2) + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt((d & 3) << 4));
-    for (; 0 < (c.length & 3);) {
-      c += "\x3d";
-    }
-    return c;
-  }
-  function X(b) {
-    var a = "", c, d = 0, g = 0;
-    for (c = 0; c < b.length && "\x3d" != b.charAt(c); ++c) {
-      var f = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".indexOf(b.charAt(c));
-      0 > f || (0 == d ? (a += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(f >> 2), g = f & 3, d = 1) : 1 == d ? (a += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(g << 2 | f >> 4), g = f & 15, d = 2) : 2 == d ? (a += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(g), a += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(f >> 2), g = f & 3, d = 3) : (a += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(g << 2 | f >> 4), a += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(f & 15), d = 0));
-    }
-    1 == d && (a += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(g << 2));
-    return a;
-  }
-  function Y(b, a) {
-    function c() {
-      this.constructor = b;
-    }
-    Z(b, a);
-    b.prototype = null === a ? Object.create(a) : (c.prototype = a.prototype, new c);
-  }
-  function B(b, a) {
-    b.length > a && (b = b.substring(0, a) + "\u2026");
-    return b;
-  }
-  function n() {
-    return new l(null);
-  }
-  function t(b, a) {
-    return new l(b, a);
-  }
-  function aa(b, a, c, d, g, f) {
-    for (; 0 <= --f;) {
-      var k = a * this[b++] + c[d] + g;
-      g = Math.floor(k / 67108864);
-      c[d++] = k & 67108863;
-    }
-    return g;
-  }
-  function ba(b, a, c, d, g, f) {
-    var k = a & 32767;
-    for (a >>= 15; 0 <= --f;) {
-      var h = this[b] & 32767, e = this[b++] >> 15, w = a * h + e * k;
-      h = k * h + ((w & 32767) << 15) + c[d] + (g & 1073741823);
-      g = (h >>> 30) + (w >>> 15) + a * e + (g >>> 30);
-      c[d++] = h & 1073741823;
-    }
-    return g;
-  }
-  function ca(b, a, c, d, g, f) {
-    var k = a & 16383;
-    for (a >>= 14; 0 <= --f;) {
-      var h = this[b] & 16383, e = this[b++] >> 14, w = a * h + e * k;
-      h = k * h + ((w & 16383) << 14) + c[d] + g;
-      g = (h >> 28) + (w >> 14) + a * e;
-      c[d++] = h & 268435455;
-    }
-    return g;
-  }
-  function S(b, a) {
-    b = I[b.charCodeAt(a)];
-    return null == b ? -1 : b;
-  }
-  function z(b) {
-    var a = n();
-    a.fromInt(b);
-    return a;
-  }
-  function J(b) {
-    var a = 1, c;
-    0 != (c = b >>> 16) && (b = c, a += 16);
-    0 != (c = b >> 8) && (b = c, a += 8);
-    0 != (c = b >> 4) && (b = c, a += 4);
-    0 != (c = b >> 2) && (b = c, a += 2);
-    0 != b >> 1 && (a += 1);
-    return a;
-  }
-  var Z = Object.setPrototypeOf || {__proto__:[]} instanceof Array && function(b, a) {
-    b.__proto__ = a;
-  } || function(b, a) {
-    for (var c in a) {
-      a.hasOwnProperty(c) && (b[c] = a[c]);
-    }
-  }, C, da = {decode:function(b) {
-    var a;
-    if (void 0 === C) {
-      var c = "0123456789ABCDEF";
-      C = {};
-      for (a = 0; 16 > a; ++a) {
-        C[c.charAt(a)] = a;
-      }
-      c = c.toLowerCase();
-      for (a = 10; 16 > a; ++a) {
-        C[c.charAt(a)] = a;
-      }
-      for (a = 0; 8 > a; ++a) {
-        C[" \f\n\r\t\u00a0\u2028\u2029".charAt(a)] = -1;
-      }
-    }
-    c = [];
-    var d = 0, g = 0;
-    for (a = 0; a < b.length; ++a) {
-      var f = b.charAt(a);
-      if ("\x3d" == f) {
-        break;
-      }
-      f = C[f];
-      if (-1 != f) {
-        if (void 0 === f) {
-          throw Error("Illegal character at offset " + a);
+var YAHOO = {};
+YAHOO.lang = {
+    /**
+     * Utility to set up the prototype, constructor and superclass properties to
+     * support an inheritance strategy that can chain constructors and methods.
+     * Static members will not be inherited.
+     *
+     * @method extend
+     * @static
+     * @param {Function} subc   the object to modify
+     * @param {Function} superc the object to inherit
+     * @param {Object} overrides  additional properties/methods to add to the
+     *                              subclass prototype.  These will override the
+     *                              matching items obtained from the superclass
+     *                              if present.
+     */
+    extend: function(subc, superc, overrides) {
+        if (! superc || ! subc) {
+            throw new Error("YAHOO.lang.extend failed, please check that " +
+                "all dependencies are included.");
         }
-        d |= f;
-        2 <= ++g ? (c[c.length] = d, g = d = 0) : d <<= 4;
-      }
-    }
-    if (g) {
-      throw Error("Hex encoding incomplete: 4 bits missing");
-    }
-    return c;
-  }}, F, N = {decode:function(b) {
-    var a;
-    if (void 0 === F) {
-      F = Object.create(null);
-      for (a = 0; 64 > a; ++a) {
-        F["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(a)] = a;
-      }
-      for (a = 0; 9 > a; ++a) {
-        F["\x3d \f\n\r\t\u00a0\u2028\u2029".charAt(a)] = -1;
-      }
-    }
-    var c = [], d = 0, g = 0;
-    for (a = 0; a < b.length; ++a) {
-      var f = b.charAt(a);
-      if ("\x3d" == f) {
-        break;
-      }
-      f = F[f];
-      if (-1 != f) {
-        if (void 0 === f) {
-          throw Error("Illegal character at offset " + a);
+
+        var F = function() {};
+        F.prototype = superc.prototype;
+        subc.prototype = new F();
+        subc.prototype.constructor = subc;
+        subc.superclass = superc.prototype;
+
+        if (superc.prototype.constructor == Object.prototype.constructor) {
+            superc.prototype.constructor = superc;
         }
-        d |= f;
-        4 <= ++g ? (c[c.length] = d >> 16, c[c.length] = d >> 8 & 255, c[c.length] = d & 255, g = d = 0) : d <<= 6;
-      }
-    }
-    switch(g) {
-      case 1:
-        throw Error("Base64 encoding incomplete: at least 2 bits missing");
-      case 2:
-        c[c.length] = d >> 10;
-        break;
-      case 3:
-        c[c.length] = d >> 16, c[c.length] = d >> 8 & 255;
-    }
-    return c;
-  }, re:/-----BEGIN [^-]+-----([A-Za-z0-9+\/=\s]+)-----END [^-]+-----|begin-base64[^\n]+\n([A-Za-z0-9+\/=\s]+)====/, unarmor:function(b) {
-    var a = N.re.exec(b);
-    if (a) {
-      if (a[1]) {
-        b = a[1];
-      } else {
-        if (a[2]) {
-          b = a[2];
-        } else {
-          throw Error("RegExp out of sync");
-        }
-      }
-    }
-    return N.decode(b);
-  }}, G = function() {
-    function b(a) {
-      this.buf = [+a || 0];
-    }
-    b.prototype.mulAdd = function(a, c) {
-      var d = this.buf, b = d.length, f;
-      for (f = 0; f < b; ++f) {
-        var k = d[f] * a + c;
-        10000000000000 > k ? c = 0 : (c = 0 | k / 10000000000000, k -= 10000000000000 * c);
-        d[f] = k;
-      }
-      0 < c && (d[f] = c);
-    };
-    b.prototype.sub = function(a) {
-      var c = this.buf, d = c.length, b;
-      for (b = 0; b < d; ++b) {
-        var f = c[b] - a;
-        0 > f ? (f += 10000000000000, a = 1) : a = 0;
-        c[b] = f;
-      }
-      for (; 0 === c[c.length - 1];) {
-        c.pop();
-      }
-    };
-    b.prototype.toString = function(a) {
-      if (10 != (a || 10)) {
-        throw Error("only base 10 is supported");
-      }
-      a = this.buf;
-      for (var c = a[a.length - 1].toString(), d = a.length - 2; 0 <= d; --d) {
-        c += (10000000000000 + a[d]).toString().substring(1);
-      }
-      return c;
-    };
-    b.prototype.valueOf = function() {
-      for (var a = this.buf, c = 0, d = a.length - 1; 0 <= d; --d) {
-        c = 10000000000000 * c + a[d];
-      }
-      return c;
-    };
-    b.prototype.simplify = function() {
-      var a = this.buf;
-      return 1 == a.length ? a[0] : this;
-    };
-    return b;
-  }(), ea = /^(\d\d)(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])([01]\d|2[0-3])(?:([0-5]\d)(?:([0-5]\d)(?:[.,](\d{1,3}))?)?)?(Z|[-+](?:[0]\d|1[0-2])([0-5]\d)?)?$/, fa = /^(\d\d\d\d)(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])([01]\d|2[0-3])(?:([0-5]\d)(?:([0-5]\d)(?:[.,](\d{1,3}))?)?)?(Z|[-+](?:[0]\d|1[0-2])([0-5]\d)?)?$/, O = function() {
-    function b(a, c) {
-      this.hexDigits = "0123456789ABCDEF";
-      a instanceof b ? (this.enc = a.enc, this.pos = a.pos) : (this.enc = a, this.pos = c);
-    }
-    b.prototype.get = function(a) {
-      void 0 === a && (a = this.pos++);
-      if (a >= this.enc.length) {
-        throw Error("Requesting byte offset " + a + " on a stream of length " + this.enc.length);
-      }
-      return "string" === typeof this.enc ? this.enc.charCodeAt(a) : this.enc[a];
-    };
-    b.prototype.hexByte = function(a) {
-      return this.hexDigits.charAt(a >> 4 & 15) + this.hexDigits.charAt(a & 15);
-    };
-    b.prototype.hexDump = function(a, c, d) {
-      for (var b = ""; a < c; ++a) {
-        if (b += this.hexByte(this.get(a)), !0 !== d) {
-          switch(a & 15) {
-            case 7:
-              b += "  ";
-              break;
-            case 15:
-              b += "\n";
-              break;
-            default:
-              b += " ";
-          }
-        }
-      }
-      return b;
-    };
-    b.prototype.isASCII = function(a, c) {
-      for (; a < c; ++a) {
-        var d = this.get(a);
-        if (32 > d || 176 < d) {
-          return !1;
-        }
-      }
-      return !0;
-    };
-    b.prototype.parseStringISO = function(a, c) {
-      for (var d = ""; a < c; ++a) {
-        d += String.fromCharCode(this.get(a));
-      }
-      return d;
-    };
-    b.prototype.parseStringUTF = function(a, c) {
-      for (var d = ""; a < c;) {
-        var b = this.get(a++);
-        d = 128 > b ? d + String.fromCharCode(b) : 191 < b && 224 > b ? d + String.fromCharCode((b & 31) << 6 | this.get(a++) & 63) : d + String.fromCharCode((b & 15) << 12 | (this.get(a++) & 63) << 6 | this.get(a++) & 63);
-      }
-      return d;
-    };
-    b.prototype.parseStringBMP = function(a, c) {
-      for (var d = "", b, f = a; f < c;) {
-        a = this.get(f++), b = this.get(f++), d += String.fromCharCode(a << 8 | b);
-      }
-      return d;
-    };
-    b.prototype.parseTime = function(a, c, d) {
-      a = this.parseStringISO(a, c);
-      c = (d ? ea : fa).exec(a);
-      if (!c) {
-        return "Unrecognized time: " + a;
-      }
-      d && (c[1] = +c[1], c[1] += 70 > +c[1] ? 2000 : 1900);
-      a = c[1] + "-" + c[2] + "-" + c[3] + " " + c[4];
-      c[5] && (a += ":" + c[5], c[6] && (a += ":" + c[6], c[7] && (a += "." + c[7])));
-      c[8] && (a += " UTC", "Z" != c[8] && (a += c[8], c[9] && (a += ":" + c[9])));
-      return a;
-    };
-    b.prototype.parseInteger = function(a, c) {
-      for (var d = this.get(a), b = 127 < d, f = b ? 255 : 0, k, h = ""; d == f && ++a < c;) {
-        d = this.get(a);
-      }
-      k = c - a;
-      if (0 === k) {
-        return b ? -1 : 0;
-      }
-      if (4 < k) {
-        h = d;
-        for (k <<= 3; 0 == ((+h ^ f) & 128);) {
-          h = +h << 1, --k;
-        }
-        h = "(" + k + " bit)\n";
-      }
-      b && (d -= 256);
-      d = new G(d);
-      for (a += 1; a < c; ++a) {
-        d.mulAdd(256, this.get(a));
-      }
-      return h + d.toString();
-    };
-    b.prototype.parseBitString = function(a, c, d) {
-      var b = this.get(a), f = "(" + ((c - a - 1 << 3) - b) + " bit)\n", k = "";
-      for (a += 1; a < c; ++a) {
-        for (var h = this.get(a), e = a == c - 1 ? b : 0, w = 7; w >= e; --w) {
-          k += h >> w & 1 ? "1" : "0";
-        }
-        if (k.length > d) {
-          return f + B(k, d);
-        }
-      }
-      return f + k;
-    };
-    b.prototype.parseOctetString = function(a, c, d) {
-      if (this.isASCII(a, c)) {
-        return B(this.parseStringISO(a, c), d);
-      }
-      var b = c - a, f = "(" + b + " byte)\n";
-      d /= 2;
-      for (b > d && (c = a + d); a < c; ++a) {
-        f += this.hexByte(this.get(a));
-      }
-      b > d && (f += "\u2026");
-      return f;
-    };
-    b.prototype.parseOID = function(a, c, d) {
-      for (var b = "", f = new G, k = 0; a < c; ++a) {
-        var h = this.get(a);
-        f.mulAdd(128, h & 127);
-        k += 7;
-        if (!(h & 128)) {
-          "" === b ? (f = f.simplify(), f instanceof G ? (f.sub(80), b = "2." + f.toString()) : (b = 80 > f ? 40 > f ? 0 : 1 : 2, b = b + "." + (f - 40 * b))) : b += "." + f.toString();
-          if (b.length > d) {
-            return B(b, d);
-          }
-          f = new G;
-          k = 0;
-        }
-      }
-      0 < k && (b += ".incomplete");
-      return b;
-    };
-    return b;
-  }(), ia = function() {
-    function b(a, c, d, b, f) {
-      if (!(b instanceof T)) {
-        throw Error("Invalid tag value.");
-      }
-      this.stream = a;
-      this.header = c;
-      this.length = d;
-      this.tag = b;
-      this.sub = f;
-    }
-    b.prototype.typeName = function() {
-      switch(this.tag.tagClass) {
-        case 0:
-          switch(this.tag.tagNumber) {
-            case 0:
-              return "EOC";
-            case 1:
-              return "BOOLEAN";
-            case 2:
-              return "INTEGER";
-            case 3:
-              return "BIT_STRING";
-            case 4:
-              return "OCTET_STRING";
-            case 5:
-              return "NULL";
-            case 6:
-              return "OBJECT_IDENTIFIER";
-            case 7:
-              return "ObjectDescriptor";
-            case 8:
-              return "EXTERNAL";
-            case 9:
-              return "REAL";
-            case 10:
-              return "ENUMERATED";
-            case 11:
-              return "EMBEDDED_PDV";
-            case 12:
-              return "UTF8String";
-            case 16:
-              return "SEQUENCE";
-            case 17:
-              return "SET";
-            case 18:
-              return "NumericString";
-            case 19:
-              return "PrintableString";
-            case 20:
-              return "TeletexString";
-            case 21:
-              return "VideotexString";
-            case 22:
-              return "IA5String";
-            case 23:
-              return "UTCTime";
-            case 24:
-              return "GeneralizedTime";
-            case 25:
-              return "GraphicString";
-            case 26:
-              return "VisibleString";
-            case 27:
-              return "GeneralString";
-            case 28:
-              return "UniversalString";
-            case 30:
-              return "BMPString";
-          }return "Universal_" + this.tag.tagNumber.toString();
-        case 1:
-          return "Application_" + this.tag.tagNumber.toString();
-        case 2:
-          return "[" + this.tag.tagNumber.toString() + "]";
-        case 3:
-          return "Private_" + this.tag.tagNumber.toString();
-      }
-    };
-    b.prototype.content = function(a) {
-      if (void 0 === this.tag) {
-        return null;
-      }
-      void 0 === a && (a = Infinity);
-      var c = this.posContent(), d = Math.abs(this.length);
-      if (!this.tag.isUniversal()) {
-        return null !== this.sub ? "(" + this.sub.length + " elem)" : this.stream.parseOctetString(c, c + d, a);
-      }
-      switch(this.tag.tagNumber) {
-        case 1:
-          return 0 === this.stream.get(c) ? "false" : "true";
-        case 2:
-          return this.stream.parseInteger(c, c + d);
-        case 3:
-          return this.sub ? "(" + this.sub.length + " elem)" : this.stream.parseBitString(c, c + d, a);
-        case 4:
-          return this.sub ? "(" + this.sub.length + " elem)" : this.stream.parseOctetString(c, c + d, a);
-        case 6:
-          return this.stream.parseOID(c, c + d, a);
-        case 16:
-        case 17:
-          return null !== this.sub ? "(" + this.sub.length + " elem)" : "(no elem)";
-        case 12:
-          return B(this.stream.parseStringUTF(c, c + d), a);
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 26:
-          return B(this.stream.parseStringISO(c, c + d), a);
-        case 30:
-          return B(this.stream.parseStringBMP(c, c + d), a);
-        case 23:
-        case 24:
-          return this.stream.parseTime(c, c + d, 23 == this.tag.tagNumber);
-      }
-      return null;
-    };
-    b.prototype.toString = function() {
-      return this.typeName() + "@" + this.stream.pos + "[header:" + this.header + ",length:" + this.length + ",sub:" + (null === this.sub ? "null" : this.sub.length) + "]";
-    };
-    b.prototype.toPrettyString = function(a) {
-      void 0 === a && (a = "");
-      var c = a + this.typeName() + " @" + this.stream.pos;
-      0 <= this.length && (c += "+");
-      c += this.length;
-      this.tag.tagConstructed ? c += " (constructed)" : !this.tag.isUniversal() || 3 != this.tag.tagNumber && 4 != this.tag.tagNumber || null === this.sub || (c += " (encapsulates)");
-      c += "\n";
-      if (null !== this.sub) {
-        a += "  ";
-        for (var d = 0, b = this.sub.length; d < b; ++d) {
-          c += this.sub[d].toPrettyString(a);
-        }
-      }
-      return c;
-    };
-    b.prototype.posStart = function() {
-      return this.stream.pos;
-    };
-    b.prototype.posContent = function() {
-      return this.stream.pos + this.header;
-    };
-    b.prototype.posEnd = function() {
-      return this.stream.pos + this.header + Math.abs(this.length);
-    };
-    b.prototype.toHexString = function() {
-      return this.stream.hexDump(this.posStart(), this.posEnd(), !0);
-    };
-    b.decodeLength = function(a) {
-      var c = a.get(), d = c & 127;
-      if (d == c) {
-        return d;
-      }
-      if (6 < d) {
-        throw Error("Length over 48 bits not supported at position " + (a.pos - 1));
-      }
-      if (0 === d) {
-        return null;
-      }
-      for (var b = c = 0; b < d; ++b) {
-        c = 256 * c + a.get();
-      }
-      return c;
-    };
-    b.prototype.getHexStringValue = function() {
-      return this.toHexString().substr(2 * this.header, 2 * this.length);
-    };
-    b.decode = function(a) {
-      var c = a instanceof O ? a : new O(a, 0);
-      a = new O(c);
-      var d = new T(c), g = b.decodeLength(c), f = c.pos, k = f - a.pos, h = null, e = function() {
-        var a = [];
-        if (null !== g) {
-          for (var d = f + g; c.pos < d;) {
-            a[a.length] = b.decode(c);
-          }
-          if (c.pos != d) {
-            throw Error("Content size is not correct for container starting at offset " + f);
-          }
-        } else {
-          try {
-            for (;;) {
-              d = b.decode(c);
-              if (d.tag.isEOC()) {
-                break;
-              }
-              a[a.length] = d;
+
+        if (overrides) {
+            var i;
+            for (i in overrides) {
+                subc.prototype[i] = overrides[i];
             }
-            g = f - c.pos;
-          } catch (ha) {
-            throw Error("Exception while decoding undefined length content: " + ha);
-          }
-        }
-        return a;
-      };
-      if (d.tagConstructed) {
-        h = e();
-      } else {
-        if (d.isUniversal() && (3 == d.tagNumber || 4 == d.tagNumber)) {
-          try {
-            if (3 == d.tagNumber && 0 != c.get()) {
-              throw Error("BIT STRINGs with unused bits cannot encapsulate.");
-            }
-            h = e();
-            for (e = 0; e < h.length; ++e) {
-              if (h[e].tag.isEOC()) {
-                throw Error("EOC is not supposed to be actual content.");
-              }
-            }
-          } catch (w) {
-            h = null;
-          }
-        }
-      }
-      if (null === h) {
-        if (null === g) {
-          throw Error("We can't skip over an invalid tag with undefined length at offset " + f);
-        }
-        c.pos = f + Math.abs(g);
-      }
-      return new b(a, k, g, d, h);
-    };
-    return b;
-  }(), T = function() {
-    function b(a) {
-      var c = a.get();
-      this.tagClass = c >> 6;
-      this.tagConstructed = 0 !== (c & 32);
-      this.tagNumber = c & 31;
-      if (31 == this.tagNumber) {
-        var d = new G;
-        do {
-          c = a.get(), d.mulAdd(128, c & 127);
-        } while (c & 128);
-        this.tagNumber = d.simplify();
-      }
-    }
-    b.prototype.isUniversal = function() {
-      return 0 === this.tagClass;
-    };
-    b.prototype.isEOC = function() {
-      return 0 === this.tagClass && 0 === this.tagNumber;
-    };
-    return b;
-  }(), r = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 
-  571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997], ja = 67108864 / r[r.length - 1], l = function() {
-    function b(a, c, d) {
-      null != a && ("number" == typeof a ? this.fromNumber(a, c, d) : null == c && "string" != typeof a ? this.fromString(a, 256) : this.fromString(a, c));
-    }
-    b.prototype.toString = function(a) {
-      if (0 > this.s) {
-        return "-" + this.negate().toString(a);
-      }
-      if (16 == a) {
-        a = 4;
-      } else {
-        if (8 == a) {
-          a = 3;
-        } else {
-          if (2 == a) {
-            a = 1;
-          } else {
-            if (32 == a) {
-              a = 5;
-            } else {
-              if (4 == a) {
-                a = 2;
-              } else {
-                return this.toRadix(a);
-              }
-            }
-          }
-        }
-      }
-      var c = (1 << a) - 1, d, b = !1, f = "", k = this.t, h = this.DB - k * this.DB % a;
-      if (0 < k--) {
-        for (h < this.DB && 0 < (d = this[k] >> h) && (b = !0, f = "0123456789abcdefghijklmnopqrstuvwxyz".charAt(d)); 0 <= k;) {
-          h < a ? (d = (this[k] & (1 << h) - 1) << a - h, d |= this[--k] >> (h += this.DB - a)) : (d = this[k] >> (h -= a) & c, 0 >= h && (h += this.DB, --k)), 0 < d && (b = !0), b && (f += "0123456789abcdefghijklmnopqrstuvwxyz".charAt(d));
-        }
-      }
-      return b ? f : "0";
-    };
-    b.prototype.negate = function() {
-      var a = n();
-      b.ZERO.subTo(this, a);
-      return a;
-    };
-    b.prototype.abs = function() {
-      return 0 > this.s ? this.negate() : this;
-    };
-    b.prototype.compareTo = function(a) {
-      var c = this.s - a.s;
-      if (0 != c) {
-        return c;
-      }
-      var d = this.t;
-      c = d - a.t;
-      if (0 != c) {
-        return 0 > this.s ? -c : c;
-      }
-      for (; 0 <= --d;) {
-        if (0 != (c = this[d] - a[d])) {
-          return c;
-        }
-      }
-      return 0;
-    };
-    b.prototype.bitLength = function() {
-      return 0 >= this.t ? 0 : this.DB * (this.t - 1) + J(this[this.t - 1] ^ this.s & this.DM);
-    };
-    b.prototype.mod = function(a) {
-      var c = n();
-      this.abs().divRemTo(a, null, c);
-      0 > this.s && 0 < c.compareTo(b.ZERO) && a.subTo(c, c);
-      return c;
-    };
-    b.prototype.modPowInt = function(a, c) {
-      c = 256 > a || c.isEven() ? new U(c) : new V(c);
-      return this.exp(a, c);
-    };
-    b.prototype.clone = function() {
-      var a = n();
-      this.copyTo(a);
-      return a;
-    };
-    b.prototype.intValue = function() {
-      if (0 > this.s) {
-        if (1 == this.t) {
-          return this[0] - this.DV;
-        }
-        if (0 == this.t) {
-          return -1;
-        }
-      } else {
-        if (1 == this.t) {
-          return this[0];
-        }
-        if (0 == this.t) {
-          return 0;
-        }
-      }
-      return (this[1] & (1 << 32 - this.DB) - 1) << this.DB | this[0];
-    };
-    b.prototype.byteValue = function() {
-      return 0 == this.t ? this.s : this[0] << 24 >> 24;
-    };
-    b.prototype.shortValue = function() {
-      return 0 == this.t ? this.s : this[0] << 16 >> 16;
-    };
-    b.prototype.signum = function() {
-      return 0 > this.s ? -1 : 0 >= this.t || 1 == this.t && 0 >= this[0] ? 0 : 1;
-    };
-    b.prototype.toByteArray = function() {
-      var a = this.t, c = [];
-      c[0] = this.s;
-      var d = this.DB - a * this.DB % 8, b, f = 0;
-      if (0 < a--) {
-        for (d < this.DB && (b = this[a] >> d) != (this.s & this.DM) >> d && (c[f++] = b | this.s << this.DB - d); 0 <= a;) {
-          if (8 > d ? (b = (this[a] & (1 << d) - 1) << 8 - d, b |= this[--a] >> (d += this.DB - 8)) : (b = this[a] >> (d -= 8) & 255, 0 >= d && (d += this.DB, --a)), 0 != (b & 128) && (b |= -256), 0 == f && (this.s & 128) != (b & 128) && ++f, 0 < f || b != this.s) {
-            c[f++] = b;
-          }
-        }
-      }
-      return c;
-    };
-    b.prototype.equals = function(a) {
-      return 0 == this.compareTo(a);
-    };
-    b.prototype.min = function(a) {
-      return 0 > this.compareTo(a) ? this : a;
-    };
-    b.prototype.max = function(a) {
-      return 0 < this.compareTo(a) ? this : a;
-    };
-    b.prototype.and = function(a) {
-      var c = n();
-      this.bitwiseTo(a, E, c);
-      return c;
-    };
-    b.prototype.or = function(a) {
-      var c = n();
-      this.bitwiseTo(a, H, c);
-      return c;
-    };
-    b.prototype.xor = function(a) {
-      var c = n();
-      this.bitwiseTo(a, Q, c);
-      return c;
-    };
-    b.prototype.andNot = function(a) {
-      var c = n();
-      this.bitwiseTo(a, R, c);
-      return c;
-    };
-    b.prototype.not = function() {
-      for (var a = n(), c = 0; c < this.t; ++c) {
-        a[c] = this.DM & ~this[c];
-      }
-      a.t = this.t;
-      a.s = ~this.s;
-      return a;
-    };
-    b.prototype.shiftLeft = function(a) {
-      var c = n();
-      0 > a ? this.rShiftTo(-a, c) : this.lShiftTo(a, c);
-      return c;
-    };
-    b.prototype.shiftRight = function(a) {
-      var c = n();
-      0 > a ? this.lShiftTo(-a, c) : this.rShiftTo(a, c);
-      return c;
-    };
-    b.prototype.getLowestSetBit = function() {
-      for (var a = 0; a < this.t; ++a) {
-        if (0 != this[a]) {
-          var c = a * this.DB;
-          a = this[a];
-          if (0 == a) {
-            a = -1;
-          } else {
-            var d = 0;
-            0 == (a & 65535) && (a >>= 16, d += 16);
-            0 == (a & 255) && (a >>= 8, d += 8);
-            0 == (a & 15) && (a >>= 4, d += 4);
-            0 == (a & 3) && (a >>= 2, d += 2);
-            0 == (a & 1) && ++d;
-            a = d;
-          }
-          return c + a;
-        }
-      }
-      return 0 > this.s ? this.t * this.DB : -1;
-    };
-    b.prototype.bitCount = function() {
-      for (var a = 0, c = this.s & this.DM, d = 0; d < this.t; ++d) {
-        for (var b = this[d] ^ c, f = 0; 0 != b;) {
-          b &= b - 1, ++f;
-        }
-        a += f;
-      }
-      return a;
-    };
-    b.prototype.testBit = function(a) {
-      var c = Math.floor(a / this.DB);
-      return c >= this.t ? 0 != this.s : 0 != (this[c] & 1 << a % this.DB);
-    };
-    b.prototype.setBit = function(a) {
-      return this.changeBit(a, H);
-    };
-    b.prototype.clearBit = function(a) {
-      return this.changeBit(a, R);
-    };
-    b.prototype.flipBit = function(a) {
-      return this.changeBit(a, Q);
-    };
-    b.prototype.add = function(a) {
-      var c = n();
-      this.addTo(a, c);
-      return c;
-    };
-    b.prototype.subtract = function(a) {
-      var c = n();
-      this.subTo(a, c);
-      return c;
-    };
-    b.prototype.multiply = function(a) {
-      var c = n();
-      this.multiplyTo(a, c);
-      return c;
-    };
-    b.prototype.divide = function(a) {
-      var c = n();
-      this.divRemTo(a, c, null);
-      return c;
-    };
-    b.prototype.remainder = function(a) {
-      var c = n();
-      this.divRemTo(a, null, c);
-      return c;
-    };
-    b.prototype.divideAndRemainder = function(a) {
-      var c = n(), d = n();
-      this.divRemTo(a, c, d);
-      return [c, d];
-    };
-    b.prototype.modPow = function(a, c) {
-      var d = a.bitLength(), b = z(1);
-      if (0 >= d) {
-        return b;
-      }
-      var f = 18 > d ? 1 : 48 > d ? 3 : 144 > d ? 4 : 768 > d ? 5 : 6;
-      c = 8 > d ? new U(c) : c.isEven() ? new ka(c) : new V(c);
-      var k = [], h = 3, e = f - 1, w = (1 << f) - 1;
-      k[1] = c.convert(this);
-      if (1 < f) {
-        for (d = n(), c.sqrTo(k[1], d); h <= w;) {
-          k[h] = n(), c.mulTo(d, k[h - 2], k[h]), h += 2;
-        }
-      }
-      var l = a.t - 1, m = !0, v = n();
-      for (d = J(a[l]) - 1; 0 <= l;) {
-        if (d >= e) {
-          var q = a[l] >> d - e & w;
-        } else {
-          q = (a[l] & (1 << d + 1) - 1) << e - d, 0 < l && (q |= a[l - 1] >> this.DB + d - e);
-        }
-        for (h = f; 0 == (q & 1);) {
-          q >>= 1, --h;
-        }
-        0 > (d -= h) && (d += this.DB, --l);
-        if (m) {
-          k[q].copyTo(b), m = !1;
-        } else {
-          for (; 1 < h;) {
-            c.sqrTo(b, v), c.sqrTo(v, b), h -= 2;
-          }
-          0 < h ? c.sqrTo(b, v) : (h = b, b = v, v = h);
-          c.mulTo(v, k[q], b);
-        }
-        for (; 0 <= l && 0 == (a[l] & 1 << d);) {
-          c.sqrTo(b, v), h = b, b = v, v = h, 0 > --d && (d = this.DB - 1, --l);
-        }
-      }
-      return c.revert(b);
-    };
-    b.prototype.modInverse = function(a) {
-      var c = a.isEven();
-      if (this.isEven() && c || 0 == a.signum()) {
-        return b.ZERO;
-      }
-      for (var d = a.clone(), g = this.clone(), f = z(1), k = z(0), h = z(0), e = z(1); 0 != d.signum();) {
-        for (; d.isEven();) {
-          d.rShiftTo(1, d), c ? (f.isEven() && k.isEven() || (f.addTo(this, f), k.subTo(a, k)), f.rShiftTo(1, f)) : k.isEven() || k.subTo(a, k), k.rShiftTo(1, k);
-        }
-        for (; g.isEven();) {
-          g.rShiftTo(1, g), c ? (h.isEven() && e.isEven() || (h.addTo(this, h), e.subTo(a, e)), h.rShiftTo(1, h)) : e.isEven() || e.subTo(a, e), e.rShiftTo(1, e);
-        }
-        0 <= d.compareTo(g) ? (d.subTo(g, d), c && f.subTo(h, f), k.subTo(e, k)) : (g.subTo(d, g), c && h.subTo(f, h), e.subTo(k, e));
-      }
-      if (0 != g.compareTo(b.ONE)) {
-        return b.ZERO;
-      }
-      if (0 <= e.compareTo(a)) {
-        return e.subtract(a);
-      }
-      if (0 > e.signum()) {
-        e.addTo(a, e);
-      } else {
-        return e;
-      }
-      return 0 > e.signum() ? e.add(a) : e;
-    };
-    b.prototype.pow = function(a) {
-      return this.exp(a, new la);
-    };
-    b.prototype.gcd = function(a) {
-      var c = 0 > this.s ? this.negate() : this.clone();
-      a = 0 > a.s ? a.negate() : a.clone();
-      if (0 > c.compareTo(a)) {
-        var d = c;
-        c = a;
-        a = d;
-      }
-      d = c.getLowestSetBit();
-      var b = a.getLowestSetBit();
-      if (0 > b) {
-        return c;
-      }
-      d < b && (b = d);
-      0 < b && (c.rShiftTo(b, c), a.rShiftTo(b, a));
-      for (; 0 < c.signum();) {
-        0 < (d = c.getLowestSetBit()) && c.rShiftTo(d, c), 0 < (d = a.getLowestSetBit()) && a.rShiftTo(d, a), 0 <= c.compareTo(a) ? (c.subTo(a, c), c.rShiftTo(1, c)) : (a.subTo(c, a), a.rShiftTo(1, a));
-      }
-      0 < b && a.lShiftTo(b, a);
-      return a;
-    };
-    b.prototype.isProbablePrime = function(a) {
-      var c, d = this.abs();
-      if (1 == d.t && d[0] <= r[r.length - 1]) {
-        for (c = 0; c < r.length; ++c) {
-          if (d[0] == r[c]) {
-            return !0;
-          }
-        }
-        return !1;
-      }
-      if (d.isEven()) {
-        return !1;
-      }
-      for (c = 1; c < r.length;) {
-        for (var b = r[c], f = c + 1; f < r.length && b < ja;) {
-          b *= r[f++];
-        }
-        for (b = d.modInt(b); c < f;) {
-          if (0 == b % r[c++]) {
-            return !1;
-          }
-        }
-      }
-      return d.millerRabin(a);
-    };
-    b.prototype.copyTo = function(a) {
-      for (var c = this.t - 1; 0 <= c; --c) {
-        a[c] = this[c];
-      }
-      a.t = this.t;
-      a.s = this.s;
-    };
-    b.prototype.fromInt = function(a) {
-      this.t = 1;
-      this.s = 0 > a ? -1 : 0;
-      0 < a ? this[0] = a : -1 > a ? this[0] = a + this.DV : this.t = 0;
-    };
-    b.prototype.fromString = function(a, c) {
-      if (16 == c) {
-        c = 4;
-      } else {
-        if (8 == c) {
-          c = 3;
-        } else {
-          if (256 == c) {
-            c = 8;
-          } else {
-            if (2 == c) {
-              c = 1;
-            } else {
-              if (32 == c) {
-                c = 5;
-              } else {
-                if (4 == c) {
-                  c = 2;
-                } else {
-                  this.fromRadix(a, c);
-                  return;
+
+            /*
+             * IE will not enumerate native functions in a derived object even if the
+             * function was overridden.  This is a workaround for specific functions
+             * we care about on the Object prototype.
+             * @property _IEEnumFix
+             * @param {Function} r  the object to receive the augmentation
+             * @param {Function} s  the object that supplies the properties to augment
+             * @static
+             * @private
+             */
+            var _IEEnumFix = function() {},
+                ADD = ["toString", "valueOf"];
+            try {
+                if (/MSIE/.test(navigator.userAgent)) {
+                    _IEEnumFix = function(r, s) {
+                        for (i = 0; i < ADD.length; i = i + 1) {
+                            var fname = ADD[i], f = s[fname];
+                            if (typeof f === 'function' && f != Object.prototype[fname]) {
+                                r[fname] = f;
+                            }
+                        }
+                    };
                 }
-              }
-            }
-          }
+            } catch (ex) {}            _IEEnumFix(subc.prototype, overrides);
         }
-      }
-      this.s = this.t = 0;
-      for (var d = a.length, g = !1, f = 0; 0 <= --d;) {
-        var k = 8 == c ? +a[d] & 255 : S(a, d);
-        0 > k ? "-" == a.charAt(d) && (g = !0) : (g = !1, 0 == f ? this[this.t++] = k : f + c > this.DB ? (this[this.t - 1] |= (k & (1 << this.DB - f) - 1) << f, this[this.t++] = k >> this.DB - f) : this[this.t - 1] |= k << f, f += c, f >= this.DB && (f -= this.DB));
-      }
-      8 == c && 0 != (+a[0] & 128) && (this.s = -1, 0 < f && (this[this.t - 1] |= (1 << this.DB - f) - 1 << f));
-      this.clamp();
-      g && b.ZERO.subTo(this, this);
+    }
+};
+
+/* asn1-1.0.13.js (c) 2013-2017 Kenji Urushima | kjur.github.com/jsrsasign/license
+ */
+
+/**
+ * @fileOverview
+ * @name asn1-1.0.js
+ * @author Kenji Urushima kenji.urushima@gmail.com
+ * @version asn1 1.0.13 (2017-Jun-02)
+ * @since jsrsasign 2.1
+ * @license <a href="https://kjur.github.io/jsrsasign/license/">MIT License</a>
+ */
+
+/**
+ * kjur's class library name space
+ * <p>
+ * This name space provides following name spaces:
+ * <ul>
+ * <li>{@link KJUR.asn1} - ASN.1 primitive hexadecimal encoder</li>
+ * <li>{@link KJUR.asn1.x509} - ASN.1 structure for X.509 certificate and CRL</li>
+ * <li>{@link KJUR.crypto} - Java Cryptographic Extension(JCE) style MessageDigest/Signature
+ * class and utilities</li>
+ * </ul>
+ * </p>
+ * NOTE: Please ignore method summary and document of this namespace. This caused by a bug of jsdoc2.
+ * @name KJUR
+ * @namespace kjur's class library name space
+ */
+var KJUR = {};
+
+/**
+ * kjur's ASN.1 class library name space
+ * <p>
+ * This is ITU-T X.690 ASN.1 DER encoder class library and
+ * class structure and methods is very similar to
+ * org.bouncycastle.asn1 package of
+ * well known BouncyCaslte Cryptography Library.
+ * <h4>PROVIDING ASN.1 PRIMITIVES</h4>
+ * Here are ASN.1 DER primitive classes.
+ * <ul>
+ * <li>0x01 {@link KJUR.asn1.DERBoolean}</li>
+ * <li>0x02 {@link KJUR.asn1.DERInteger}</li>
+ * <li>0x03 {@link KJUR.asn1.DERBitString}</li>
+ * <li>0x04 {@link KJUR.asn1.DEROctetString}</li>
+ * <li>0x05 {@link KJUR.asn1.DERNull}</li>
+ * <li>0x06 {@link KJUR.asn1.DERObjectIdentifier}</li>
+ * <li>0x0a {@link KJUR.asn1.DEREnumerated}</li>
+ * <li>0x0c {@link KJUR.asn1.DERUTF8String}</li>
+ * <li>0x12 {@link KJUR.asn1.DERNumericString}</li>
+ * <li>0x13 {@link KJUR.asn1.DERPrintableString}</li>
+ * <li>0x14 {@link KJUR.asn1.DERTeletexString}</li>
+ * <li>0x16 {@link KJUR.asn1.DERIA5String}</li>
+ * <li>0x17 {@link KJUR.asn1.DERUTCTime}</li>
+ * <li>0x18 {@link KJUR.asn1.DERGeneralizedTime}</li>
+ * <li>0x30 {@link KJUR.asn1.DERSequence}</li>
+ * <li>0x31 {@link KJUR.asn1.DERSet}</li>
+ * </ul>
+ * <h4>OTHER ASN.1 CLASSES</h4>
+ * <ul>
+ * <li>{@link KJUR.asn1.ASN1Object}</li>
+ * <li>{@link KJUR.asn1.DERAbstractString}</li>
+ * <li>{@link KJUR.asn1.DERAbstractTime}</li>
+ * <li>{@link KJUR.asn1.DERAbstractStructured}</li>
+ * <li>{@link KJUR.asn1.DERTaggedObject}</li>
+ * </ul>
+ * <h4>SUB NAME SPACES</h4>
+ * <ul>
+ * <li>{@link KJUR.asn1.cades} - CAdES long term signature format</li>
+ * <li>{@link KJUR.asn1.cms} - Cryptographic Message Syntax</li>
+ * <li>{@link KJUR.asn1.csr} - Certificate Signing Request (CSR/PKCS#10)</li>
+ * <li>{@link KJUR.asn1.tsp} - RFC 3161 Timestamping Protocol Format</li>
+ * <li>{@link KJUR.asn1.x509} - RFC 5280 X.509 certificate and CRL</li>
+ * </ul>
+ * </p>
+ * NOTE: Please ignore method summary and document of this namespace.
+ * This caused by a bug of jsdoc2.
+ * @name KJUR.asn1
+ * @namespace
+ */
+if (typeof KJUR.asn1 == "undefined" || !KJUR.asn1) KJUR.asn1 = {};
+
+/**
+ * ASN1 utilities class
+ * @name KJUR.asn1.ASN1Util
+ * @class ASN1 utilities class
+ * @since asn1 1.0.2
+ */
+KJUR.asn1.ASN1Util = new function() {
+    this.integerToByteHex = function(i) {
+        var h = i.toString(16);
+        if ((h.length % 2) == 1) h = '0' + h;
+        return h;
     };
-    b.prototype.clamp = function() {
-      for (var a = this.s & this.DM; 0 < this.t && this[this.t - 1] == a;) {
-        --this.t;
-      }
-    };
-    b.prototype.dlShiftTo = function(a, c) {
-      var d;
-      for (d = this.t - 1; 0 <= d; --d) {
-        c[d + a] = this[d];
-      }
-      for (d = a - 1; 0 <= d; --d) {
-        c[d] = 0;
-      }
-      c.t = this.t + a;
-      c.s = this.s;
-    };
-    b.prototype.drShiftTo = function(a, c) {
-      for (var d = a; d < this.t; ++d) {
-        c[d - a] = this[d];
-      }
-      c.t = Math.max(this.t - a, 0);
-      c.s = this.s;
-    };
-    b.prototype.lShiftTo = function(a, c) {
-      var d = a % this.DB, b = this.DB - d, f = (1 << b) - 1;
-      a = Math.floor(a / this.DB);
-      for (var k = this.s << d & this.DM, h = this.t - 1; 0 <= h; --h) {
-        c[h + a + 1] = this[h] >> b | k, k = (this[h] & f) << d;
-      }
-      for (h = a - 1; 0 <= h; --h) {
-        c[h] = 0;
-      }
-      c[a] = k;
-      c.t = this.t + a + 1;
-      c.s = this.s;
-      c.clamp();
-    };
-    b.prototype.rShiftTo = function(a, c) {
-      c.s = this.s;
-      var d = Math.floor(a / this.DB);
-      if (d >= this.t) {
-        c.t = 0;
-      } else {
-        a %= this.DB;
-        var b = this.DB - a, f = (1 << a) - 1;
-        c[0] = this[d] >> a;
-        for (var k = d + 1; k < this.t; ++k) {
-          c[k - d - 1] |= (this[k] & f) << b, c[k - d] = this[k] >> a;
-        }
-        0 < a && (c[this.t - d - 1] |= (this.s & f) << b);
-        c.t = this.t - d;
-        c.clamp();
-      }
-    };
-    b.prototype.subTo = function(a, c) {
-      for (var d = 0, b = 0, f = Math.min(a.t, this.t); d < f;) {
-        b += this[d] - a[d], c[d++] = b & this.DM, b >>= this.DB;
-      }
-      if (a.t < this.t) {
-        for (b -= a.s; d < this.t;) {
-          b += this[d], c[d++] = b & this.DM, b >>= this.DB;
-        }
-        b += this.s;
-      } else {
-        for (b += this.s; d < a.t;) {
-          b -= a[d], c[d++] = b & this.DM, b >>= this.DB;
-        }
-        b -= a.s;
-      }
-      c.s = 0 > b ? -1 : 0;
-      -1 > b ? c[d++] = this.DV + b : 0 < b && (c[d++] = b);
-      c.t = d;
-      c.clamp();
-    };
-    b.prototype.multiplyTo = function(a, c) {
-      var d = this.abs(), g = a.abs(), f = d.t;
-      for (c.t = f + g.t; 0 <= --f;) {
-        c[f] = 0;
-      }
-      for (f = 0; f < g.t; ++f) {
-        c[f + d.t] = d.am(0, g[f], c, f, 0, d.t);
-      }
-      c.s = 0;
-      c.clamp();
-      this.s != a.s && b.ZERO.subTo(c, c);
-    };
-    b.prototype.squareTo = function(a) {
-      for (var c = this.abs(), b = a.t = 2 * c.t; 0 <= --b;) {
-        a[b] = 0;
-      }
-      for (b = 0; b < c.t - 1; ++b) {
-        var g = c.am(b, c[b], a, 2 * b, 0, 1);
-        (a[b + c.t] += c.am(b + 1, 2 * c[b], a, 2 * b + 1, g, c.t - b - 1)) >= c.DV && (a[b + c.t] -= c.DV, a[b + c.t + 1] = 1);
-      }
-      0 < a.t && (a[a.t - 1] += c.am(b, c[b], a, 2 * b, 0, 1));
-      a.s = 0;
-      a.clamp();
-    };
-    b.prototype.divRemTo = function(a, c, d) {
-      var g = a.abs();
-      if (!(0 >= g.t)) {
-        var f = this.abs();
-        if (f.t < g.t) {
-          null != c && c.fromInt(0), null != d && this.copyTo(d);
-        } else {
-          null == d && (d = n());
-          var k = n(), h = this.s;
-          a = a.s;
-          var e = this.DB - J(g[g.t - 1]);
-          0 < e ? (g.lShiftTo(e, k), f.lShiftTo(e, d)) : (g.copyTo(k), f.copyTo(d));
-          g = k.t;
-          f = k[g - 1];
-          if (0 != f) {
-            var l = f * (1 << this.F1) + (1 < g ? k[g - 2] >> this.F2 : 0), m = this.FV / l;
-            l = (1 << this.F1) / l;
-            var q = 1 << this.F2, v = d.t, t = v - g, r = null == c ? n() : c;
-            k.dlShiftTo(t, r);
-            0 <= d.compareTo(r) && (d[d.t++] = 1, d.subTo(r, d));
-            b.ONE.dlShiftTo(g, r);
-            for (r.subTo(k, k); k.t < g;) {
-              k[k.t++] = 0;
-            }
-            for (; 0 <= --t;) {
-              var u = d[--v] == f ? this.DM : Math.floor(d[v] * m + (d[v - 1] + q) * l);
-              if ((d[v] += k.am(0, u, d, t, 0, g)) < u) {
-                for (k.dlShiftTo(t, r), d.subTo(r, d); d[v] < --u;) {
-                  d.subTo(r, d);
+    this.bigIntToMinTwosComplementsHex = function(bigIntegerValue) {
+        var h = bigIntegerValue.toString(16);
+        if (h.substr(0, 1) != '-') {
+            if (h.length % 2 == 1) {
+                h = '0' + h;
+            } else {
+                if (! h.match(/^[0-7]/)) {
+                    h = '00' + h;
                 }
-              }
             }
-            null != c && (d.drShiftTo(g, c), h != a && b.ZERO.subTo(c, c));
-            d.t = g;
-            d.clamp();
-            0 < e && d.rShiftTo(e, d);
-            0 > h && b.ZERO.subTo(d, d);
-          }
-        }
-      }
-    };
-    b.prototype.invDigit = function() {
-      if (1 > this.t) {
-        return 0;
-      }
-      var a = this[0];
-      if (0 == (a & 1)) {
-        return 0;
-      }
-      var c = a & 3;
-      c = c * (2 - (a & 15) * c) & 15;
-      c = c * (2 - (a & 255) * c) & 255;
-      c = c * (2 - ((a & 65535) * c & 65535)) & 65535;
-      c = c * (2 - a * c % this.DV) % this.DV;
-      return 0 < c ? this.DV - c : -c;
-    };
-    b.prototype.isEven = function() {
-      return 0 == (0 < this.t ? this[0] & 1 : this.s);
-    };
-    b.prototype.exp = function(a, c) {
-      if (4294967295 < a || 1 > a) {
-        return b.ONE;
-      }
-      var d = n(), g = n(), f = c.convert(this), k = J(a) - 1;
-      for (f.copyTo(d); 0 <= --k;) {
-        if (c.sqrTo(d, g), 0 < (a & 1 << k)) {
-          c.mulTo(g, f, d);
         } else {
-          var e = d;
-          d = g;
-          g = e;
-        }
-      }
-      return c.revert(d);
-    };
-    b.prototype.chunkSize = function(a) {
-      return Math.floor(Math.LN2 * this.DB / Math.log(a));
-    };
-    b.prototype.toRadix = function(a) {
-      null == a && (a = 10);
-      if (0 == this.signum() || 2 > a || 36 < a) {
-        return "0";
-      }
-      var c = this.chunkSize(a);
-      c = Math.pow(a, c);
-      var b = z(c), g = n(), f = n(), k = "";
-      for (this.divRemTo(b, g, f); 0 < g.signum();) {
-        k = (c + f.intValue()).toString(a).substr(1) + k, g.divRemTo(b, g, f);
-      }
-      return f.intValue().toString(a) + k;
-    };
-    b.prototype.fromRadix = function(a, c) {
-      this.fromInt(0);
-      null == c && (c = 10);
-      for (var d = this.chunkSize(c), g = Math.pow(c, d), f = !1, k = 0, e = 0, l = 0; l < a.length; ++l) {
-        var w = S(a, l);
-        0 > w ? "-" == a.charAt(l) && 0 == this.signum() && (f = !0) : (e = c * e + w, ++k >= d && (this.dMultiply(g), this.dAddOffset(e, 0), e = k = 0));
-      }
-      0 < k && (this.dMultiply(Math.pow(c, k)), this.dAddOffset(e, 0));
-      f && b.ZERO.subTo(this, this);
-    };
-    b.prototype.fromNumber = function(a, c, d) {
-      if ("number" == typeof c) {
-        if (2 > a) {
-          this.fromInt(1);
-        } else {
-          for (this.fromNumber(a, d), this.testBit(a - 1) || this.bitwiseTo(b.ONE.shiftLeft(a - 1), H, this), this.isEven() && this.dAddOffset(1, 0); !this.isProbablePrime(c);) {
-            this.dAddOffset(2, 0), this.bitLength() > a && this.subTo(b.ONE.shiftLeft(a - 1), this);
-          }
-        }
-      } else {
-        d = [];
-        var g = a & 7;
-        d.length = (a >> 3) + 1;
-        c.nextBytes(d);
-        d[0] = 0 < g ? d[0] & (1 << g) - 1 : 0;
-        this.fromString(d, 256);
-      }
-    };
-    b.prototype.bitwiseTo = function(a, c, b) {
-      var d, f = Math.min(a.t, this.t);
-      for (d = 0; d < f; ++d) {
-        b[d] = c(this[d], a[d]);
-      }
-      if (a.t < this.t) {
-        var k = a.s & this.DM;
-        for (d = f; d < this.t; ++d) {
-          b[d] = c(this[d], k);
-        }
-        b.t = this.t;
-      } else {
-        k = this.s & this.DM;
-        for (d = f; d < a.t; ++d) {
-          b[d] = c(k, a[d]);
-        }
-        b.t = a.t;
-      }
-      b.s = c(this.s, a.s);
-      b.clamp();
-    };
-    b.prototype.changeBit = function(a, c) {
-      a = b.ONE.shiftLeft(a);
-      this.bitwiseTo(a, c, a);
-      return a;
-    };
-    b.prototype.addTo = function(a, c) {
-      for (var b = 0, g = 0, f = Math.min(a.t, this.t); b < f;) {
-        g += this[b] + a[b], c[b++] = g & this.DM, g >>= this.DB;
-      }
-      if (a.t < this.t) {
-        for (g += a.s; b < this.t;) {
-          g += this[b], c[b++] = g & this.DM, g >>= this.DB;
-        }
-        g += this.s;
-      } else {
-        for (g += this.s; b < a.t;) {
-          g += a[b], c[b++] = g & this.DM, g >>= this.DB;
-        }
-        g += a.s;
-      }
-      c.s = 0 > g ? -1 : 0;
-      0 < g ? c[b++] = g : -1 > g && (c[b++] = this.DV + g);
-      c.t = b;
-      c.clamp();
-    };
-    b.prototype.dMultiply = function(a) {
-      this[this.t] = this.am(0, a - 1, this, 0, 0, this.t);
-      ++this.t;
-      this.clamp();
-    };
-    b.prototype.dAddOffset = function(a, c) {
-      if (0 != a) {
-        for (; this.t <= c;) {
-          this[this.t++] = 0;
-        }
-        for (this[c] += a; this[c] >= this.DV;) {
-          this[c] -= this.DV, ++c >= this.t && (this[this.t++] = 0), ++this[c];
-        }
-      }
-    };
-    b.prototype.multiplyLowerTo = function(a, c, b) {
-      var d = Math.min(this.t + a.t, c);
-      b.s = 0;
-      for (b.t = d; 0 < d;) {
-        b[--d] = 0;
-      }
-      for (var f = b.t - this.t; d < f; ++d) {
-        b[d + this.t] = this.am(0, a[d], b, d, 0, this.t);
-      }
-      for (f = Math.min(a.t, c); d < f; ++d) {
-        this.am(0, a[d], b, d, 0, c - d);
-      }
-      b.clamp();
-    };
-    b.prototype.multiplyUpperTo = function(a, c, b) {
-      --c;
-      var d = b.t = this.t + a.t - c;
-      for (b.s = 0; 0 <= --d;) {
-        b[d] = 0;
-      }
-      for (d = Math.max(c - this.t, 0); d < a.t; ++d) {
-        b[this.t + d - c] = this.am(c - d, a[d], b, 0, 0, this.t + d - c);
-      }
-      b.clamp();
-      b.drShiftTo(1, b);
-    };
-    b.prototype.modInt = function(a) {
-      if (0 >= a) {
-        return 0;
-      }
-      var c = this.DV % a, b = 0 > this.s ? a - 1 : 0;
-      if (0 < this.t) {
-        if (0 == c) {
-          b = this[0] % a;
-        } else {
-          for (var g = this.t - 1; 0 <= g; --g) {
-            b = (c * b + this[g]) % a;
-          }
-        }
-      }
-      return b;
-    };
-    b.prototype.millerRabin = function(a) {
-      var c = this.subtract(b.ONE), d = c.getLowestSetBit();
-      if (0 >= d) {
-        return !1;
-      }
-      var g = c.shiftRight(d);
-      a = a + 1 >> 1;
-      a > r.length && (a = r.length);
-      for (var f = n(), k = 0; k < a; ++k) {
-        f.fromInt(r[Math.floor(Math.random() * r.length)]);
-        var e = f.modPow(g, this);
-        if (0 != e.compareTo(b.ONE) && 0 != e.compareTo(c)) {
-          for (var l = 1; l++ < d && 0 != e.compareTo(c);) {
-            if (e = e.modPowInt(2, this), 0 == e.compareTo(b.ONE)) {
-              return !1;
+            var hPos = h.substr(1);
+            var xorLen = hPos.length;
+            if (xorLen % 2 == 1) {
+                xorLen += 1;
+            } else {
+                if (! h.match(/^[0-7]/)) {
+                    xorLen += 2;
+                }
             }
-          }
-          if (0 != e.compareTo(c)) {
-            return !1;
-          }
-        }
-      }
-      return !0;
-    };
-    b.prototype.square = function() {
-      var a = n();
-      this.squareTo(a);
-      return a;
-    };
-    b.prototype.gcda = function(a, c) {
-      var b = 0 > this.s ? this.negate() : this.clone(), g = 0 > a.s ? a.negate() : a.clone();
-      0 > b.compareTo(g) && (a = b, b = g, g = a);
-      var f = b.getLowestSetBit(), e = g.getLowestSetBit();
-      if (0 > e) {
-        c(b);
-      } else {
-        f < e && (e = f);
-        0 < e && (b.rShiftTo(e, b), g.rShiftTo(e, g));
-        var h = function() {
-          0 < (f = b.getLowestSetBit()) && b.rShiftTo(f, b);
-          0 < (f = g.getLowestSetBit()) && g.rShiftTo(f, g);
-          0 <= b.compareTo(g) ? (b.subTo(g, b), b.rShiftTo(1, b)) : (g.subTo(b, g), g.rShiftTo(1, g));
-          0 < b.signum() ? setTimeout(h, 0) : (0 < e && g.lShiftTo(e, g), setTimeout(function() {
-            c(g);
-          }, 0));
-        };
-        setTimeout(h, 10);
-      }
-    };
-    b.prototype.fromNumberAsync = function(a, c, d, g) {
-      if ("number" == typeof c) {
-        if (2 > a) {
-          this.fromInt(1);
-        } else {
-          this.fromNumber(a, d);
-          this.testBit(a - 1) || this.bitwiseTo(b.ONE.shiftLeft(a - 1), H, this);
-          this.isEven() && this.dAddOffset(1, 0);
-          var f = this, e = function() {
-            f.dAddOffset(2, 0);
-            f.bitLength() > a && f.subTo(b.ONE.shiftLeft(a - 1), f);
-            f.isProbablePrime(c) ? setTimeout(function() {
-              g();
-            }, 0) : setTimeout(e, 0);
-          };
-          setTimeout(e, 0);
-        }
-      } else {
-        d = [];
-        var h = a & 7;
-        d.length = (a >> 3) + 1;
-        c.nextBytes(d);
-        d[0] = 0 < h ? d[0] & (1 << h) - 1 : 0;
-        this.fromString(d, 256);
-      }
-    };
-    return b;
-  }(), la = function() {
-    function b() {
-    }
-    b.prototype.convert = function(a) {
-      return a;
-    };
-    b.prototype.revert = function(a) {
-      return a;
-    };
-    b.prototype.mulTo = function(a, c, b) {
-      a.multiplyTo(c, b);
-    };
-    b.prototype.sqrTo = function(a, c) {
-      a.squareTo(c);
-    };
-    return b;
-  }(), U = function() {
-    function b(a) {
-      this.m = a;
-    }
-    b.prototype.convert = function(a) {
-      return 0 > a.s || 0 <= a.compareTo(this.m) ? a.mod(this.m) : a;
-    };
-    b.prototype.revert = function(a) {
-      return a;
-    };
-    b.prototype.reduce = function(a) {
-      a.divRemTo(this.m, null, a);
-    };
-    b.prototype.mulTo = function(a, c, b) {
-      a.multiplyTo(c, b);
-      this.reduce(b);
-    };
-    b.prototype.sqrTo = function(a, c) {
-      a.squareTo(c);
-      this.reduce(c);
-    };
-    return b;
-  }(), V = function() {
-    function b(a) {
-      this.m = a;
-      this.mp = a.invDigit();
-      this.mpl = this.mp & 32767;
-      this.mph = this.mp >> 15;
-      this.um = (1 << a.DB - 15) - 1;
-      this.mt2 = 2 * a.t;
-    }
-    b.prototype.convert = function(a) {
-      var c = n();
-      a.abs().dlShiftTo(this.m.t, c);
-      c.divRemTo(this.m, null, c);
-      0 > a.s && 0 < c.compareTo(l.ZERO) && this.m.subTo(c, c);
-      return c;
-    };
-    b.prototype.revert = function(a) {
-      var c = n();
-      a.copyTo(c);
-      this.reduce(c);
-      return c;
-    };
-    b.prototype.reduce = function(a) {
-      for (; a.t <= this.mt2;) {
-        a[a.t++] = 0;
-      }
-      for (var c = 0; c < this.m.t; ++c) {
-        var b = a[c] & 32767, g = b * this.mpl + ((b * this.mph + (a[c] >> 15) * this.mpl & this.um) << 15) & a.DM;
-        b = c + this.m.t;
-        for (a[b] += this.m.am(0, g, a, c, 0, this.m.t); a[b] >= a.DV;) {
-          a[b] -= a.DV, a[++b]++;
-        }
-      }
-      a.clamp();
-      a.drShiftTo(this.m.t, a);
-      0 <= a.compareTo(this.m) && a.subTo(this.m, a);
-    };
-    b.prototype.mulTo = function(a, c, b) {
-      a.multiplyTo(c, b);
-      this.reduce(b);
-    };
-    b.prototype.sqrTo = function(a, c) {
-      a.squareTo(c);
-      this.reduce(c);
-    };
-    return b;
-  }(), ka = function() {
-    function b(a) {
-      this.m = a;
-      this.r2 = n();
-      this.q3 = n();
-      l.ONE.dlShiftTo(2 * a.t, this.r2);
-      this.mu = this.r2.divide(a);
-    }
-    b.prototype.convert = function(a) {
-      if (0 > a.s || a.t > 2 * this.m.t) {
-        return a.mod(this.m);
-      }
-      if (0 > a.compareTo(this.m)) {
-        return a;
-      }
-      var c = n();
-      a.copyTo(c);
-      this.reduce(c);
-      return c;
-    };
-    b.prototype.revert = function(a) {
-      return a;
-    };
-    b.prototype.reduce = function(a) {
-      a.drShiftTo(this.m.t - 1, this.r2);
-      a.t > this.m.t + 1 && (a.t = this.m.t + 1, a.clamp());
-      this.mu.multiplyUpperTo(this.r2, this.m.t + 1, this.q3);
-      for (this.m.multiplyLowerTo(this.q3, this.m.t + 1, this.r2); 0 > a.compareTo(this.r2);) {
-        a.dAddOffset(1, this.m.t + 1);
-      }
-      for (a.subTo(this.r2, a); 0 <= a.compareTo(this.m);) {
-        a.subTo(this.m, a);
-      }
-    };
-    b.prototype.mulTo = function(a, c, b) {
-      a.multiplyTo(c, b);
-      this.reduce(b);
-    };
-    b.prototype.sqrTo = function(a, c) {
-      a.squareTo(c);
-      this.reduce(c);
-    };
-    return b;
-  }();
-  if ("Microsoft Internet Explorer" == navigator.appName) {
-    l.prototype.am = ba;
-    var q = 30;
-  } else {
-    "Netscape" != navigator.appName ? (l.prototype.am = aa, q = 26) : (l.prototype.am = ca, q = 28);
-  }
-  l.prototype.DB = q;
-  l.prototype.DM = (1 << q) - 1;
-  l.prototype.DV = 1 << q;
-  l.prototype.FV = Math.pow(2, 52);
-  l.prototype.F1 = 52 - q;
-  l.prototype.F2 = 2 * q - 52;
-  var I = [], m;
-  q = 48;
-  for (m = 0; 9 >= m; ++m) {
-    I[q++] = m;
-  }
-  q = 97;
-  for (m = 10; 36 > m; ++m) {
-    I[q++] = m;
-  }
-  q = 65;
-  for (m = 10; 36 > m; ++m) {
-    I[q++] = m;
-  }
-  l.ZERO = z(0);
-  l.ONE = z(1);
-  var ma = function() {
-    function b() {
-      this.j = this.i = 0;
-      this.S = [];
-    }
-    b.prototype.init = function(a) {
-      var c, b;
-      for (c = 0; 256 > c; ++c) {
-        this.S[c] = c;
-      }
-      for (c = b = 0; 256 > c; ++c) {
-        b = b + this.S[c] + a[c % a.length] & 255;
-        var g = this.S[c];
-        this.S[c] = this.S[b];
-        this.S[b] = g;
-      }
-      this.j = this.i = 0;
-    };
-    b.prototype.next = function() {
-      this.i = this.i + 1 & 255;
-      this.j = this.j + this.S[this.i] & 255;
-      var a = this.S[this.i];
-      this.S[this.i] = this.S[this.j];
-      this.S[this.j] = a;
-      return this.S[a + this.S[this.i] & 255];
-    };
-    return b;
-  }(), K, x = null;
-  if (null == x) {
-    x = [];
-    var u = 0;
-    q = void 0;
-    if (window.crypto && window.crypto.getRandomValues) {
-      for (m = new Uint32Array(256), window.crypto.getRandomValues(m), q = 0; q < m.length; ++q) {
-        x[u++] = m[q] & 255;
-      }
-    }
-    var L = function(b) {
-      this.count = this.count || 0;
-      if (256 <= this.count || 256 <= u) {
-        window.removeEventListener ? window.removeEventListener("mousemove", L, !1) : window.detachEvent && window.detachEvent("onmousemove", L);
-      } else {
-        try {
-          var a = b.x + b.y;
-          x[u++] = a & 255;
-          this.count += 1;
-        } catch (c) {
-        }
-      }
-    };
-    window.addEventListener ? window.addEventListener("mousemove", L, !1) : window.attachEvent && window.attachEvent("onmousemove", L);
-  }
-  var P = function() {
-    function b() {
-    }
-    b.prototype.nextBytes = function(a) {
-      for (var c = 0; c < a.length; ++c) {
-        var b = c;
-        if (null == K) {
-          for (K = new ma; 256 > u;) {
-            var g = Math.floor(65536 * Math.random());
-            x[u++] = g & 255;
-          }
-          K.init(x);
-          for (u = 0; u < x.length; ++u) {
-            x[u] = 0;
-          }
-          u = 0;
-        }
-        g = K.next();
-        a[b] = g;
-      }
-    };
-    return b;
-  }();
-  q = function() {
-    function b() {
-      this.n = null;
-      this.e = 0;
-      this.coeff = this.dmq1 = this.dmp1 = this.q = this.p = this.d = null;
-    }
-    b.prototype.doPublic = function(a) {
-      return a.modPowInt(this.e, this.n);
-    };
-    b.prototype.doPrivate = function(a) {
-      if (null == this.p || null == this.q) {
-        return a.modPow(this.d, this.n);
-      }
-      var c = a.mod(this.p).modPow(this.dmp1, this.p);
-      for (a = a.mod(this.q).modPow(this.dmq1, this.q); 0 > c.compareTo(a);) {
-        c = c.add(this.p);
-      }
-      return c.subtract(a).multiply(this.coeff).mod(this.p).multiply(this.q).add(a);
-    };
-    b.prototype.setPublic = function(a, c) {
-      null != a && null != c && 0 < a.length && 0 < c.length ? (this.n = t(a, 16), this.e = parseInt(c, 16)) : console.error("Invalid RSA public key");
-    };
-    b.prototype.encrypt = function(a) {
-      var c = this.n.bitLength() + 7 >> 3;
-      if (c < a.length + 11) {
-        console.error("Message too long for RSA"), c = null;
-      } else {
-        for (var b = [], g = a.length - 1; 0 <= g && 0 < c;) {
-          var f = a.charCodeAt(g--);
-          128 > f ? b[--c] = f : 127 < f && 2048 > f ? (b[--c] = f & 63 | 128, b[--c] = f >> 6 | 192) : (b[--c] = f & 63 | 128, b[--c] = f >> 6 & 63 | 128, b[--c] = f >> 12 | 224);
-        }
-        b[--c] = 0;
-        a = new P;
-        for (g = []; 2 < c;) {
-          for (g[0] = 0; 0 == g[0];) {
-            a.nextBytes(g);
-          }
-          b[--c] = g[0];
-        }
-        b[--c] = 2;
-        b[--c] = 0;
-        c = new l(b);
-      }
-      if (null == c) {
-        return null;
-      }
-      c = this.doPublic(c);
-      if (null == c) {
-        return null;
-      }
-      c = c.toString(16);
-      return 0 == (c.length & 1) ? c : "0" + c;
-    };
-    b.prototype.setPrivate = function(a, c, b) {
-      null != a && null != c && 0 < a.length && 0 < c.length ? (this.n = t(a, 16), this.e = parseInt(c, 16), this.d = t(b, 16)) : console.error("Invalid RSA private key");
-    };
-    b.prototype.setPrivateEx = function(a, c, b, g, f, e, h, l) {
-      null != a && null != c && 0 < a.length && 0 < c.length ? (this.n = t(a, 16), this.e = parseInt(c, 16), this.d = t(b, 16), this.p = t(g, 16), this.q = t(f, 16), this.dmp1 = t(e, 16), this.dmq1 = t(h, 16), this.coeff = t(l, 16)) : console.error("Invalid RSA private key");
-    };
-    b.prototype.generate = function(a, c) {
-      var b = new P, g = a >> 1;
-      this.e = parseInt(c, 16);
-      for (c = new l(c, 16);;) {
-        for (; this.p = new l(a - g, 1, b), 0 != this.p.subtract(l.ONE).gcd(c).compareTo(l.ONE) || !this.p.isProbablePrime(10);) {
-        }
-        for (; this.q = new l(g, 1, b), 0 != this.q.subtract(l.ONE).gcd(c).compareTo(l.ONE) || !this.q.isProbablePrime(10);) {
-        }
-        if (0 >= this.p.compareTo(this.q)) {
-          var f = this.p;
-          this.p = this.q;
-          this.q = f;
-        }
-        f = this.p.subtract(l.ONE);
-        var e = this.q.subtract(l.ONE), h = f.multiply(e);
-        if (0 == h.gcd(c).compareTo(l.ONE)) {
-          this.n = this.p.multiply(this.q);
-          this.d = c.modInverse(h);
-          this.dmp1 = this.d.mod(f);
-          this.dmq1 = this.d.mod(e);
-          this.coeff = this.q.modInverse(this.p);
-          break;
-        }
-      }
-    };
-    b.prototype.decrypt = function(a) {
-      a = t(a, 16);
-      a = this.doPrivate(a);
-      if (null == a) {
-        return null;
-      }
-      a: {
-        var c = this.n.bitLength() + 7 >> 3;
-        a = a.toByteArray();
-        for (var b = 0; b < a.length && 0 == a[b];) {
-          ++b;
-        }
-        if (a.length - b != c - 1 || 2 != a[b]) {
-          a = null;
-        } else {
-          for (++b; 0 != a[b];) {
-            if (++b >= a.length) {
-              a = null;
-              break a;
+            var hMask = '';
+            for (var i = 0; i < xorLen; i++) {
+                hMask += 'f';
             }
-          }
-          for (c = ""; ++b < a.length;) {
-            var g = a[b] & 255;
-            128 > g ? c += String.fromCharCode(g) : 191 < g && 224 > g ? (c += String.fromCharCode((g & 31) << 6 | a[b + 1] & 63), ++b) : (c += String.fromCharCode((g & 15) << 12 | (a[b + 1] & 63) << 6 | a[b + 2] & 63), b += 2);
-          }
-          a = c;
+            var biMask = new BigInteger(hMask, 16);
+            var biNeg = biMask.xor(bigIntegerValue).add(BigInteger.ONE);
+            h = biNeg.toString(16).replace(/^-/, '');
         }
-      }
-      return a;
+        return h;
     };
-    b.prototype.generateAsync = function(a, c, b) {
-      var d = new P, f = a >> 1;
-      this.e = parseInt(c, 16);
-      var e = new l(c, 16), h = this, m = function() {
-        var c = function() {
-          if (0 >= h.p.compareTo(h.q)) {
-            var a = h.p;
-            h.p = h.q;
-            h.q = a;
-          }
-          a = h.p.subtract(l.ONE);
-          var c = h.q.subtract(l.ONE), d = a.multiply(c);
-          0 == d.gcd(e).compareTo(l.ONE) ? (h.n = h.p.multiply(h.q), h.d = e.modInverse(d), h.dmp1 = h.d.mod(a), h.dmq1 = h.d.mod(c), h.coeff = h.q.modInverse(h.p), setTimeout(function() {
-            b();
-          }, 0)) : setTimeout(m, 0);
-        }, g = function() {
-          h.q = n();
-          h.q.fromNumberAsync(f, 1, d, function() {
-            h.q.subtract(l.ONE).gcda(e, function(a) {
-              0 == a.compareTo(l.ONE) && h.q.isProbablePrime(10) ? setTimeout(c, 0) : setTimeout(g, 0);
-            });
-          });
-        }, k = function() {
-          h.p = n();
-          h.p.fromNumberAsync(a - f, 1, d, function() {
-            h.p.subtract(l.ONE).gcda(e, function(a) {
-              0 == a.compareTo(l.ONE) && h.p.isProbablePrime(10) ? setTimeout(g, 0) : setTimeout(k, 0);
-            });
-          });
-        };
-        setTimeout(k, 0);
-      };
-      setTimeout(m, 0);
+    /**
+     * get PEM string from hexadecimal data and header string
+     * @name getPEMStringFromHex
+     * @memberOf KJUR.asn1.ASN1Util
+     * @function
+     * @param {String} dataHex hexadecimal string of PEM body
+     * @param {String} pemHeader PEM header string (ex. 'RSA PRIVATE KEY')
+     * @return {String} PEM formatted string of input data
+     * @description
+     * This method converts a hexadecimal string to a PEM string with
+     * a specified header. Its line break will be CRLF("\r\n").
+     * @example
+     * var pem  = KJUR.asn1.ASN1Util.getPEMStringFromHex('616161', 'RSA PRIVATE KEY');
+     * // value of pem will be:
+     * -----BEGIN PRIVATE KEY-----
+     * YWFh
+     * -----END PRIVATE KEY-----
+     */
+    this.getPEMStringFromHex = function(dataHex, pemHeader) {
+        return hextopem(dataHex, pemHeader);
     };
-    return b;
-  }();
-  m = {extend:function(b, a, c) {
-    if (!a || !b) {
-      throw Error("YAHOO.lang.extend failed, please check that all dependencies are included.");
+
+    /**
+     * generate ASN1Object specifed by JSON parameters
+     * @name newObject
+     * @memberOf KJUR.asn1.ASN1Util
+     * @function
+     * @param {Array} param JSON parameter to generate ASN1Object
+     * @return {KJUR.asn1.ASN1Object} generated object
+     * @since asn1 1.0.3
+     * @description
+     * generate any ASN1Object specified by JSON param
+     * including ASN.1 primitive or structured.
+     * Generally 'param' can be described as follows:
+     * <blockquote>
+     * {TYPE-OF-ASNOBJ: ASN1OBJ-PARAMETER}
+     * </blockquote>
+     * 'TYPE-OF-ASN1OBJ' can be one of following symbols:
+     * <ul>
+     * <li>'bool' - DERBoolean</li>
+     * <li>'int' - DERInteger</li>
+     * <li>'bitstr' - DERBitString</li>
+     * <li>'octstr' - DEROctetString</li>
+     * <li>'null' - DERNull</li>
+     * <li>'oid' - DERObjectIdentifier</li>
+     * <li>'enum' - DEREnumerated</li>
+     * <li>'utf8str' - DERUTF8String</li>
+     * <li>'numstr' - DERNumericString</li>
+     * <li>'prnstr' - DERPrintableString</li>
+     * <li>'telstr' - DERTeletexString</li>
+     * <li>'ia5str' - DERIA5String</li>
+     * <li>'utctime' - DERUTCTime</li>
+     * <li>'gentime' - DERGeneralizedTime</li>
+     * <li>'seq' - DERSequence</li>
+     * <li>'set' - DERSet</li>
+     * <li>'tag' - DERTaggedObject</li>
+     * </ul>
+     * @example
+     * newObject({'prnstr': 'aaa'});
+     * newObject({'seq': [{'int': 3}, {'prnstr': 'aaa'}]})
+     * // ASN.1 Tagged Object
+     * newObject({'tag': {'tag': 'a1',
+     *                    'explicit': true,
+     *                    'obj': {'seq': [{'int': 3}, {'prnstr': 'aaa'}]}}});
+     * // more simple representation of ASN.1 Tagged Object
+     * newObject({'tag': ['a1',
+     *                    true,
+     *                    {'seq': [
+     *                      {'int': 3},
+     *                      {'prnstr': 'aaa'}]}
+     *                   ]});
+     */
+    this.newObject = function(param) {
+        var _KJUR = KJUR,
+            _KJUR_asn1 = _KJUR.asn1,
+            _DERBoolean = _KJUR_asn1.DERBoolean,
+            _DERInteger = _KJUR_asn1.DERInteger,
+            _DERBitString = _KJUR_asn1.DERBitString,
+            _DEROctetString = _KJUR_asn1.DEROctetString,
+            _DERNull = _KJUR_asn1.DERNull,
+            _DERObjectIdentifier = _KJUR_asn1.DERObjectIdentifier,
+            _DEREnumerated = _KJUR_asn1.DEREnumerated,
+            _DERUTF8String = _KJUR_asn1.DERUTF8String,
+            _DERNumericString = _KJUR_asn1.DERNumericString,
+            _DERPrintableString = _KJUR_asn1.DERPrintableString,
+            _DERTeletexString = _KJUR_asn1.DERTeletexString,
+            _DERIA5String = _KJUR_asn1.DERIA5String,
+            _DERUTCTime = _KJUR_asn1.DERUTCTime,
+            _DERGeneralizedTime = _KJUR_asn1.DERGeneralizedTime,
+            _DERSequence = _KJUR_asn1.DERSequence,
+            _DERSet = _KJUR_asn1.DERSet,
+            _DERTaggedObject = _KJUR_asn1.DERTaggedObject,
+            _newObject = _KJUR_asn1.ASN1Util.newObject;
+
+        var keys = Object.keys(param);
+        if (keys.length != 1)
+            throw "key of param shall be only one.";
+        var key = keys[0];
+
+        if (":bool:int:bitstr:octstr:null:oid:enum:utf8str:numstr:prnstr:telstr:ia5str:utctime:gentime:seq:set:tag:".indexOf(":" + key + ":") == -1)
+            throw "undefined key: " + key;
+
+        if (key == "bool")    return new _DERBoolean(param[key]);
+        if (key == "int")     return new _DERInteger(param[key]);
+        if (key == "bitstr")  return new _DERBitString(param[key]);
+        if (key == "octstr")  return new _DEROctetString(param[key]);
+        if (key == "null")    return new _DERNull(param[key]);
+        if (key == "oid")     return new _DERObjectIdentifier(param[key]);
+        if (key == "enum")    return new _DEREnumerated(param[key]);
+        if (key == "utf8str") return new _DERUTF8String(param[key]);
+        if (key == "numstr")  return new _DERNumericString(param[key]);
+        if (key == "prnstr")  return new _DERPrintableString(param[key]);
+        if (key == "telstr")  return new _DERTeletexString(param[key]);
+        if (key == "ia5str")  return new _DERIA5String(param[key]);
+        if (key == "utctime") return new _DERUTCTime(param[key]);
+        if (key == "gentime") return new _DERGeneralizedTime(param[key]);
+
+        if (key == "seq") {
+            var paramList = param[key];
+            var a = [];
+            for (var i = 0; i < paramList.length; i++) {
+                var asn1Obj = _newObject(paramList[i]);
+                a.push(asn1Obj);
+            }
+            return new _DERSequence({'array': a});
+        }
+
+        if (key == "set") {
+            var paramList = param[key];
+            var a = [];
+            for (var i = 0; i < paramList.length; i++) {
+                var asn1Obj = _newObject(paramList[i]);
+                a.push(asn1Obj);
+            }
+            return new _DERSet({'array': a});
+        }
+
+        if (key == "tag") {
+            var tagParam = param[key];
+            if (Object.prototype.toString.call(tagParam) === '[object Array]' &&
+                tagParam.length == 3) {
+                var obj = _newObject(tagParam[2]);
+                return new _DERTaggedObject({tag: tagParam[0],
+                    explicit: tagParam[1],
+                    obj: obj});
+            } else {
+                var newParam = {};
+                if (tagParam.explicit !== undefined)
+                    newParam.explicit = tagParam.explicit;
+                if (tagParam.tag !== undefined)
+                    newParam.tag = tagParam.tag;
+                if (tagParam.obj === undefined)
+                    throw "obj shall be specified for 'tag'.";
+                newParam.obj = _newObject(tagParam.obj);
+                return new _DERTaggedObject(newParam);
+            }
+        }
+    };
+
+    /**
+     * get encoded hexadecimal string of ASN1Object specifed by JSON parameters
+     * @name jsonToASN1HEX
+     * @memberOf KJUR.asn1.ASN1Util
+     * @function
+     * @param {Array} param JSON parameter to generate ASN1Object
+     * @return hexadecimal string of ASN1Object
+     * @since asn1 1.0.4
+     * @description
+     * As for ASN.1 object representation of JSON object,
+     * please see {@link newObject}.
+     * @example
+     * jsonToASN1HEX({'prnstr': 'aaa'});
+     */
+    this.jsonToASN1HEX = function(param) {
+        var asn1Obj = this.newObject(param);
+        return asn1Obj.getEncodedHex();
+    };
+};
+
+/**
+ * get dot noted oid number string from hexadecimal value of OID
+ * @name oidHexToInt
+ * @memberOf KJUR.asn1.ASN1Util
+ * @function
+ * @param {String} hex hexadecimal value of object identifier
+ * @return {String} dot noted string of object identifier
+ * @since jsrsasign 4.8.3 asn1 1.0.7
+ * @description
+ * This static method converts from hexadecimal string representation of
+ * ASN.1 value of object identifier to oid number string.
+ * @example
+ * KJUR.asn1.ASN1Util.oidHexToInt('550406') &rarr; "2.5.4.6"
+ */
+KJUR.asn1.ASN1Util.oidHexToInt = function(hex) {
+    var s = "";
+    var i01 = parseInt(hex.substr(0, 2), 16);
+    var i0 = Math.floor(i01 / 40);
+    var i1 = i01 % 40;
+    var s = i0 + "." + i1;
+
+    var binbuf = "";
+    for (var i = 2; i < hex.length; i += 2) {
+        var value = parseInt(hex.substr(i, 2), 16);
+        var bin = ("00000000" + value.toString(2)).slice(- 8);
+        binbuf = binbuf + bin.substr(1, 7);
+        if (bin.substr(0, 1) == "0") {
+            var bi = new BigInteger(binbuf, 2);
+            s = s + "." + bi.toString(10);
+            binbuf = "";
+        }
     }
-    var d = function() {
+    return s;
+};
+
+/**
+ * get hexadecimal value of object identifier from dot noted oid value
+ * @name oidIntToHex
+ * @memberOf KJUR.asn1.ASN1Util
+ * @function
+ * @param {String} oidString dot noted string of object identifier
+ * @return {String} hexadecimal value of object identifier
+ * @since jsrsasign 4.8.3 asn1 1.0.7
+ * @description
+ * This static method converts from object identifier value string.
+ * to hexadecimal string representation of it.
+ * @example
+ * KJUR.asn1.ASN1Util.oidIntToHex("2.5.4.6") &rarr; "550406"
+ */
+KJUR.asn1.ASN1Util.oidIntToHex = function(oidString) {
+    var itox = function(i) {
+        var h = i.toString(16);
+        if (h.length == 1) h = '0' + h;
+        return h;
     };
-    d.prototype = a.prototype;
-    b.prototype = new d;
-    b.prototype.constructor = b;
-    b.superclass = a.prototype;
-    a.prototype.constructor == Object.prototype.constructor && (a.prototype.constructor = a);
-    if (c) {
-      for (var g in c) {
-        b.prototype[g] = c[g];
-      }
-      a = function() {
-      };
-      var f = ["toString", "valueOf"];
-      try {
-        /MSIE/.test(navigator.userAgent) && (a = function(a, c) {
-          for (g = 0; g < f.length; g += 1) {
-            var b = f[g], d = c[b];
-            "function" === typeof d && d != Object.prototype[b] && (a[b] = d);
-          }
-        });
-      } catch (k) {
-      }
-      a(b.prototype, c);
+
+    var roidtox = function(roid) {
+        var h = '';
+        var bi = new BigInteger(roid, 10);
+        var b = bi.toString(2);
+        var padLen = 7 - b.length % 7;
+        if (padLen == 7) padLen = 0;
+        var bPad = '';
+        for (var i = 0; i < padLen; i++) bPad += '0';
+        b = bPad + b;
+        for (var i = 0; i < b.length - 1; i += 7) {
+            var b8 = b.substr(i, 7);
+            if (i != b.length - 7) b8 = '1' + b8;
+            h += itox(parseInt(b8, 2));
+        }
+        return h;
+    };
+
+    if (! oidString.match(/^[0-9.]+$/)) {
+        throw "malformed oid string: " + oidString;
     }
-  }};
-  var e = {};
-  "undefined" != typeof e.asn1 && e.asn1 || (e.asn1 = {});
-  e.asn1.ASN1Util = new function() {
-    this.integerToByteHex = function(b) {
-      b = b.toString(16);
-      1 == b.length % 2 && (b = "0" + b);
-      return b;
-    };
-    this.bigIntToMinTwosComplementsHex = function(b) {
-      var a = b.toString(16);
-      if ("-" != a.substr(0, 1)) {
-        1 == a.length % 2 ? a = "0" + a : a.match(/^[0-7]/) || (a = "00" + a);
-      } else {
-        var c = a.substr(1).length;
-        1 == c % 2 ? c += 1 : a.match(/^[0-7]/) || (c += 2);
-        a = "";
-        for (var d = 0; d < c; d++) {
-          a += "f";
-        }
-        a = (new l(a, 16)).xor(b).add(l.ONE).toString(16).replace(/^-/, "");
-      }
-      return a;
-    };
-    this.getPEMStringFromHex = function(b, a) {
-      return hextopem(b, a);
-    };
-    this.newObject = function(b) {
-      var a = e.asn1, c = a.DERBoolean, d = a.DERInteger, g = a.DERBitString, f = a.DEROctetString, k = a.DERNull, h = a.DERObjectIdentifier, l = a.DEREnumerated, m = a.DERUTF8String, n = a.DERNumericString, q = a.DERPrintableString, t = a.DERTeletexString, r = a.DERIA5String, u = a.DERUTCTime, z = a.DERGeneralizedTime, y = a.DERSequence, x = a.DERSet, A = a.DERTaggedObject;
-      a = a.ASN1Util.newObject;
-      var p = Object.keys(b);
-      if (1 != p.length) {
-        throw "key of param shall be only one.";
-      }
-      p = p[0];
-      if (-1 == ":bool:int:bitstr:octstr:null:oid:enum:utf8str:numstr:prnstr:telstr:ia5str:utctime:gentime:seq:set:tag:".indexOf(":" + p + ":")) {
-        throw "undefined key: " + p;
-      }
-      if ("bool" == p) {
-        return new c(b[p]);
-      }
-      if ("int" == p) {
-        return new d(b[p]);
-      }
-      if ("bitstr" == p) {
-        return new g(b[p]);
-      }
-      if ("octstr" == p) {
-        return new f(b[p]);
-      }
-      if ("null" == p) {
-        return new k(b[p]);
-      }
-      if ("oid" == p) {
-        return new h(b[p]);
-      }
-      if ("enum" == p) {
-        return new l(b[p]);
-      }
-      if ("utf8str" == p) {
-        return new m(b[p]);
-      }
-      if ("numstr" == p) {
-        return new n(b[p]);
-      }
-      if ("prnstr" == p) {
-        return new q(b[p]);
-      }
-      if ("telstr" == p) {
-        return new t(b[p]);
-      }
-      if ("ia5str" == p) {
-        return new r(b[p]);
-      }
-      if ("utctime" == p) {
-        return new u(b[p]);
-      }
-      if ("gentime" == p) {
-        return new z(b[p]);
-      }
-      if ("seq" == p) {
-        A = b[p];
-        b = [];
-        for (c = 0; c < A.length; c++) {
-          d = a(A[c]), b.push(d);
-        }
-        return new y({array:b});
-      }
-      if ("set" == p) {
-        A = b[p];
-        b = [];
-        for (c = 0; c < A.length; c++) {
-          d = a(A[c]), b.push(d);
-        }
-        return new x({array:b});
-      }
-      if ("tag" == p) {
-        y = b[p];
-        if ("[object Array]" === Object.prototype.toString.call(y) && 3 == y.length) {
-          return a = a(y[2]), new A({tag:y[0], explicit:y[1], obj:a});
-        }
-        x = {};
-        void 0 !== y.explicit && (x.explicit = y.explicit);
-        void 0 !== y.tag && (x.tag = y.tag);
-        if (void 0 === y.obj) {
-          throw "obj shall be specified for 'tag'.";
-        }
-        x.obj = a(y.obj);
-        return new A(x);
-      }
-    };
-    this.jsonToASN1HEX = function(b) {
-      return this.newObject(b).getEncodedHex();
-    };
-  };
-  e.asn1.ASN1Util.oidHexToInt = function(b) {
-    var a = parseInt(b.substr(0, 2), 16);
-    a = Math.floor(a / 40) + "." + a % 40;
-    for (var c = "", d = 2; d < b.length; d += 2) {
-      var g = ("00000000" + parseInt(b.substr(d, 2), 16).toString(2)).slice(-8);
-      c += g.substr(1, 7);
-      "0" == g.substr(0, 1) && (c = new l(c, 2), a = a + "." + c.toString(10), c = "");
+    var h = '';
+    var a = oidString.split('.');
+    var i0 = parseInt(a[0]) * 40 + parseInt(a[1]);
+    h += itox(i0);
+    a.splice(0, 2);
+    for (var i = 0; i < a.length; i++) {
+        h += roidtox(a[i]);
     }
-    return a;
-  };
-  e.asn1.ASN1Util.oidIntToHex = function(b) {
-    var a = function(a) {
-      a = a.toString(16);
-      1 == a.length && (a = "0" + a);
-      return a;
-    }, c = function(c) {
-      var b = "";
-      c = (new l(c, 10)).toString(2);
-      var d = 7 - c.length % 7;
-      7 == d && (d = 0);
-      for (var f = "", g = 0; g < d; g++) {
-        f += "0";
-      }
-      c = f + c;
-      for (g = 0; g < c.length - 1; g += 7) {
-        d = c.substr(g, 7), g != c.length - 7 && (d = "1" + d), b += a(parseInt(d, 2));
-      }
-      return b;
-    };
-    if (!b.match(/^[0-9.]+$/)) {
-      throw "malformed oid string: " + b;
-    }
-    var d = "";
-    b = b.split(".");
-    var g = 40 * parseInt(b[0]) + parseInt(b[1]);
-    d += a(g);
-    b.splice(0, 2);
-    for (g = 0; g < b.length; g++) {
-      d += c(b[g]);
-    }
-    return d;
-  };
-  e.asn1.ASN1Object = function() {
+    return h;
+};
+
+
+// ********************************************************************
+//  Abstract ASN.1 Classes
+// ********************************************************************
+
+// ********************************************************************
+
+/**
+ * base class for ASN.1 DER encoder object
+ * @name KJUR.asn1.ASN1Object
+ * @class base class for ASN.1 DER encoder object
+ * @property {Boolean} isModified flag whether internal data was changed
+ * @property {String} hTLV hexadecimal string of ASN.1 TLV
+ * @property {String} hT hexadecimal string of ASN.1 TLV tag(T)
+ * @property {String} hL hexadecimal string of ASN.1 TLV length(L)
+ * @property {String} hV hexadecimal string of ASN.1 TLV value(V)
+ * @description
+ */
+KJUR.asn1.ASN1Object = function() {
+    var hV = '';
+
+    /**
+     * get hexadecimal ASN.1 TLV length(L) bytes from TLV value(V)
+     * @name getLengthHexFromValue
+     * @memberOf KJUR.asn1.ASN1Object#
+     * @function
+     * @return {String} hexadecimal string of ASN.1 TLV length(L)
+     */
     this.getLengthHexFromValue = function() {
-      if ("undefined" == typeof this.hV || null == this.hV) {
-        throw "this.hV is null or undefined.";
-      }
-      if (1 == this.hV.length % 2) {
-        throw "value hex must be even length: n\x3d0,v\x3d" + this.hV;
-      }
-      var b = this.hV.length / 2, a = b.toString(16);
-      1 == a.length % 2 && (a = "0" + a);
-      if (128 > b) {
-        return a;
-      }
-      var c = a.length / 2;
-      if (15 < c) {
-        throw "ASN.1 length too long to represent by 8x: n \x3d " + b.toString(16);
-      }
-      return (128 + c).toString(16) + a;
+        if (typeof this.hV == "undefined" || this.hV == null) {
+            throw "this.hV is null or undefined.";
+        }
+        if (this.hV.length % 2 == 1) {
+            throw "value hex must be even length: n=" + hV.length + ",v=" + this.hV;
+        }
+        var n = this.hV.length / 2;
+        var hN = n.toString(16);
+        if (hN.length % 2 == 1) {
+            hN = "0" + hN;
+        }
+        if (n < 128) {
+            return hN;
+        } else {
+            var hNlen = hN.length / 2;
+            if (hNlen > 15) {
+                throw "ASN.1 length too long to represent by 8x: n = " + n.toString(16);
+            }
+            var head = 128 + hNlen;
+            return head.toString(16) + hN;
+        }
     };
+
+    /**
+     * get hexadecimal string of ASN.1 TLV bytes
+     * @name getEncodedHex
+     * @memberOf KJUR.asn1.ASN1Object#
+     * @function
+     * @return {String} hexadecimal string of ASN.1 TLV
+     */
     this.getEncodedHex = function() {
-      if (null == this.hTLV || this.isModified) {
-        this.hV = this.getFreshValueHex(), this.hL = this.getLengthHexFromValue(), this.hTLV = this.hT + this.hL + this.hV, this.isModified = !1;
-      }
-      return this.hTLV;
+        if (this.hTLV == null || this.isModified) {
+            this.hV = this.getFreshValueHex();
+            this.hL = this.getLengthHexFromValue();
+            this.hTLV = this.hT + this.hL + this.hV;
+            this.isModified = false;
+            //alert("first time: " + this.hTLV);
+        }
+        return this.hTLV;
     };
+
+    /**
+     * get hexadecimal string of ASN.1 TLV value(V) bytes
+     * @name getValueHex
+     * @memberOf KJUR.asn1.ASN1Object#
+     * @function
+     * @return {String} hexadecimal string of ASN.1 TLV value(V) bytes
+     */
     this.getValueHex = function() {
-      this.getEncodedHex();
-      return this.hV;
+        this.getEncodedHex();
+        return this.hV;
     };
+
     this.getFreshValueHex = function() {
-      return "";
+        return '';
     };
-  };
-  e.asn1.DERAbstractString = function(b) {
-    e.asn1.DERAbstractString.superclass.constructor.call(this);
+};
+
+// == BEGIN DERAbstractString ================================================
+/**
+ * base class for ASN.1 DER string classes
+ * @name KJUR.asn1.DERAbstractString
+ * @class base class for ASN.1 DER string classes
+ * @param {Array} params associative array of parameters (ex. {'str': 'aaa'})
+ * @property {String} s internal string of value
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>str - specify initial ASN.1 value(V) by a string</li>
+ * <li>hex - specify initial ASN.1 value(V) by a hexadecimal string</li>
+ * </ul>
+ * NOTE: 'params' can be omitted.
+ */
+KJUR.asn1.DERAbstractString = function(params) {
+    KJUR.asn1.DERAbstractString.superclass.constructor.call(this);
+
+    /**
+     * get string value of this string object
+     * @name getString
+     * @memberOf KJUR.asn1.DERAbstractString#
+     * @function
+     * @return {String} string value of this string object
+     */
     this.getString = function() {
-      return this.s;
+        return this.s;
     };
-    this.setString = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.s = a;
-      this.hV = stohex(this.s);
+
+    /**
+     * set value by a string
+     * @name setString
+     * @memberOf KJUR.asn1.DERAbstractString#
+     * @function
+     * @param {String} newS value by a string to set
+     */
+    this.setString = function(newS) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.s = newS;
+        this.hV = stohex(this.s);
     };
-    this.setStringHex = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.s = null;
-      this.hV = a;
+
+    /**
+     * set value by a hexadecimal string
+     * @name setStringHex
+     * @memberOf KJUR.asn1.DERAbstractString#
+     * @function
+     * @param {String} newHexString value by a hexadecimal string to set
+     */
+    this.setStringHex = function(newHexString) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.s = null;
+        this.hV = newHexString;
     };
+
     this.getFreshValueHex = function() {
-      return this.hV;
+        return this.hV;
     };
-    "undefined" != typeof b && ("string" == typeof b ? this.setString(b) : "undefined" != typeof b.str ? this.setString(b.str) : "undefined" != typeof b.hex && this.setStringHex(b.hex));
-  };
-  m.extend(e.asn1.DERAbstractString, e.asn1.ASN1Object);
-  e.asn1.DERAbstractTime = function(b) {
-    e.asn1.DERAbstractTime.superclass.constructor.call(this);
-    this.localDateToUTC = function(a) {
-      utc = a.getTime() + 60000 * a.getTimezoneOffset();
-      return new Date(utc);
+
+    if (typeof params != "undefined") {
+        if (typeof params == "string") {
+            this.setString(params);
+        } else if (typeof params['str'] != "undefined") {
+            this.setString(params['str']);
+        } else if (typeof params['hex'] != "undefined") {
+            this.setStringHex(params['hex']);
+        }
+    }
+};
+YAHOO.lang.extend(KJUR.asn1.DERAbstractString, KJUR.asn1.ASN1Object);
+// == END   DERAbstractString ================================================
+
+// == BEGIN DERAbstractTime ==================================================
+/**
+ * base class for ASN.1 DER Generalized/UTCTime class
+ * @name KJUR.asn1.DERAbstractTime
+ * @class base class for ASN.1 DER Generalized/UTCTime class
+ * @param {Array} params associative array of parameters (ex. {'str': '130430235959Z'})
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * @see KJUR.asn1.ASN1Object - superclass
+ */
+KJUR.asn1.DERAbstractTime = function(params) {
+    KJUR.asn1.DERAbstractTime.superclass.constructor.call(this);
+
+    // --- PRIVATE METHODS --------------------
+    this.localDateToUTC = function(d) {
+        utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        var utcDate = new Date(utc);
+        return utcDate;
     };
-    this.formatDate = function(a, c, b) {
-      var d = this.zeroPadding;
-      a = this.localDateToUTC(a);
-      var f = String(a.getFullYear());
-      "utc" == c && (f = f.substr(2, 2));
-      c = d(String(a.getMonth() + 1), 2);
-      var e = d(String(a.getDate()), 2), h = d(String(a.getHours()), 2), l = d(String(a.getMinutes()), 2), m = d(String(a.getSeconds()), 2);
-      f = f + c + e + h + l + m;
-      !0 === b && (b = a.getMilliseconds(), 0 != b && (d = d(String(b), 3), d = d.replace(/[0]+$/, ""), f = f + "." + d));
-      return f + "Z";
+
+    /*
+     * format date string by Data object
+     * @name formatDate
+     * @memberOf KJUR.asn1.AbstractTime;
+     * @param {Date} dateObject
+     * @param {string} type 'utc' or 'gen'
+     * @param {boolean} withMillis flag for with millisections or not
+     * @description
+     * 'withMillis' flag is supported from asn1 1.0.6.
+     */
+    this.formatDate = function(dateObject, type, withMillis) {
+        var pad = this.zeroPadding;
+        var d = this.localDateToUTC(dateObject);
+        var year = String(d.getFullYear());
+        if (type == 'utc') year = year.substr(2, 2);
+        var month = pad(String(d.getMonth() + 1), 2);
+        var day = pad(String(d.getDate()), 2);
+        var hour = pad(String(d.getHours()), 2);
+        var min = pad(String(d.getMinutes()), 2);
+        var sec = pad(String(d.getSeconds()), 2);
+        var s = year + month + day + hour + min + sec;
+        if (withMillis === true) {
+            var millis = d.getMilliseconds();
+            if (millis != 0) {
+                var sMillis = pad(String(millis), 3);
+                sMillis = sMillis.replace(/[0]+$/, "");
+                s = s + "." + sMillis;
+            }
+        }
+        return s + "Z";
     };
-    this.zeroPadding = function(a, c) {
-      return a.length >= c ? a : Array(c - a.length + 1).join("0") + a;
+
+    this.zeroPadding = function(s, len) {
+        if (s.length >= len) return s;
+        return new Array(len - s.length + 1).join('0') + s;
     };
+
+    // --- PUBLIC METHODS --------------------
+    /**
+     * get string value of this string object
+     * @name getString
+     * @memberOf KJUR.asn1.DERAbstractTime#
+     * @function
+     * @return {String} string value of this time object
+     */
     this.getString = function() {
-      return this.s;
+        return this.s;
     };
-    this.setString = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.s = a;
-      this.hV = stohex(a);
+
+    /**
+     * set value by a string
+     * @name setString
+     * @memberOf KJUR.asn1.DERAbstractTime#
+     * @function
+     * @param {String} newS value by a string to set such like "130430235959Z"
+     */
+    this.setString = function(newS) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.s = newS;
+        this.hV = stohex(newS);
     };
-    this.setByDateValue = function(a, c, b, g, f, e) {
-      a = new Date(Date.UTC(a, c - 1, b, g, f, e, 0));
-      this.setByDate(a);
+
+    /**
+     * set value by a Date object
+     * @name setByDateValue
+     * @memberOf KJUR.asn1.DERAbstractTime#
+     * @function
+     * @param {Integer} year year of date (ex. 2013)
+     * @param {Integer} month month of date between 1 and 12 (ex. 12)
+     * @param {Integer} day day of month
+     * @param {Integer} hour hours of date
+     * @param {Integer} min minutes of date
+     * @param {Integer} sec seconds of date
+     */
+    this.setByDateValue = function(year, month, day, hour, min, sec) {
+        var dateObject = new Date(Date.UTC(year, month - 1, day, hour, min, sec, 0));
+        this.setByDate(dateObject);
     };
+
     this.getFreshValueHex = function() {
-      return this.hV;
+        return this.hV;
     };
-  };
-  m.extend(e.asn1.DERAbstractTime, e.asn1.ASN1Object);
-  e.asn1.DERAbstractStructured = function(b) {
-    e.asn1.DERAbstractString.superclass.constructor.call(this);
-    this.setByASN1ObjectArray = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.asn1Array = a;
+};
+YAHOO.lang.extend(KJUR.asn1.DERAbstractTime, KJUR.asn1.ASN1Object);
+// == END   DERAbstractTime ==================================================
+
+// == BEGIN DERAbstractStructured ============================================
+/**
+ * base class for ASN.1 DER structured class
+ * @name KJUR.asn1.DERAbstractStructured
+ * @class base class for ASN.1 DER structured class
+ * @property {Array} asn1Array internal array of ASN1Object
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * @see KJUR.asn1.ASN1Object - superclass
+ */
+KJUR.asn1.DERAbstractStructured = function(params) {
+    KJUR.asn1.DERAbstractString.superclass.constructor.call(this);
+
+    /**
+     * set value by array of ASN1Object
+     * @name setByASN1ObjectArray
+     * @memberOf KJUR.asn1.DERAbstractStructured#
+     * @function
+     * @param {array} asn1ObjectArray array of ASN1Object to set
+     */
+    this.setByASN1ObjectArray = function(asn1ObjectArray) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.asn1Array = asn1ObjectArray;
     };
-    this.appendASN1Object = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.asn1Array.push(a);
+
+    /**
+     * append an ASN1Object to internal array
+     * @name appendASN1Object
+     * @memberOf KJUR.asn1.DERAbstractStructured#
+     * @function
+     * @param {ASN1Object} asn1Object to add
+     */
+    this.appendASN1Object = function(asn1Object) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.asn1Array.push(asn1Object);
     };
-    this.asn1Array = [];
-    "undefined" != typeof b && "undefined" != typeof b.array && (this.asn1Array = b.array);
-  };
-  m.extend(e.asn1.DERAbstractStructured, e.asn1.ASN1Object);
-  e.asn1.DERBoolean = function() {
-    e.asn1.DERBoolean.superclass.constructor.call(this);
+
+    this.asn1Array = new Array();
+    if (typeof params != "undefined") {
+        if (typeof params['array'] != "undefined") {
+            this.asn1Array = params['array'];
+        }
+    }
+};
+YAHOO.lang.extend(KJUR.asn1.DERAbstractStructured, KJUR.asn1.ASN1Object);
+
+
+// ********************************************************************
+//  ASN.1 Object Classes
+// ********************************************************************
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER Boolean
+ * @name KJUR.asn1.DERBoolean
+ * @class class for ASN.1 DER Boolean
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * @see KJUR.asn1.ASN1Object - superclass
+ */
+KJUR.asn1.DERBoolean = function() {
+    KJUR.asn1.DERBoolean.superclass.constructor.call(this);
     this.hT = "01";
     this.hTLV = "0101ff";
-  };
-  m.extend(e.asn1.DERBoolean, e.asn1.ASN1Object);
-  e.asn1.DERInteger = function(b) {
-    e.asn1.DERInteger.superclass.constructor.call(this);
+};
+YAHOO.lang.extend(KJUR.asn1.DERBoolean, KJUR.asn1.ASN1Object);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER Integer
+ * @name KJUR.asn1.DERInteger
+ * @class class for ASN.1 DER Integer
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>int - specify initial ASN.1 value(V) by integer value</li>
+ * <li>bigint - specify initial ASN.1 value(V) by BigInteger object</li>
+ * <li>hex - specify initial ASN.1 value(V) by a hexadecimal string</li>
+ * </ul>
+ * NOTE: 'params' can be omitted.
+ */
+KJUR.asn1.DERInteger = function(params) {
+    KJUR.asn1.DERInteger.superclass.constructor.call(this);
     this.hT = "02";
-    this.setByBigInteger = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.hV = e.asn1.ASN1Util.bigIntToMinTwosComplementsHex(a);
+
+    /**
+     * set value by Tom Wu's BigInteger object
+     * @name setByBigInteger
+     * @memberOf KJUR.asn1.DERInteger#
+     * @function
+     * @param {BigInteger} bigIntegerValue to set
+     */
+    this.setByBigInteger = function(bigIntegerValue) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.hV = KJUR.asn1.ASN1Util.bigIntToMinTwosComplementsHex(bigIntegerValue);
     };
-    this.setByInteger = function(a) {
-      a = new l(String(a), 10);
-      this.setByBigInteger(a);
+
+    /**
+     * set value by integer value
+     * @name setByInteger
+     * @memberOf KJUR.asn1.DERInteger
+     * @function
+     * @param {Integer} integer value to set
+     */
+    this.setByInteger = function(intValue) {
+        var bi = new BigInteger(String(intValue), 10);
+        this.setByBigInteger(bi);
     };
-    this.setValueHex = function(a) {
-      this.hV = a;
+
+    /**
+     * set value by integer value
+     * @name setValueHex
+     * @memberOf KJUR.asn1.DERInteger#
+     * @function
+     * @param {String} hexadecimal string of integer value
+     * @description
+     * <br/>
+     * NOTE: Value shall be represented by minimum octet length of
+     * two's complement representation.
+     * @example
+     * new KJUR.asn1.DERInteger(123);
+     * new KJUR.asn1.DERInteger({'int': 123});
+     * new KJUR.asn1.DERInteger({'hex': '1fad'});
+     */
+    this.setValueHex = function(newHexString) {
+        this.hV = newHexString;
     };
+
     this.getFreshValueHex = function() {
-      return this.hV;
+        return this.hV;
     };
-    "undefined" != typeof b && ("undefined" != typeof b.bigint ? this.setByBigInteger(b.bigint) : "undefined" != typeof b["int"] ? this.setByInteger(b["int"]) : "number" == typeof b ? this.setByInteger(b) : "undefined" != typeof b.hex && this.setValueHex(b.hex));
-  };
-  m.extend(e.asn1.DERInteger, e.asn1.ASN1Object);
-  e.asn1.DERBitString = function(b) {
-    if (void 0 !== b && "undefined" !== typeof b.obj) {
-      var a = e.asn1.ASN1Util.newObject(b.obj);
-      b.hex = "00" + a.getEncodedHex();
+
+    if (typeof params != "undefined") {
+        if (typeof params['bigint'] != "undefined") {
+            this.setByBigInteger(params['bigint']);
+        } else if (typeof params['int'] != "undefined") {
+            this.setByInteger(params['int']);
+        } else if (typeof params == "number") {
+            this.setByInteger(params);
+        } else if (typeof params['hex'] != "undefined") {
+            this.setValueHex(params['hex']);
+        }
     }
-    e.asn1.DERBitString.superclass.constructor.call(this);
+};
+YAHOO.lang.extend(KJUR.asn1.DERInteger, KJUR.asn1.ASN1Object);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER encoded BitString primitive
+ * @name KJUR.asn1.DERBitString
+ * @class class for ASN.1 DER encoded BitString primitive
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>bin - specify binary string (ex. '10111')</li>
+ * <li>array - specify array of boolean (ex. [true,false,true,true])</li>
+ * <li>hex - specify hexadecimal string of ASN.1 value(V) including unused bits</li>
+ * <li>obj - specify {@link KJUR.asn1.ASN1Util.newObject}
+ * argument for "BitString encapsulates" structure.</li>
+ * </ul>
+ * NOTE1: 'params' can be omitted.<br/>
+ * NOTE2: 'obj' parameter have been supported since
+ * asn1 1.0.11, jsrsasign 6.1.1 (2016-Sep-25).<br/>
+ * @example
+ * // default constructor
+ * o = new KJUR.asn1.DERBitString();
+ * // initialize with binary string
+ * o = new KJUR.asn1.DERBitString({bin: "1011"});
+ * // initialize with boolean array
+ * o = new KJUR.asn1.DERBitString({array: [true,false,true,true]});
+ * // initialize with hexadecimal string (04 is unused bits)
+ * o = new KJUR.asn1.DEROctetString({hex: "04bac0"});
+ * // initialize with ASN1Util.newObject argument for encapsulated
+ * o = new KJUR.asn1.DERBitString({obj: {seq: [{int: 3}, {prnstr: 'aaa'}]}});
+ * // above generates a ASN.1 data like this:
+ * // BIT STRING, encapsulates {
+ * //   SEQUENCE {
+ * //     INTEGER 3
+ * //     PrintableString 'aaa'
+ * //     }
+ * //   }
+ */
+KJUR.asn1.DERBitString = function(params) {
+    if (params !== undefined && typeof params.obj !== "undefined") {
+        var o = KJUR.asn1.ASN1Util.newObject(params.obj);
+        params.hex = "00" + o.getEncodedHex();
+    }
+    KJUR.asn1.DERBitString.superclass.constructor.call(this);
     this.hT = "03";
-    this.setHexValueIncludingUnusedBits = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.hV = a;
+
+    /**
+     * set ASN.1 value(V) by a hexadecimal string including unused bits
+     * @name setHexValueIncludingUnusedBits
+     * @memberOf KJUR.asn1.DERBitString#
+     * @function
+     * @param {String} newHexStringIncludingUnusedBits
+     */
+    this.setHexValueIncludingUnusedBits = function(newHexStringIncludingUnusedBits) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.hV = newHexStringIncludingUnusedBits;
     };
-    this.setUnusedBitsAndHexValue = function(a, b) {
-      if (0 > a || 7 < a) {
-        throw "unused bits shall be from 0 to 7: u \x3d " + a;
-      }
-      this.hTLV = null;
-      this.isModified = !0;
-      this.hV = "0" + a + b;
+
+    /**
+     * set ASN.1 value(V) by unused bit and hexadecimal string of value
+     * @name setUnusedBitsAndHexValue
+     * @memberOf KJUR.asn1.DERBitString#
+     * @function
+     * @param {Integer} unusedBits
+     * @param {String} hValue
+     */
+    this.setUnusedBitsAndHexValue = function(unusedBits, hValue) {
+        if (unusedBits < 0 || 7 < unusedBits) {
+            throw "unused bits shall be from 0 to 7: u = " + unusedBits;
+        }
+        var hUnusedBits = "0" + unusedBits;
+        this.hTLV = null;
+        this.isModified = true;
+        this.hV = hUnusedBits + hValue;
     };
-    this.setByBinaryString = function(a) {
-      a = a.replace(/0+$/, "");
-      var c = 8 - a.length % 8;
-      8 == c && (c = 0);
-      for (var b = 0; b <= c; b++) {
-        a += "0";
-      }
-      var f = "";
-      for (b = 0; b < a.length - 1; b += 8) {
-        var e = a.substr(b, 8);
-        e = parseInt(e, 2).toString(16);
-        1 == e.length && (e = "0" + e);
-        f += e;
-      }
-      this.hTLV = null;
-      this.isModified = !0;
-      this.hV = "0" + c + f;
+
+    /**
+     * set ASN.1 DER BitString by binary string<br/>
+     * @name setByBinaryString
+     * @memberOf KJUR.asn1.DERBitString#
+     * @function
+     * @param {String} binaryString binary value string (i.e. '10111')
+     * @description
+     * Its unused bits will be calculated automatically by length of
+     * 'binaryValue'. <br/>
+     * NOTE: Trailing zeros '0' will be ignored.
+     * @example
+     * o = new KJUR.asn1.DERBitString();
+     * o.setByBooleanArray("01011");
+     */
+    this.setByBinaryString = function(binaryString) {
+        binaryString = binaryString.replace(/0+$/, '');
+        var unusedBits = 8 - binaryString.length % 8;
+        if (unusedBits == 8) unusedBits = 0;
+        for (var i = 0; i <= unusedBits; i++) {
+            binaryString += '0';
+        }
+        var h = '';
+        for (var i = 0; i < binaryString.length - 1; i += 8) {
+            var b = binaryString.substr(i, 8);
+            var x = parseInt(b, 2).toString(16);
+            if (x.length == 1) x = '0' + x;
+            h += x;
+        }
+        this.hTLV = null;
+        this.isModified = true;
+        this.hV = '0' + unusedBits + h;
     };
-    this.setByBooleanArray = function(a) {
-      for (var c = "", b = 0; b < a.length; b++) {
-        c = 1 == a[b] ? c + "1" : c + "0";
-      }
-      this.setByBinaryString(c);
+
+    /**
+     * set ASN.1 TLV value(V) by an array of boolean<br/>
+     * @name setByBooleanArray
+     * @memberOf KJUR.asn1.DERBitString#
+     * @function
+     * @param {array} booleanArray array of boolean (ex. [true, false, true])
+     * @description
+     * NOTE: Trailing falses will be ignored in the ASN.1 DER Object.
+     * @example
+     * o = new KJUR.asn1.DERBitString();
+     * o.setByBooleanArray([false, true, false, true, true]);
+     */
+    this.setByBooleanArray = function(booleanArray) {
+        var s = '';
+        for (var i = 0; i < booleanArray.length; i++) {
+            if (booleanArray[i] == true) {
+                s += '1';
+            } else {
+                s += '0';
+            }
+        }
+        this.setByBinaryString(s);
     };
-    this.newFalseArray = function(a) {
-      for (var c = Array(a), b = 0; b < a; b++) {
-        c[b] = !1;
-      }
-      return c;
+
+    /**
+     * generate an array of falses with specified length<br/>
+     * @name newFalseArray
+     * @memberOf KJUR.asn1.DERBitString
+     * @function
+     * @param {Integer} nLength length of array to generate
+     * @return {array} array of boolean falses
+     * @description
+     * This static method may be useful to initialize boolean array.
+     * @example
+     * o = new KJUR.asn1.DERBitString();
+     * o.newFalseArray(3) &rarr; [false, false, false]
+     */
+    this.newFalseArray = function(nLength) {
+        var a = new Array(nLength);
+        for (var i = 0; i < nLength; i++) {
+            a[i] = false;
+        }
+        return a;
     };
+
     this.getFreshValueHex = function() {
-      return this.hV;
+        return this.hV;
     };
-    "undefined" != typeof b && ("string" == typeof b && b.toLowerCase().match(/^[0-9a-f]+$/) ? this.setHexValueIncludingUnusedBits(b) : "undefined" != typeof b.hex ? this.setHexValueIncludingUnusedBits(b.hex) : "undefined" != typeof b.bin ? this.setByBinaryString(b.bin) : "undefined" != typeof b.array && this.setByBooleanArray(b.array));
-  };
-  m.extend(e.asn1.DERBitString, e.asn1.ASN1Object);
-  e.asn1.DEROctetString = function(b) {
-    if (void 0 !== b && "undefined" !== typeof b.obj) {
-      var a = e.asn1.ASN1Util.newObject(b.obj);
-      b.hex = a.getEncodedHex();
+
+    if (typeof params != "undefined") {
+        if (typeof params == "string" && params.toLowerCase().match(/^[0-9a-f]+$/)) {
+            this.setHexValueIncludingUnusedBits(params);
+        } else if (typeof params['hex'] != "undefined") {
+            this.setHexValueIncludingUnusedBits(params['hex']);
+        } else if (typeof params['bin'] != "undefined") {
+            this.setByBinaryString(params['bin']);
+        } else if (typeof params['array'] != "undefined") {
+            this.setByBooleanArray(params['array']);
+        }
     }
-    e.asn1.DEROctetString.superclass.constructor.call(this, b);
+};
+YAHOO.lang.extend(KJUR.asn1.DERBitString, KJUR.asn1.ASN1Object);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER OctetString<br/>
+ * @name KJUR.asn1.DEROctetString
+ * @class class for ASN.1 DER OctetString
+ * @param {Array} params associative array of parameters (ex. {'str': 'aaa'})
+ * @extends KJUR.asn1.DERAbstractString
+ * @description
+ * This class provides ASN.1 OctetString simple type.<br/>
+ * Supported "params" attributes are:
+ * <ul>
+ * <li>str - to set a string as a value</li>
+ * <li>hex - to set a hexadecimal string as a value</li>
+ * <li>obj - to set a encapsulated ASN.1 value by JSON object
+ * which is defined in {@link KJUR.asn1.ASN1Util.newObject}</li>
+ * </ul>
+ * NOTE: A parameter 'obj' have been supported
+ * for "OCTET STRING, encapsulates" structure.
+ * since asn1 1.0.11, jsrsasign 6.1.1 (2016-Sep-25).
+ * @see KJUR.asn1.DERAbstractString - superclass
+ * @example
+ * // default constructor
+ * o = new KJUR.asn1.DEROctetString();
+ * // initialize with string
+ * o = new KJUR.asn1.DEROctetString({str: "aaa"});
+ * // initialize with hexadecimal string
+ * o = new KJUR.asn1.DEROctetString({hex: "616161"});
+ * // initialize with ASN1Util.newObject argument
+ * o = new KJUR.asn1.DEROctetString({obj: {seq: [{int: 3}, {prnstr: 'aaa'}]}});
+ * // above generates a ASN.1 data like this:
+ * // OCTET STRING, encapsulates {
+ * //   SEQUENCE {
+ * //     INTEGER 3
+ * //     PrintableString 'aaa'
+ * //     }
+ * //   }
+ */
+KJUR.asn1.DEROctetString = function(params) {
+    if (params !== undefined && typeof params.obj !== "undefined") {
+        var o = KJUR.asn1.ASN1Util.newObject(params.obj);
+        params.hex = o.getEncodedHex();
+    }
+    KJUR.asn1.DEROctetString.superclass.constructor.call(this, params);
     this.hT = "04";
-  };
-  m.extend(e.asn1.DEROctetString, e.asn1.DERAbstractString);
-  e.asn1.DERNull = function() {
-    e.asn1.DERNull.superclass.constructor.call(this);
+};
+YAHOO.lang.extend(KJUR.asn1.DEROctetString, KJUR.asn1.DERAbstractString);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER Null
+ * @name KJUR.asn1.DERNull
+ * @class class for ASN.1 DER Null
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * @see KJUR.asn1.ASN1Object - superclass
+ */
+KJUR.asn1.DERNull = function() {
+    KJUR.asn1.DERNull.superclass.constructor.call(this);
     this.hT = "05";
     this.hTLV = "0500";
-  };
-  m.extend(e.asn1.DERNull, e.asn1.ASN1Object);
-  e.asn1.DERObjectIdentifier = function(b) {
-    var a = function(a) {
-      a = a.toString(16);
-      1 == a.length && (a = "0" + a);
-      return a;
+};
+YAHOO.lang.extend(KJUR.asn1.DERNull, KJUR.asn1.ASN1Object);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER ObjectIdentifier
+ * @name KJUR.asn1.DERObjectIdentifier
+ * @class class for ASN.1 DER ObjectIdentifier
+ * @param {Array} params associative array of parameters (ex. {'oid': '2.5.4.5'})
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>oid - specify initial ASN.1 value(V) by a oid string (ex. 2.5.4.13)</li>
+ * <li>hex - specify initial ASN.1 value(V) by a hexadecimal string</li>
+ * </ul>
+ * NOTE: 'params' can be omitted.
+ */
+KJUR.asn1.DERObjectIdentifier = function(params) {
+    var itox = function(i) {
+        var h = i.toString(16);
+        if (h.length == 1) h = '0' + h;
+        return h;
     };
-    e.asn1.DERObjectIdentifier.superclass.constructor.call(this);
+    var roidtox = function(roid) {
+        var h = '';
+        var bi = new BigInteger(roid, 10);
+        var b = bi.toString(2);
+        var padLen = 7 - b.length % 7;
+        if (padLen == 7) padLen = 0;
+        var bPad = '';
+        for (var i = 0; i < padLen; i++) bPad += '0';
+        b = bPad + b;
+        for (var i = 0; i < b.length - 1; i += 7) {
+            var b8 = b.substr(i, 7);
+            if (i != b.length - 7) b8 = '1' + b8;
+            h += itox(parseInt(b8, 2));
+        }
+        return h;
+    };
+
+    KJUR.asn1.DERObjectIdentifier.superclass.constructor.call(this);
     this.hT = "06";
-    this.setValueHex = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.s = null;
-      this.hV = a;
+
+    /**
+     * set value by a hexadecimal string
+     * @name setValueHex
+     * @memberOf KJUR.asn1.DERObjectIdentifier#
+     * @function
+     * @param {String} newHexString hexadecimal value of OID bytes
+     */
+    this.setValueHex = function(newHexString) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.s = null;
+        this.hV = newHexString;
     };
-    this.setValueOidString = function(c) {
-      if (!c.match(/^[0-9.]+$/)) {
-        throw "malformed oid string: " + c;
-      }
-      var b = "";
-      c = c.split(".");
-      var e = 40 * parseInt(c[0]) + parseInt(c[1]);
-      b += a(e);
-      c.splice(0, 2);
-      for (e = 0; e < c.length; e++) {
-        var f = "", k = (new l(c[e], 10)).toString(2), h = 7 - k.length % 7;
-        7 == h && (h = 0);
-        for (var m = "", n = 0; n < h; n++) {
-          m += "0";
+
+    /**
+     * set value by a OID string<br/>
+     * @name setValueOidString
+     * @memberOf KJUR.asn1.DERObjectIdentifier#
+     * @function
+     * @param {String} oidString OID string (ex. 2.5.4.13)
+     * @example
+     * o = new KJUR.asn1.DERObjectIdentifier();
+     * o.setValueOidString("2.5.4.13");
+     */
+    this.setValueOidString = function(oidString) {
+        if (! oidString.match(/^[0-9.]+$/)) {
+            throw "malformed oid string: " + oidString;
         }
-        k = m + k;
-        for (n = 0; n < k.length - 1; n += 7) {
-          h = k.substr(n, 7), n != k.length - 7 && (h = "1" + h), f += a(parseInt(h, 2));
+        var h = '';
+        var a = oidString.split('.');
+        var i0 = parseInt(a[0]) * 40 + parseInt(a[1]);
+        h += itox(i0);
+        a.splice(0, 2);
+        for (var i = 0; i < a.length; i++) {
+            h += roidtox(a[i]);
         }
-        b += f;
-      }
-      this.hTLV = null;
-      this.isModified = !0;
-      this.s = null;
-      this.hV = b;
+        this.hTLV = null;
+        this.isModified = true;
+        this.s = null;
+        this.hV = h;
     };
-    this.setValueName = function(a) {
-      var b = e.asn1.x509.OID.name2oid(a);
-      if ("" !== b) {
-        this.setValueOidString(b);
-      } else {
-        throw "DERObjectIdentifier oidName undefined: " + a;
-      }
+
+    /**
+     * set value by a OID name
+     * @name setValueName
+     * @memberOf KJUR.asn1.DERObjectIdentifier#
+     * @function
+     * @param {String} oidName OID name (ex. 'serverAuth')
+     * @since 1.0.1
+     * @description
+     * OID name shall be defined in 'KJUR.asn1.x509.OID.name2oidList'.
+     * Otherwise raise error.
+     * @example
+     * o = new KJUR.asn1.DERObjectIdentifier();
+     * o.setValueName("serverAuth");
+     */
+    this.setValueName = function(oidName) {
+        var oid = KJUR.asn1.x509.OID.name2oid(oidName);
+        if (oid !== '') {
+            this.setValueOidString(oid);
+        } else {
+            throw "DERObjectIdentifier oidName undefined: " + oidName;
+        }
     };
+
     this.getFreshValueHex = function() {
-      return this.hV;
+        return this.hV;
     };
-    void 0 !== b && ("string" === typeof b ? b.match(/^[0-2].[0-9.]+$/) ? this.setValueOidString(b) : this.setValueName(b) : void 0 !== b.oid ? this.setValueOidString(b.oid) : void 0 !== b.hex ? this.setValueHex(b.hex) : void 0 !== b.name && this.setValueName(b.name));
-  };
-  m.extend(e.asn1.DERObjectIdentifier, e.asn1.ASN1Object);
-  e.asn1.DEREnumerated = function(b) {
-    e.asn1.DEREnumerated.superclass.constructor.call(this);
+
+    if (params !== undefined) {
+        if (typeof params === "string") {
+            if (params.match(/^[0-2].[0-9.]+$/)) {
+                this.setValueOidString(params);
+            } else {
+                this.setValueName(params);
+            }
+        } else if (params.oid !== undefined) {
+            this.setValueOidString(params.oid);
+        } else if (params.hex !== undefined) {
+            this.setValueHex(params.hex);
+        } else if (params.name !== undefined) {
+            this.setValueName(params.name);
+        }
+    }
+};
+YAHOO.lang.extend(KJUR.asn1.DERObjectIdentifier, KJUR.asn1.ASN1Object);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER Enumerated
+ * @name KJUR.asn1.DEREnumerated
+ * @class class for ASN.1 DER Enumerated
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>int - specify initial ASN.1 value(V) by integer value</li>
+ * <li>hex - specify initial ASN.1 value(V) by a hexadecimal string</li>
+ * </ul>
+ * NOTE: 'params' can be omitted.
+ * @example
+ * new KJUR.asn1.DEREnumerated(123);
+ * new KJUR.asn1.DEREnumerated({int: 123});
+ * new KJUR.asn1.DEREnumerated({hex: '1fad'});
+ */
+KJUR.asn1.DEREnumerated = function(params) {
+    KJUR.asn1.DEREnumerated.superclass.constructor.call(this);
     this.hT = "0a";
-    this.setByBigInteger = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.hV = e.asn1.ASN1Util.bigIntToMinTwosComplementsHex(a);
+
+    /**
+     * set value by Tom Wu's BigInteger object
+     * @name setByBigInteger
+     * @memberOf KJUR.asn1.DEREnumerated#
+     * @function
+     * @param {BigInteger} bigIntegerValue to set
+     */
+    this.setByBigInteger = function(bigIntegerValue) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.hV = KJUR.asn1.ASN1Util.bigIntToMinTwosComplementsHex(bigIntegerValue);
     };
-    this.setByInteger = function(a) {
-      a = new l(String(a), 10);
-      this.setByBigInteger(a);
+
+    /**
+     * set value by integer value
+     * @name setByInteger
+     * @memberOf KJUR.asn1.DEREnumerated#
+     * @function
+     * @param {Integer} integer value to set
+     */
+    this.setByInteger = function(intValue) {
+        var bi = new BigInteger(String(intValue), 10);
+        this.setByBigInteger(bi);
     };
-    this.setValueHex = function(a) {
-      this.hV = a;
+
+    /**
+     * set value by integer value
+     * @name setValueHex
+     * @memberOf KJUR.asn1.DEREnumerated#
+     * @function
+     * @param {String} hexadecimal string of integer value
+     * @description
+     * <br/>
+     * NOTE: Value shall be represented by minimum octet length of
+     * two's complement representation.
+     */
+    this.setValueHex = function(newHexString) {
+        this.hV = newHexString;
     };
+
     this.getFreshValueHex = function() {
-      return this.hV;
+        return this.hV;
     };
-    "undefined" != typeof b && ("undefined" != typeof b["int"] ? this.setByInteger(b["int"]) : "number" == typeof b ? this.setByInteger(b) : "undefined" != typeof b.hex && this.setValueHex(b.hex));
-  };
-  m.extend(e.asn1.DEREnumerated, e.asn1.ASN1Object);
-  e.asn1.DERUTF8String = function(b) {
-    e.asn1.DERUTF8String.superclass.constructor.call(this, b);
+
+    if (typeof params != "undefined") {
+        if (typeof params['int'] != "undefined") {
+            this.setByInteger(params['int']);
+        } else if (typeof params == "number") {
+            this.setByInteger(params);
+        } else if (typeof params['hex'] != "undefined") {
+            this.setValueHex(params['hex']);
+        }
+    }
+};
+YAHOO.lang.extend(KJUR.asn1.DEREnumerated, KJUR.asn1.ASN1Object);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER UTF8String
+ * @name KJUR.asn1.DERUTF8String
+ * @class class for ASN.1 DER UTF8String
+ * @param {Array} params associative array of parameters (ex. {'str': 'aaa'})
+ * @extends KJUR.asn1.DERAbstractString
+ * @description
+ * @see KJUR.asn1.DERAbstractString - superclass
+ */
+KJUR.asn1.DERUTF8String = function(params) {
+    KJUR.asn1.DERUTF8String.superclass.constructor.call(this, params);
     this.hT = "0c";
-  };
-  m.extend(e.asn1.DERUTF8String, e.asn1.DERAbstractString);
-  e.asn1.DERNumericString = function(b) {
-    e.asn1.DERNumericString.superclass.constructor.call(this, b);
+};
+YAHOO.lang.extend(KJUR.asn1.DERUTF8String, KJUR.asn1.DERAbstractString);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER NumericString
+ * @name KJUR.asn1.DERNumericString
+ * @class class for ASN.1 DER NumericString
+ * @param {Array} params associative array of parameters (ex. {'str': 'aaa'})
+ * @extends KJUR.asn1.DERAbstractString
+ * @description
+ * @see KJUR.asn1.DERAbstractString - superclass
+ */
+KJUR.asn1.DERNumericString = function(params) {
+    KJUR.asn1.DERNumericString.superclass.constructor.call(this, params);
     this.hT = "12";
-  };
-  m.extend(e.asn1.DERNumericString, e.asn1.DERAbstractString);
-  e.asn1.DERPrintableString = function(b) {
-    e.asn1.DERPrintableString.superclass.constructor.call(this, b);
+};
+YAHOO.lang.extend(KJUR.asn1.DERNumericString, KJUR.asn1.DERAbstractString);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER PrintableString
+ * @name KJUR.asn1.DERPrintableString
+ * @class class for ASN.1 DER PrintableString
+ * @param {Array} params associative array of parameters (ex. {'str': 'aaa'})
+ * @extends KJUR.asn1.DERAbstractString
+ * @description
+ * @see KJUR.asn1.DERAbstractString - superclass
+ */
+KJUR.asn1.DERPrintableString = function(params) {
+    KJUR.asn1.DERPrintableString.superclass.constructor.call(this, params);
     this.hT = "13";
-  };
-  m.extend(e.asn1.DERPrintableString, e.asn1.DERAbstractString);
-  e.asn1.DERTeletexString = function(b) {
-    e.asn1.DERTeletexString.superclass.constructor.call(this, b);
+};
+YAHOO.lang.extend(KJUR.asn1.DERPrintableString, KJUR.asn1.DERAbstractString);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER TeletexString
+ * @name KJUR.asn1.DERTeletexString
+ * @class class for ASN.1 DER TeletexString
+ * @param {Array} params associative array of parameters (ex. {'str': 'aaa'})
+ * @extends KJUR.asn1.DERAbstractString
+ * @description
+ * @see KJUR.asn1.DERAbstractString - superclass
+ */
+KJUR.asn1.DERTeletexString = function(params) {
+    KJUR.asn1.DERTeletexString.superclass.constructor.call(this, params);
     this.hT = "14";
-  };
-  m.extend(e.asn1.DERTeletexString, e.asn1.DERAbstractString);
-  e.asn1.DERIA5String = function(b) {
-    e.asn1.DERIA5String.superclass.constructor.call(this, b);
+};
+YAHOO.lang.extend(KJUR.asn1.DERTeletexString, KJUR.asn1.DERAbstractString);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER IA5String
+ * @name KJUR.asn1.DERIA5String
+ * @class class for ASN.1 DER IA5String
+ * @param {Array} params associative array of parameters (ex. {'str': 'aaa'})
+ * @extends KJUR.asn1.DERAbstractString
+ * @description
+ * @see KJUR.asn1.DERAbstractString - superclass
+ */
+KJUR.asn1.DERIA5String = function(params) {
+    KJUR.asn1.DERIA5String.superclass.constructor.call(this, params);
     this.hT = "16";
-  };
-  m.extend(e.asn1.DERIA5String, e.asn1.DERAbstractString);
-  e.asn1.DERUTCTime = function(b) {
-    e.asn1.DERUTCTime.superclass.constructor.call(this, b);
+};
+YAHOO.lang.extend(KJUR.asn1.DERIA5String, KJUR.asn1.DERAbstractString);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER UTCTime
+ * @name KJUR.asn1.DERUTCTime
+ * @class class for ASN.1 DER UTCTime
+ * @param {Array} params associative array of parameters (ex. {'str': '130430235959Z'})
+ * @extends KJUR.asn1.DERAbstractTime
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>str - specify initial ASN.1 value(V) by a string (ex.'130430235959Z')</li>
+ * <li>hex - specify initial ASN.1 value(V) by a hexadecimal string</li>
+ * <li>date - specify Date object.</li>
+ * </ul>
+ * NOTE: 'params' can be omitted.
+ * <h4>EXAMPLES</h4>
+ * @example
+ * d1 = new KJUR.asn1.DERUTCTime();
+ * d1.setString('130430125959Z');
+ *
+ * d2 = new KJUR.asn1.DERUTCTime({'str': '130430125959Z'});
+ * d3 = new KJUR.asn1.DERUTCTime({'date': new Date(Date.UTC(2015, 0, 31, 0, 0, 0, 0))});
+ * d4 = new KJUR.asn1.DERUTCTime('130430125959Z');
+ */
+KJUR.asn1.DERUTCTime = function(params) {
+    KJUR.asn1.DERUTCTime.superclass.constructor.call(this, params);
     this.hT = "17";
-    this.setByDate = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.date = a;
-      this.s = this.formatDate(this.date, "utc");
-      this.hV = stohex(this.s);
+
+    /**
+     * set value by a Date object<br/>
+     * @name setByDate
+     * @memberOf KJUR.asn1.DERUTCTime#
+     * @function
+     * @param {Date} dateObject Date object to set ASN.1 value(V)
+     * @example
+     * o = new KJUR.asn1.DERUTCTime();
+     * o.setByDate(new Date("2016/12/31"));
+     */
+    this.setByDate = function(dateObject) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.date = dateObject;
+        this.s = this.formatDate(this.date, 'utc');
+        this.hV = stohex(this.s);
     };
+
     this.getFreshValueHex = function() {
-      "undefined" == typeof this.date && "undefined" == typeof this.s && (this.date = new Date, this.s = this.formatDate(this.date, "utc"), this.hV = stohex(this.s));
-      return this.hV;
+        if (typeof this.date == "undefined" && typeof this.s == "undefined") {
+            this.date = new Date();
+            this.s = this.formatDate(this.date, 'utc');
+            this.hV = stohex(this.s);
+        }
+        return this.hV;
     };
-    void 0 !== b && (void 0 !== b.str ? this.setString(b.str) : "string" == typeof b && b.match(/^[0-9]{12}Z$/) ? this.setString(b) : void 0 !== b.hex ? this.setStringHex(b.hex) : void 0 !== b.date && this.setByDate(b.date));
-  };
-  m.extend(e.asn1.DERUTCTime, e.asn1.DERAbstractTime);
-  e.asn1.DERGeneralizedTime = function(b) {
-    e.asn1.DERGeneralizedTime.superclass.constructor.call(this, b);
+
+    if (params !== undefined) {
+        if (params.str !== undefined) {
+            this.setString(params.str);
+        } else if (typeof params == "string" && params.match(/^[0-9]{12}Z$/)) {
+            this.setString(params);
+        } else if (params.hex !== undefined) {
+            this.setStringHex(params.hex);
+        } else if (params.date !== undefined) {
+            this.setByDate(params.date);
+        }
+    }
+};
+YAHOO.lang.extend(KJUR.asn1.DERUTCTime, KJUR.asn1.DERAbstractTime);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER GeneralizedTime
+ * @name KJUR.asn1.DERGeneralizedTime
+ * @class class for ASN.1 DER GeneralizedTime
+ * @param {Array} params associative array of parameters (ex. {'str': '20130430235959Z'})
+ * @property {Boolean} withMillis flag to show milliseconds or not
+ * @extends KJUR.asn1.DERAbstractTime
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>str - specify initial ASN.1 value(V) by a string (ex.'20130430235959Z')</li>
+ * <li>hex - specify initial ASN.1 value(V) by a hexadecimal string</li>
+ * <li>date - specify Date object.</li>
+ * <li>millis - specify flag to show milliseconds (from 1.0.6)</li>
+ * </ul>
+ * NOTE1: 'params' can be omitted.
+ * NOTE2: 'withMillis' property is supported from asn1 1.0.6.
+ */
+KJUR.asn1.DERGeneralizedTime = function(params) {
+    KJUR.asn1.DERGeneralizedTime.superclass.constructor.call(this, params);
     this.hT = "18";
-    this.withMillis = !1;
-    this.setByDate = function(a) {
-      this.hTLV = null;
-      this.isModified = !0;
-      this.date = a;
-      this.s = this.formatDate(this.date, "gen", this.withMillis);
-      this.hV = stohex(this.s);
+    this.withMillis = false;
+
+    /**
+     * set value by a Date object
+     * @name setByDate
+     * @memberOf KJUR.asn1.DERGeneralizedTime#
+     * @function
+     * @param {Date} dateObject Date object to set ASN.1 value(V)
+     * @example
+     * When you specify UTC time, use 'Date.UTC' method like this:<br/>
+     * o1 = new DERUTCTime();
+     * o1.setByDate(date);
+     *
+     * date = new Date(Date.UTC(2015, 0, 31, 23, 59, 59, 0)); #2015JAN31 23:59:59
+     */
+    this.setByDate = function(dateObject) {
+        this.hTLV = null;
+        this.isModified = true;
+        this.date = dateObject;
+        this.s = this.formatDate(this.date, 'gen', this.withMillis);
+        this.hV = stohex(this.s);
     };
+
     this.getFreshValueHex = function() {
-      void 0 === this.date && void 0 === this.s && (this.date = new Date, this.s = this.formatDate(this.date, "gen", this.withMillis), this.hV = stohex(this.s));
-      return this.hV;
+        if (this.date === undefined && this.s === undefined) {
+            this.date = new Date();
+            this.s = this.formatDate(this.date, 'gen', this.withMillis);
+            this.hV = stohex(this.s);
+        }
+        return this.hV;
     };
-    void 0 !== b && (void 0 !== b.str ? this.setString(b.str) : "string" == typeof b && b.match(/^[0-9]{14}Z$/) ? this.setString(b) : void 0 !== b.hex ? this.setStringHex(b.hex) : void 0 !== b.date && this.setByDate(b.date), !0 === b.millis && (this.withMillis = !0));
-  };
-  m.extend(e.asn1.DERGeneralizedTime, e.asn1.DERAbstractTime);
-  e.asn1.DERSequence = function(b) {
-    e.asn1.DERSequence.superclass.constructor.call(this, b);
+
+    if (params !== undefined) {
+        if (params.str !== undefined) {
+            this.setString(params.str);
+        } else if (typeof params == "string" && params.match(/^[0-9]{14}Z$/)) {
+            this.setString(params);
+        } else if (params.hex !== undefined) {
+            this.setStringHex(params.hex);
+        } else if (params.date !== undefined) {
+            this.setByDate(params.date);
+        }
+        if (params.millis === true) {
+            this.withMillis = true;
+        }
+    }
+};
+YAHOO.lang.extend(KJUR.asn1.DERGeneralizedTime, KJUR.asn1.DERAbstractTime);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER Sequence
+ * @name KJUR.asn1.DERSequence
+ * @class class for ASN.1 DER Sequence
+ * @extends KJUR.asn1.DERAbstractStructured
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>array - specify array of ASN1Object to set elements of content</li>
+ * </ul>
+ * NOTE: 'params' can be omitted.
+ */
+KJUR.asn1.DERSequence = function(params) {
+    KJUR.asn1.DERSequence.superclass.constructor.call(this, params);
     this.hT = "30";
     this.getFreshValueHex = function() {
-      for (var a = "", b = 0; b < this.asn1Array.length; b++) {
-        a += this.asn1Array[b].getEncodedHex();
-      }
-      return this.hV = a;
+        var h = '';
+        for (var i = 0; i < this.asn1Array.length; i++) {
+            var asn1Obj = this.asn1Array[i];
+            h += asn1Obj.getEncodedHex();
+        }
+        this.hV = h;
+        return this.hV;
     };
-  };
-  m.extend(e.asn1.DERSequence, e.asn1.DERAbstractStructured);
-  e.asn1.DERSet = function(b) {
-    e.asn1.DERSet.superclass.constructor.call(this, b);
+};
+YAHOO.lang.extend(KJUR.asn1.DERSequence, KJUR.asn1.DERAbstractStructured);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER Set
+ * @name KJUR.asn1.DERSet
+ * @class class for ASN.1 DER Set
+ * @extends KJUR.asn1.DERAbstractStructured
+ * @description
+ * <br/>
+ * As for argument 'params' for constructor, you can specify one of
+ * following properties:
+ * <ul>
+ * <li>array - specify array of ASN1Object to set elements of content</li>
+ * <li>sortflag - flag for sort (default: true). ASN.1 BER is not sorted in 'SET OF'.</li>
+ * </ul>
+ * NOTE1: 'params' can be omitted.<br/>
+ * NOTE2: sortflag is supported since 1.0.5.
+ */
+KJUR.asn1.DERSet = function(params) {
+    KJUR.asn1.DERSet.superclass.constructor.call(this, params);
     this.hT = "31";
-    this.sortFlag = !0;
+    this.sortFlag = true; // item shall be sorted only in ASN.1 DER
     this.getFreshValueHex = function() {
-      for (var a = [], b = 0; b < this.asn1Array.length; b++) {
-        a.push(this.asn1Array[b].getEncodedHex());
-      }
-      1 == this.sortFlag && a.sort();
-      return this.hV = a.join("");
+        var a = new Array();
+        for (var i = 0; i < this.asn1Array.length; i++) {
+            var asn1Obj = this.asn1Array[i];
+            a.push(asn1Obj.getEncodedHex());
+        }
+        if (this.sortFlag == true) a.sort();
+        this.hV = a.join('');
+        return this.hV;
     };
-    "undefined" != typeof b && "undefined" != typeof b.sortflag && 0 == b.sortflag && (this.sortFlag = !1);
-  };
-  m.extend(e.asn1.DERSet, e.asn1.DERAbstractStructured);
-  e.asn1.DERTaggedObject = function(b) {
-    e.asn1.DERTaggedObject.superclass.constructor.call(this);
+
+    if (typeof params != "undefined") {
+        if (typeof params.sortflag != "undefined" &&
+            params.sortflag == false)
+            this.sortFlag = false;
+    }
+};
+YAHOO.lang.extend(KJUR.asn1.DERSet, KJUR.asn1.DERAbstractStructured);
+
+// ********************************************************************
+/**
+ * class for ASN.1 DER TaggedObject
+ * @name KJUR.asn1.DERTaggedObject
+ * @class class for ASN.1 DER TaggedObject
+ * @extends KJUR.asn1.ASN1Object
+ * @description
+ * <br/>
+ * Parameter 'tagNoNex' is ASN.1 tag(T) value for this object.
+ * For example, if you find '[1]' tag in a ASN.1 dump,
+ * 'tagNoHex' will be 'a1'.
+ * <br/>
+ * As for optional argument 'params' for constructor, you can specify *ANY* of
+ * following properties:
+ * <ul>
+ * <li>explicit - specify true if this is explicit tag otherwise false
+ *     (default is 'true').</li>
+ * <li>tag - specify tag (default is 'a0' which means [0])</li>
+ * <li>obj - specify ASN1Object which is tagged</li>
+ * </ul>
+ * @example
+ * d1 = new KJUR.asn1.DERUTF8String({'str':'a'});
+ * d2 = new KJUR.asn1.DERTaggedObject({'obj': d1});
+ * hex = d2.getEncodedHex();
+ */
+KJUR.asn1.DERTaggedObject = function(params) {
+    KJUR.asn1.DERTaggedObject.superclass.constructor.call(this);
     this.hT = "a0";
-    this.hV = "";
-    this.isExplicit = !0;
+    this.hV = '';
+    this.isExplicit = true;
     this.asn1Object = null;
-    this.setASN1Object = function(a, b, d) {
-      this.hT = b;
-      this.isExplicit = a;
-      this.asn1Object = d;
-      this.isExplicit ? (this.hV = this.asn1Object.getEncodedHex(), this.hTLV = null, this.isModified = !0) : (this.hV = null, this.hTLV = d.getEncodedHex(), this.hTLV = this.hTLV.replace(/^../, b), this.isModified = !1);
-    };
-    this.getFreshValueHex = function() {
-      return this.hV;
-    };
-    "undefined" != typeof b && ("undefined" != typeof b.tag && (this.hT = b.tag), "undefined" != typeof b.explicit && (this.isExplicit = b.explicit), "undefined" != typeof b.obj && (this.asn1Object = b.obj, this.setASN1Object(this.isExplicit, this.hT, this.asn1Object)));
-  };
-  m.extend(e.asn1.DERTaggedObject, e.asn1.ASN1Object);
-  var W = function(b) {
-    function a(c) {
-      var d = b.call(this) || this;
-      c && ("string" === typeof c ? d.parseKey(c) : (a.hasPrivateKeyProperty(c) || a.hasPublicKeyProperty(c)) && d.parsePropertiesFrom(c));
-      return d;
-    }
-    Y(a, b);
-    a.prototype.parseKey = function(a) {
-      try {
-        var b = 0, c = 0, f = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/.test(a) ? da.decode(a) : N.unarmor(a), e = ia.decode(f);
-        3 === e.sub.length && (e = e.sub[2].sub[0]);
-        if (9 === e.sub.length) {
-          b = e.sub[1].getHexStringValue();
-          this.n = t(b, 16);
-          c = e.sub[2].getHexStringValue();
-          this.e = parseInt(c, 16);
-          var h = e.sub[3].getHexStringValue();
-          this.d = t(h, 16);
-          var l = e.sub[4].getHexStringValue();
-          this.p = t(l, 16);
-          var m = e.sub[5].getHexStringValue();
-          this.q = t(m, 16);
-          var n = e.sub[6].getHexStringValue();
-          this.dmp1 = t(n, 16);
-          var q = e.sub[7].getHexStringValue();
-          this.dmq1 = t(q, 16);
-          var r = e.sub[8].getHexStringValue();
-          this.coeff = t(r, 16);
+
+    /**
+     * set value by an ASN1Object
+     * @name setString
+     * @memberOf KJUR.asn1.DERTaggedObject#
+     * @function
+     * @param {Boolean} isExplicitFlag flag for explicit/implicit tag
+     * @param {Integer} tagNoHex hexadecimal string of ASN.1 tag
+     * @param {ASN1Object} asn1Object ASN.1 to encapsulate
+     */
+    this.setASN1Object = function(isExplicitFlag, tagNoHex, asn1Object) {
+        this.hT = tagNoHex;
+        this.isExplicit = isExplicitFlag;
+        this.asn1Object = asn1Object;
+        if (this.isExplicit) {
+            this.hV = this.asn1Object.getEncodedHex();
+            this.hTLV = null;
+            this.isModified = true;
         } else {
-          if (2 === e.sub.length) {
-            var u = e.sub[1].sub[0];
-            b = u.sub[0].getHexStringValue();
-            this.n = t(b, 16);
-            c = u.sub[1].getHexStringValue();
-            this.e = parseInt(c, 16);
-          } else {
-            return !1;
-          }
+            this.hV = null;
+            this.hTLV = asn1Object.getEncodedHex();
+            this.hTLV = this.hTLV.replace(/^../, tagNoHex);
+            this.isModified = false;
         }
-        return !0;
-      } catch (na) {
-        return !1;
-      }
     };
-    a.prototype.getPrivateBaseKey = function() {
-      var a = {array:[new e.asn1.DERInteger({int:0}), new e.asn1.DERInteger({bigint:this.n}), new e.asn1.DERInteger({int:this.e}), new e.asn1.DERInteger({bigint:this.d}), new e.asn1.DERInteger({bigint:this.p}), new e.asn1.DERInteger({bigint:this.q}), new e.asn1.DERInteger({bigint:this.dmp1}), new e.asn1.DERInteger({bigint:this.dmq1}), new e.asn1.DERInteger({bigint:this.coeff})]};
-      return (new e.asn1.DERSequence(a)).getEncodedHex();
+
+    this.getFreshValueHex = function() {
+        return this.hV;
     };
-    a.prototype.getPrivateBaseKeyB64 = function() {
-      return M(this.getPrivateBaseKey());
-    };
-    a.prototype.getPublicBaseKey = function() {
-      var a = new e.asn1.DERSequence({array:[new e.asn1.DERObjectIdentifier({oid:"1.2.840.113549.1.1.1"}), new e.asn1.DERNull]}), b = new e.asn1.DERSequence({array:[new e.asn1.DERInteger({bigint:this.n}), new e.asn1.DERInteger({int:this.e})]});
-      b = new e.asn1.DERBitString({hex:"00" + b.getEncodedHex()});
-      return (new e.asn1.DERSequence({array:[a, b]})).getEncodedHex();
-    };
-    a.prototype.getPublicBaseKeyB64 = function() {
-      return M(this.getPublicBaseKey());
-    };
-    a.wordwrap = function(a, b) {
-      b = b || 64;
-      return a ? a.match(RegExp("(.{1," + b + "})( +|$\n?)|(.{1," + b + "})", "g")).join("\n") : a;
-    };
-    a.prototype.getPrivateKey = function() {
-      return "-----BEGIN RSA PRIVATE KEY-----\n" + (a.wordwrap(this.getPrivateBaseKeyB64()) + "\n") + "-----END RSA PRIVATE KEY-----";
-    };
-    a.prototype.getPublicKey = function() {
-      return "-----BEGIN PUBLIC KEY-----\n" + (a.wordwrap(this.getPublicBaseKeyB64()) + "\n") + "-----END PUBLIC KEY-----";
-    };
-    a.hasPublicKeyProperty = function(a) {
-      a = a || {};
-      return a.hasOwnProperty("n") && a.hasOwnProperty("e");
-    };
-    a.hasPrivateKeyProperty = function(a) {
-      a = a || {};
-      return a.hasOwnProperty("n") && a.hasOwnProperty("e") && a.hasOwnProperty("d") && a.hasOwnProperty("p") && a.hasOwnProperty("q") && a.hasOwnProperty("dmp1") && a.hasOwnProperty("dmq1") && a.hasOwnProperty("coeff");
-    };
-    a.prototype.parsePropertiesFrom = function(a) {
-      this.n = a.n;
-      this.e = a.e;
-      a.hasOwnProperty("d") && (this.d = a.d, this.p = a.p, this.q = a.q, this.dmp1 = a.dmp1, this.dmq1 = a.dmq1, this.coeff = a.coeff);
-    };
-    return a;
-  }(q);
-  q = function() {
-    function b(a) {
-      a = a || {};
-      this.default_key_size = parseInt(a.default_key_size, 10) || 1024;
-      this.default_public_exponent = a.default_public_exponent || "010001";
-      this.log = a.log || !1;
-      this.key = null;
+
+    if (typeof params != "undefined") {
+        if (typeof params['tag'] != "undefined") {
+            this.hT = params['tag'];
+        }
+        if (typeof params['explicit'] != "undefined") {
+            this.isExplicit = params['explicit'];
+        }
+        if (typeof params['obj'] != "undefined") {
+            this.asn1Object = params['obj'];
+            this.setASN1Object(this.isExplicit, this.hT, this.asn1Object);
+        }
     }
-    b.prototype.setKey = function(a) {
-      this.log && this.key && console.warn("A key was already set, overriding existing.");
-      this.key = new W(a);
-    };
-    b.prototype.setPrivateKey = function(a) {
-      this.setKey(a);
-    };
-    b.prototype.setPublicKey = function(a) {
-      this.setKey(a);
-    };
-    b.prototype.decrypt = function(a) {
-      try {
-        return this.getKey().decrypt(X(a));
-      } catch (c) {
-        return !1;
-      }
-    };
-    b.prototype.encrypt = function(a) {
-      try {
-        return M(this.getKey().encrypt(a));
-      } catch (c) {
-        return !1;
-      }
-    };
-    b.prototype.getKey = function(a) {
-      if (!this.key) {
-        this.key = new W;
-        if (a && "[object Function]" === {}.toString.call(a)) {
-          this.key.generateAsync(this.default_key_size, this.default_public_exponent, a);
-          return;
+};
+YAHOO.lang.extend(KJUR.asn1.DERTaggedObject, KJUR.asn1.ASN1Object);
+
+/**
+ * Create a new JSEncryptRSAKey that extends Tom Wu's RSA key object.
+ * This object is just a decorator for parsing the key parameter
+ * @param {string|Object} key - The key in string format, or an object containing
+ * the parameters needed to build a RSAKey object.
+ * @constructor
+ */
+var JSEncryptRSAKey = /** @class */ (function (_super) {
+    __extends(JSEncryptRSAKey, _super);
+    function JSEncryptRSAKey(key) {
+        var _this = _super.call(this) || this;
+        // Call the super constructor.
+        //  RSAKey.call(this);
+        // If a key key was provided.
+        if (key) {
+            // If this is a string...
+            if (typeof key === "string") {
+                _this.parseKey(key);
+            }
+            else if (JSEncryptRSAKey.hasPrivateKeyProperty(key) ||
+                JSEncryptRSAKey.hasPublicKeyProperty(key)) {
+                // Set the values for the key.
+                _this.parsePropertiesFrom(key);
+            }
         }
-        this.key.generate(this.default_key_size, this.default_public_exponent);
-      }
-      return this.key;
+        return _this;
+    }
+    /**
+     * Method to parse a pem encoded string containing both a public or private key.
+     * The method will translate the pem encoded string in a der encoded string and
+     * will parse private key and public key parameters. This method accepts public key
+     * in the rsaencryption pkcs #1 format (oid: 1.2.840.113549.1.1.1).
+     *
+     * @todo Check how many rsa formats use the same format of pkcs #1.
+     *
+     * The format is defined as:
+     * PublicKeyInfo ::= SEQUENCE {
+     *   algorithm       AlgorithmIdentifier,
+     *   PublicKey       BIT STRING
+     * }
+     * Where AlgorithmIdentifier is:
+     * AlgorithmIdentifier ::= SEQUENCE {
+     *   algorithm       OBJECT IDENTIFIER,     the OID of the enc algorithm
+     *   parameters      ANY DEFINED BY algorithm OPTIONAL (NULL for PKCS #1)
+     * }
+     * and PublicKey is a SEQUENCE encapsulated in a BIT STRING
+     * RSAPublicKey ::= SEQUENCE {
+     *   modulus           INTEGER,  -- n
+     *   publicExponent    INTEGER   -- e
+     * }
+     * it's possible to examine the structure of the keys obtained from openssl using
+     * an asn.1 dumper as the one used here to parse the components: http://lapo.it/asn1js/
+     * @argument {string} pem the pem encoded string, can include the BEGIN/END header/footer
+     * @private
+     */
+    JSEncryptRSAKey.prototype.parseKey = function (pem) {
+        try {
+            var modulus = 0;
+            var public_exponent = 0;
+            var reHex = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/;
+            var der = reHex.test(pem) ? Hex.decode(pem) : Base64.unarmor(pem);
+            var asn1 = ASN1.decode(der);
+            // Fixes a bug with OpenSSL 1.0+ private keys
+            if (asn1.sub.length === 3) {
+                asn1 = asn1.sub[2].sub[0];
+            }
+            if (asn1.sub.length === 9) {
+                // Parse the private key.
+                modulus = asn1.sub[1].getHexStringValue(); // bigint
+                this.n = parseBigInt(modulus, 16);
+                public_exponent = asn1.sub[2].getHexStringValue(); // int
+                this.e = parseInt(public_exponent, 16);
+                var private_exponent = asn1.sub[3].getHexStringValue(); // bigint
+                this.d = parseBigInt(private_exponent, 16);
+                var prime1 = asn1.sub[4].getHexStringValue(); // bigint
+                this.p = parseBigInt(prime1, 16);
+                var prime2 = asn1.sub[5].getHexStringValue(); // bigint
+                this.q = parseBigInt(prime2, 16);
+                var exponent1 = asn1.sub[6].getHexStringValue(); // bigint
+                this.dmp1 = parseBigInt(exponent1, 16);
+                var exponent2 = asn1.sub[7].getHexStringValue(); // bigint
+                this.dmq1 = parseBigInt(exponent2, 16);
+                var coefficient = asn1.sub[8].getHexStringValue(); // bigint
+                this.coeff = parseBigInt(coefficient, 16);
+            }
+            else if (asn1.sub.length === 2) {
+                // Parse the public key.
+                var bit_string = asn1.sub[1];
+                var sequence = bit_string.sub[0];
+                modulus = sequence.sub[0].getHexStringValue();
+                this.n = parseBigInt(modulus, 16);
+                public_exponent = sequence.sub[1].getHexStringValue();
+                this.e = parseInt(public_exponent, 16);
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        catch (ex) {
+            return false;
+        }
     };
-    b.prototype.getPrivateKey = function() {
-      return this.getKey().getPrivateKey();
+    /**
+     * Translate rsa parameters in a hex encoded string representing the rsa key.
+     *
+     * The translation follow the ASN.1 notation :
+     * RSAPrivateKey ::= SEQUENCE {
+     *   version           Version,
+     *   modulus           INTEGER,  -- n
+     *   publicExponent    INTEGER,  -- e
+     *   privateExponent   INTEGER,  -- d
+     *   prime1            INTEGER,  -- p
+     *   prime2            INTEGER,  -- q
+     *   exponent1         INTEGER,  -- d mod (p1)
+     *   exponent2         INTEGER,  -- d mod (q-1)
+     *   coefficient       INTEGER,  -- (inverse of q) mod p
+     * }
+     * @returns {string}  DER Encoded String representing the rsa private key
+     * @private
+     */
+    JSEncryptRSAKey.prototype.getPrivateBaseKey = function () {
+        var options = {
+            array: [
+                new KJUR.asn1.DERInteger({ int: 0 }),
+                new KJUR.asn1.DERInteger({ bigint: this.n }),
+                new KJUR.asn1.DERInteger({ int: this.e }),
+                new KJUR.asn1.DERInteger({ bigint: this.d }),
+                new KJUR.asn1.DERInteger({ bigint: this.p }),
+                new KJUR.asn1.DERInteger({ bigint: this.q }),
+                new KJUR.asn1.DERInteger({ bigint: this.dmp1 }),
+                new KJUR.asn1.DERInteger({ bigint: this.dmq1 }),
+                new KJUR.asn1.DERInteger({ bigint: this.coeff })
+            ]
+        };
+        var seq = new KJUR.asn1.DERSequence(options);
+        return seq.getEncodedHex();
     };
-    b.prototype.getPrivateKeyB64 = function() {
-      return this.getKey().getPrivateBaseKeyB64();
+    /**
+     * base64 (pem) encoded version of the DER encoded representation
+     * @returns {string} pem encoded representation without header and footer
+     * @public
+     */
+    JSEncryptRSAKey.prototype.getPrivateBaseKeyB64 = function () {
+        return hex2b64(this.getPrivateBaseKey());
     };
-    b.prototype.getPublicKey = function() {
-      return this.getKey().getPublicKey();
+    /**
+     * Translate rsa parameters in a hex encoded string representing the rsa public key.
+     * The representation follow the ASN.1 notation :
+     * PublicKeyInfo ::= SEQUENCE {
+     *   algorithm       AlgorithmIdentifier,
+     *   PublicKey       BIT STRING
+     * }
+     * Where AlgorithmIdentifier is:
+     * AlgorithmIdentifier ::= SEQUENCE {
+     *   algorithm       OBJECT IDENTIFIER,     the OID of the enc algorithm
+     *   parameters      ANY DEFINED BY algorithm OPTIONAL (NULL for PKCS #1)
+     * }
+     * and PublicKey is a SEQUENCE encapsulated in a BIT STRING
+     * RSAPublicKey ::= SEQUENCE {
+     *   modulus           INTEGER,  -- n
+     *   publicExponent    INTEGER   -- e
+     * }
+     * @returns {string} DER Encoded String representing the rsa public key
+     * @private
+     */
+    JSEncryptRSAKey.prototype.getPublicBaseKey = function () {
+        var first_sequence = new KJUR.asn1.DERSequence({
+            array: [
+                new KJUR.asn1.DERObjectIdentifier({ oid: "1.2.840.113549.1.1.1" }),
+                new KJUR.asn1.DERNull()
+            ]
+        });
+        var second_sequence = new KJUR.asn1.DERSequence({
+            array: [
+                new KJUR.asn1.DERInteger({ bigint: this.n }),
+                new KJUR.asn1.DERInteger({ int: this.e })
+            ]
+        });
+        var bit_string = new KJUR.asn1.DERBitString({
+            hex: "00" + second_sequence.getEncodedHex()
+        });
+        var seq = new KJUR.asn1.DERSequence({
+            array: [
+                first_sequence,
+                bit_string
+            ]
+        });
+        return seq.getEncodedHex();
     };
-    b.prototype.getPublicKeyB64 = function() {
-      return this.getKey().getPublicBaseKeyB64();
+    /**
+     * base64 (pem) encoded version of the DER encoded representation
+     * @returns {string} pem encoded representation without header and footer
+     * @public
+     */
+    JSEncryptRSAKey.prototype.getPublicBaseKeyB64 = function () {
+        return hex2b64(this.getPublicBaseKey());
     };
-    b.version = "3.0.0-beta.1";
-    return b;
-  }();
-  window.JSEncrypt = q;
-  D.JSEncrypt = q;
-  D.default = q;
-  Object.defineProperty(D, "__esModule", {value:!0});
-});
+    /**
+     * wrap the string in block of width chars. The default value for rsa keys is 64
+     * characters.
+     * @param {string} str the pem encoded string without header and footer
+     * @param {Number} [width=64] - the length the string has to be wrapped at
+     * @returns {string}
+     * @private
+     */
+    JSEncryptRSAKey.wordwrap = function (str, width) {
+        width = width || 64;
+        if (!str) {
+            return str;
+        }
+        var regex = "(.{1," + width + "})( +|$\n?)|(.{1," + width + "})";
+        return str.match(RegExp(regex, "g")).join("\n");
+    };
+    /**
+     * Retrieve the pem encoded private key
+     * @returns {string} the pem encoded private key with header/footer
+     * @public
+     */
+    JSEncryptRSAKey.prototype.getPrivateKey = function () {
+        var key = "-----BEGIN RSA PRIVATE KEY-----\n";
+        key += JSEncryptRSAKey.wordwrap(this.getPrivateBaseKeyB64()) + "\n";
+        key += "-----END RSA PRIVATE KEY-----";
+        return key;
+    };
+    /**
+     * Retrieve the pem encoded public key
+     * @returns {string} the pem encoded public key with header/footer
+     * @public
+     */
+    JSEncryptRSAKey.prototype.getPublicKey = function () {
+        var key = "-----BEGIN PUBLIC KEY-----\n";
+        key += JSEncryptRSAKey.wordwrap(this.getPublicBaseKeyB64()) + "\n";
+        key += "-----END PUBLIC KEY-----";
+        return key;
+    };
+    /**
+     * Check if the object contains the necessary parameters to populate the rsa modulus
+     * and public exponent parameters.
+     * @param {Object} [obj={}] - An object that may contain the two public key
+     * parameters
+     * @returns {boolean} true if the object contains both the modulus and the public exponent
+     * properties (n and e)
+     * @todo check for types of n and e. N should be a parseable bigInt object, E should
+     * be a parseable integer number
+     * @private
+     */
+    JSEncryptRSAKey.hasPublicKeyProperty = function (obj) {
+        obj = obj || {};
+        return (obj.hasOwnProperty("n") &&
+            obj.hasOwnProperty("e"));
+    };
+    /**
+     * Check if the object contains ALL the parameters of an RSA key.
+     * @param {Object} [obj={}] - An object that may contain nine rsa key
+     * parameters
+     * @returns {boolean} true if the object contains all the parameters needed
+     * @todo check for types of the parameters all the parameters but the public exponent
+     * should be parseable bigint objects, the public exponent should be a parseable integer number
+     * @private
+     */
+    JSEncryptRSAKey.hasPrivateKeyProperty = function (obj) {
+        obj = obj || {};
+        return (obj.hasOwnProperty("n") &&
+            obj.hasOwnProperty("e") &&
+            obj.hasOwnProperty("d") &&
+            obj.hasOwnProperty("p") &&
+            obj.hasOwnProperty("q") &&
+            obj.hasOwnProperty("dmp1") &&
+            obj.hasOwnProperty("dmq1") &&
+            obj.hasOwnProperty("coeff"));
+    };
+    /**
+     * Parse the properties of obj in the current rsa object. Obj should AT LEAST
+     * include the modulus and public exponent (n, e) parameters.
+     * @param {Object} obj - the object containing rsa parameters
+     * @private
+     */
+    JSEncryptRSAKey.prototype.parsePropertiesFrom = function (obj) {
+        this.n = obj.n;
+        this.e = obj.e;
+        if (obj.hasOwnProperty("d")) {
+            this.d = obj.d;
+            this.p = obj.p;
+            this.q = obj.q;
+            this.dmp1 = obj.dmp1;
+            this.dmq1 = obj.dmq1;
+            this.coeff = obj.coeff;
+        }
+    };
+    return JSEncryptRSAKey;
+}(RSAKey));
+
+/**
+ *
+ * @param {Object} [options = {}] - An object to customize JSEncrypt behaviour
+ * possible parameters are:
+ * - default_key_size        {number}  default: 1024 the key size in bit
+ * - default_public_exponent {string}  default: '010001' the hexadecimal representation of the public exponent
+ * - log                     {boolean} default: false whether log warn/error or not
+ * @constructor
+ */
+var JSEncrypt = /** @class */ (function () {
+    function JSEncrypt(options) {
+        options = options || {};
+        this.default_key_size = parseInt(options.default_key_size, 10) || 1024;
+        this.default_public_exponent = options.default_public_exponent || "010001"; // 65537 default openssl public exponent for rsa key type
+        this.log = options.log || false;
+        // The private and public key.
+        this.key = null;
+    }
+    /**
+     * Method to set the rsa key parameter (one method is enough to set both the public
+     * and the private key, since the private key contains the public key paramenters)
+     * Log a warning if logs are enabled
+     * @param {Object|string} key the pem encoded string or an object (with or without header/footer)
+     * @public
+     */
+    JSEncrypt.prototype.setKey = function (key) {
+        if (this.log && this.key) {
+            console.warn("A key was already set, overriding existing.");
+        }
+        this.key = new JSEncryptRSAKey(key);
+    };
+    /**
+     * Proxy method for setKey, for api compatibility
+     * @see setKey
+     * @public
+     */
+    JSEncrypt.prototype.setPrivateKey = function (privkey) {
+        // Create the key.
+        this.setKey(privkey);
+    };
+    /**
+     * Proxy method for setKey, for api compatibility
+     * @see setKey
+     * @public
+     */
+    JSEncrypt.prototype.setPublicKey = function (pubkey) {
+        // Sets the public key.
+        this.setKey(pubkey);
+    };
+    /**
+     * Proxy method for RSAKey object's decrypt, decrypt the string using the private
+     * components of the rsa key object. Note that if the object was not set will be created
+     * on the fly (by the getKey method) using the parameters passed in the JSEncrypt constructor
+     * @param {string} str base64 encoded crypted string to decrypt
+     * @return {string} the decrypted string
+     * @public
+     */
+    JSEncrypt.prototype.decrypt = function (str) {
+        // Return the decrypted string.
+        try {
+            return this.getKey().decrypt(b64tohex(str));
+        }
+        catch (ex) {
+            return false;
+        }
+    };
+    /**
+     * Proxy method for RSAKey object's encrypt, encrypt the string using the public
+     * components of the rsa key object. Note that if the object was not set will be created
+     * on the fly (by the getKey method) using the parameters passed in the JSEncrypt constructor
+     * @param {string} str the string to encrypt
+     * @return {string} the encrypted string encoded in base64
+     * @public
+     */
+    JSEncrypt.prototype.encrypt = function (str) {
+        // Return the encrypted string.
+        try {
+            return hex2b64(this.getKey().encrypt(str));
+        }
+        catch (ex) {
+            return false;
+        }
+    };
+    /**
+     * Getter for the current JSEncryptRSAKey object. If it doesn't exists a new object
+     * will be created and returned
+     * @param {callback} [cb] the callback to be called if we want the key to be generated
+     * in an async fashion
+     * @returns {JSEncryptRSAKey} the JSEncryptRSAKey object
+     * @public
+     */
+    JSEncrypt.prototype.getKey = function (cb) {
+        // Only create new if it does not exist.
+        if (!this.key) {
+            // Get a new private key.
+            this.key = new JSEncryptRSAKey();
+            if (cb && {}.toString.call(cb) === "[object Function]") {
+                this.key.generateAsync(this.default_key_size, this.default_public_exponent, cb);
+                return;
+            }
+            // Generate the key.
+            this.key.generate(this.default_key_size, this.default_public_exponent);
+        }
+        return this.key;
+    };
+    /**
+     * Returns the pem encoded representation of the private key
+     * If the key doesn't exists a new key will be created
+     * @returns {string} pem encoded representation of the private key WITH header and footer
+     * @public
+     */
+    JSEncrypt.prototype.getPrivateKey = function () {
+        // Return the private representation of this key.
+        return this.getKey().getPrivateKey();
+    };
+    /**
+     * Returns the pem encoded representation of the private key
+     * If the key doesn't exists a new key will be created
+     * @returns {string} pem encoded representation of the private key WITHOUT header and footer
+     * @public
+     */
+    JSEncrypt.prototype.getPrivateKeyB64 = function () {
+        // Return the private representation of this key.
+        return this.getKey().getPrivateBaseKeyB64();
+    };
+    /**
+     * Returns the pem encoded representation of the public key
+     * If the key doesn't exists a new key will be created
+     * @returns {string} pem encoded representation of the public key WITH header and footer
+     * @public
+     */
+    JSEncrypt.prototype.getPublicKey = function () {
+        // Return the private representation of this key.
+        return this.getKey().getPublicKey();
+    };
+    /**
+     * Returns the pem encoded representation of the public key
+     * If the key doesn't exists a new key will be created
+     * @returns {string} pem encoded representation of the public key WITHOUT header and footer
+     * @public
+     */
+    JSEncrypt.prototype.getPublicKeyB64 = function () {
+        // Return the private representation of this key.
+        return this.getKey().getPublicBaseKeyB64();
+    };
+    JSEncrypt.version = "3.0.0-beta.1";
+    return JSEncrypt;
+}());
+
+window.JSEncrypt = JSEncrypt;
+
+exports.JSEncrypt = JSEncrypt;
+exports.default = JSEncrypt;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));

@@ -25,9 +25,9 @@ function initialisation() {
 }
 function loadPlugins() {
   var a = $.Deferred();
-  var b = globalLoader.AsyncScriptLoader(app.config.min ? "../js/plugin/all.plugin.min." + app.config.version.app + ".js" : "../js/plugin/plugins.js");
+  var b = lapstone.globalLoader.AsyncScriptLoader(app.config.min ? "../js/plugin/all.plugin.min." + app.config.version.app + ".js" : "../js/plugin/plugins.js");
   b.done(function() {
-    startup.addFunction("                  plugin constructor", app.plugins.constructor);
+    lapstone.startup.addFunction("                  plugin constructor", app.plugins.constructor);
     a.resolve();
   });
   b.fail(function() {
@@ -37,9 +37,9 @@ function loadPlugins() {
 }
 function loadPages() {
   var a = $.Deferred();
-  var b = globalLoader.AsyncScriptLoader(app.config.min ? "../js/page/all.page.min." + app.config.version.app + ".js" : "../js/page/pages.js");
+  var b = lapstone.globalLoader.AsyncScriptLoader(app.config.min ? "../js/page/all.page.min." + app.config.version.app + ".js" : "../js/page/pages.js");
   b.done(function() {
-    startup.addFunction("                  page constructor", app.pages.constructor);
+    lapstone.startup.addFunction("                  page constructor", app.pages.constructor);
     a.resolve();
   });
   b.fail(function() {
@@ -49,10 +49,10 @@ function loadPages() {
 }
 function loadConfiguration() {
   var a = $.Deferred();
-  var b = globalLoader.AsyncJsonLoader("../js/lapstone.json");
+  var b = lapstone.globalLoader.AsyncJsonLoader("../js/lapstone.json");
   b.done(function(b) {
     $.extend(!0, app.config, b);
-    initialisationPanel.start().done(function() {
+    lapstone.initialisationPanel.start().done(function() {
       $(".lapstone-version").text(app.config.version.lapstone);
       $(".app-version").text(app.config.version.app);
       void 0 === b.name && console.warn("lapstone.json has no 'name' property.");
@@ -83,12 +83,12 @@ function updateFramework() {
     var c = app.config.version.lapstone;
     var e = app.config.version.app;
     !0 === app.config.version.update && (console.warn("update done"), window.plugin_Informator ? app.info.set("app.config.version.update", !1) : console.log("Update mechanism doesn't works without Informator plugin."), app.notify.add.alert({id:"updateDone", title:app.lang.string("update done - title", "lapstone", {version:app.config.version.app}), text:app.lang.string("update done - text", "lapstone", {version:app.config.version.app}), button:app.lang.string("update done - button", "lapstone")}));
-    b != c || d != e ? (console.warn("TODO Lastone || App Version Update"), app.info.set("app.config.version.app", d), app.info.set("app.config.version.lapstone", b), globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(c) {
+    b != c || d != e ? (console.warn("TODO Lastone || App Version Update"), app.info.set("app.config.version.app", d), app.info.set("app.config.version.lapstone", b), lapstone.globalLoader.AsyncJsonLoader("../files/update/registry.json", 3).done(function(c) {
       var e = [];
       $.each(c.updateRegistry, function(a, c) {
         console.log(JSON.stringify(c));
-        c.startWithAppVersion && c.stopWithAppVersion && d.toIntegerVersion() >= c.startWithAppVersion.toIntegerVersion() && d.toIntegerVersion() < c.stopWithAppVersion.toIntegerVersion() && (console.warn("App Update: " + c.description), e.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + c.updateScript, 1)));
-        c.startWithLapstoneVersion && c.stopWithLapstoneVersion && b.toIntegerVersion() >= c.startWithLapstoneVersion.toIntegerVersion() && b.toIntegerVersion() < c.stopWithLapstoneVersion.toIntegerVersion() && (console.warn("Lapstone Update: " + c.description), e.push(globalLoader.AsyncScriptLoader("../files/update/scripts/" + c.updateScript, 1)));
+        c.startWithAppVersion && c.stopWithAppVersion && d.toIntegerVersion() >= c.startWithAppVersion.toIntegerVersion() && d.toIntegerVersion() < c.stopWithAppVersion.toIntegerVersion() && (console.warn("App Update: " + c.description), e.push(lapstone.globalLoader.AsyncScriptLoader("../files/update/scripts/" + c.updateScript, 1)));
+        c.startWithLapstoneVersion && c.stopWithLapstoneVersion && b.toIntegerVersion() >= c.startWithLapstoneVersion.toIntegerVersion() && b.toIntegerVersion() < c.stopWithLapstoneVersion.toIntegerVersion() && (console.warn("Lapstone Update: " + c.description), e.push(lapstone.globalLoader.AsyncScriptLoader("../files/update/scripts/" + c.updateScript, 1)));
       });
       $.when.apply($, e).done(function() {
         app.info.set("app.config.version.update", !0);
@@ -115,7 +115,7 @@ function cacheAjax() {
 }
 function loadJQueryMobile() {
   var a = $.Deferred();
-  var b = globalLoader.AsyncScriptLoader("../ext/jQueryMobile/jquery.mobile.min.js");
+  var b = lapstone.globalLoader.AsyncScriptLoader("../ext/jQueryMobile/jquery.mobile.min.js");
   b.done(function() {
     a.resolve();
   });
@@ -124,21 +124,20 @@ function loadJQueryMobile() {
   });
   return a.promise();
 }
-var globalLoader, startupDefinition, initialisationPanel, startup;
-globalLoader = {globalTimeout:10000, globalAttempts:3, AsyncJsonLoader:function(a, b, d, c) {
+var lapstone = {globalLoader:{globalTimeout:10000, globalAttempts:3, AsyncJsonLoader:function(a, b, d, c) {
   void 0 == c && (c = $.Deferred());
   void 0 == d && (d = 1);
-  void 0 == b && (b = globalLoader.globalAttempts);
-  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"json", timeout:globalLoader.globalTimeout}).done(function(e, f, g) {
-    "timeout" === f ? (startup.log("Timeout while loading: " + a), startup.log("It was attempt " + d + " of " + b + "."), d < b ? (startup.log("So we try again."), globalLoader.AsyncJsonLoader(a, b, d + 1, c)) : (startup.log("So the framework loading fails."), c.reject(f))) : c.resolve(e);
+  void 0 == b && (b = lapstone.globalLoader.globalAttempts);
+  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"json", timeout:lapstone.globalLoader.globalTimeout}).done(function(e, f, g) {
+    "timeout" === f ? (lapstone.startup.log("Timeout while loading: " + a), lapstone.startup.log("It was attempt " + d + " of " + b + "."), d < b ? (lapstone.startup.log("So we try again."), lapstone.globalLoader.AsyncJsonLoader(a, b, d + 1, c)) : (lapstone.startup.log("So the framework loading fails."), c.reject(f))) : c.resolve(e);
   }).fail(function(e, f, g) {
-    d < b ? globalLoader.AsyncJsonLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load JSON. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
+    d < b ? lapstone.globalLoader.AsyncJsonLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load JSON. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
   });
   return c.promise();
 }, JsonLoader:function(a, b, d) {
   console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + a);
   var c = null;
-  $.ajax({cache:cacheAjax(), url:a, async:!1, dataType:"json", timeout:globalLoader.globalTimeout, success:function(a) {
+  $.ajax({cache:cacheAjax(), url:a, async:!1, dataType:"json", timeout:lapstone.globalLoader.globalTimeout, success:function(a) {
     c = a;
   }, error:function(b, c, d) {
     console.log("Fatal Error: Can't load JSON. Url: " + a + " Status: " + c);
@@ -149,16 +148,16 @@ globalLoader = {globalTimeout:10000, globalAttempts:3, AsyncJsonLoader:function(
 }, AsyncScriptLoader:function(a, b, d, c) {
   void 0 == c && (c = $.Deferred());
   void 0 == d && (d = 1);
-  void 0 == b && (b = globalLoader.globalAttempts);
-  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"script", timeout:globalLoader.globalTimeout}).done(function(e, f, g) {
-    "timeout" === f ? (startup.log("Timeout while loading: " + a), startup.log("It was attempt " + d + " of " + b + "."), d < b ? (startup.log("So we try again."), globalLoader.AsyncScriptLoader(a, b, d + 1, c)) : (startup.log("So the framework loading fails."), c.reject(f))) : c.resolve(e);
+  void 0 == b && (b = lapstone.globalLoader.globalAttempts);
+  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"script", timeout:lapstone.globalLoader.globalTimeout}).done(function(e, f, g) {
+    "timeout" === f ? (lapstone.startup.log("Timeout while loading: " + a), lapstone.startup.log("It was attempt " + d + " of " + b + "."), d < b ? (lapstone.startup.log("So we try again."), lapstone.globalLoader.AsyncScriptLoader(a, b, d + 1, c)) : (lapstone.startup.log("So the framework loading fails."), c.reject(f))) : c.resolve(e);
   }).fail(function(e, f, g) {
-    d < b ? globalLoader.AsyncScriptLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load Script. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
+    d < b ? lapstone.globalLoader.AsyncScriptLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load Script. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
   });
   return c.promise();
 }, ScriptLoader:function(a, b, d) {
   console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + a);
-  $.ajax({cache:cacheAjax(), url:a, async:!1, dataType:"script", timeout:globalLoader.globalTimeout, success:function(a) {
+  $.ajax({cache:cacheAjax(), url:a, async:!1, dataType:"script", timeout:lapstone.globalLoader.globalTimeout, success:function(a) {
   }, error:function(b, d, f) {
     alert("Fatal Error: Can't load Script. Url: " + a + " Status: " + d);
     console.log("             Message: " + f.message);
@@ -167,17 +166,17 @@ globalLoader = {globalTimeout:10000, globalAttempts:3, AsyncJsonLoader:function(
 }, AsyncTextLoader:function(a, b, d, c) {
   void 0 == c && (c = $.Deferred());
   void 0 == d && (d = 1);
-  void 0 == b && (b = globalLoader.globalAttempts);
-  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"text", timeout:globalLoader.globalTimeout}).done(function(e, f, g) {
-    "timeout" === f ? (startup.log("Timeout while loading: " + a), startup.log("It was attempt " + d + " of " + b + "."), d < b ? (startup.log("So we try again."), globalLoader.AsyncTextLoader(a, b, d + 1, c)) : (startup.log("So the framework loading fails."), c.reject(f))) : c.resolve(e);
+  void 0 == b && (b = lapstone.globalLoader.globalAttempts);
+  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"text", timeout:lapstone.globalLoader.globalTimeout}).done(function(e, f, g) {
+    "timeout" === f ? (lapstone.startup.log("Timeout while loading: " + a), lapstone.startup.log("It was attempt " + d + " of " + b + "."), d < b ? (lapstone.startup.log("So we try again."), lapstone.globalLoader.AsyncTextLoader(a, b, d + 1, c)) : (lapstone.startup.log("So the framework loading fails."), c.reject(f))) : c.resolve(e);
   }).fail(function(e, f, g) {
-    d < b ? globalLoader.AsyncTextLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load Text. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
+    d < b ? lapstone.globalLoader.AsyncTextLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load Text. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
   });
   return c.promise();
 }, TextLoader:function(a, b, d) {
   console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + a);
   var c = null;
-  $.ajax({cache:cacheAjax(), url:a, async:!1, dataType:"text", timeout:globalLoader.globalTimeout, success:function(a) {
+  $.ajax({cache:cacheAjax(), url:a, async:!1, dataType:"text", timeout:lapstone.globalLoader.globalTimeout, success:function(a) {
     c = a;
   }, error:function(b, c, d) {
     alert("Fatal Error: Can't load TEXT. Url: " + a + " Status: " + c);
@@ -187,7 +186,7 @@ globalLoader = {globalTimeout:10000, globalAttempts:3, AsyncJsonLoader:function(
   return c;
 }, AsyncStyleLoader:function(a, b, d) {
   var c = $.Deferred();
-  globalLoader.AsyncTextLoader(a).done(function(b) {
+  lapstone.globalLoader.AsyncTextLoader(a).done(function(b) {
     b = b.replaceAll('url("', 'url("' + a.substring(0, a.lastIndexOf("/") + 1));
     b = b.replaceAll("url('", "url('" + a.substring(0, a.lastIndexOf("/") + 1));
     $("head").append(function() {
@@ -204,19 +203,19 @@ globalLoader = {globalTimeout:10000, globalAttempts:3, AsyncJsonLoader:function(
 }, AsyncLessLoader:function(a, b, d, c) {
   void 0 == c && (c = $.Deferred());
   void 0 == d && (d = 1);
-  void 0 == b && (b = globalLoader.globalAttempts);
-  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"text", timeout:globalLoader.globalTimeout}).done(function(e, f, g) {
-    "timeout" === f ? (startup.log("Timeout while loading: " + a), startup.log("It was attempt " + d + " of " + b + "."), d < b ? (startup.log("So we try again."), globalLoader.AsyncTextLoader(a, b, d + 1, c)) : (startup.log("So the framework loading fails."), c.reject(arguments))) : (void 0 == $("style#lapstoneStyles")[0] && $("head").append(function() {
+  void 0 == b && (b = lapstone.globalLoader.globalAttempts);
+  $.ajax({cache:cacheAjax(), url:a, async:!0, dataType:"text", timeout:lapstone.globalLoader.globalTimeout}).done(function(e, f, g) {
+    "timeout" === f ? (lapstone.startup.log("Timeout while loading: " + a), lapstone.startup.log("It was attempt " + d + " of " + b + "."), d < b ? (lapstone.startup.log("So we try again."), lapstone.globalLoader.AsyncTextLoader(a, b, d + 1, c)) : (lapstone.startup.log("So the framework loading fails."), c.reject(arguments))) : (void 0 == $("style#lapstoneStyles")[0] && $("head").append(function() {
       return $("\x3cstyle\x3e").attr("id", "lapstoneStyles");
     }), $("style#lapstoneStyles").before('\x3clink rel\x3d"stylesheet/less" type\x3d"text/css" href\x3d"' + a + '"\x3e'), c.resolve(e));
   }).fail(function(e, f, g) {
-    d < b ? globalLoader.AsyncTextLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load Text. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
+    d < b ? lapstone.globalLoader.AsyncTextLoader(a, b, d + 1, c) : (console.log("Fatal Error: Can't load Text. Url: " + a + " Status: " + f), console.log("             Message: " + g.message), console.log("             Stack: " + g.stack), c.reject(arguments));
   });
   return c.promise();
 }, LessLoader:function(a, b, d) {
   a = cacheAjax() ? '\x3clink rel\x3d"stylesheet/less" type\x3d"text/css" href\x3d"' + a + '"\x3e' : '\x3clink rel\x3d"stylesheet/less" type\x3d"text/css" href\x3d"' + a + "?_\x3d" + (new Date).getTime() + '"\x3e';
   $("head").append(a);
-}};
+}}};
 $(document).bind("mobileinit", function() {
   app.debug.debug("jQuery mobile initialized", 30);
   $.mobile.ajaxEnabled = !0;
@@ -253,13 +252,13 @@ function waitForDeviceready() {
   }, 50) : (app.config.apacheCordova = !1, a.resolve());
   return a.promise();
 }
-initialisationPanel = {start:function() {
+lapstone.initialisationPanel = {start:function() {
   var a = $.Deferred();
   $("head").append("\x3ctitle\x3e");
   $("title").text("...");
   app.config.min ? ($("head").append(function() {
     return $("\x3cstyle\x3e").append(app.config.startupStyle);
-  }), $("body").append(app.config.startupContent), a.resolve()) : (globalLoader.StyleLoader("../js/lapstone.css"), globalLoader.AsyncTextLoader("../js/lapstone.html").done(function(b) {
+  }), $("body").append(app.config.startupContent), a.resolve()) : (lapstone.globalLoader.StyleLoader("../js/lapstone.css"), lapstone.globalLoader.AsyncTextLoader("../js/lapstone.html").done(function(b) {
     $("body").append(b);
     a.resolve();
   }).fail(function() {
@@ -275,47 +274,47 @@ initialisationPanel = {start:function() {
   var a = parseInt($("progress").attr("value"));
   $("progress").attr("value", a + 5);
 }, changeStatus:function() {
-  $("#LAPSTONE .lapstone-status").text(startup.currentDefinition.status);
+  $("#LAPSTONE .lapstone-status").text(lapstone.startup.currentDefinition.status);
 }, finish:function() {
-  initialisationPanel.hide();
+  lapstone.initialisationPanel.hide();
 }};
-startupDefinition = [{status:"Lapstone startup: loading configuration", "function":loadConfiguration}, {status:"Lapstone startup: initialisation", "function":initialisation}, {status:"Lapstone startup: load plugins", "function":loadPlugins}, {status:"Lapstone startup: load pages", "function":loadPages}, {status:"Lapstone startup: checking for updates", "function":updateFramework}, {status:"Lapstone startup: load jQueryMobile", "function":loadJQueryMobile}, {status:"Lapstone startup: wait for apache cordova deviceready event", 
+lapstone.startupDefinition = [{status:"Lapstone startup: loading configuration", "function":loadConfiguration}, {status:"Lapstone startup: initialisation", "function":initialisation}, {status:"Lapstone startup: load plugins", "function":loadPlugins}, {status:"Lapstone startup: load pages", "function":loadPages}, {status:"Lapstone startup: checking for updates", "function":updateFramework}, {status:"Lapstone startup: load jQueryMobile", "function":loadJQueryMobile}, {status:"Lapstone startup: wait for apache cordova deviceready event", 
 "function":waitForDeviceready}, {status:"Lapstone startup: wait for jQuerysmobile mobileinit event", "function":waitForMobileinit}];
-startup = {currentDefinition:{status:"----------------- Starting the Lapstone Framework"}, dfd:$.Deferred(), timestamp:Date.now() / 1000, startupTimestamp:Date.now() / 1000, promise:null, images:{}, addFunction:function(a, b) {
-  startupDefinition.unshift({status:a, "function":b});
+lapstone.startup = {currentDefinition:{status:"----------------- Starting the Lapstone Framework"}, dfd:$.Deferred(), timestamp:Date.now() / 1000, startupTimestamp:Date.now() / 1000, promise:null, images:{}, addFunction:function(a, b) {
+  lapstone.startupDefinition.unshift({status:a, "function":b});
 }, log:function() {
   var a = Date.now() / 1000;
-  console.log("LST " + (a - startup.timestamp).toFixed(3) + "s: " + startup.currentDefinition.status);
-  startup.timestamp = a;
+  console.log("LST " + (a - lapstone.startup.timestamp).toFixed(3) + "s: " + lapstone.startup.currentDefinition.status);
+  lapstone.startup.timestamp = a;
 }, functionDone:function(a) {
-  startup.currentDefinition = startupDefinition.shift();
-  startup.currentDefinition ? (initialisationPanel.changeStatus(), initialisationPanel.updateProgress(), startup.log(), a = startup.currentDefinition["function"](), a.done(function() {
-    startup.functionDone(arguments);
+  lapstone.startup.currentDefinition = lapstone.startupDefinition.shift();
+  lapstone.startup.currentDefinition ? (lapstone.initialisationPanel.changeStatus(), lapstone.initialisationPanel.updateProgress(), lapstone.startup.log(), a = lapstone.startup.currentDefinition["function"](), a.done(function() {
+    lapstone.startup.functionDone(arguments);
   }), a.fail(function() {
-    startup.functionFail(arguments);
-  })) : startup.dfd.resolve();
+    lapstone.startup.functionFail(arguments);
+  })) : lapstone.startup.dfd.resolve();
 }, functionFail:function() {
   console.log(" FAILED");
-  startup.log();
+  lapstone.startup.log();
   try {
     var a = JSON.stringify(arguments);
     console.log("ERROR: " + a);
     consloe.log(arguments);
   } catch (b) {
   }
-  startup.dfd.reject(arguments);
+  lapstone.startup.dfd.reject(arguments);
 }, initFramework:function() {
-  startup.log();
-  startup.functionDone();
-  return startup.dfd.promise();
+  lapstone.startup.log();
+  lapstone.startup.functionDone();
+  return lapstone.startup.dfd.promise();
 }};
 $(document).ready(function() {
-  var a = startup.initFramework();
+  var a = lapstone.startup.initFramework();
   a.done(function() {
-    initialisationPanel.finish();
+    lapstone.initialisationPanel.finish();
     app.config.lapstone = !0;
     $(document).trigger("lapstone");
-    app.config.startup = Date.now() / 1000 - startup.startupTimestamp;
+    app.config.startup = Date.now() / 1000 - lapstone.startup.startupTimestamp;
     console.log("Lapstone started in " + app.config.startup + "seconds");
     console.log("      Versions:");
     console.log("           app: " + app.config.version.app);

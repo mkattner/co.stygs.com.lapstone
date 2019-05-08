@@ -35,7 +35,7 @@ var plugin_RestClient = {config:null, cachedWebserviceIndentifyer:"_t_cachedWebs
 }, loadDefinitionFileAsync:function(a) {
   app.debug.trace("plugin_RestClient.loadDefinitionFile()");
   var b = $.Deferred();
-  a = globalLoader.AsyncJsonLoader(a);
+  a = lapstone.globalLoader.AsyncJsonLoader(a);
   a.done(function(a) {
     $.each(a, function(a, b) {
       app.debug.debug("plugin_RestClient.loadDefinitionFile() - add: " + a);
@@ -50,7 +50,7 @@ var plugin_RestClient = {config:null, cachedWebserviceIndentifyer:"_t_cachedWebs
 }, loadDefinitionFile:function(a) {
   app.debug.trace("plugin_RestClient.loadDefinitionFile()");
   app.debug.deprecated();
-  a = globalLoader.JsonLoader(a);
+  a = lapstone.globalLoader.JsonLoader(a);
   app.debug.debug("plugin_RestClient.loadDefinitionFile() - add each webservice definition");
   $.each(a, function(a, f) {
     app.debug.debug("plugin_RestClient.loadDefinitionFile() - add: " + a);

@@ -287,7 +287,7 @@ var plugin_Debug = {config:null, logObject:[], feedback:{language:{}, image:{}},
   alert(JSON.stringify(plugin_Debug.logObject));
 }, ls:{cleanupWsd:function() {
   $.each(plugin_RestClient.config.wsdFiles, function(a, b) {
-    globalLoader.AsyncJsonLoader(b, 3).done(function(a) {
+    lapstone.globalLoader.AsyncJsonLoader(b, 3).done(function(a) {
       var c = function(a) {
         return Object.keys(a).sort(function(a, b) {
           return a[0].hashCode() - b[0].hashCode();

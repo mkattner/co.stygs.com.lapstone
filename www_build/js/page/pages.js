@@ -3,15 +3,15 @@
 app.page = {};
 app.pages = {config:null, pageNames:[], includeOnce:[], history:[], constructor:function() {
   var b = $.Deferred();
-  startup.addFunction("                  cleanup pages", app.pages.cleanup);
-  startup.addFunction("                  calling the plugins' pages loaded function", app.pages.callPluginsPagesLoaded);
-  startup.addFunction("                  calling the pages' setEvents() function", app.pages.setEvents);
-  startup.addFunction("                  load pages' globalPages", app.pages.globalPages);
-  startup.addFunction("                  verifying the pages' properties", app.pages.verifyPages);
-  startup.addFunction("                  including external scripts for pages", app.pages.include);
-  startup.addFunction("                  loading the pages", app.pages.loadPages);
-  startup.addFunction("                  verifying the pages' names", app.pages.verifyPageNames);
-  startup.addFunction("                  loading the pages' configuration", app.pages.loadPageConfig);
+  lapstone.startup.addFunction("                  cleanup pages", app.pages.cleanup);
+  lapstone.startup.addFunction("                  calling the plugins' pages loaded function", app.pages.callPluginsPagesLoaded);
+  lapstone.startup.addFunction("                  calling the pages' setEvents() function", app.pages.setEvents);
+  lapstone.startup.addFunction("                  load pages' globalPages", app.pages.globalPages);
+  lapstone.startup.addFunction("                  verifying the pages' properties", app.pages.verifyPages);
+  lapstone.startup.addFunction("                  including external scripts for pages", app.pages.include);
+  lapstone.startup.addFunction("                  loading the pages", app.pages.loadPages);
+  lapstone.startup.addFunction("                  verifying the pages' names", app.pages.verifyPageNames);
+  lapstone.startup.addFunction("                  loading the pages' configuration", app.pages.loadPageConfig);
   b.resolve();
   return b.promise();
 }, cleanup:function() {
@@ -22,7 +22,7 @@ app.pages = {config:null, pageNames:[], includeOnce:[], history:[], constructor:
   var b = $.Deferred(), a = [];
   app.config.min ? b.resolve() : ($.each(app.pages.config, function(b, d) {
     d && (app.debug.validate(window["page_" + b].config.include_once), app.debug.validate(window["page_" + b].config.include), $.each(window["page_" + b].config.include_once, function(b, c) {
-      -1 === app.pages.includeOnce.indexOf(c) && (a.push(globalLoader.AsyncScriptLoader("../js/page/include/" + c)), app.pages.includeOnce.push(c));
+      -1 === app.pages.includeOnce.indexOf(c) && (a.push(lapstone.globalLoader.AsyncScriptLoader("../js/page/include/" + c)), app.pages.includeOnce.push(c));
     }));
   }), $.when.apply($, a).done(function() {
     b.resolve();
@@ -42,7 +42,7 @@ app.pages = {config:null, pageNames:[], includeOnce:[], history:[], constructor:
   if (app.config.min) {
     app.pages.config = config_json, b.resolve();
   } else {
-    var a = globalLoader.AsyncJsonLoader("../js/page/pages.json");
+    var a = lapstone.globalLoader.AsyncJsonLoader("../js/page/pages.json");
     a.done(function(a) {
       app.pages.config = a;
       b.resolve();
@@ -78,7 +78,7 @@ app.pages = {config:null, pageNames:[], includeOnce:[], history:[], constructor:
   if (app.config.min) {
     window["page_" + b].config = window["config_" + b], a.resolve();
   } else {
-    var c = globalLoader.AsyncJsonLoader("../js/page/page." + b + ".json");
+    var c = lapstone.globalLoader.AsyncJsonLoader("../js/page/page." + b + ".json");
     c.done(function(c) {
       window["page_" + b].config = c;
       a.resolve();
@@ -117,7 +117,7 @@ app.pages = {config:null, pageNames:[], includeOnce:[], history:[], constructor:
 }, loadPages:function() {
   var b = $.Deferred(), a = [], c = [], d;
   $.each(app.pages.config, function(b, c) {
-    app.config.min ? a.push(app.pages.onPageLoaded(b)) : a.push(globalLoader.AsyncScriptLoader("../js/page/page." + b + ".js"));
+    app.config.min ? a.push(app.pages.onPageLoaded(b)) : a.push(lapstone.globalLoader.AsyncScriptLoader("../js/page/page." + b + ".js"));
   });
   var e = $.when.apply($, a);
   app.config.min ? e.done(function() {
@@ -169,7 +169,7 @@ app.pages = {config:null, pageNames:[], includeOnce:[], history:[], constructor:
     });
   });
   $.each(a, function(a, b) {
-    c.push(globalLoader.AsyncScriptLoader("../files/globalPages/" + b + ".js"));
+    c.push(lapstone.globalLoader.AsyncScriptLoader("../files/globalPages/" + b + ".js"));
   });
   var d = $.when.apply($, c);
   d.done(function() {

@@ -132,7 +132,7 @@ var plugin_Navigation = {
 		},
 
 		virtual : function(url) {
-			app.debug.validate(pages.config.virtual);
+			app.debug.validate(app.pages.config.virtual);
 
 		},
 

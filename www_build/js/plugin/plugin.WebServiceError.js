@@ -37,7 +37,7 @@ var plugin_WebServiceError = {config:null, constructor:function() {
 }, loadDefinitionFileAsync:function(a) {
   app.debug.trace("plugin_WebServiceError.loadDefinitionFileAsync(" + a + ")", 20);
   var b = $.Deferred();
-  a = globalLoader.AsyncJsonLoader(a);
+  a = lapstone.globalLoader.AsyncJsonLoader(a);
   a.done(function(a) {
     $.each(a, function(a, b) {
       app.debug.debug("pugin.WebServiceError.js ~ plugin_WebServiceError.loadDefinitionFileAsync() - add: " + a, 20);
@@ -52,7 +52,7 @@ var plugin_WebServiceError = {config:null, constructor:function() {
 }, loadDefinitionFile:function(a) {
   app.debug.trace("plugin_WebServiceError.loadDefinitionFile()");
   app.debug.debug("Load definition file: " + a);
-  a = globalLoader.JsonLoader(a);
+  a = lapstone.globalLoader.JsonLoader(a);
   $.each(a, function(a, c) {
     app.debug.debug("Add definition: " + a, 20);
     plugin_WebServiceError.config.wse[a] = c;

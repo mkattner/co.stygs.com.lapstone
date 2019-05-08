@@ -9,7 +9,7 @@ public class TempMain {
 		File in=new File("C:\\temp\\in.js");
 		File out= new File("C:\\temp\\out.js");
 		
-		LapstoneCompiler.Compile(in, out);
+		LapstoneCompiler.Compile(in, out, null);
 		
 	}
 

@@ -770,7 +770,7 @@ lapstone.initialisationPanel = {
   }
 }
 
-startupDefinition = [{
+lapstone.startupDefinition = [{
   "status": "Lapstone startup: loading configuration",
   "function": loadConfiguration
 }, {
@@ -811,7 +811,7 @@ lapstone.startup = {
   images: {},
 
   addFunction: function(status, func) {
-    startupDefinition.unshift({
+    lapstone.startupDefinition.unshift({
       "status": status,
       "function": func
     });
@@ -829,7 +829,7 @@ lapstone.startup = {
     // delay startup for a smoother user experience
     // window.setTimeout(function() {
 
-    lapstone.startup.currentDefinition = startupDefinition.shift();
+    lapstone.startup.currentDefinition = lapstone.startupDefinition.shift();
     if (lapstone.startup.currentDefinition) {
 
       lapstone.initialisationPanel.changeStatus();

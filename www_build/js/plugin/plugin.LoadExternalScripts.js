@@ -9,7 +9,7 @@ var plugin_LoadExternalScripts = {config:null, loadedScripts:{}, constructor:fun
   var b = $.Deferred();
   var a = [];
   if (app.config.min) {
-    a.push(globalLoader.AsyncStyleLoader("../files/all.style." + app.config.version.app + ".css")), a.push(globalLoader.AsyncScriptLoader("../files/all.javascript." + app.config.version.app + ".js"));
+    a.push(lapstone.globalLoader.AsyncStyleLoader("../files/all.style." + app.config.version.app + ".css")), a.push(lapstone.globalLoader.AsyncScriptLoader("../files/all.javascript." + app.config.version.app + ".js"));
   } else {
     try {
       plugin_LoadExternalScripts.config.scripts.style && app.debug.fatal("plugin_LoadExternalScripts.config.scripts.style no longer exists!"), plugin_LoadExternalScripts.config.scripts.javascript && app.debug.fatal("plugin_LoadExternalScripts.config.scripts.javascript no longer exists!");
@@ -37,7 +37,7 @@ var plugin_LoadExternalScripts = {config:null, loadedScripts:{}, constructor:fun
 }, pagesLoaded:function() {
   app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
   var b = $.Deferred();
-  app.config.min ? b.resolve() : globalLoader.AsyncScriptLoader("../ext/less/less.min.js").done(function() {
+  app.config.min ? b.resolve() : lapstone.globalLoader.AsyncScriptLoader("../ext/less/less.min.js").done(function() {
     less.logger.addListener({debug:function(a) {
       app.debug.debug(a);
     }, info:function(a) {
@@ -63,7 +63,7 @@ var plugin_LoadExternalScripts = {config:null, loadedScripts:{}, constructor:fun
   if (0 < b.length) {
     var d = b.shift();
     app.debug.debug("plugin_LoadExternalScripts.loadScriptsAsync() - LOAD url: " + d);
-    globalLoader.AsyncScriptLoader(d).done(function() {
+    lapstone.globalLoader.AsyncScriptLoader(d).done(function() {
       plugin_LoadExternalScripts.loadedScripts[d] = !0;
       app.debug.debug("plugin_LoadExternalScripts.loadScriptsAsync() - DONE url: " + d);
       app.debug.debug("plugin_LoadExternalScripts.loadScriptsAsync() - call recursive");
@@ -88,7 +88,7 @@ var plugin_LoadExternalScripts = {config:null, loadedScripts:{}, constructor:fun
   if (0 < b.length) {
     var e = b.shift();
     app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - LOAD url: " + e);
-    e.endsWith(".less") ? c = globalLoader.AsyncLessLoader(e) : e.endsWith(".css") && (c = globalLoader.AsyncStyleLoader(e));
+    e.endsWith(".less") ? c = lapstone.globalLoader.AsyncLessLoader(e) : e.endsWith(".css") && (c = lapstone.globalLoader.AsyncStyleLoader(e));
     c.done(function() {
       plugin_LoadExternalScripts.loadedScripts[e] = !0;
       app.debug.debug("plugin_LoadExternalScripts.loadStyleAsync() - DONE url: " + e);
@@ -115,7 +115,7 @@ var plugin_LoadExternalScripts = {config:null, loadedScripts:{}, constructor:fun
     return app.debug.debug("plugin_LoadExternalScripts.functions.css() - css already loaded: " + b), $.Deferred().resolve();
   }
   app.debug.debug("plugin_LoadExternalScripts.functions.css() - load css: " + b);
-  var a = globalLoader.AsyncStyleLoader(b);
+  var a = lapstone.globalLoader.AsyncStyleLoader(b);
   a.done(function() {
     app.debug.debug("plugin_LoadExternalScripts.functions.css() - css loading done: " + b);
     app.debug.debug("plugin_LoadExternalScripts.functions.css() - add url to loadedScripts array");
@@ -128,7 +128,7 @@ var plugin_LoadExternalScripts = {config:null, loadedScripts:{}, constructor:fun
     return app.debug.debug("plugin_LoadExternalScripts.functions.less() - less already loaded: " + b), $.Deferred().resolve();
   }
   app.debug.debug("plugin_LoadExternalScripts.functions.less() - load css: " + b);
-  var a = globalLoader.AsyncLessLoader(b);
+  var a = lapstone.globalLoader.AsyncLessLoader(b);
   a.done(function() {
     app.debug.debug("plugin_LoadExternalScripts.functions.less() - css loading done: " + b);
     app.debug.debug("plugin_LoadExternalScripts.functions.less() - add url to loadedScripts array");
@@ -140,7 +140,7 @@ var plugin_LoadExternalScripts = {config:null, loadedScripts:{}, constructor:fun
   if (b in plugin_LoadExternalScripts.loadedScripts) {
     return app.debug.debug("plugin_LoadExternalScripts.functions.javascript() - javascript already loaded: " + b), $.Deferred().resolve();
   }
-  var a = globalLoader.AsyncScriptLoader(b);
+  var a = lapstone.globalLoader.AsyncScriptLoader(b);
   a.done(function() {
     app.debug.debug("plugin_LoadExternalScripts.functions.javascript() - javascript loading done: " + b);
     app.debug.debug("plugin_LoadExternalScripts.functions.javascript() - add url to loadedScripts array");

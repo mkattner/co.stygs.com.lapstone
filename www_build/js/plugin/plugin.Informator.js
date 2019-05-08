@@ -26,9 +26,9 @@ var plugin_Informator = {config:null, configurationPrefix:"informator-config", c
   var a = $.Deferred();
   if (this.config.useHtml5Storage && this.config.savePageConfig) {
     var b = {};
-    $.each(pages.pageNames, function(a, c) {
+    $.each(app.pages.pageNames, function(a, c) {
       void 0 == b["page_" + c] && (b["page_" + c] = {});
-      b["page_" + c].config = globalLoader.JsonLoader("../js/page/page." + c + ".json");
+      b["page_" + c].config = lapstone.globalLoader.JsonLoader("../js/page/page." + c + ".json");
     });
     this.syncObjectWithHtml5Storage(b);
   }

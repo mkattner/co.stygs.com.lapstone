@@ -23,7 +23,7 @@ var plugin_MultilanguageIso639_3 = {config:null, dictionary:null, parameter:null
   app.debug.trace("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
 }, loadLanguageIntoDict:function(a) {
   var b = "../files/language/" + a + ".json";
-  var d = globalLoader.AsyncJsonLoader(b);
+  var d = lapstone.globalLoader.AsyncJsonLoader(b);
   d.done(function(b) {
     plugin_MultilanguageIso639_3.dictionary = b;
     $("html").attr({lang:plugin_MultilanguageIso639_3.config.availableLanguages[a][0]});

@@ -290,7 +290,7 @@ app["pages"] = {
 	},
 
 	loadPages : function() {
-		var dfd = $.Deferred(), promises_js = Array(), promiseOfPromises_js, promises_func = Array(), promiseOfPromises_func;
+		var dfd = $.Deferred(), promises_js = new Array(), promiseOfPromises_js, promises_func = Array(), promiseOfPromises_func;
 
 		$.each(app.pages.config, function(key, value) {
 			if (app.config.min) {

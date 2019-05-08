@@ -1,4 +1,4 @@
-//# sourceURL=plugin.WebServiceError.js
+// # sourceURL=plugin.WebServiceError.js
 /**
  * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
@@ -169,9 +169,11 @@ var plugin_WebServiceError = {
       if ($.isPlainObject(webserviceResult)) {
         app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: isPlainObject == true");
         app.debug.validate(plugin_WebServiceError.config.strictErrorKeys);
-        for (key in plugin_WebServiceError.config.strictErrorKeys) {
+        for (var key in plugin_WebServiceError.config.strictErrorKeys) {
           // $.each(plugin_WebServiceError.config.strictErrorKeys,
           // function(index, errorKey) {
+          var errorKey
+
           errorKey = plugin_WebServiceError.config.strictErrorKeys[key];
 
           if (webserviceResult.hasOwnProperty(errorKey) === true) {

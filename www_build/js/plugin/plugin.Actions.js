@@ -17,7 +17,7 @@ var plugin_Actions = {config:null, constructor:function() {
     a.resolve();
   } else {
     $.each(plugin_Actions.config.actions, function(a, c) {
-      b.push(globalLoader.AsyncScriptLoader("../files/actions/" + c));
+      b.push(lapstone.globalLoader.AsyncScriptLoader("../files/actions/" + c));
     });
     var c = $.when.apply($, b);
     c.done(function() {

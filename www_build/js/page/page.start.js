@@ -28,7 +28,7 @@ var page_start = {config:null, include:null, include_once:null, parameter:{}, el
 }, pagechangefailed:function(a, b) {
 }, pagecreate:function(a, b) {
 }, pagehide:function(a, b) {
-  initialisationPanel.hide();
+  lapstone.initialisationPanel.hide();
 }, pageinit:function(a, b) {
 }, pageload:function(a, b) {
 }, pageloadfailed:function(a, b) {
