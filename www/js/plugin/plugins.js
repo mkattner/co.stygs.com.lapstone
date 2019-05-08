@@ -26,21 +26,21 @@ app["plugins"] = {
 		// reverse order
 
 		// 7
-		startup.addFunction("                  cleanup plugins", app.plugins.cleanup);
+		lapstone.startup.addFunction("                  cleanup plugins", app.plugins.cleanup);
 		// 6
-		startup.addFunction("                  defining the plugins' events", app.plugins.callPluginEvents);
+		lapstone.startup.addFunction("                  defining the plugins' events", app.plugins.callPluginEvents);
 		// 5
-		startup.addFunction("                  calling the plugins' loaded event", app.plugins.callPluginsLoadedEvent);
+		lapstone.startup.addFunction("                  calling the plugins' loaded event", app.plugins.callPluginsLoadedEvent);
 		// 4
-		startup.addFunction("                  loading the plugins' include scripts", app.plugins.includeFiles);
+		lapstone.startup.addFunction("                  loading the plugins' include scripts", app.plugins.includeFiles);
 		// 3.5
-		startup.addFunction("                  loading the plugins' include dependencies", app.plugins.includeDependencies);
+		lapstone.startup.addFunction("                  loading the plugins' include dependencies", app.plugins.includeDependencies);
 		// 3
-		startup.addFunction("                  loading the plugins", app.plugins.loadPlugins);
+		lapstone.startup.addFunction("                  loading the plugins", app.plugins.loadPlugins);
 		// 2
-		startup.addFunction("                  verifying the plugins' configuration", app.plugins.verifyPluginNames);
+		lapstone.startup.addFunction("                  verifying the plugins' configuration", app.plugins.verifyPluginNames);
 		// 1
-		startup.addFunction("                  loading the plugins' configuration", app.plugins.loadPluginConfig);
+		lapstone.startup.addFunction("                  loading the plugins' configuration", app.plugins.loadPluginConfig);
 
 		dfd.resolve();
 		return dfd.promise();

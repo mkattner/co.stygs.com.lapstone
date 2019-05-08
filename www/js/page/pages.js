@@ -34,23 +34,23 @@ app["pages"] = {
 		// reverse order
 
 		// 9
-		startup.addFunction("                  cleanup pages", app.pages.cleanup);
+		lapstone.startup.addFunction("                  cleanup pages", app.pages.cleanup);
 		// 8
-		startup.addFunction("                  calling the plugins' pages loaded function", app.pages.callPluginsPagesLoaded);
+		lapstone.startup.addFunction("                  calling the plugins' pages loaded function", app.pages.callPluginsPagesLoaded);
 		// 7
-		startup.addFunction("                  calling the pages' setEvents() function", app.pages.setEvents);
+		lapstone.startup.addFunction("                  calling the pages' setEvents() function", app.pages.setEvents);
 		// 6
-		startup.addFunction("                  load pages' globalPages", app.pages.globalPages);
+		lapstone.startup.addFunction("                  load pages' globalPages", app.pages.globalPages);
 		// 5
-		startup.addFunction("                  verifying the pages' properties", app.pages.verifyPages);
+		lapstone.startup.addFunction("                  verifying the pages' properties", app.pages.verifyPages);
 		// 4
-		startup.addFunction("                  including external scripts for pages", app.pages.include);
+		lapstone.startup.addFunction("                  including external scripts for pages", app.pages.include);
 		// 3
-		startup.addFunction("                  loading the pages", app.pages.loadPages);
+		lapstone.startup.addFunction("                  loading the pages", app.pages.loadPages);
 		// 2
-		startup.addFunction("                  verifying the pages' names", app.pages.verifyPageNames);
+		lapstone.startup.addFunction("                  verifying the pages' names", app.pages.verifyPageNames);
 		// 1
-		startup.addFunction("                  loading the pages' configuration", app.pages.loadPageConfig);
+		lapstone.startup.addFunction("                  loading the pages' configuration", app.pages.loadPageConfig);
 
 		// startup.addFunction(" loading the script for global pages",
 		// lapstone.globalLoader.AsyncScriptLoader,

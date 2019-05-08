@@ -95,7 +95,7 @@ function loadPlugins() {
   // load the plugins file
   promise = lapstone.globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
-    startup.addFunction("                  plugin constructor", app.plugins.constructor);
+    lapstone.startup.addFunction("                  plugin constructor", app.plugins.constructor);
     dfd.resolve();
   });
   promise.fail(function() {
@@ -117,7 +117,7 @@ function loadPages() {
   // load pages file
   promise = lapstone.globalLoader.AsyncScriptLoader(url);
   promise.done(function() {
-    startup.addFunction("                  page constructor", app.pages.constructor);
+    lapstone.startup.addFunction("                  page constructor", app.pages.constructor);
     dfd.resolve();
   });
   promise.fail(function() {
@@ -358,13 +358,13 @@ lapstone.globalLoader = {
       timeout: lapstone.globalLoader.globalTimeout
     }).done(function(data, textStatus, jqXHR) {
       if (textStatus === "timeout") {
-        startup.log("Timeout while loading: " + url);
-        startup.log("It was attempt " + attempt + " of " + attempts + ".");
+        lapstone.startup.log("Timeout while loading: " + url);
+        lapstone.startup.log("It was attempt " + attempt + " of " + attempts + ".");
         if (attempt < attempts) {
-          startup.log("So we try again.");
+          lapstone.startup.log("So we try again.");
           lapstone.globalLoader.AsyncJsonLoader(url, attempts, attempt + 1, dfd);
         } else {
-          startup.log("So the framework loading fails.");
+          lapstone.startup.log("So the framework loading fails.");
           dfd.reject(textStatus);
         }
       } else {
@@ -422,13 +422,13 @@ lapstone.globalLoader = {
       timeout: lapstone.globalLoader.globalTimeout
     }).done(function(data, textStatus, jqXHR) {
       if (textStatus === "timeout") {
-        startup.log("Timeout while loading: " + url);
-        startup.log("It was attempt " + attempt + " of " + attempts + ".");
+        lapstone.startup.log("Timeout while loading: " + url);
+        lapstone.startup.log("It was attempt " + attempt + " of " + attempts + ".");
         if (attempt < attempts) {
-          startup.log("So we try again.");
+          lapstone.startup.log("So we try again.");
           lapstone.globalLoader.AsyncScriptLoader(url, attempts, attempt + 1, dfd);
         } else {
-          startup.log("So the framework loading fails.");
+          lapstone.startup.log("So the framework loading fails.");
           dfd.reject(textStatus);
         }
       } else {
@@ -486,13 +486,13 @@ lapstone.globalLoader = {
       timeout: lapstone.globalLoader.globalTimeout
     }).done(function(data, textStatus, jqXHR) {
       if (textStatus === "timeout") {
-        startup.log("Timeout while loading: " + url);
-        startup.log("It was attempt " + attempt + " of " + attempts + ".");
+        lapstone.startup.log("Timeout while loading: " + url);
+        lapstone.startup.log("It was attempt " + attempt + " of " + attempts + ".");
         if (attempt < attempts) {
-          startup.log("So we try again.");
+          lapstone.startup.log("So we try again.");
           lapstone.globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
         } else {
-          startup.log("So the framework loading fails.");
+          lapstone.startup.log("So the framework loading fails.");
           dfd.reject(textStatus);
         }
       } else {
@@ -594,13 +594,13 @@ lapstone.globalLoader = {
     }).done(function(data, textStatus, jqXHR) {
       // console.log("+++++++ " + JSON.stringify(jqXHR));
       if (textStatus === "timeout") {
-        startup.log("Timeout while loading: " + url);
-        startup.log("It was attempt " + attempt + " of " + attempts + ".");
+        lapstone.startup.log("Timeout while loading: " + url);
+        lapstone.startup.log("It was attempt " + attempt + " of " + attempts + ".");
         if (attempt < attempts) {
-          startup.log("So we try again.");
+          lapstone.startup.log("So we try again.");
           lapstone.globalLoader.AsyncTextLoader(url, attempts, attempt + 1, dfd);
         } else {
-          startup.log("So the framework loading fails.");
+          lapstone.startup.log("So the framework loading fails.");
           dfd.reject(arguments);
         }
       } else {
@@ -762,7 +762,7 @@ lapstone.initialisationPanel = {
   },
 
   changeStatus: function() {
-    $("#LAPSTONE .lapstone-status").text(startup.currentDefinition['status']);
+    $("#LAPSTONE .lapstone-status").text(lapstone.startup.currentDefinition['status']);
   },
 
   finish: function() {
@@ -796,7 +796,7 @@ startupDefinition = [{
   "function": waitForMobileinit
 }]
 
-startup = {
+lapstone.startup = {
   currentDefinition: {
     "status": "----------------- Starting the Lapstone Framework",
   // "function": waitForDeviceready,
@@ -818,8 +818,8 @@ startup = {
   },
   log: function() {
     var timestamp = Date.now() / 1000;
-    console.log("LST " + (timestamp - startup.timestamp).toFixed(3) + "s: " + startup.currentDefinition['status']);
-    startup.timestamp = timestamp;
+    console.log("LST " + (timestamp - lapstone.startup.timestamp).toFixed(3) + "s: " + lapstone.startup.currentDefinition['status']);
+    lapstone.startup.timestamp = timestamp;
   },
 
   functionDone: function(data) {
@@ -829,28 +829,28 @@ startup = {
     // delay startup for a smoother user experience
     // window.setTimeout(function() {
 
-    startup.currentDefinition = startupDefinition.shift();
-    if (startup.currentDefinition) {
+    lapstone.startup.currentDefinition = startupDefinition.shift();
+    if (lapstone.startup.currentDefinition) {
 
       lapstone.initialisationPanel.changeStatus();
       lapstone.initialisationPanel.updateProgress();
 
-      startup.log();
-      promise = startup.currentDefinition['function']();
+      lapstone.startup.log();
+      promise = lapstone.startup.currentDefinition['function']();
 
       promise.done(function() {
-        startup.functionDone(arguments);
+        lapstone.startup.functionDone(arguments);
       });
 
       promise.fail(function() {
-        startup.functionFail(arguments);
+        lapstone.startup.functionFail(arguments);
       });
 
       // }, 50);
 
       // alert('next')
     } else {
-      startup.dfd.resolve();
+      lapstone.startup.dfd.resolve();
     }
   },
 
@@ -858,7 +858,7 @@ startup = {
     var serializedError;
 
     console.log(" FAILED");
-    startup.log();
+    lapstone.startup.log();
     try {
       serializedError = JSON.stringify(arguments);
       console.log("ERROR: " + serializedError);
@@ -866,14 +866,14 @@ startup = {
     } catch (e) {
     }
 
-    startup.dfd.reject(arguments);
+    lapstone.startup.dfd.reject(arguments);
   },
 
   initFramework: function() {
-    startup.log();
-    startup.functionDone();
+    lapstone.startup.log();
+    lapstone.startup.functionDone();
 
-    return startup.dfd.promise();
+    return lapstone.startup.dfd.promise();
   }
 }
 
@@ -881,7 +881,7 @@ startup = {
 $(document).ready(function() {
   var inititalisationPromise;
 
-  inititalisationPromise = startup.initFramework();
+  inititalisationPromise = lapstone.startup.initFramework();
 
   inititalisationPromise.done(function() {
     // alert("init done");
@@ -895,7 +895,7 @@ $(document).ready(function() {
     // trigger the lapstone initialisation event
     $(document).trigger("lapstone");
 
-    app.config['startup'] = ((Date.now()) / 1000) - startup.startupTimestamp;
+    app.config['startup'] = ((Date.now()) / 1000) - lapstone.startup.startupTimestamp;
 
     // cleanup
     // delete initialisation;
