@@ -142,7 +142,7 @@ public class LapstoneCompiler implements ILogger {
 	com.google.javascript.jscomp.Compiler compiler = new Compiler();
 
 	CompilerOptions options = new CompilerOptions();
-	// options.setEmitUseStrict(false);
+	 options.setEmitUseStrict(false);
 	// Advanced mode is used here, but additional options could be set, too.
 	CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
 	options.setPrettyPrint(true);

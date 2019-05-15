@@ -94,7 +94,7 @@ public class Release implements ILogger {
 	allPlugins.delete();
     }
 
-    private static void createCombinedFilesFile(File www, String newVersion) throws Exception {
+    private static void createCombinedFilesFile(File www_debug, File www, String newVersion) throws Exception {
 	ObjectMapper objectMapper = new ObjectMapper();
 	File configuration;
 
@@ -116,7 +116,7 @@ public class Release implements ILogger {
 		LOGGER.debug("-----------------------------------------------------------------------------------");
 		LOGGER.debug("Running release() method on: " + curretnClass);
 		IPlugin_JSON plugin_JSON = (IPlugin_JSON) Class.forName(curretnClass).newInstance();
-		plugin_JSON.release(www, lapstoneJson);
+		plugin_JSON.release(www_debug, www, lapstoneJson);
 
 	    } catch (ClassNotFoundException e) {
 		LOGGER.trace("ClassNotFoundException: " + curretnClass, e);
@@ -134,16 +134,16 @@ public class Release implements ILogger {
 	// ********************************************************************
 	// create single plugin file
 
-	Release.createSinglePluginFile(www);
+	Release.createSinglePluginFile(www_debug, www);
 
 	// ********************************************************************
 	// create single page file
 
-	Release.createSinglePageFile(www);
+	Release.createSinglePageFile(www_debug, www);
 
     }
 
-    private static void createSinglePageFile(File www) throws Exception {
+    private static void createSinglePageFile(File www_debug, File www) throws Exception {
 	String allPagesContent = "";
 	Page_JSON pageConfiguration;
 	ObjectMapper objectMapper = new ObjectMapper();
@@ -187,7 +187,7 @@ public class Release implements ILogger {
 
 			// Compressor.compressJavaScript(file.getAbsolutePath(), file.getAbsolutePath(),
 			// new JavascriptCompressorOptions());
-			LapstoneCompiler.Compile(file, file, www);
+			LapstoneCompiler.Compile(file, file, www_debug);
 		    }
 
 		    catch (Exception e) {
@@ -251,7 +251,7 @@ public class Release implements ILogger {
 	// FileUtils.deleteDirectory(new File(www, "js/page/include"));
     }
 
-    private static void createSinglePluginFile(File www) throws Exception {
+    private static void createSinglePluginFile(File www_debug, File www) throws Exception {
 	StringBuilder allPluginsContent = new StringBuilder();
 	APlugin_JSON pluginConfiguration;
 	ObjectMapper objectMapper = new ObjectMapper();
@@ -283,7 +283,7 @@ public class Release implements ILogger {
 		    // Compressor.compressJavaScript(currentFile.getAbsolutePath(),
 		    // currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
 
-		    LapstoneCompiler.Compile(currentPluginFile, currentPluginFile, www);
+		    LapstoneCompiler.Compile(currentPluginFile, currentPluginFile, www_debug);
 		} catch (Exception e) {
 		    throw new CompressorException(e);
 		}
@@ -309,7 +309,7 @@ public class Release implements ILogger {
 		    LOGGER.info("Adding include file: " + pluginIncludeFile.getAbsolutePath());
 
 		    // slow
-		    LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile, www);
+		    LapstoneCompiler.Compile(pluginIncludeFile, pluginIncludeFile, www_debug);
 
 		    allPluginsContent.append(";\n\n" + FileUtils.readFileToString(pluginIncludeFile, Lapstone.CHARSET));
 		    // pluginIncludeFile.delete();
@@ -414,7 +414,7 @@ public class Release implements ILogger {
 
 	    // ********************************************************************
 	    // combine files
-	    Release.createCombinedFilesFile(www, newVersion);
+	    Release.createCombinedFilesFile(www_debug, www, newVersion);
 
 	    // ********************************************************************
 	    // minify plugins
@@ -630,7 +630,7 @@ public class Release implements ILogger {
 	    // Compressor.compressJavaScript(lapstoneJsFile.getAbsolutePath(),
 	    // lapstoneJsFile.getAbsolutePath(), new JavascriptCompressorOptions());
 
-	    LapstoneCompiler.Compile(lapstoneJsFile, lapstoneJsFile, www);
+	    LapstoneCompiler.Compile(lapstoneJsFile, lapstoneJsFile, www_debug);
 
 	    // slow in java, but very useful for debugging release version
 	    FileUtils.writeStringToFile(lapstoneJsFile, "//# sourceURL=lapstone.js" + "\n" + FileUtils.readFileToString(lapstoneJsFile, Lapstone.CHARSET), Lapstone.CHARSET);

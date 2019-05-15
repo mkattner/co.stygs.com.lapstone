@@ -37,6 +37,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	// TODO Auto-generated method stub
 	return null;
     }
+
     public List<String> getDependency() {
 	return dependency;
     }
@@ -50,7 +51,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
     }
 
     @Override
-    public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
+    public Boolean release(File www_debug, File www, LapstoneJSON lapstoneJson) throws Exception {
 	ObjectMapper objectMapper = new ObjectMapper();
 	File configuration;
 	File currentFile;
@@ -72,8 +73,8 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	    System.out.println("Compress: " + currentFile.getAbsolutePath());
 
 	    try {
-//		Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
-		LapstoneCompiler.Compile(currentFile,currentFile);
+		// Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
+		LapstoneCompiler.Compile(currentFile, currentFile, www_debug);
 	    } catch (Exception e) {
 		e.printStackTrace();
 		System.out.println("ERROR: NOT ABLE TO COMPRESS: " + currentFile.getAbsolutePath());
@@ -81,13 +82,13 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 	    System.out.println("Add: " + currentFile.getAbsolutePath());
 
-	    combinedJavascript += FileUtils.readFileToString(currentFile,Lapstone.CHARSET) + "\n\n";
+	    combinedJavascript += FileUtils.readFileToString(currentFile, Lapstone.CHARSET) + "\n\n";
 
 	    Files.delete(currentFile.toPath());
 	}
 	File allJavascriptFile = new File(www, "files/all.javascript." + lapstoneJson.getVersion().get("app") + ".js");
 	System.out.println("Wirte combined script file: " + allJavascriptFile.getAbsolutePath());
-	FileUtils.write(allJavascriptFile, combinedJavascript,Lapstone.CHARSET);
+	FileUtils.write(allJavascriptFile, combinedJavascript, Lapstone.CHARSET);
 
 	// STYLES
 	System.out.println();
@@ -117,7 +118,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 		// currentFile.getAbsolutePath(), new
 		// StylesheetCompressorOptions());
 
-		currentStyle = FileUtils.readFileToString(currentFile,Lapstone.CHARSET) + "\n\n";
+		currentStyle = FileUtils.readFileToString(currentFile, Lapstone.CHARSET) + "\n\n";
 	    } else {
 		currentStyle = "";
 	    }
@@ -137,7 +138,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 	}
 	File allStyles = new File(www, "files/all.style.css");
 	System.out.println("Wirte combined style file: " + allStyles.getAbsolutePath());
-	FileUtils.write(allStyles, combinedStyle,Lapstone.CHARSET);
+	FileUtils.write(allStyles, combinedStyle, Lapstone.CHARSET);
 	Release.cssRegistry.add(allStyles);
 
 	return null;
