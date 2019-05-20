@@ -4,21 +4,20 @@ import java.io.File;
 
 public class Plugin_JSON extends APlugin_JSON {
 
-    public Plugin_JSON() {
-	// TODO Auto-generated constructor stub
-    }
+	public Plugin_JSON() {
+		// TODO Auto-generated constructor stub
+	}
 
-    @Override
+	@Override
 	public String getAdditionalJavascript(File www) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-    public Boolean release(File www, LapstoneJSON lapstoneJson) {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
+	public Boolean release(File www_debug, File www, LapstoneJSON lapstoneJson) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

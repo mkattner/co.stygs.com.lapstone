@@ -41,7 +41,7 @@ public class Plugin_DeviceManager_JSON extends APlugin_JSON {
     }
 
 	@Override
-    public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
+    public Boolean release(File www_debug,File www, LapstoneJSON lapstoneJson) throws Exception {
 	// TODO Auto-generated method stub
 
 	ObjectMapper objectMapper = new ObjectMapper();

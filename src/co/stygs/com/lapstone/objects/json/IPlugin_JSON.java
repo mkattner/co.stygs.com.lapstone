@@ -7,5 +7,5 @@ public interface IPlugin_JSON {
 //    public String addJavaSript(File www, LapstoneJSON lapstoneJson);
    
     
-    public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception;
+    public Boolean release(File www_debug,File www, LapstoneJSON lapstoneJson) throws Exception;
 }

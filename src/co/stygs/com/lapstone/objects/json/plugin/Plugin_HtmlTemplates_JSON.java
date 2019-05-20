@@ -47,7 +47,7 @@ public class Plugin_HtmlTemplates_JSON extends APlugin_JSON implements ILogger {
 	}
 
 	@Override
-	public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
+	public Boolean release(File www_debug,File www, LapstoneJSON lapstoneJson) throws Exception {
 		LOGGER.debug("Release: " + this.getClass().getSimpleName());
 
 		ObjectMapper objectMapper = new ObjectMapper();

@@ -50,7 +50,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
     }
 
     @Override
-    public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
+    public Boolean release(File www_debug,File www, LapstoneJSON lapstoneJson) throws Exception {
 	ObjectMapper objectMapper = new ObjectMapper();
 	File configuration;
 	File currentFile;
@@ -73,7 +73,7 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 	    try {
 //		Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
-		LapstoneCompiler.Compile(currentFile,currentFile);
+		LapstoneCompiler.Compile(currentFile,currentFile,www_debug);
 	    } catch (Exception e) {
 		e.printStackTrace();
 		System.out.println("ERROR: NOT ABLE TO COMPRESS: " + currentFile.getAbsolutePath());

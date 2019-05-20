@@ -66,19 +66,19 @@ public class Build implements ILogger {
 	    LOGGER.debug("www_debug: " + www_debug.getAbsolutePath());
 
 	    // ********************************************************************
-	    // update app version
+//	    // update app version
 	    ObjectMapper objectMapper = new ObjectMapper();
-	    File configuration = new File(www_debug, "js/lapstone.json");
-	    LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
-	    String appVersion = (String) lapstoneJson.getVersion().get("app");
-	    Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
-	    buildVersion++;
-	    String newVersion = ((String) lapstoneJson.getVersion().get("app")).substring(0, ((String) lapstoneJson.getVersion().get("app")).lastIndexOf(".") + 1) + buildVersion.toString();
-	    lapstoneJson.getVersion().put("app", newVersion);
-	    objectMapper.writeValue(configuration, lapstoneJson);
+//	    File configuration = new File(www_debug, "js/lapstone.json");
+//	    LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
+//	    String appVersion = (String) lapstoneJson.getVersion().get("app");
+//	    Integer buildVersion = Integer.parseInt(appVersion.split("\\.")[appVersion.split("\\.").length - 1]);
+//	    buildVersion++;
+//	    String newVersion = ((String) lapstoneJson.getVersion().get("app")).substring(0, ((String) lapstoneJson.getVersion().get("app")).lastIndexOf(".") + 1) + buildVersion.toString();
+//	    lapstoneJson.getVersion().put("app", newVersion);
+//	    objectMapper.writeValue(configuration, lapstoneJson);
 
-	    System.out.println();
-	    System.out.println("Updating app version from " + appVersion + " to " + newVersion);
+//	    System.out.println();
+//	    System.out.println("Updating app version from " + appVersion + " to " + newVersion);
 
 	    // ********************************************************************
 	    // copy www_debug to www
@@ -99,7 +99,7 @@ public class Build implements ILogger {
 
 
 
-	    objectMapper.writeValue(configuration, lapstoneJson);
+//	    objectMapper.writeValue(configuration, lapstoneJson);
 
 	    for (File f : FileUtils.listFiles(new File(www_build,"js"), new IOFileFilter() {
 

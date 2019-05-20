@@ -52,7 +52,7 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 	}
 
 	@Override
-	public Boolean release(File www, LapstoneJSON lapstoneJson) throws Exception {
+	public Boolean release(File www_debug,File www, LapstoneJSON lapstoneJson) throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		File configuration;
 		File currentFile;
