@@ -66,7 +66,7 @@ public class Release implements ILogger {
 	    // throw new CompressorException(e);
 	}
 
-	allPages.delete();
+	// allPages.delete();
 
     }
 
@@ -91,7 +91,7 @@ public class Release implements ILogger {
 
 	}
 
-	allPlugins.delete();
+	// allPlugins.delete();
     }
 
     private static void createCombinedFilesFile(File www_debug, File www, String newVersion) throws Exception {
@@ -110,6 +110,7 @@ public class Release implements ILogger {
 	Map<String, Boolean> plugins = objectMapper.readValue(configuration, new TypeReference<HashMap<String, String>>() {
 	});
 
+	LOGGER.info("Run release methods on plugins.");
 	for (String pluginName : plugins.keySet()) {
 	    String curretnClass = "co.stygs.com.lapstone.objects.json.plugin.Plugin_" + pluginName + "_JSON";
 	    try {
@@ -215,7 +216,7 @@ public class Release implements ILogger {
 		}
 
 		// delete processed file
-		file.delete();
+		// file.delete();
 
 		if (!currentFileContent.endsWith(";"))
 		    currentFileContent += ";";
@@ -241,7 +242,7 @@ public class Release implements ILogger {
 
 	    LOGGER.info("Adding include_once file: " + include_onceFile.getAbsolutePath());
 	    includeContent += ";" + FileUtils.readFileToString(include_onceFile, Charset.forName("UTF-8"));
-	    include_onceFile.delete();
+	    // include_onceFile.delete();
 	}
 	includeContent = "includeEverything=function(){" + includeContent + "};";
 
@@ -267,11 +268,11 @@ public class Release implements ILogger {
 
 	pluginJs = new File(www, "js/plugin/plugins.js");
 	allPluginsContent.append(FileUtils.readFileToString(pluginJs, Lapstone.CHARSET));
-	pluginJs.delete();
+	// pluginJs.delete();
 
 	pluginJson = new File(www, "js/plugin/plugins.json");
 	allPluginsContent.append(";\n" + "var config_json = " + FileUtils.readFileToString(pluginJson, Lapstone.CHARSET));
-	pluginJson.delete();
+	// pluginJson.delete();
 
 	// for each plugin in lapstone
 	for (String pluginName : plugins.keySet()) {
@@ -288,7 +289,7 @@ public class Release implements ILogger {
 		    throw new CompressorException(e);
 		}
 		allPluginsContent.append(";\n\n" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
-		Files.delete(currentPluginFile.toPath());
+		// Files.delete(currentPluginFile.toPath());
 
 		// JSON
 		currentPluginFile = new File(www, "js/plugin/plugin." + pluginName + ".json");
@@ -319,7 +320,7 @@ public class Release implements ILogger {
 
 		allPluginsContent.append(";\n\n" + "var config_" + pluginName + "=" + FileUtils.readFileToString(currentPluginFile, Lapstone.CHARSET));
 
-		Files.delete(currentPluginFile.toPath());
+		// Files.delete(currentPluginFile.toPath());
 	    }
 
 	}
@@ -389,8 +390,11 @@ public class Release implements ILogger {
 
 	    System.out.println("Delete directory: " + www.getAbsolutePath());
 	    FileUtils.deleteDirectory(www);
+
+	    System.out.println("Copy directory: " + www_debug.getAbsolutePath() + " to " + www.getAbsolutePath());
 	    FileUtils.copyDirectory(www_debug, www, true);
 
+	    System.out.println("Delete directory: " + "tools");
 	    FileUtils.deleteQuietly(new File(www, "tools"));
 
 	    // ********************************************************************

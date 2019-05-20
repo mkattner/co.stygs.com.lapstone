@@ -2,7 +2,9 @@ package co.stygs.com.lapstone.objects.json;
 
 import java.util.List;
 
-public abstract class APlugin_JSON implements IPlugin_JSON{
+import co.stygs.com.lapstone.ILogger;
+
+public abstract class APlugin_JSON implements IPlugin_JSON, ILogger{
 
     private List<String> include;
     

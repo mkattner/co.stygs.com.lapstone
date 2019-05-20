@@ -52,13 +52,13 @@ public class LapstoneCompiler implements ILogger {
 
 		@Override
 		public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
-		    LOGGER.error(sourceName + " " + line + ": " + message + " " + lineSource + " " + lineOffset);
+		    LOGGER.warn(sourceName + " " + line + ": " + message + " " + lineSource + " " + lineOffset);
 
 		}
 
 		@Override
 		public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
-		    LOGGER.error(sourceName + " " + line + ": " + message + " " + lineSource + " " + lineOffset);
+		    LOGGER.warn(sourceName + " " + line + ": " + message + " " + lineSource + " " + lineOffset);
 		    return null;
 		}
 
@@ -124,12 +124,12 @@ public class LapstoneCompiler implements ILogger {
 	}
 
 	catch (Exception e) {
-	    LOGGER.error("-------------------------------------------------------------------------------------");
-	    LOGGER.error("Lapstone compilation error in: " + in.getName());
-	    LOGGER.error("Rhino is unable to parse: " + in.getAbsolutePath());
-	    LOGGER.error("Exception", e);
-	    LOGGER.error("Error above is not critical, but dirty.");
-	    LOGGER.error("-------------------------------------------------------------------------------------");
+	    LOGGER.warn("-------------------------------------------------------------------------------------");
+	    LOGGER.warn("Lapstone compilation error in: " + in.getName());
+	    LOGGER.warn("Rhino is unable to parse: " + in.getAbsolutePath());
+	    LOGGER.warn("Exception", e);
+	    LOGGER.warn("Error above is not critical, but dirty.");
+	    LOGGER.warn("-------------------------------------------------------------------------------------");
 
 	    FileUtils.writeStringToFile(out, FileUtils.readFileToString(in, Lapstone.CHARSET), Lapstone.CHARSET);
 	}

@@ -74,7 +74,12 @@ public class Plugin_LoadExternalScripts_JSON extends APlugin_JSON {
 
 	    try {
 		// Compressor.compressJavaScript(currentFile.getAbsolutePath(), currentFile.getAbsolutePath(), new JavascriptCompressorOptions());
-		LapstoneCompiler.Compile(currentFile, currentFile, www_debug);
+		if (currentFile.getAbsolutePath().contains("ext")) {
+		    LOGGER.info("Skip external file: " + currentFile.getAbsolutePath());
+		} else {
+		    LOGGER.info("Compile external file: " + currentFile.getAbsolutePath());
+		    LapstoneCompiler.Compile(currentFile, currentFile, www_debug);
+		}
 	    } catch (Exception e) {
 		e.printStackTrace();
 		System.out.println("ERROR: NOT ABLE TO COMPRESS: " + currentFile.getAbsolutePath());
