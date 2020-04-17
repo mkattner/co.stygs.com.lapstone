@@ -21,6 +21,22 @@ var plugin_WebServiceClient = {
 	config : null,
 	constructor : function() {
 		var dfd = $.Deferred();
+
+		app.debug.operation(function() {
+			app.debug.validate(plugin_WebServiceClient.config.useHeaderToken, "undefined", "WebServiceClient.config.useHeaderToken is outdated. use: WebServiceClient.config.<server>.useHeaderToken")
+
+			$.each(plugin_WebServiceClient.config.server, function(name, serverObject) {
+				app.debug.validate(serverObject.defaultDataType, "object", "mappings object has changed to defaultDataType or defaultContentType");
+				app.debug.validate(serverObject.defaultContentType, "object", "mappings object has changed to defaultDataType or defaultContentType");
+
+				app.debug.validate(serverObject.useHeaderToken, "boolean", "required: serverObject.useHeaderToken");
+				app.debug.validate(serverObject.headerToken, "object", "required: serverObject.headerToken");
+				app.debug.validate(serverObject.headerToken.key, "string", "required: serverObject.headerToken.key");
+				app.debug.validate(serverObject.headerToken.value, "string", "required: serverObject.headerToken.value");
+
+			})
+		});
+
 		dfd.resolve();
 		return dfd.promise();
 
@@ -89,10 +105,10 @@ var plugin_WebServiceClient = {
 		// app.debug.debug("plugin_WebServiceClient.getAjax() - webservice: " +
 		// url
 		// + "?" + data);
-//
-//		app.debug.operation(function() {
-//			currentWsd = wsd;
-//		});
+		//
+		// app.debug.operation(function() {
+		// currentWsd = wsd;
+		// });
 
 		var returnValue = null, dfd = null, jqXHR, $ajax_processData = true;// ,
 		// headers
@@ -126,8 +142,8 @@ var plugin_WebServiceClient = {
 
 		// The type of data that you're expecting back from the server.
 		// TODO Use a default dataType in WSC.json
-		if (wsd.dataType.length === 0) {
-			wsd.dataType = plugin_WebServiceClient.config.server[wsd.server].mappings[wsd.method.toLowerCase()];
+		if (wsd.dataType === undefined || wsd.dataType.length === 0) {
+			wsd.dataType = plugin_WebServiceClient.config.server[wsd.server].defaultDataType[wsd.method.toLowerCase()];
 		}
 
 		switch (wsd.dataType.split(";")[0]) {
@@ -145,8 +161,8 @@ var plugin_WebServiceClient = {
 		// When sending data to the server, use this content type.
 		// TODO Use a default contentType in WSC.json
 		// like dataType
-		if (wsd.contentType.length === 0) {
-			wsd.contentType = "application/x-www-form-urlencoded";
+		if (wsd.contentType === undefined || wsd.contentType.length === 0) {
+			wsd.contentType = plugin_WebServiceClient.config.server[wsd.server].defaultDataType[wsd.method.toLowerCase()];
 		}
 
 		switch (wsd.contentType.split(";")[0]) {
@@ -212,17 +228,6 @@ var plugin_WebServiceClient = {
 					beforeSend : function(jqXHR, settings) {
 						app.debug.debug("plugin_WebServiceClient.getAjax() beforeSend: set http headers");
 
-						app.debug.operation(function() {
-							window.setTimeout(function() {
-								app.debug.validate(plugin_WebServiceClient.config.useHeaderToken, "undefined", "WebServiceClient.config.useHeaderToken is outdated. use: WebServiceClient.config.<server>.useHeaderToken")
-								app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].useHeaderToken, "boolean", "required: ");
-
-								app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].headerToken, "object", "required:");
-								app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].headerToken.key, "string", "required:");
-								app.debug.validate(plugin_WebServiceClient.config.server[wsd.server].headerToken.value, "string", "required: ");
-							}, 0);
-						})
-
 						if (plugin_WebServiceClient.config.server[wsd.server].useHeaderToken) {
 							// app.debug.debug("plugin_WebServiceClient.getAjax()
 							// case:
@@ -254,7 +259,7 @@ var plugin_WebServiceClient = {
 						if (app.plugins.functions.pluginLoaded("WebServiceError") === true) {
 							app.debug.debug("plugin_WebServiceClient.getAjax() - case: wse plugin is active");
 							var exeptionConfig
-							if (( exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
+							if ((exeptionConfig = app.wse.getExceptionConfig(data)) === false) {
 								if (dfd != undefined && dfd != null) {
 									app.debug.debug("plugin_WebServiceClient.getAjax() - case: no exception: " + JSON.stringify(returnValue));
 									dfd.resolve(returnValue);

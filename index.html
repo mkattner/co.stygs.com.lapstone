@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>APP</title>
+<script src="jquery-3.4.1.min.js"></script>
+<script src="moment-with-locales.min.js"></script>
+<script src="d3.v5.min.js"></script>
+</head>
+<body>
+	<div id="devices"></div>
+	<div id="graph_temp"></div>
+	<div id="graph_hum"></div>
+	<div id="graph_pres"></div>
+	<div id="graph_light"></div>
+	<script type="text/javascript">
+		var display = function($this) {
+			var date = moment($this.val(), "YYYY-MM-DD");
+
+			var requests = [];
+			$(".compare:checked").each(function() {
+				var device = $(this).data("device");
+				requests.push($.getJSON("http://localhost:2870/API/bis_auf_widerruf/sequence/" + device.id + "/" + date.year() + "/" + date.dayOfYear()));
+			});
+
+			$.when.apply($, requests).then(function() {
+
+				if (requests.length === 1) {
+					json = [ arguments[0] ]
+				} else {
+					json = []
+					$.each(arguments, function(i, d) {
+						json.push(d[0]);
+					});
+				}
+
+				$("#graph_temp").empty();//.append(JSON.stringify(json))
+				$("#graph_hum").empty();
+				$("#graph_pres").empty();
+				$("#graph_light").empty();
+
+				for (var i = json.length - 1; i >= 0; i--) {
+					if (json[i].success === false) {
+						//alert(json[i].exception);
+						json.splice(i, 1);
+					}
+				}
+
+				// set the dimensions and margins of the graph
+				var margin = {
+					top : 20,
+					right : 20,
+					bottom : 50,
+					left : 70
+				};
+				var width = 960 - margin.left - margin.right;
+				var height = 500 - margin.top - margin.bottom;
+
+				// append the svg object to the body of the page
+				var svg_temp = d3.select("#graph_temp").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+				var svg_hum = d3.select("#graph_hum").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+				var svg_pres = d3.select("#graph_pres").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+				var svg_light = d3.select("#graph_light").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+				//json = json[0];
+
+				// Add X axis
+				var minMax_t = [], minMax_h = [], minMax_p = [], minMax_l = [], minMax_date = [];
+				json.forEach(function(j) {
+					minMax_t = minMax_t.concat(d3.extent(j.data.measurements, function(d) {
+						return d.t;
+					}))
+					minMax_h = minMax_h.concat(d3.extent(j.data.measurements, function(d) {
+						return d.h;
+					}))
+					minMax_p = minMax_p.concat(d3.extent(j.data.measurements, function(d) {
+						return d.p;
+					}))
+					minMax_l = minMax_l.concat(d3.extent(j.data.measurements, function(d) {
+						return d.l;
+					}))
+
+					j.data.measurements.forEach(function(d) {
+						d.date = moment(date).add(d.s, 'seconds').toDate()
+					});
+
+					minMax_date = minMax_date.concat(d3.extent(j.data.measurements, function(d) {
+						return d.date;
+					}))
+
+				});
+
+				minMax_t = d3.extent(minMax_t);
+				minMax_h = d3.extent(minMax_h);
+				minMax_p = d3.extent(minMax_p);
+				minMax_l = d3.extent(minMax_l);
+				minMax_date = d3.extent(minMax_date);
+
+				data = json[0].data.measurements;
+
+				console.log(data);
+				var x = d3.scaleTime().domain(minMax_date).range([ 0, width ]);
+
+				svg_temp.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
+
+				svg_pres.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
+
+				svg_hum.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
+
+				svg_light.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
+
+				// Add Y axis
+				var y_temp = d3.scaleLinear().domain(minMax_t).range([ height, 0 ]);
+
+				svg_temp.append("g").call(d3.axisLeft(y_temp));
+
+				var y_hum = d3.scaleLinear().domain(minMax_h).range([ height, 0 ]);
+
+				svg_hum.append("g").call(d3.axisLeft(y_hum));
+
+				var y_pres = d3.scaleLinear().domain(minMax_p).range([ height, 0 ]);
+
+				svg_pres.append("g").call(d3.axisLeft(y_pres));
+
+				var y_light = d3.scaleLinear().domain(minMax_l).range([ height, 0 ]);
+
+				svg_light.append("g").call(d3.axisLeft(y_light));
+
+				// Add the line
+				var randomColor = function(seed) {
+					var letters = '0123456789ABCDEF';
+					var color = '#';
+					for (var i = 0; i < 6; i++) {
+						color += letters[Math.floor(Math.abs(Math.sin(seed + i)) * 16)];
+					}
+					return color;
+				}
+
+				$.each(json, function(i, j) {
+					svg_temp.append("path").datum(j.data.measurements).attr("fill", "none").attr("stroke", randomColor(i)).attr("stroke-width", 1.5).attr("d", d3.line().x(function(d) {
+						return x(d.date)
+					}).y(function(d) {
+						return y_temp(d.t)
+					}))
+				})
+
+				$.each(json, function(i, j) {
+					svg_hum.append("path").datum(j.data.measurements).attr("fill", "none").attr("stroke", randomColor(i)).attr("stroke-width", 1.5).attr("d", d3.line().x(function(d) {
+						return x(d.date)
+					}).y(function(d) {
+						return y_hum(d.h)
+					}))
+				})
+
+				$.each(json, function(i, j) {
+					svg_pres.append("path").datum(j.data.measurements).attr("fill", "none").attr("stroke", randomColor(i)).attr("stroke-width", 1.5).attr("d", d3.line().x(function(d) {
+						return x(d.date)
+					}).y(function(d) {
+						return y_pres(d.p)
+					}))
+				})
+
+				$.each(json, function(i, j) {
+					svg_light.append("path").datum(j.data.measurements).attr("fill", "none").attr("stroke", randomColor(i)).attr("stroke-width", 1.5).attr("d", d3.line().x(function(d) {
+						return x(d.date)
+					}).y(function(d) {
+						return y_light(d.l)
+					}))
+				})
+
+				// brushes
+				svg_temp.append("g").attr("class", "brush").call(d3.brushX().extent([ [ 0, 0 ], [ width, height ] ]).on("end", function() {
+				}));
+				svg_hum.append("g").attr("class", "brush").call(d3.brushX().extent([ [ 0, 0 ], [ width, height ] ]).on("end", function() {
+				}));
+				svg_pres.append("g").attr("class", "brush").call(d3.brushX().extent([ [ 0, 0 ], [ width, height ] ]).on("end", function() {
+				}));
+				svg_light.append("g").attr("class", "brush").call(d3.brushX().extent([ [ 0, 0 ], [ width, height ] ]).on("end", function() {
+				}));
+
+			});
+		}
+
+		$(document).ready(function() {
+			$.getJSON("http://localhost:2870/API/bis_auf_widerruf/device/list", function(json) {
+				$.each(json.data, function(index, device) {
+					$("#devices").append(function() {
+						return $("<a>").attr({
+							"href" : "#"
+						}).css({
+							"display" : "inline-block",
+							"border" : "1px solid black",
+							"hight" : "60px"
+						}).append(function() {
+							return $("<p>").text("#" + device.id + " " + device.name);
+						}).append(function() {
+							return $("<p>").text(JSON.stringify(device));
+						}).append(function() {
+							return $("<input>").data({
+								"device" : device
+							}).attr({
+								"type" : "checkbox"
+							}).addClass("compare")
+						})
+					})
+				})
+				$("#devices").append(function() {
+					return $("<a>").attr({
+						"href" : "#"
+					}).text("Back")
+				})
+				$("#devices").append(function() {
+					return $("<input>").attr({
+						"type" : "date"
+					}).on("change", function() {
+						display($(this));
+					})
+				});
+			});
+		});
+	</script>
+
+</body>
+</html>

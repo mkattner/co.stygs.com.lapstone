@@ -11,6 +11,7 @@
 	"javascriptOrdered": [
 		"../ext/jQueryUi/jquery-ui.min.js",
 		"../ext/jQueryUiTouchPunch/jquery.ui.touch-punch.min.js",
-		"../ext/moment/moment.js"
+		"../ext/moment/moment.js",
+		"../ext/underscore/underscore-min.js"
 	]
 }

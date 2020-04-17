@@ -8,19 +8,25 @@
 	"defaultWebServiceMethod": "post",
 	"defaultWebServiceType": "json",
 	"useServerShuffle": true,
-	"useHeaderToken": false,
-	"headerToken": {
-		"key": "Authorization",
-		"value": "data-app-token"
-	},
 	"defaultServer": "template",
 	"server": {
 		"template": {
 			"active": true,
 			"pingPath": "",
-			"mappings": {
+			"useHeaderToken": false,
+			"headerToken": {
+				"key": "Authorization",
+				"value": "data-app-token"
+			},
+			"defaultDataType": {
 				"post": "application/json;charset=UTF-8",
 				"get": "application/json;charset=UTF-8",
+				"put": "application/json;charset=UTF-8",
+				"delete": "application/json;charset=UTF-8"
+			},
+			"defaultContentType": {
+				"post": "application/json;charset=UTF-8",
+				"get": "application/x-www-form-urlencoded",
 				"put": "application/json;charset=UTF-8",
 				"delete": "application/json;charset=UTF-8"
 			},
@@ -37,11 +43,22 @@
 		"socket": {
 			"active": true,
 			"pingPath": "",
-			"mappings": {
-				"post": "json",
-				"get": "query",
-				"put": "json",
-				"delete": "json"
+			"useHeaderToken": false,
+			"headerToken": {
+				"key": "Authorization",
+				"value": "data-app-token"
+			},
+			"defaultDataType": {
+				"post": "application/json;charset=UTF-8",
+				"get": "application/json;charset=UTF-8",
+				"put": "application/json;charset=UTF-8",
+				"delete": "application/json;charset=UTF-8"
+			},
+			"defaultContentType": {
+				"post": "application/json;charset=UTF-8",
+				"get": "application/x-www-form-urlencoded",
+				"put": "application/json;charset=UTF-8",
+				"delete": "application/json;charset=UTF-8"
 			},
 			"endpoints": [
 				{
