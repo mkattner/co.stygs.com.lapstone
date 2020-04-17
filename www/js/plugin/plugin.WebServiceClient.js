@@ -1,4 +1,4 @@
-// # sourceURL=plugin.WebServiceClient.js
+//# sourceURL=plugin.WebServiceClient.js
 /**
  * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted,
  * free of charge, to any person obtaining a copy of this software and
@@ -33,6 +33,11 @@ var plugin_WebServiceClient = {
 				app.debug.validate(serverObject.headerToken, "object", "required: serverObject.headerToken");
 				app.debug.validate(serverObject.headerToken.key, "string", "required: serverObject.headerToken.key");
 				app.debug.validate(serverObject.headerToken.value, "string", "required: serverObject.headerToken.value");
+
+				app.debug.validate(serverObject.usePathToken, "boolean", "required: serverObject.usePathToken");
+				app.debug.validate(serverObject.pathToken, "object", "required: serverObject.pathToken");
+				app.debug.validate(serverObject.pathToken.key, "string", "required: serverObject.pathToken.key");
+				app.debug.validate(serverObject.pathToken.value, "string", "required: serverObject.pathToken.value");
 
 			})
 		});
@@ -131,6 +136,10 @@ var plugin_WebServiceClient = {
 		app.debug.validate(wsd.serverObject, "object")
 
 		// replace and delete url parameters
+		if (plugin_WebServiceClient.config.server[wsd.server].usePathToken === true) {
+			wsd.parameters[plugin_WebServiceClient.config.server[wsd.server].pathToken.key] = app.store.localStorage.get(plugin_WebServiceClient.config.server[wsd.server].pathToken.value);
+		}
+
 		$.each(wsd.parameters, function(parameterName, parameterValue) {
 			if (wsd.url.occurences("{" + parameterName + "}") > 0) {
 				wsd.url = wsd.url.replaceAll("{" + parameterName + "}", parameterValue);

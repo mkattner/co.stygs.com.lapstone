@@ -18,6 +18,11 @@
 				"key": "Authorization",
 				"value": "data-app-token"
 			},
+			"usePathToken": false,
+			"pathToken": {
+				"key": "Authorization",
+				"value": "data-app-token"
+			},
 			"defaultDataType": {
 				"post": "application/json;charset=UTF-8",
 				"get": "application/json;charset=UTF-8",
@@ -45,6 +50,11 @@
 			"pingPath": "",
 			"useHeaderToken": false,
 			"headerToken": {
+				"key": "Authorization",
+				"value": "data-app-token"
+			},
+			"usePathToken": false,
+			"pathToken": {
 				"key": "Authorization",
 				"value": "data-app-token"
 			},
