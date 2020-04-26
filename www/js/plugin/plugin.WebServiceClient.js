@@ -137,15 +137,21 @@ var plugin_WebServiceClient = {
 
 		// replace and delete url parameters
 		if (plugin_WebServiceClient.config.server[wsd.server].usePathToken === true) {
-			wsd.parameters[plugin_WebServiceClient.config.server[wsd.server].pathToken.key] = app.store.localStorage.get(plugin_WebServiceClient.config.server[wsd.server].pathToken.value);
+			if (wsd.parameters[plugin_WebServiceClient.config.server[wsd.server].pathToken.key] === undefined)
+				wsd.url = wsd.url.replaceAll("{" + plugin_WebServiceClient.config.server[wsd.server].pathToken.key + "}", app.store.localStorage.get(plugin_WebServiceClient.config.server[wsd.server].pathToken.value));
+			// wsd.parameters[plugin_WebServiceClient.config.server[wsd.server].pathToken.key]
+			// =
+			// app.store.localStorage.get(plugin_WebServiceClient.config.server[wsd.server].pathToken.value);
 		}
 
-		$.each(wsd.parameters, function(parameterName, parameterValue) {
-			if (wsd.url.occurences("{" + parameterName + "}") > 0) {
-				wsd.url = wsd.url.replaceAll("{" + parameterName + "}", parameterValue);
-				delete wsd.parameters[parameterName];
-			}
-		});
+		// Do I need this? It's done in app.rc.mergeWsdWithParameters
+		// $.each(wsd.parameters, function(parameterName, parameterValue) {
+		// if (wsd.url.occurences("{" + parameterName + "}") > 0) {
+		// wsd.url = wsd.url.replaceAll("{" + parameterName + "}",
+		// parameterValue);
+		// delete wsd.parameters[parameterName];
+		// }
+		// });
 
 		wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
 

@@ -24,6 +24,8 @@ public class Plugin_WebServiceError_JSON extends APlugin_JSON {
     private Map<String, Map<String, String>> wse;
 
     private List<String> wseFiles;
+    
+    private String errorFlag;
 
     public Plugin_WebServiceError_JSON() {
 	// TODO Auto-generated constructor stub
@@ -99,5 +101,13 @@ public class Plugin_WebServiceError_JSON extends APlugin_JSON {
 	public void setWseFiles(List<String> wseFiles) {
 	this.wseFiles = wseFiles;
     }
+
+	public String getErrorFlag() {
+		return errorFlag;
+	}
+
+	public void setErrorFlag(String errorFlag) {
+		this.errorFlag = errorFlag;
+	}
 
 }

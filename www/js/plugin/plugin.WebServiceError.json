@@ -5,7 +5,7 @@
 	"dependency": [],
 	"wseFiles": [
 		"../files/wse/wse.http.json",
-		"../files/wse/wse.moodle.json"
+		"../files/wse/wse.application.json"
 	],
 	"actions": {
 		"redirect": "",
@@ -13,6 +13,7 @@
 		"alert": "",
 		"confirmation": ""
 	},
+	"errorFlag": "success",
 	"errorKeys": [
 		"error",
 		"status",
