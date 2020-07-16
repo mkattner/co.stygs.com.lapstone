@@ -107,7 +107,7 @@ public class Release implements ILogger {
 	LapstoneJSON lapstoneJson = objectMapper.readValue(configuration, LapstoneJSON.class);
 
 	configuration = new File(www, "js/plugin/plugins.json");
-	Map<String, Boolean> plugins = objectMapper.readValue(configuration, new TypeReference<HashMap<String, String>>() {
+	Map<String, Boolean> plugins = objectMapper.readValue(configuration, new TypeReference<HashMap<String, Boolean>>() {
 	});
 
 	LOGGER.info("Run release methods on plugins.");
