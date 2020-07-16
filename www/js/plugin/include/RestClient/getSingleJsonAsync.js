@@ -40,7 +40,7 @@ plugin_RestClient.getSingleJsonAsync = function(paramService, parameter, async) 
 
 	// case: webesrvice is cacheable && webservice is cached
 	// alert(JSON.stringify(parameter))
-	if ((cachedJson = plugin_RestClient.functions.cacheJson(paramService, wsd.parameters)) && plugin_RestClient.config.webservices[paramService].cacheable) {
+	if ((cachedJson = plugin_RestClient.functions.cacheJson(paramService, parameter)) && plugin_RestClient.config.webservices[paramService].cacheable) {
 		app.debug.info("plugin_RestClient - CACHED: " + paramService);
 
 		app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
@@ -57,7 +57,7 @@ plugin_RestClient.getSingleJsonAsync = function(paramService, parameter, async) 
 		promise.done(function(json) {
 
 			app.debug.debug("plugin_RestClient.getSingleJsonAsync()- Webservice call done: " + JSON.stringify(json));
-			plugin_RestClient.functions.cacheJson(paramService, wsd.parameters, json);
+			plugin_RestClient.functions.cacheJson(paramService, parameter, json);
 
 			app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
 			wsEventTrigger.resolve(json);

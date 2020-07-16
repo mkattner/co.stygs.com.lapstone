@@ -26,6 +26,12 @@ var plugin_DeviceManager = {
 	// called by plugins.js
 	constructor : function() {
 		var dfd = $.Deferred();
+
+		console.log("exprimental")
+		lapstone.globalLoader.AsyncTextLoader("../files/icons/AppleWebapp.html", 3).done(function(file) {
+			$("head").append($(file));
+		})
+
 		dfd.resolve();
 		return dfd.promise();
 

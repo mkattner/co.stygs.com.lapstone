@@ -31,7 +31,7 @@ plugin_RestClient.getSingleJson = function(paramService, parameter, async) {
   $(document).trigger("webserviceCall", [wsEventTrigger.promise(), paramService, wsd]);
   app.debug.webservice(paramService);
 
-  if ((json = plugin_RestClient.functions.cacheJson(paramService, wsd.parameters)) && plugin_RestClient.config.webservices[paramService].cacheable) {
+  if ((json = plugin_RestClient.functions.cacheJson(paramService, parameter)) && plugin_RestClient.config.webservices[paramService].cacheable) {
     app.debug.info("plugin_RestClient - CACHED: " + paramService);
 
     app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
@@ -46,7 +46,7 @@ plugin_RestClient.getSingleJson = function(paramService, parameter, async) {
 
   }
 
-  plugin_RestClient.functions.cacheJson(paramService, wsd.parameters, json);
+  plugin_RestClient.functions.cacheJson(paramService, parameter, json);
 
   app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + paramService);
   wsEventTrigger.resolve(json);

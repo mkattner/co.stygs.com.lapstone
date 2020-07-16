@@ -1,9 +1,20 @@
 // # sourceURL=plugin.KeepAlive.js
 /**
- * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2018 martin.kattner@gmail.com Permission is hereby granted,
+ * free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions: The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 var plugin_KeepAlive = {
@@ -28,7 +39,9 @@ var plugin_KeepAlive = {
 			app.debug.debug("plugin_KeepAlive.pluginsLoaded() call: plugin_KeepAlive.keepAliveRequest() to make a first keepAlive request");
 			plugin_KeepAlive.keepAliveRequest();
 			app.debug.debug("plugin_KeepAlive.pluginsLoaded() initialize the keepAlive interval: plugin_KeepAlive.interval ");
-			plugin_KeepAlive.interval = window.setInterval("plugin_KeepAlive.keepAliveRequest()", plugin_KeepAlive.config.intervalInS * 1000);
+			plugin_KeepAlive.interval = window.setInterval(function() {
+				plugin_KeepAlive.keepAliveRequest();
+			}, plugin_KeepAlive.config.intervalInS * 1000);
 		}
 
 		dfd.resolve();
@@ -66,80 +79,17 @@ var plugin_KeepAlive = {
 
 	},
 	// private functionsstartTime : 0.0,
-	eventTriggering : function() {
+	eventTriggering : function(isAlive) {
 		app.debug.trace("plugin_KeepAlive.eventTriggering()");
-		if (!plugin_KeepAlive.config.isAlive) {
+		if (!isAlive) {
 			$("[data-role=page]").trigger("connectionisdead");
 			$(window).trigger("connectionisdead");
-		} 
-		
-		else if (plugin_KeepAlive.config.isAlive) {
+		}
+
+		else if (isAlive) {
 			$("[data-role=page]").trigger("connectionisalive");
 			$(window).trigger("connectionisalive");
 		}
-	},
-
-	ajaxSuccess : function(data, textStatus, jqXHR) {
-		app.debug.trace("plugin_KeepAlive.ajaxSuccess()");
-		var wsDuration = Date.now() - plugin_KeepAlive.startTime;
-		if (wsDuration >= plugin_KeepAlive.config.maximumResponseTime) {
-// app.info.set("plugin_KeepAlive.config.lastDuration", wsDuration);
-			app.persist.setPluginConfiguration("KeepAlive", "lastDuration", wsDuration);
-			
-// app.info.set("plugin_KeepAlive.config.isAlive", false);
-			app.persist.setPluginConfiguration("KeepAlive", "isAlive", false);
-			
-			
-// app.info.set("plugin_KeepAlive.config.error.code", 2);
-			app.persist.setPluginConfiguration("KeepAlive", "error.code", 2);
-			
-// app.info.set("plugin_KeepAlive.config.error.text", "Timeout error");
-			app.persist.setPluginConfiguration("KeepAlive", "error.text", "Timeout error");
-			
-		} 
-		
-		else {
-// app.info.set("plugin_KeepAlive.config.lastDuration", wsDuration);
-			app.persist.setPluginConfiguration("KeepAlive", "lastDuration", wsDuration);
-			
-// app.info.set("plugin_KeepAlive.config.isAlive", true);
-			app.persist.setPluginConfiguration("KeepAlive", "isAlive", true);
-			
-// app.info.set("plugin_KeepAlive.config.error.code", 0);
-			 app.persist.setPluginConfiguration("KeepAlive", "error.code", 0);
-			 
-			
-// app.info.set("plugin_KeepAlive.config.error.text", "No error");
-			app.persist.setPluginConfiguration("KeepAlive", "error.text", "No error");
-		}
-// app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.lastDuration = " + app.store.localStorage.get("config.plugin_KeepAlive.config.lastDuration"));
-// app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.isAlive = " + app.store.localStorage.get("config.plugin_KeepAlive.config.isAlive"));
-// app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.error.code = " + app.store.localStorage.get("config.plugin_KeepAlive.config.error.code"));
-// app.debug.debug("plugin_KeepAlive.ajaxSuccess() value: plugin_KeepAlive.config.error.text = " + app.store.localStorage.get("config.plugin_KeepAlive.config.error.text"));
-		
-		app.debug.warn(JSON.stringify(app.persist.getPluginConfiguration("KeepAlive")));
-		
-		plugin_KeepAlive.eventTriggering();
-	},
-
-	ajaxError : function(jqXHR, textStatus, errorThrown) {
-		app.debug.trace("plugin_KeepAlive.ajaxError()");
-		var wsDuration = Date.now() - plugin_KeepAlive.startTime;
-		
-// app.info.set("plugin_KeepAlive.config.lastDuration", wsDuration);
-		app.persist.setPluginConfiguration("KeepAlive", "lastDuration", wsDuration);
-		
-// app.info.set("plugin_KeepAlive.config.isAlive", false);
-		app.persist.setPluginConfiguration("KeepAlive", "isAlive", false);
-		
-// app.info.set("plugin_KeepAlive.config.error.code", 1);
-		 app.persist.setPluginConfiguration("KeepAlive", "error.code", 1);
-		 
-// app.info.set("plugin_KeepAlive.config.error.text", "Webservice Error: ");
-		app.persist.setPluginConfiguration("KeepAlive", "error.text", "Webservice Error");
-		
-		app.debug.debug("plugin_KeepAlive.ajaxSuccess() - KeepAlive request failed: " + plugin_KeepAlive.config.error.text + "\nTime: " + wsDuration + "\n\n" + JSON.stringify(errorThrown, null, 4), 60);
-		plugin_KeepAlive.eventTriggering();
 	},
 
 	ajax : function(url, data, type, method, timeout) {
@@ -155,6 +105,82 @@ var plugin_KeepAlive = {
 				timeout : timeout,
 				success : plugin_KeepAlive.ajaxSuccess,
 				error : plugin_KeepAlive.ajaxError
+			})
+
+			.done(function(data, textStatus, jqXHR) {
+				app.debug.trace("plugin_KeepAlive.ajaxSuccess()");
+				var wsDuration = Date.now() - plugin_KeepAlive.startTime;
+				if (wsDuration >= plugin_KeepAlive.config.maximumResponseTime) {
+					app.persist.setPluginConfiguration("KeepAlive", "lastDuration", wsDuration);
+
+					app.persist.setPluginConfiguration("KeepAlive", "isAlive", false);
+
+					app.persist.setPluginConfiguration("KeepAlive", "error.code", 2);
+
+					app.persist.setPluginConfiguration("KeepAlive", "error.text", "Timeout error");
+
+				}
+
+				else {
+					app.persist.setPluginConfiguration("KeepAlive", "lastDuration", wsDuration);
+
+					app.persist.setPluginConfiguration("KeepAlive", "isAlive", true);
+
+					app.persist.setPluginConfiguration("KeepAlive", "error.code", 0);
+
+					app.persist.setPluginConfiguration("KeepAlive", "error.text", "No error");
+				}
+
+				app.debug.warn(JSON.stringify(app.persist.getPluginConfiguration("KeepAlive")));
+
+				plugin_KeepAlive.eventTriggering(plugin_KeepAlive.config.isAlive);
+
+				app.debug.validate(app.alive.config.versionCheck, "boolean")
+				if (app.alive.config.versionCheck === true) {
+					
+					app.debug.validate(data.data.versionApp, "string")
+					if (data.data.versionApp.toIntegerVersion() > app.config.version.app.toIntegerVersion()) {
+						// APP VERSION DOESN'T EQUAL
+						app.actions.outdated("app")
+					} else if (data.data.versionApp.toIntegerVersion() < app.config.version.app.toIntegerVersion()) {
+						// SEVER OUTDATED
+						app.actions.outdated("server")
+					} else if (data.data.versionApp.toIntegerVersion() == app.config.version.app.toIntegerVersion()) {
+						app.debug.debug("app version equals.");
+					} else {
+						app.debug.warn("No app version exists in keep alive response")
+					}
+
+					app.debug.validate(data.data.versionLapstone, "string")
+					if (data.data.versionLapstone.toIntegerVersion() > app.config.version.lapstone.toIntegerVersion()) {
+						// LAPSTONE VERSION DOESN'T EQUAL
+						app.actions.outdated("lapstone")
+					} else if (data.data.versionLapstone.toIntegerVersion() < app.config.version.lapstone.toIntegerVersion()) {
+						// SEVER OUTDATED
+						app.actions.outdated("server")
+					} else if (data.data.versionLapstone.toIntegerVersion() == app.config.version.lapstone.toIntegerVersion()) {
+						app.debug.debug("lapstone version equals.");
+					} else {
+						app.debug.warn("No lapstone version exists in keep alive response")
+					}
+				}
+			})
+
+			.fail(function(jqXHR, textStatus, errorThrown) {
+				app.debug.trace("plugin_KeepAlive.ajaxError()");
+				var wsDuration = Date.now() - plugin_KeepAlive.startTime;
+
+				app.persist.setPluginConfiguration("KeepAlive", "lastDuration", wsDuration);
+
+				app.persist.setPluginConfiguration("KeepAlive", "isAlive", false);
+
+				app.persist.setPluginConfiguration("KeepAlive", "error.code", 1);
+
+				app.persist.setPluginConfiguration("KeepAlive", "error.text", "Webservice Error");
+
+				app.debug.debug("plugin_KeepAlive.ajaxSuccess() - KeepAlive request failed: " + plugin_KeepAlive.config.error.text + "\nTime: " + wsDuration + "\n\n" + JSON.stringify(errorThrown, null, 4), 60);
+				plugin_KeepAlive.eventTriggering(plugin_KeepAlive.config.isAlive);
+
 			});
 		} catch (err) {
 			alert("Fatal exception!\n\n" + JSON.stringify(err, null, 4));
@@ -163,9 +189,9 @@ var plugin_KeepAlive = {
 	},
 
 	/*
-   * 
-   * 0 OK; 1 Webservice failed; 2 Timeout Error
-   */
+	 * 
+	 * 0 OK; 1 Webservice failed; 2 Timeout Error
+	 */
 	keepAliveRequest : function() {
 		app.debug.trace("plugin_KeepAlive.keepAliveRequest()");
 
@@ -179,7 +205,7 @@ var plugin_KeepAlive = {
 		try {
 			server = plugin_WebServiceClient.functions.getServer(plugin_KeepAlive.config.server, false);
 		} catch (e) {
-			return
+			return;
 		}
 
 		// server = (server.endsWith("/") ? server.substr(0, server.length - 1)
@@ -194,8 +220,10 @@ var plugin_KeepAlive = {
 		switch (plugin_KeepAlive.config.type) {
 		case "json":
 			plugin_KeepAlive.startTime = Date.now();
-			return plugin_KeepAlive.ajax(url, data, "json", method, timeout);
-			break;
+
+			var response = plugin_KeepAlive.ajax(url, data, "json", method, timeout);
+
+			return response;
 		case "xml":
 			alert("still not implemented");
 			break;
@@ -213,10 +241,10 @@ var plugin_KeepAlive = {
 	// public functions
 	// called by user
 	/**
-   * Public functions for plugin_KeepAlive
-   * 
-   * @namespace plugin_KeepAlive.functions
-   */
+	 * Public functions for plugin_KeepAlive
+	 * 
+	 * @namespace plugin_KeepAlive.functions
+	 */
 	functions : {
 		request : function() {
 
@@ -224,10 +252,14 @@ var plugin_KeepAlive = {
 
 		},
 
-		isAlive : function()  {
-if(plugin_KeepAlive.config.useKeepAlive===false){return true;}
-else{
-			return plugin_KeepAlive.config.isAlive;}
+		isAlive : function() {
+			if (plugin_KeepAlive.config.useKeepAlive === false) {
+				return true;
+			}
+
+			else {
+				return plugin_KeepAlive.config.isAlive;
+			}
 		},
 
 		badConnectionHandler : function() {

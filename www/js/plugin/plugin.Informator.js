@@ -165,10 +165,15 @@ var plugin_Informator = {
 		app.debug.trace("plugin_Informator.loadValueIntoObject(" + app.debug.arguments(arguments) + ")");
 
 		var propertyValue;
+		try {
+			if (propertyLocation && propertyLocation.indexOf("Session") != -1)
+				alert()
+		} catch (e) {
+		}
 
 		propertyValue = app.store.localStorage.get(propertyLocation);
 		propertyLocation = propertyLocation.substring(plugin_Informator.configurationPrefix.length + 1);
-
+		
 		if (propertyLocation.indexOf("..") < 0)
 			plugin_HTML5Storage.setDeep(window, propertyLocation, propertyValue);
 		else

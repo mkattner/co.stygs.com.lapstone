@@ -52,14 +52,14 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
 
     // case: webesrvice is cacheable && webservice is cached
 //    alert(JSON.stringify(parameter))
-    if ((cachedJson = plugin_RestClient.functions.cacheJson(webServiceName, wsd.parameters)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
+    if ((cachedJson = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
       app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
 
       resultObject[webServiceName] = cachedJson;
 
       promiseArray.push($.Deferred().resolve());
       webwebServiceNamesArray.push(plugin_RestClient.cachedWebserviceIndentifyer);
-      webserviceParameterArray.push(wsd.parameters);
+      webserviceParameterArray.push(parameter);
 
       // resolve webservice event
       app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
@@ -73,7 +73,7 @@ plugin_RestClient.getMultipleJsonAsync = function(paramService, parameter, async
 
       promiseArray.push(promise);
       webwebServiceNamesArray.push(webServiceName);
-      webserviceParameterArray.push(wsd.parameters);
+      webserviceParameterArray.push(parameter);
 
       promise.done(function() {
         app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);

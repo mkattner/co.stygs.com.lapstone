@@ -16,5 +16,6 @@
 	"error": {
 		"text": "",
 		"code": 0
-	}
+	},
+	"versionCheck": false
 }

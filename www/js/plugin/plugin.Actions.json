@@ -8,6 +8,7 @@
 		"confirm.js",
 		"login.js",
 		"logout.js",
-		"loginObligate.js"
+		"loginObligate.js",
+		"outdated.js"
 	]
 }

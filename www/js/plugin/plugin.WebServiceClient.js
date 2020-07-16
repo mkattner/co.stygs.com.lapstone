@@ -357,24 +357,6 @@ var plugin_WebServiceClient = {
 		getJson : function(wsd, parameters, async) {
 			app.debug.trace("plugin_WebServiceClient.functions.getJson()");
 			var returnValue;
-			// if (local === true) {
-			// app.debug.debug("plugin_WebServiceClient.functions.getJson() -
-			// case:
-			// local == true");
-			// url = path;
-			// } else {
-			// app.debug.debug("plugin_WebServiceClient.functions.getJson() -
-			// case:
-			// local == false");
-			// serverConfig = plugin_WebServiceClient.getPreferedServer(server);
-			// alert(JSON.stringify(serverConfig));
-			// url = serverConfig.scheme + serverConfig.scheme_specific_part +
-			// serverConfig.host + ":" + serverConfig.port + serverConfig.path +
-			// path;
-			// dataType =
-			// plugin_WebServiceClient.config.server[server].mappings[method.toLowerCase()];
-			// alert(dataType);
-			// }
 
 			returnValue = plugin_WebServiceClient.getAjax(wsd, parameters, async);
 			return returnValue;
@@ -528,7 +510,6 @@ var plugin_WebServiceClient = {
 				asObject = false;
 			}
 
-			// alert(JSON.stringify(server));
 			if (asObject === true) {
 				app.debug.debug("plugin_WebServiceClient.functions.getServer() - case: return server as object: " + JSON.stringify(server));
 				return server;

@@ -41,7 +41,8 @@ plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
     $(document).trigger("webserviceCall", [wsEventTrigger.promise(), webServiceName, wsd]);
     app.debug.webservice(webServiceName);
 
-    if ((json = plugin_RestClient.functions.cacheJson(webServiceName, wsd.parameters)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
+    
+    if ((json = plugin_RestClient.functions.cacheJson(webServiceName, parameter)) && plugin_RestClient.config.webservices[webServiceName].cacheable) {
       app.debug.info("plugin_RestClient - CACHED: " + webServiceName);
 
       app.debug.info("plugin_RestClient - RESOLVE TRIGGER EVENT: " + webServiceName);
@@ -61,7 +62,7 @@ plugin_RestClient.getMultipleJson = function(paramService, parameter, async) {
 
     app.debug.debug("plugin_RestClient.getMultipleJson() - add language wildcards wich could be defined in webservice response");
 
-    plugin_RestClient.functions.cacheJson(webServiceName, wsd.parameters, json);
+    plugin_RestClient.functions.cacheJson(webServiceName, parameter, json);
     app.debug.debug("plugin_RestClient.getMultipleJson() - add result to resultObject");
     jsonObject[webServiceName] = json;
   });

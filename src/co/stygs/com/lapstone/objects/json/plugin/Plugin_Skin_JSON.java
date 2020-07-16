@@ -29,6 +29,7 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 	public Plugin_Skin_JSON() {
 		// TODO Auto-generated constructor stub
 	}
+
 	@Override
 	public String getAdditionalJavascript(File www) throws Exception {
 		// TODO Auto-generated method stub
@@ -52,7 +53,7 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 	}
 
 	@Override
-	public Boolean release(File www_debug,File www, LapstoneJSON lapstoneJson) throws Exception {
+	public Boolean release(File www_debug, File www, LapstoneJSON lapstoneJson) throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		File configuration;
 		File currentFile;
@@ -61,6 +62,8 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 		Plugin_Skin_JSON skinJson = objectMapper.readValue(configuration, Plugin_Skin_JSON.class);
 
 		if (skinJson.getUseSkinPlugin()) {
+
+			// CREATE the CSS FILES
 			for (String skin : skinJson.getSkins().keySet()) {
 				String combinedStyle = "";
 				for (String url : skinJson.getSkins().get(skin)) {
@@ -75,7 +78,7 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 
 					combinedStyle += currentStyle;
 
-					Files.delete(currentFile.toPath());
+					// Files.delete(currentFile.toPath());
 				}
 
 				File allSkins = new File(www, "css/skin/" + skin + "/all.skin." + skin + ".css");
@@ -87,6 +90,17 @@ public class Plugin_Skin_JSON extends APlugin_JSON {
 				LapstoneCompiler.Css(allSkins, allSkins);
 				Release.cssRegistry.add(allSkins);
 			}
+
+			// DELETE ALL OLD CSS FILES
+			// do this in an extra loop to allow multiple usage of less and css files in
+			// different skins.
+			for (String skin : skinJson.getSkins().keySet()) {
+				for (String url : skinJson.getSkins().get(skin)) {
+					currentFile = new File(www, "page/" + url);
+					Files.delete(currentFile.toPath());
+				}
+			}
+
 		}
 
 		return null;

@@ -4,7 +4,10 @@
 	"include": [],
 	"dependency": [],
 	"excludedPlugins": [
-		"Debug","Skin","KeepAlive"
+		"Debug",
+		"Skin",
+		"KeepAlive",
+		"Session"
 	],
 	"firstLevelReservedNames": [
 		"name",

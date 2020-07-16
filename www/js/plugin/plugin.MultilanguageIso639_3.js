@@ -77,6 +77,11 @@ var plugin_MultilanguageIso639_3 = {
 				"lang" : plugin_MultilanguageIso639_3.config.availableLanguages[language][0]
 			});
 
+			// CHANGE LANGUAGE IN MOMENT
+			if (window.moment !== undefined) {
+				moment.locale(plugin_MultilanguageIso639_3.config.availableLanguages[language][0])
+			}
+
 		}).fail(function(error) {
 			alert("Fatal error: Can't load language: " + langUri + " Error: " + JSON.stringify(error));
 		});

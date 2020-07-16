@@ -265,6 +265,7 @@ function updateFramework() {
 				$.each(response.updateRegistry, function(index, updateObject) {
 					console.log(JSON.stringify(updateObject))
 
+					// APP version update
 					if (updateObject.startWithAppVersion && updateObject.stopWithAppVersion) {
 						if (currentAppVersion.toIntegerVersion() >= updateObject.startWithAppVersion.toIntegerVersion() && currentAppVersion.toIntegerVersion() < updateObject.stopWithAppVersion.toIntegerVersion()) {
 							// App Update
@@ -273,6 +274,7 @@ function updateFramework() {
 						}
 					}
 
+					// LAPSTONE version update
 					if (updateObject.startWithLapstoneVersion && updateObject.stopWithLapstoneVersion) {
 						if (currentLapstoneVersion.toIntegerVersion() >= updateObject.startWithLapstoneVersion.toIntegerVersion() && currentLapstoneVersion.toIntegerVersion() < updateObject.stopWithLapstoneVersion.toIntegerVersion()) {
 							// Lapstone Update
@@ -286,7 +288,9 @@ function updateFramework() {
 				// UPDATE SCRIPTS DONE
 				$.when.apply($, updateScriptPromisses).done(function() {
 					app.info.set("app.config.version.update", true);
-					location.reload();
+
+					console.log("All update scripts are run. Lapstone scripts are stopped. ");
+					// location.reload();
 					// dfd.resolve();
 				}).fail(function() {
 					dfd.reject();
