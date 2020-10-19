@@ -13,6 +13,7 @@
 		"template": {
 			"active": true,
 			"pingPath": "",
+			"useKeepAlive": true,
 			"useHeaderToken": false,
 			"headerToken": {
 				"key": "Authorization",
@@ -47,6 +48,7 @@
 		},
 		"socket": {
 			"active": true,
+			"useKeepAlive": true,
 			"pingPath": "",
 			"useHeaderToken": false,
 			"headerToken": {

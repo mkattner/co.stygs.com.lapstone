@@ -38,6 +38,10 @@ var plugin_WebServiceClient = {
 				app.debug.validate(serverObject.pathToken, "object", "required: serverObject.pathToken");
 				app.debug.validate(serverObject.pathToken.key, "string", "required: serverObject.pathToken.key");
 				app.debug.validate(serverObject.pathToken.value, "string", "required: serverObject.pathToken.value");
+				
+				app.debug.validate(serverObject.useKeepAlive, "boolean", "required: serverObject.useKeepAlive");
+				
+				
 
 			})
 		});
@@ -177,7 +181,7 @@ var plugin_WebServiceClient = {
 		// TODO Use a default contentType in WSC.json
 		// like dataType
 		if (wsd.contentType === undefined || wsd.contentType.length === 0) {
-			wsd.contentType = plugin_WebServiceClient.config.server[wsd.server].defaultDataType[wsd.method.toLowerCase()];
+			wsd.contentType = plugin_WebServiceClient.config.server[wsd.server].defaultContentType[wsd.method.toLowerCase()];
 		}
 
 		switch (wsd.contentType.split(";")[0]) {

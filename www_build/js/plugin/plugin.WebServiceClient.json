@@ -17,6 +17,7 @@
 	"server": {
 		"template": {
 			"active": true,
+			"useKeepAlive": true,
 			"pingPath": "",
 			"mappings": {
 				"post": "application/json;charset=UTF-8",
@@ -36,6 +37,7 @@
 		},
 		"socket": {
 			"active": true,
+			"useKeepAlive": true,
 			"pingPath": "",
 			"mappings": {
 				"post": "json",
