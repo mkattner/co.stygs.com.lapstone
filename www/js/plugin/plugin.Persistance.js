@@ -12,118 +12,118 @@
  */
 
 var plugin_Persistance = {
-  config: null,
-  // called by plugins.js
-  constructor: function() {
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	config: null,
+	// called by plugins.js
+	constructor: function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after all plugins are loaded
-  pluginsLoaded: function() {
-    app.debug.trace("plugin_Persist.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
-    var dfd = $.Deferred();
+	// called after all plugins are loaded
+	pluginsLoaded: function() {
+		app.debug.trace("plugin_Persist.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
+		var dfd = $.Deferred();
 
-    $.each(app.plugins.pluginNames, function(index, pluginName) {
-      var pluginConfig, persistantConfig;
+		$.each(app.plugins.pluginNames, function(index, pluginName) {
+			var pluginConfig, persistantConfig;
 
-      if ((persistantConfig = app.sess.getObject(pluginName, plugin_Persistance.config.sessionKey)) !== null) {
+			if ((persistantConfig = app.sess.getObject(pluginName, plugin_Persistance.config.sessionKey)) !== null) {
 
-        pluginConfig = $.extend(true, app.plugins.getConfigByName(pluginName), persistantConfig);
+				pluginConfig = $.extend(true, app.plugins.getConfigByName(pluginName), persistantConfig);
 
-        app.plugins.setConfigByName(pluginName, pluginConfig)
-      }
+				app.plugins.setConfigByName(pluginName, pluginConfig)
+			}
 
-    });
+		});
 
-    dfd.resolve();
-    return dfd.promise();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after all pages are loaded
-  // caller pages.js
-  pagesLoaded: function() {
-    app.debug.trace("plugin_Persist.pagesLoaded(" + app.debug.arguments(arguments) + ")");
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	// called after all pages are loaded
+	// caller pages.js
+	pagesLoaded: function() {
+		app.debug.trace("plugin_Persist.pagesLoaded(" + app.debug.arguments(arguments) + ")");
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after pluginsLoaded()
-  // caller: plugins.js
-  definePluginEvents: function() {
-    app.debug.trace("plugin_Persist.definePluginEvents(" + app.debug.arguments(arguments) + ")");
+	// called after pluginsLoaded()
+	// caller: plugins.js
+	definePluginEvents: function() {
+		app.debug.trace("plugin_Persist.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // called by pages.js
-  // called for each page after createPage();
-  afterHtmlInjectedBeforePageComputing: function(container) {
-    app.debug.trace("plugin_Persist.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
+	},
+	// called by pages.js
+	// called for each page after createPage();
+	afterHtmlInjectedBeforePageComputing: function(container) {
+		app.debug.trace("plugin_Persist.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // called once
-  // set the jQuery delegates
-  // caller: pages.js
-  pageSpecificEvents: function(container) {
-    app.debug.trace("plugin_Persist.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
+	},
+	// called once
+	// set the jQuery delegates
+	// caller: pages.js
+	pageSpecificEvents: function(container) {
+		app.debug.trace("plugin_Persist.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // private functions
+	},
+	// private functions
 
-  // public functions
-  // called by user
-  /**
-   * Public functions for plugin_Persist
-   * 
-   * @namespace plugin_Persist.functions
-   * 
-   */
+	// public functions
+	// called by user
+	/**
+	 * Public functions for plugin_Persist
+	 * 
+	 * @namespace plugin_Persist.functions
+	 * 
+	 */
 
-  setDeep: function(object, locatorArray, value) {
-    var currentLocator;
-    object = object || {};
+	setDeep: function(object, locatorArray, value) {
+		var currentLocator;
+		object = object || {};
 
-    currentLocator = locatorArray.shift();
+		currentLocator = locatorArray.shift();
 
-    if (locatorArray.length === 0) {
-      object[currentLocator] = value;
-    }
+		if (locatorArray.length === 0) {
+			object[currentLocator] = value;
+		}
 
-    else {
-      object[currentLocator] = object[currentLocator] || {};
-      object[currentLocator] = plugin_Persistance.setDeep(object[currentLocator], locatorArray, value);
-    }
+		else {
+			object[currentLocator] = object[currentLocator] || {};
+			object[currentLocator] = plugin_Persistance.setDeep(object[currentLocator], locatorArray, value);
+		}
 
-    return object;
-  },
+		return object;
+	},
 
-  functions: {
-    setPluginConfiguration: function(pluginName, locator, value) {
-      var pluginConfig, locatorArray, object;
+	functions: {
+		setPluginConfiguration: function(pluginName, locator, value) {
+			var pluginConfig, locatorArray, object;
 
-      // pluginConfig = app.plugins.configByName(pluginName);
+			// pluginConfig = app.plugins.configByName(pluginName);
 
-      locatorArray = locator.split(".");
+			locatorArray = locator.split(".");
 
-      if ((object = app.sess.getObject(pluginName, plugin_Persistance.config.sessionKey)) === null) object = {};
+			if ((object = app.sess.getObject(pluginName, plugin_Persistance.config.sessionKey)) === null) object = {};
 
-      object = plugin_Persistance.setDeep(object, locatorArray, value);
+			object = plugin_Persistance.setDeep(object, locatorArray, value);
 
-      // in the local storage
-      app.sess.setObject(pluginName, object, plugin_Persistance.config.sessionKey);
-      
-      // in the config
-      pluginConfig = $.extend(true, app.plugins.getConfigByName(pluginName), object);
+			// in the local storage
+			app.sess.setObject(pluginName, object, plugin_Persistance.config.sessionKey);
 
-      app.plugins.setConfigByName(pluginName, pluginConfig)
-    },
+			// in the config
+			pluginConfig = $.extend(true, app.plugins.getConfigByName(pluginName), object);
 
-    getPluginConfiguration: function(pluginName) {
-      return app.sess.getObject(pluginName, plugin_Persistance.config.sessionKey);
-    }
-  }
+			app.plugins.setConfigByName(pluginName, pluginConfig)
+		},
+
+		getPluginConfiguration: function(pluginName) {
+			return app.sess.getObject(pluginName, plugin_Persistance.config.sessionKey);
+		}
+	}
 };

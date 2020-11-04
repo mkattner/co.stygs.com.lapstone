@@ -12,16 +12,16 @@
  * @namespace plugin_RestClient
  */
 var plugin_RestClient = {
-	config : null,
-	cachedWebserviceIndentifyer : "_t_cachedWebservice_",
+	config: null,
+	cachedWebserviceIndentifyer: "_t_cachedWebservice_",
 
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
 
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_RestClient.pluginsLoaded()");
 		var dfd, promises;
 
@@ -59,7 +59,7 @@ var plugin_RestClient = {
 	},
 
 	// called after all pages are loaded
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_RestClient.pagesLoaded()");
 		app.debug.debug("plugin_" + this.config.name + ".pagesLoaded()", 11);
 		var dfd = $.Deferred();
@@ -67,21 +67,21 @@ var plugin_RestClient = {
 		return dfd.promise();
 	},
 
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 	},
 
 	// called by pages.js
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_RestClient.afterHtmlInjectedBeforePageComputing()");
 	},
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_RestClient.pageSpecificEvents()");
 	},
 
 	/**
 	 * 
 	 */
-	loadDefinitionFileAsync : function(path) {
+	loadDefinitionFileAsync: function(path) {
 		app.debug.trace("plugin_RestClient.loadDefinitionFile()");
 		var dfd = $.Deferred(), promise;
 		promise = lapstone.globalLoader.AsyncJsonLoader(path);
@@ -104,7 +104,7 @@ var plugin_RestClient = {
 	/**
 	 * 
 	 */
-	loadDefinitionFile : function(path) {
+	loadDefinitionFile: function(path) {
 		app.debug.trace("plugin_RestClient.loadDefinitionFile()");
 		app.debug.deprecated();
 		var json = lapstone.globalLoader.JsonLoader(path);
@@ -124,7 +124,7 @@ var plugin_RestClient = {
 	 * @memberof plugin_RestClient
 	 * @namespace plugin_RestClient.functions
 	 */
-	functions : {
+	functions: {
 
 		/**
 		 * Retruns a specific webservice definition (wsd).
@@ -136,7 +136,7 @@ var plugin_RestClient = {
 		 * @returns {null|String} - The webservice definition object or NULL if
 		 *          the object doesn't exist.
 		 */
-		getWsd : function(webServiceName) {
+		getWsd: function(webServiceName) {
 			app.debug.trace("plugin_RestClient.functions.getWsd(" + app.debug.arguments(arguments) + ")");
 			var wsd, tmpWsd;
 			wsd = $.extend(true, {}, plugin_RestClient.config.webservices[webServiceName]);
@@ -221,7 +221,7 @@ var plugin_RestClient = {
 		 *            webServiceName - The name of the webservice.
 		 * @returns {boolean} - Success or fail deleting a the webservice
 		 */
-		deleteWsd : function(webServiceName) {
+		deleteWsd: function(webServiceName) {
 			app.debug.trace("plugin_RestClient.functions.deleteWsd(" + app.debug.arguments(arguments) + ")");
 			delete plugin_RestClient.config.webservices[webServiceName];
 			return true;
@@ -239,12 +239,12 @@ var plugin_RestClient = {
 		/**
 		 * @deprecated removed in version 1.0
 		 */
-		addWebserviceDefinitionFile : function(path) {
+		addWebserviceDefinitionFile: function(path) {
 			app.debug.debug("plugin_RestClient.functions.addWebserviceDefinitionFile(" + app.debug.arguments(arguments) + ")");
 			plugin_RestClient.loadDefinitionFile(path);
 		},
 
-		addWebservice : function(name, wsd) {
+		addWebservice: function(name, wsd) {
 			if (plugin_RestClient.config.webservices[name] === undefined) {
 				plugin_RestClient.config.webservices[name] = wsd;
 			} else {
@@ -264,7 +264,7 @@ var plugin_RestClient = {
 		 * @returns {boolean} - Success or fail deleting a webservice from
 		 *          cache.
 		 */
-		removeCache : function(webServiceName, parameter) {
+		removeCache: function(webServiceName, parameter) {
 			app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
 			app.store.localStorage.removeObject(plugin_RestClient.cachedWebserviceIndentifyer + webServiceName);
 			return true;
@@ -277,7 +277,7 @@ var plugin_RestClient = {
 		 * @function clearCache
 		 * @returns {boolean} - Success or fail removing the cache.
 		 */
-		clearCache : function(webServiceName, parameter) {
+		clearCache: function(webServiceName, parameter) {
 			app.debug.trace("plugin_RestClient.functions.removeCache(" + app.debug.arguments(arguments) + ")");
 			app.store.localStorage.removeItem(plugin_RestClient.cachedWebserviceIndentifyer + "*");
 			return true;
@@ -298,7 +298,7 @@ var plugin_RestClient = {
 		 * @returns {boolean} - Success or fail caching a the webservice. No
 		 *          reason is returned.
 		 */
-		cacheJson : function(webServiceName, parameter, data) {
+		cacheJson: function(webServiceName, parameter, data) {
 			app.debug.trace("plugin_RestClient.functions.cacheJson(" + app.debug.arguments(arguments) + ")");
 			app.debug.validate(_);
 			var cachedWs, wsd, uniqueWsIdentifyer;
@@ -313,10 +313,10 @@ var plugin_RestClient = {
 					app.debug.debug("plugin_RestClient.functions.cacheJson() - case: store to local storage");
 
 					cachedWs = {
-						servicename : webServiceName,
-						parameter : parameter,
-						cachetimestamp : Date.now(),
-						data : JSON.stringify(data)
+						servicename: webServiceName,
+						parameter: parameter,
+						cachetimestamp: Date.now(),
+						data: JSON.stringify(data)
 					};
 
 					app.store.localStorage.setObject(plugin_RestClient.cachedWebserviceIndentifyer + uniqueWsIdentifyer, cachedWs);
@@ -375,7 +375,7 @@ var plugin_RestClient = {
 		 *            parameter - The parameter of the call.
 		 * @returns {String} - The full URL of the webservice call.
 		 */
-		getFullUrl : function(wsd, parameters) {
+		getFullUrl: function(wsd, parameters) {
 			app.debug.trace("plugin_RestClient.functions.getFullUrl(" + app.debug.arguments(arguments) + ")");
 			var url;
 
@@ -390,10 +390,10 @@ var plugin_RestClient = {
 			return url;
 		},
 
-		getJsonWithLoader_overrun : null,
-		getJsonWithLoader_Delay : null,
-		getJsonWithLoader_Queue : 0,
-		getJsonWithLoader : function(service, parameter, async, attempts) {
+		getJsonWithLoader_overrun: null,
+		getJsonWithLoader_Delay: null,
+		getJsonWithLoader_Queue: 0,
+		getJsonWithLoader: function(service, parameter, async, attempts) {
 			app.debug.trace("plugin_RestClient.functions.getJsonWithLoader(" + app.debug.arguments(arguments) + ")");
 			app.debug.validate(plugin_RestClient.config.global_getJsonWithLoader_uniqueLoader);
 			// keep alive is Activated and connection is down
@@ -514,8 +514,8 @@ var plugin_RestClient = {
 						app.debug.info("plugin_RestClient - LOADER SHOW");
 
 						app.notify.loader.show(app.rc.config.global_getJsonWithLoader_loaderTemplate, {
-							"headline" : app.lang.string(loaderHeadline, app.rc.config.global_getJsonWithLoader_multilanguageContext),
-							"text" : app.lang.string(loaderText, app.rc.config.global_getJsonWithLoader_multilanguageContext)
+							"headline": app.lang.string(loaderHeadline, app.rc.config.global_getJsonWithLoader_multilanguageContext),
+							"text": app.lang.string(loaderText, app.rc.config.global_getJsonWithLoader_multilanguageContext)
 						});
 
 						// }
@@ -636,13 +636,13 @@ var plugin_RestClient = {
 		 * @returns {null|Object<jQuery.Deferred>} A jQuery.Deferrd object or
 		 *          null in case of an error.
 		 */
-		getJson : function(service, parameter, async, attempts, dfd) {
+		getJson: function(service, parameter, async, attempts, dfd) {
 			app.debug.trace("plugin_RestClient.functions.getJson(" + app.debug.arguments(arguments) + ")");
 			var json, i, promise;
 
 			if (plugin_WebServiceClient.config.server[app.rc.getWsd("box_get").server].useKeepAlive === false
 
-			|| app.plugins.functions.pluginLoaded("KeepAlive") === true && app.alive.isAlive() === true) {
+				|| app.plugins.functions.pluginLoaded("KeepAlive") === true && app.alive.isAlive() === true) {
 
 				app.debug.debug("plugin_RestClient.functions.getJson() - case: keepAlive && isAlive");
 
@@ -758,12 +758,12 @@ var plugin_RestClient = {
 					if (dfd === null || dfd === undefined)
 						dfd = $.Deferred();
 					dfd.reject({
-						"id" : Math.abs("not alive".hashCode()),
-						"error" : "not alive",
-						"arguments" : arguments
+						"id": Math.abs("not alive".hashCode()),
+						"error": "not alive",
+						"arguments": arguments
 					}, null);
 
-					$(document).trigger("webserviceCall", [ dfd.promise(), "server is not alive", {} ]);
+					$(document).trigger("webserviceCall", [dfd.promise(), "server is not alive", {}]);
 					return dfd.promise();
 				}
 
@@ -776,7 +776,7 @@ var plugin_RestClient = {
 			return null;
 		},
 
-		mergeWsdWithParameters : function(wsd, parameters) {
+		mergeWsdWithParameters: function(wsd, parameters) {
 
 			var map;
 
@@ -789,7 +789,7 @@ var plugin_RestClient = {
 					// test if string -> could be number | object | boolean too
 					if (typeof parameterValue === "string"
 
-					&& parameterValue.contains("||")) {
+						&& parameterValue.contains("||")) {
 
 						defaultValue = parameterValue.substr(parameterValue.indexOf("||") + 2);
 						// TODO create a generic string parser

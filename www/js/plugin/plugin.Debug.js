@@ -17,17 +17,17 @@ var plugin_Debug = {
 	 * 
 	 * @private
 	 */
-	config : null,
+	config: null,
 
 	/**
 	 * Log object
 	 * 
 	 * @private
 	 */
-	logObject : [],
-	feedback : {
-		language : {},
-		image : {}
+	logObject: [],
+	feedback: {
+		language: {},
+		image: {}
 	},
 	// obligate functions
 
@@ -36,7 +36,7 @@ var plugin_Debug = {
 	 * 
 	 * @protected
 	 */
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 
 		// validate config file
@@ -52,7 +52,7 @@ var plugin_Debug = {
 	 * 
 	 * @protected
 	 */
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_Debug.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 
@@ -68,7 +68,7 @@ var plugin_Debug = {
 	 * 
 	 * @protected
 	 */
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_Debug.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -81,7 +81,7 @@ var plugin_Debug = {
 	 * @protected
 	 * @returns {boolean} Succesfull or unsuccessful
 	 */
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_Debug.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 		/**
@@ -118,24 +118,24 @@ var plugin_Debug = {
 	 * @param container
 	 *            {object} jQuery page div
 	 */
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_Debug.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		if (plugin_Debug.config.debugDevice && (app.config.min == false)) {
 			var $debugDiv, select;
 
 			$debugDiv = $("<div>").attr({
-				id : "divDebug",
-				"data-enhance" : "false"
+				id: "divDebug",
+				"data-enhance": "false"
 			}).css({
-				"position" : "fixed",
-				"display" : "none",
-				"z-index" : "1050",
-				"top" : "0px",
-				"left" : "0px",
-				"padding" : "5px",
-				"min-width" : "250px",
-				"min-height" : "50px",
-				"background-color" : "rgba(200, 200, 200, 0.7)"
+				"position": "fixed",
+				"display": "none",
+				"z-index": "1050",
+				"top": "0px",
+				"left": "0px",
+				"padding": "5px",
+				"min-width": "250px",
+				"min-height": "50px",
+				"background-color": "rgba(200, 200, 200, 0.7)"
 			});
 
 			/**
@@ -143,13 +143,13 @@ var plugin_Debug = {
 			 */
 			select = $("<div>").addClass("ui-field-contain").append(function() {
 				return $("<label>").attr({
-					"for" : "selConsoleLevel"
+					"for": "selConsoleLevel"
 				}).text("console level")
 			}).append(function() {
 				return $("<select>").attr({
-					"id" : "selConsoleLevel",
-					"multiple" : "multiple",
-					"data-native-menu" : "false"
+					"id": "selConsoleLevel",
+					"multiple": "multiple",
+					"data-native-menu": "false"
 				})
 			});
 
@@ -158,13 +158,13 @@ var plugin_Debug = {
 			 */
 			select = $("<div>").addClass("ui-field-contain").append(function() {
 				return $("<label>").attr({
-					"for" : "selLogLevel"
+					"for": "selLogLevel"
 				}).text("log level")
 			}).append(function() {
 				return $("<select>").attr({
-					"id" : "selLogLevel",
-					"multiple" : "multiple",
-					"data-native-menu" : "false"
+					"id": "selLogLevel",
+					"multiple": "multiple",
+					"data-native-menu": "false"
 				})
 			});
 
@@ -172,9 +172,9 @@ var plugin_Debug = {
 
 				select.find("select").append(function() {
 					return $("<option>").attr({
-						value : levelName
+						value: levelName
 					}).prop({
-						"selected" : (plugin_Debug.config.logLevel.indexOf(levelName) > -1) ? true : false
+						"selected": (plugin_Debug.config.logLevel.indexOf(levelName) > -1) ? true : false
 					}).text(levelName)
 				});
 
@@ -187,26 +187,26 @@ var plugin_Debug = {
 			 */
 			$debugDiv.append(function() {
 				return $("<button>").attr({
-					id : "btnClose",
+					id: "btnClose",
 				}).text("Close")
 			});
 
 			container.append($debugDiv);
 
 			$debugDiv.css({
-				"display" : "none"
+				"display": "none"
 			});
 
 			container.append(function() {
 				return $("<div>").attr("id", "divDebugButton").css({
-					"position" : "fixed",
-					"display" : "block",
-					"z-index" : "1050",
-					"top" : "0px",
-					"left" : "0px",
-					"height" : "10px",
-					"width" : "20px",
-					"background-color" : "red"
+					"position": "fixed",
+					"display": "block",
+					"z-index": "1050",
+					"top": "0px",
+					"left": "0px",
+					"height": "10px",
+					"width": "20px",
+					"background-color": "red"
 				}).on("click", function() {
 					$(this).hide();
 					$("#divDebug").show();
@@ -221,7 +221,7 @@ var plugin_Debug = {
 	 * @param container
 	 *            {object} jQuery page div
 	 */
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_Debug.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
 		// is debug device
@@ -229,7 +229,7 @@ var plugin_Debug = {
 
 			$(document).on('change', '#selLogLevel', function(event) {
 				app.debug.event(event);
-				var levels = $("#selLogLevel").val() || [ "OFF" ];
+				var levels = $("#selLogLevel").val() || ["OFF"];
 
 				plugin_Debug.config.logLevel = levels;
 				app.sess.setObject("logLevel", levels, "debug");
@@ -252,7 +252,7 @@ var plugin_Debug = {
 	},
 
 	// private functions
-	aboutListener : function(event, element) {
+	aboutListener: function(event, element) {
 		var clicks;
 
 		if (!element.data("clicks")) {
@@ -274,7 +274,7 @@ var plugin_Debug = {
 		// alert(clicks);
 	},
 
-	about : function() {
+	about: function() {
 		app.debug.validate(plugin_Notification);
 
 		var content;
@@ -360,23 +360,23 @@ var plugin_Debug = {
 		});
 
 		app.notify.dialog({
-			text : content,
-			title : "About the app.",
-			headline : "Use this data when you report a bug.",
-			buttonLeft : "Report a Bug",
-			buttonRight : "Close",
-			callbackButtonLeft : function(popup) {
+			text: content,
+			title: "About the app.",
+			headline: "Use this data when you report a bug.",
+			buttonLeft: "Report a Bug",
+			buttonRight: "Close",
+			callbackButtonLeft: function(popup) {
 				$("html").on("vclick", function(event) {
 					plugin_Debug.aboutListener(event, $(this));
 				});
 			},
-			callbackButtonRight : function(popup) {
+			callbackButtonRight: function(popup) {
 				$("html").on("vclick", function(event) {
 					plugin_Debug.aboutListener(event, $(this));
 				});
 			},
-			delayInMs : 0,
-			width : "80%"
+			delayInMs: 0,
+			width: "80%"
 		})
 	},
 
@@ -387,7 +387,7 @@ var plugin_Debug = {
 	 * @memberof plugin_Debug
 	 * @namespace plugin_Debug.functions
 	 */
-	functions : {
+	functions: {
 
 		/**
 		 * Consumes an array with values of different types and returns it as a
@@ -399,7 +399,7 @@ var plugin_Debug = {
 		 *            argumentsToPrint - An array with the arguments to print.
 		 * @returns {String} A string representation of the array.
 		 */
-		arguments : function(argumentsToPrint) {
+		arguments: function(argumentsToPrint) {
 			var returnValue = "";
 
 			$.each(argumentsToPrint, function(index, argument) {
@@ -421,7 +421,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		webservice : function(serviceName) {
+		webservice: function(serviceName) {
 			if (typeof serviceName === "string") {
 				plugin_RestClient.config.webservices[serviceName]['calls'] = plugin_RestClient.config.webservices[serviceName]['calls'] || 0;
 				plugin_RestClient.config.webservices[serviceName]['calls']++;
@@ -436,7 +436,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		lapstone : function(output) {
+		lapstone: function(output) {
 			// log debug output
 			this.log(output, "LAPSTONE");
 		},
@@ -449,7 +449,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		trace : function(output) {
+		trace: function(output) {
 			// log debug output
 			this.log(output, "TRACE");
 		},
@@ -462,7 +462,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		debug : function(output) {
+		debug: function(output) {
 			// log debug output
 			this.log(output, "DEBUG");
 		},
@@ -475,7 +475,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		todo : function(output) {
+		todo: function(output) {
 			// log debug output
 			this.log(output, "TODO", true);
 		},
@@ -488,7 +488,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		info : function(output) {
+		info: function(output) {
 			// log debug output
 			this.log(output, "INFO");
 		},
@@ -501,7 +501,7 @@ var plugin_Debug = {
 		 * @param {jQuery.Event}
 		 *            output - The debug output.
 		 */
-		event : function(event) {
+		event: function(event) {
 			// log debug output
 			// eventinger = event;
 			this.log("            Type: " + event.type, "EVENT");
@@ -524,7 +524,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		app : function(output) {
+		app: function(output) {
 			// log debug output
 			this.log(output, "APP");
 		},
@@ -537,7 +537,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		warn : function(output) {
+		warn: function(output) {
 			// log debug output
 			this.log(output, "WARN");
 		},
@@ -550,7 +550,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		error : function(output) {
+		error: function(output) {
 			// log debug output
 			this.log(output, "ERROR", true);
 		},
@@ -563,7 +563,7 @@ var plugin_Debug = {
 		 * @param {Function}
 		 *            operation - The function to call.
 		 */
-		operation : function(operation) {
+		operation: function(operation) {
 			operation();
 		},
 
@@ -575,7 +575,7 @@ var plugin_Debug = {
 		 * @param {Function}
 		 *            operation - The function to call.
 		 */
-		object : function(object) {
+		object: function(object) {
 			console.log(object)
 		},
 
@@ -587,7 +587,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		fatal : function(output) {
+		fatal: function(output) {
 			// log debug output
 			this.log(output, "FATAL", true);
 		},
@@ -600,7 +600,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            output - The debug output.
 		 */
-		deprecated : function(text) {
+		deprecated: function(text) {
 			if (plugin_Debug.config.debugDevice) {
 				try {
 					console.error("Deprecated: " + text);
@@ -613,7 +613,7 @@ var plugin_Debug = {
 			}
 		},
 
-		flat : function() {
+		flat: function() {
 
 		},
 
@@ -641,7 +641,7 @@ var plugin_Debug = {
 		 * @param {Type}
 		 *            type - Type to validate.
 		 */
-		validate : function(object, type, message) {
+		validate: function(object, type, message) {
 			message = message || "No specific message."
 
 			if (type) {
@@ -733,7 +733,7 @@ var plugin_Debug = {
 			}
 		},
 
-		alert : function(text, level) {
+		alert: function(text, level) {
 			console.warn("Dep. " + text);
 		},
 
@@ -748,7 +748,7 @@ var plugin_Debug = {
 		 * @param {String}
 		 *            The debug level.
 		 */
-		log : function(output, level, trace) {
+		log: function(output, level, trace) {
 			var now = new Date();
 			var dateString = /*
 								 * now.getUTCFullYear().toString() + "." +
@@ -777,7 +777,7 @@ var plugin_Debug = {
 			}
 		},
 
-		showLog : function() {
+		showLog: function() {
 			console.warn("Deprecated function!!");
 			alert(JSON.stringify(plugin_Debug.logObject));
 		},
@@ -788,8 +788,8 @@ var plugin_Debug = {
 		 * @memberof plugin_Debug.functions
 		 * @namespace plugin_Debug.functions.ls
 		 */
-		ls : {
-			cleanupWsd : function() {
+		ls: {
+			cleanupWsd: function() {
 				$.each(plugin_RestClient.config.wsdFiles, function(index, wsdUrl) {
 					lapstone.globalLoader.AsyncJsonLoader(wsdUrl, 3).done(function(wsd) {
 						var newWsdFileContent, sortMembers;
@@ -842,14 +842,14 @@ var plugin_Debug = {
 
 								// sort keys
 								newWsd = {
-									"info" : newWsdFileContent[wsdName]["info"],
-									"url" : newWsdFileContent[wsdName]["url"],
-									"parameters" : newWsdFileContent[wsdName]["parameters"],
-									"headers" : newWsdFileContent[wsdName]["headers"],
-									"method" : newWsdFileContent[wsdName]["method"],
-									"timeout" : newWsdFileContent[wsdName]["timeout"],
-									"cacheable" : newWsdFileContent[wsdName]["cacheable"],
-									"cacheInMs" : newWsdFileContent[wsdName]["cacheInMs"]
+									"info": newWsdFileContent[wsdName]["info"],
+									"url": newWsdFileContent[wsdName]["url"],
+									"parameters": newWsdFileContent[wsdName]["parameters"],
+									"headers": newWsdFileContent[wsdName]["headers"],
+									"method": newWsdFileContent[wsdName]["method"],
+									"timeout": newWsdFileContent[wsdName]["timeout"],
+									"cacheable": newWsdFileContent[wsdName]["cacheable"],
+									"cacheInMs": newWsdFileContent[wsdName]["cacheInMs"]
 
 								}
 
@@ -880,7 +880,7 @@ var plugin_Debug = {
 			 * @memberof plugin_Debug.functions.ls
 			 * @function wsd
 			 */
-			wsd : function(snipplet) {
+			wsd: function(snipplet) {
 				app.debug.trace("plugin_Debug.functions.ls.wsd(" + app.debug.arguments(arguments) + ")");
 				$.each(plugin_RestClient.config.webservices, function(wsName, singleWsd) {
 					var path, query;
@@ -914,7 +914,7 @@ var plugin_Debug = {
 			}
 		},
 
-		functionTree : function(startObject, startPrefix) {
+		functionTree: function(startObject, startPrefix) {
 
 			// console.log(startPrefix);
 			if (startObject)
@@ -941,7 +941,7 @@ var plugin_Debug = {
 		 * @memberof plugin_Debug.functions
 		 * @namespace plugin_Debug.functions.feedback
 		 */
-		feedback : {
+		feedback: {
 
 			/**
 			 * Collect untranslated language IDs
@@ -961,31 +961,31 @@ var plugin_Debug = {
 			 * @param {Object
 			 *            <String, Object> - Untranslated
 			 */
-			language : function(object) {
+			language: function(object) {
 				app.debug.trace("plugin_Debug.functions.feedback.language(" + app.debug.arguments(arguments) + ")");
 				app.debug.warn("Unimplemented language: " + JSON.stringify(object));
 				$.extend(true, plugin_Debug.feedback.language, object);
 			},
 
-			languageGetJson : function() {
+			languageGetJson: function() {
 				app.debug.trace("plugin_Debug.functions.feedback.languageGetJson(" + app.debug.arguments(arguments) + ")");
 				return JSON.stringify($.extend(true, plugin_Debug.feedback.language, plugin_MultilanguageIso639_3.dictionary));
 			},
 
-			image : function(object) {
+			image: function(object) {
 				app.debug.trace("plugin_Debug.functions.feedback.image(" + app.debug.arguments(arguments) + ")");
 				app.debug.warn("Unimplemented image: " + JSON.stringify(object));
 				$.extend(true, plugin_Debug.feedback.image, object);
 			},
-			imageGetJson : function() {
+			imageGetJson: function() {
 				app.debug.trace("plugin_Debug.functions.feedback.languageGetJson(" + app.debug.arguments(arguments) + ")");
 				return JSON.stringify($.extend(true, plugin_Debug.feedback.image, plugin_ImageProvider.config.images));
 			},
-			wsdGetJson : function() {
+			wsdGetJson: function() {
 				app.debug.trace("plugin_Debug.functions.feedback.wsdGetJson(" + app.debug.arguments(arguments) + ")");
 				return JSON.stringify(plugin_RestClient.config.webservices);
 			},
-			wsdGetCalls : function() {
+			wsdGetCalls: function() {
 				$.each(plugin_RestClient.config.webservices, function(serviceName, wsd) {
 					console.log((wsd.calls || 0) + " - " + serviceName + " - " + wsd.url);
 				});

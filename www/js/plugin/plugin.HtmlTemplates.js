@@ -18,13 +18,13 @@
  */
 
 var plugin_HtmlTemplates = {
-	config : null,
-	constructor : function() {
+	config: null,
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_HtmlTemplates.pluginsLoaded()");
 		app.debug.validate(plugin_HtmlTemplates.config.useSkinPlugin, "boolean");
 
@@ -96,7 +96,7 @@ var plugin_HtmlTemplates = {
 	},
 
 	// called after all pages are loaded
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_HtmlTemplates.pagesLoaded()");
 		var dfd = $.Deferred();
 
@@ -104,26 +104,26 @@ var plugin_HtmlTemplates = {
 		return dfd.promise();
 	},
 
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 	},
 
 	// called by pages.js
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_HtmlTemplates.afterHtmlInjectedBeforePageComputing()");
 	},
 
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_HtmlTemplates.pageSpecificEvents()");
 	},
 
-	parseLess : function(data, attempt) {
+	parseLess: function(data, attempt) {
 		var css;
 		attempt = attempt || 0;
 
 		if (attempt < 3)
 			try {
 				less.render(data, {
-					filename : "../files/template/xxx.less"
+					filename: "../files/template/xxx.less"
 				}, function(error, output) {
 					css = output.css;
 					// output.imports = array of string filenames of the imports
@@ -142,7 +142,7 @@ var plugin_HtmlTemplates = {
 		return css;
 	},
 
-	getText : function(templateId) {
+	getText: function(templateId) {
 		app.debug.trace("plugin_HtmlTemplates.getText()");
 		var text = null, style = null, styleIsActive;
 
@@ -180,7 +180,7 @@ var plugin_HtmlTemplates = {
 		return text;
 	},
 
-	getElements : function(templateId) {
+	getElements: function(templateId) {
 		app.debug.trace("plugin_HtmlTemplates.getElements()");
 		var elements;
 
@@ -194,9 +194,9 @@ var plugin_HtmlTemplates = {
 		return elements;
 	},
 
-	functions : {
+	functions: {
 
-		get : function(templateId, $templateObject) {
+		get: function(templateId, $templateObject) {
 			app.debug.trace("plugin_HtmlTemplates.functions.get()");
 			app.debug.debug("plugin_HtmlTemplates.functions.get() - templateId: " + templateId);
 			var extendObject;
@@ -229,21 +229,21 @@ var plugin_HtmlTemplates = {
 
 			return $templateObject;
 		},
-		append : function(selector, templateId) {
+		append: function(selector, templateId) {
 			app.debug.trace("plugin_HtmlTemplates.functions.append()");
 			$(selector).append(plugin_HtmlTemplates.functions.get(templateId));
 		},
-		prepend : function(selector, templateId) {
+		prepend: function(selector, templateId) {
 			app.debug.trace("plugin_HtmlTemplates.functions.prepend()");
 			$(selector).prepend(plugin_HtmlTemplates.functions.get(templateId));
 		},
-		overwrite : function(selector, templateId) {
+		overwrite: function(selector, templateId) {
 			app.debug.trace("plugin_HtmlTemplates.functions.overwrite()");
 			app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - selector: " + selector);
 			app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - templateId: " + templateId);
 
 			var $element, $template;
-			
+
 			$element = $(selector);
 			$element.empty();
 			$element.attr("data-context", templateId);
@@ -251,7 +251,7 @@ var plugin_HtmlTemplates = {
 			$element.prepend($template);
 			app.debug.debug("plugin_HtmlTemplates.functions.overwrite() - new html code: " + $(selector)[0].outerHTML);
 		},
-		elements : function(templateId) {
+		elements: function(templateId) {
 			app.debug.trace("plugin_HtmlTemplates.functions.elements()");
 			return plugin_HtmlTemplates.getElements(templateId);
 		}

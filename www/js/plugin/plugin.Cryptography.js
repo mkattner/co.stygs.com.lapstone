@@ -22,9 +22,9 @@
  */
 
 var plugin_Cryptography = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -32,7 +32,7 @@ var plugin_Cryptography = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_Cryptography.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -42,7 +42,7 @@ var plugin_Cryptography = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_Cryptography.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -52,20 +52,20 @@ var plugin_Cryptography = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_Cryptography.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_Cryptography.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_Cryptography.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
@@ -79,7 +79,7 @@ var plugin_Cryptography = {
 	 * @namespace plugin_Cryptography.functions
 	 * 
 	 */
-	functions : {
+	functions: {
 
 	}
 };

@@ -12,121 +12,121 @@
  */
 
 var plugin_WebSocketClient = {
-  config: null,
-  // called by plugins.js
-  constructor: function() {
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	config: null,
+	// called by plugins.js
+	constructor: function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after all plugins are loaded
-  pluginsLoaded: function() {
-    app.debug.trace("plugin_WebSocketClient.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	// called after all plugins are loaded
+	pluginsLoaded: function() {
+		app.debug.trace("plugin_WebSocketClient.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after all pages are loaded
-  // caller pages.js
-  pagesLoaded: function() {
-    app.debug.trace("plugin_WebSocketClient.pagesLoaded(" + app.debug.arguments(arguments) + ")");
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	// called after all pages are loaded
+	// caller pages.js
+	pagesLoaded: function() {
+		app.debug.trace("plugin_WebSocketClient.pagesLoaded(" + app.debug.arguments(arguments) + ")");
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after pluginsLoaded()
-  // caller: plugins.js
-  definePluginEvents: function() {
-    app.debug.trace("plugin_WebSocketClient.definePluginEvents(" + app.debug.arguments(arguments) + ")");
+	// called after pluginsLoaded()
+	// caller: plugins.js
+	definePluginEvents: function() {
+		app.debug.trace("plugin_WebSocketClient.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // called by pages.js
-  // called for each page after createPage();
-  afterHtmlInjectedBeforePageComputing: function(container) {
-    app.debug.trace("plugin_WebSocketClient.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
+	},
+	// called by pages.js
+	// called for each page after createPage();
+	afterHtmlInjectedBeforePageComputing: function(container) {
+		app.debug.trace("plugin_WebSocketClient.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // called once
-  // set the jQuery delegates
-  // caller: pages.js
-  pageSpecificEvents: function(container) {
-    app.debug.trace("plugin_WebSocketClient.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
+	},
+	// called once
+	// set the jQuery delegates
+	// caller: pages.js
+	pageSpecificEvents: function(container) {
+		app.debug.trace("plugin_WebSocketClient.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // private functions
+	},
+	// private functions
 
-  // public functions
-  // called by user
-  /**
-   * Public functions for plugin_WebSocketClient
-   * 
-   * @namespace plugin_WebSocketClient.functions
-   * 
-   */
-  functions: {
-    getWebSocket: function(wsd) {
-      if (!window.WebSocket) {
-        return null;
-      } else {
-        var connection, dfd = $.Deferred();
+	// public functions
+	// called by user
+	/**
+	 * Public functions for plugin_WebSocketClient
+	 * 
+	 * @namespace plugin_WebSocketClient.functions
+	 * 
+	 */
+	functions: {
+		getWebSocket: function(wsd) {
+			if (!window.WebSocket) {
+				return null;
+			} else {
+				var connection, dfd = $.Deferred();
 
-        wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
+				wsd["serverObject"] = plugin_WebServiceClient.getPreferedServer(wsd.server);
 
-        wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
+				wsd.url = (wsd.serverObject.scheme + wsd.serverObject.scheme_specific_part + wsd.serverObject.host + ":" + wsd.serverObject.port + wsd.serverObject.path).pathCombine(wsd.url);
 
-        // demo server
-        app.debug.validate(app.wsoc.config.demoMode, "boolean");
-        if (app.wsoc.config.demoMode === true) {
-          dfd = app.demo.socket(Object.assign({}, wsd));
-        }
+				// demo server
+				app.debug.validate(app.wsoc.config.demoMode, "boolean");
+				if (app.wsoc.config.demoMode === true) {
+					dfd = app.demo.socket(Object.assign({}, wsd));
+				}
 
-        else {
-          connection = new WebSocket(wsd.url);
+				else {
+					connection = new WebSocket(wsd.url);
 
-          // When the connection is open, send some data to the server
-          connection.onopen = function() {
-            dfd["sendMessage"] = function(message) {
-              connection.send(message);
-            }
-          };
+					// When the connection is open, send some data to the server
+					connection.onopen = function() {
+						dfd["sendMessage"] = function(message) {
+							connection.send(message);
+						}
+					};
 
-          // Log errors
-          connection.onerror = function(error) {
-            // console.log('WebSocket Error ' + error);
-            dfd.reject(error);
-          };
+					// Log errors
+					connection.onerror = function(error) {
+						// console.log('WebSocket Error ' + error);
+						dfd.reject(error);
+					};
 
-          // Log messages from the server
-          connection.onmessage = function(e) {
-            dfd.notify(JSON.parse(e.data));
-          };
+					// Log messages from the server
+					connection.onmessage = function(e) {
+						dfd.notify(JSON.parse(e.data));
+					};
 
-          connection.onclose = function(event) {
-            dfd.reject(event);
-          }
+					connection.onclose = function(event) {
+						dfd.reject(event);
+					}
 
-          dfd["sendMessage"] = function(message) {
-            console.log("not open");
-          }
+					dfd["sendMessage"] = function(message) {
+						console.log("not open");
+					}
 
-          dfd.fail(function() {
-            try {
-              connection.close();
-            } catch (e) {
-              console.log(e);
-            }
+					dfd.fail(function() {
+						try {
+							connection.close();
+						} catch (e) {
+							console.log(e);
+						}
 
-          });
-        }
+					});
+				}
 
-        return dfd;
-      }
-    }
-  }
+				return dfd;
+			}
+		}
+	}
 };

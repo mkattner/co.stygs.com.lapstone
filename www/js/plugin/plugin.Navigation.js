@@ -18,13 +18,13 @@
  */
 
 var plugin_Navigation = {
-	config : null,
+	config: null,
 
-	history : [],
-	lastTransition : "none",
+	history: [],
+	lastTransition: "none",
 
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -32,7 +32,7 @@ var plugin_Navigation = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace(this.config.name + ".pluginsLoaded()");
 		var dfd = $.Deferred();
 
@@ -46,7 +46,7 @@ var plugin_Navigation = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -56,7 +56,7 @@ var plugin_Navigation = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 		/**
@@ -78,14 +78,14 @@ var plugin_Navigation = {
 			if (plugin_Navigation.history.length > 0) {
 				if (plugin_Navigation.history[plugin_Navigation.history.length - 1].page != ui.toPage.attr("id")) {
 					plugin_Navigation.history.push({
-						"page" : ui.toPage.attr("id"),
-						"transition" : ui.options.transition
+						"page": ui.toPage.attr("id"),
+						"transition": ui.options.transition
 					});
 				}
 			} else {
 				plugin_Navigation.history.push({
-					"page" : ui.toPage.attr("id"),
-					"transition" : ui.options.transition
+					"page": ui.toPage.attr("id"),
+					"transition": ui.options.transition
 				});
 			}
 		});
@@ -93,14 +93,14 @@ var plugin_Navigation = {
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 	},
@@ -113,16 +113,16 @@ var plugin_Navigation = {
 	 * 
 	 * @namespace plugin_Navigation.functions
 	 */
-	functions : {
+	functions: {
 
 		// {url:"", transition:"", reverse:""}
-		redirect : function(url, transition, reverse) {
+		redirect: function(url, transition, reverse) {
 			app.debug.trace("plugin_Navigation.functions.redirect()");
 			if (transition != undefined && app.config.jQueryMobile === true && app.config.lapstone === true)
 				setTimeout(function() { // WHY TIMEOUT
 					$("body").pagecontainer("change", url, {
-						transition : transition,
-						reverse : (reverse == undefined) ? false : reverse
+						transition: transition,
+						reverse: (reverse == undefined) ? false : reverse
 					});
 
 				}, 50);
@@ -131,12 +131,12 @@ var plugin_Navigation = {
 			}
 		},
 
-		virtual : function(url) {
+		virtual: function(url) {
 			app.debug.validate(app.pages.config.virtual);
 
 		},
 
-		back : function(transition) {
+		back: function(transition) {
 			app.debug.trace("plugin_Navigation.functions.back()");
 			var lastPage, currentPage;
 			if (plugin_Navigation.history.length > 1) {
@@ -151,7 +151,7 @@ var plugin_Navigation = {
 			}
 		},
 
-		start : function(transition) {
+		start: function(transition) {
 			transition = transition || "none";
 			if (app.info.firstUse() === true) {
 				app.nav.redirect(app.config.startPage_firstStart, transition);
@@ -162,34 +162,34 @@ var plugin_Navigation = {
 			}
 		},
 
-		forward : function() {
+		forward: function() {
 			app.debug.trace("plugin_Navigation.functions.forward()");
 			window.history.forward();
 		},
 
-		reload : function() {
+		reload: function() {
 			app.debug.trace("plugin_Navigation.functions.reload()");
 
 		},
 
-		refresh : function() {
+		refresh: function() {
 			app.debug.trace("plugin_Navigation.functions.refresh()");
 			$('div[data-role=page]').remove();
 			jQuery.mobile.changePage(window.location.href, {
-				allowSamePageTransition : true,
-				transition : 'none',
-				reloadPage : true
+				allowSamePageTransition: true,
+				transition: 'none',
+				reloadPage: true
 			});
 
 		},
 
-		redirectAndReload : function(url) {
+		redirectAndReload: function(url) {
 			app.debug.trace("plugin_Navigation.functions.redirectAndReload()");
 			$.mobile.ajaxEnabled = false;
 			window.location.replace(url);
 		},
 
-		normalizeUrl : function(uri) {
+		normalizeUrl: function(uri) {
 			app.debug.trace("plugin_Navigation.functions.normalizeUrl()");
 			uri = URI(uri);
 			if (uri.protocol() === "")
@@ -204,7 +204,7 @@ var plugin_Navigation = {
 		 * 
 		 * @return window reference
 		 */
-		openWindow : function(url, windowName, target, windowFeatures) {
+		openWindow: function(url, windowName, target, windowFeatures) {
 			if (window.cordova && window.cordova.InAppBrowser) {
 				return window.cordova.InAppBrowser.open(url, target);
 			} else {

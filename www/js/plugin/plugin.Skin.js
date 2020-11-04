@@ -18,9 +18,9 @@
  */
 
 var plugin_Skin = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -28,7 +28,7 @@ var plugin_Skin = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_Skin.pluginsLoaded()");
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 		if (plugin_Skin.config.useSkinPlugin) {
@@ -67,7 +67,7 @@ var plugin_Skin = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_Skin.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -77,20 +77,20 @@ var plugin_Skin = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_Skin.definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_Skin.afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_Skin.pageSpecificEvents()");
 
 	},
@@ -103,9 +103,9 @@ var plugin_Skin = {
 	 * 
 	 * @namespace plugin_Skin.functions
 	 */
-	functions : {
+	functions: {
 
-		changeSkin : function(skin) {
+		changeSkin: function(skin) {
 			app.debug.trace("plugin_Skin.functions.change()");
 			if (this.skinAvailable(skin)) {
 				// change skin in config
@@ -118,7 +118,7 @@ var plugin_Skin = {
 			}
 		},
 
-		skinAvailable : function(skin) {
+		skinAvailable: function(skin) {
 			app.debug.trace("plugin_Skin.functions.skinAvailable()");
 			if (this.getAvailableSkins().indexOf(skin) != -1) {
 				app.debug.debug("plugin_Skin.functions.skinAvailable() - skin available: " + skin);
@@ -129,12 +129,12 @@ var plugin_Skin = {
 			}
 		},
 
-		getAvailableSkins : function() {
+		getAvailableSkins: function() {
 			app.debug.trace("plugin_Skin.functions.getAvailableSkins()");
 			return Object.keys(plugin_Skin.config.skins);
 		},
 
-		getCurrentSkin : function() {
+		getCurrentSkin: function() {
 			app.debug.trace("plugin_Skin.functions.gatAvailableSkins()");
 			return plugin_Skin.config.defaultSkin;
 		}

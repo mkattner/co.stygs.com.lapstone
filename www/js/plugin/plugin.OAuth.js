@@ -22,9 +22,9 @@
  */
 
 var plugin_OAuth = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -32,7 +32,7 @@ var plugin_OAuth = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace(this.config.name + ".pluginsLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -42,7 +42,7 @@ var plugin_OAuth = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -52,20 +52,20 @@ var plugin_OAuth = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 	},
@@ -79,7 +79,7 @@ var plugin_OAuth = {
 	 * @namespace plugin_OAuth.functions
 	 * 
 	 */
-	desktopOAuth : function(url) {
+	desktopOAuth: function(url) {
 		// alert(app.config.apacheCordova);
 		if (app.config.apacheCordova === null || app.config.apacheCordova === false) {
 			// alert("desktop oauth");
@@ -88,8 +88,8 @@ var plugin_OAuth = {
 		}
 		return false;
 	},
-	functions : {
-		parameterFromUrl : function(parameter, url) {
+	functions: {
+		parameterFromUrl: function(parameter, url) {
 			// alert("url:" + url)
 			var regExpString, regExp, access_token;
 
@@ -117,7 +117,7 @@ var plugin_OAuth = {
 			}
 			return access_token;
 		},
-		getQueryString : function() {
+		getQueryString: function() {
 			try {
 				// console.log("todo");
 				return window.location.href.split('?')[1];
@@ -125,7 +125,7 @@ var plugin_OAuth = {
 				return '';
 			}
 		},
-		generic : function(url) {
+		generic: function(url) {
 			if (url.indexOf("dropbox") > -1)
 				return app.oa.dropbox(url);
 			else if (url.indexOf("facebook") > -1)
@@ -141,7 +141,7 @@ var plugin_OAuth = {
 			}
 		},
 		// dropbox
-		dropbox : function(url) {
+		dropbox: function(url) {
 			if (plugin_OAuth.desktopOAuth(url))
 				return null;
 			else {
@@ -149,29 +149,29 @@ var plugin_OAuth = {
 
 				dfd = $.Deferred();
 				loginWindow = cordova.InAppBrowser.open(url, '_blank', 'location=yes');
-//
-//				$(loginWindow).on('loadstart', function(e) {
-//					eventCount++;
-//					if (eventCount > 2) {
-//						var url, error, success;
-//						url = e.originalEvent.url;
-//						error = /\?error=(.+)$/.exec(url);
-//						success = /\?oauth_token=(.+)$/.exec(url);
-//						if (success) {
-//							loginWindow.close();
-//							dfd.resolve(url.split('?')[1]);
-//						} else if (error) {
-//							loginWindow.close();
-//							dfd.reject(error);
-//						}
-//					}
-//				});
+				//
+				//				$(loginWindow).on('loadstart', function(e) {
+				//					eventCount++;
+				//					if (eventCount > 2) {
+				//						var url, error, success;
+				//						url = e.originalEvent.url;
+				//						error = /\?error=(.+)$/.exec(url);
+				//						success = /\?oauth_token=(.+)$/.exec(url);
+				//						if (success) {
+				//							loginWindow.close();
+				//							dfd.resolve(url.split('?')[1]);
+				//						} else if (error) {
+				//							loginWindow.close();
+				//							dfd.reject(error);
+				//						}
+				//					}
+				//				});
 				return dfd.promise();
 			}
 		},
 
 		// facebook
-		facebook : function(url) {
+		facebook: function(url) {
 			var dfd, inAppBrowserRef_facebook, eventCount, redirect_uri;
 
 			redirect_uri = URI(url).query(true).redirect_uri;
@@ -218,7 +218,7 @@ var plugin_OAuth = {
 		},
 
 		// google
-		google : function(url) {
+		google: function(url) {
 			var dfd, redirect_uri;
 
 			redirect_uri = URI(url).query(true).redirect_uri;
@@ -274,13 +274,13 @@ var plugin_OAuth = {
 			}
 		},
 
-		facebookToken : function(code, client_id, client_secret, redirect_uri) {
+		facebookToken: function(code, client_id, client_secret, redirect_uri) {
 			$.post('https://accounts.google.com/o/oauth2/token', {
-				code : code,
-				client_id : client_id,
-				client_secret : client_secret,
-				redirect_uri : redirect_uri,
-				grant_type : 'authorization_code'
+				code: code,
+				client_id: client_id,
+				client_secret: client_secret,
+				redirect_uri: redirect_uri,
+				grant_type: 'authorization_code'
 			}).done(function(data) {
 				// deferred.resolve(data);
 			}).fail(function(response) {

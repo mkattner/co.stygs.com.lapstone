@@ -12,76 +12,76 @@
  */
 
 var plugin_Feedback = {
-  config: null,
-  // called by plugins.js
-  constructor: function() {
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	config: null,
+	// called by plugins.js
+	constructor: function() {
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after all plugins are loaded
-  pluginsLoaded: function() {
-    app.debug.trace("plugin_Feedback.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
-    var dfd = $.Deferred();
+	// called after all plugins are loaded
+	pluginsLoaded: function() {
+		app.debug.trace("plugin_Feedback.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
+		var dfd = $.Deferred();
 
-    app.rc.addWebservice(plugin_Feedback.config.webserviceName, plugin_Feedback.config.webserviceDefinition)
+		app.rc.addWebservice(plugin_Feedback.config.webserviceName, plugin_Feedback.config.webserviceDefinition)
 
-    dfd.resolve();
-    return dfd.promise();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after all pages are loaded
-  // caller pages.js
-  pagesLoaded: function() {
-    app.debug.trace("plugin_Feedback.pagesLoaded(" + app.debug.arguments(arguments) + ")");
-    var dfd = $.Deferred();
-    dfd.resolve();
-    return dfd.promise();
+	// called after all pages are loaded
+	// caller pages.js
+	pagesLoaded: function() {
+		app.debug.trace("plugin_Feedback.pagesLoaded(" + app.debug.arguments(arguments) + ")");
+		var dfd = $.Deferred();
+		dfd.resolve();
+		return dfd.promise();
 
-  },
+	},
 
-  // called after pluginsLoaded()
-  // caller: plugins.js
-  definePluginEvents: function() {
-    app.debug.trace("plugin_Feedback.definePluginEvents(" + app.debug.arguments(arguments) + ")");
+	// called after pluginsLoaded()
+	// caller: plugins.js
+	definePluginEvents: function() {
+		app.debug.trace("plugin_Feedback.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // called by pages.js
-  // called for each page after createPage();
-  afterHtmlInjectedBeforePageComputing: function(container) {
-    app.debug.trace("plugin_Feedback.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
+	},
+	// called by pages.js
+	// called for each page after createPage();
+	afterHtmlInjectedBeforePageComputing: function(container) {
+		app.debug.trace("plugin_Feedback.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // called once
-  // set the jQuery delegates
-  // caller: pages.js
-  pageSpecificEvents: function(container) {
-    app.debug.trace("plugin_Feedback.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
+	},
+	// called once
+	// set the jQuery delegates
+	// caller: pages.js
+	pageSpecificEvents: function(container) {
+		app.debug.trace("plugin_Feedback.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
-  },
-  // private functions
+	},
+	// private functions
 
-  // public functions
-  // called by user
-  /**
-   * Public functions for plugin_Feedback
-   * 
-   * @namespace plugin_Feedback.functions
-   * 
-   */
-  functions: {
-    send: function(text) {
-      window.setTimeout(function() {
-        if (plugin_Feedback.config.allowAnonymousFeedback === true) {
-          app.rc.getJson(plugin_Feedback.config.webserviceName, {
-            "feedback": text
-          }, true, 1);
-        }
-      }, 10);
+	// public functions
+	// called by user
+	/**
+	 * Public functions for plugin_Feedback
+	 * 
+	 * @namespace plugin_Feedback.functions
+	 * 
+	 */
+	functions: {
+		send: function(text) {
+			window.setTimeout(function() {
+				if (plugin_Feedback.config.allowAnonymousFeedback === true) {
+					app.rc.getJson(plugin_Feedback.config.webserviceName, {
+						"feedback": text
+					}, true, 1);
+				}
+			}, 10);
 
-    }
-  }
+		}
+	}
 };

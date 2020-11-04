@@ -18,16 +18,16 @@
  */
 
 var plugin_Actions = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_Actions.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 
 		// Validate the standard includes. It's obligate for every app.
@@ -71,7 +71,7 @@ var plugin_Actions = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_Actions.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -81,20 +81,20 @@ var plugin_Actions = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_Actions.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_Actions.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_Actions.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
@@ -108,9 +108,9 @@ var plugin_Actions = {
 	 * @namespace plugin_Actions.functions
 	 */
 
-	functions : {
+	functions: {
 		// defined in files/actions.js
-		registerAction : function(name, actionFunction) {
+		registerAction: function(name, actionFunction) {
 			plugin_Actions.functions[name] = actionFunction;
 		}
 	}

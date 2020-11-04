@@ -22,13 +22,13 @@
  */
 
 var plugin_jQueryExtend = {
-	config : null,
-	constructor : function() {
+	config: null,
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace(this.config.name + ".pluginsLoaded()");
 
 		var dfd = $.Deferred();
@@ -69,23 +69,23 @@ var plugin_jQueryExtend = {
 	},
 
 	// called after all pages are loaded
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
 
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 	},
 
 	// called by pages.js
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
 	},
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
 	},
 
-	functions : {}
+	functions: {}
 };

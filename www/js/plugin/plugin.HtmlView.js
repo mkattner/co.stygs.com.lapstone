@@ -22,9 +22,9 @@
  */
 
 var plugin_HtmlView = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -32,7 +32,7 @@ var plugin_HtmlView = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace(this.config.name + ".pluginsLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -42,7 +42,7 @@ var plugin_HtmlView = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -52,25 +52,25 @@ var plugin_HtmlView = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_" + this.config.name + ".definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_" + this.config.name + ".afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_" + this.config.name + ".pageSpecificEvents()");
 
 		$(document).on("pagecontainerbeforetransition", function(event, ui) {
-		  app.debug.event(event);
-		  
+			app.debug.event(event);
+
 			//alert("pagecontainerbeforetransition");
 			var pageId, context, text;
 			pageId = ui.toPage.attr('id');
@@ -89,9 +89,9 @@ var plugin_HtmlView = {
 	 * @namespace plugin_HtmlView.functions
 	 * 
 	 */
-	functions : {
-		page : {
-			width : function(minimum, maximum) {
+	functions: {
+		page: {
+			width: function(minimum, maximum) {
 				var val = parseInt($("div[data-role=page]").css("width"));
 				if (val > maximum)
 					return maximum;
@@ -99,15 +99,15 @@ var plugin_HtmlView = {
 					return minimum;
 				return val;
 			},
-			height : function(minimum, maximum) {
+			height: function(minimum, maximum) {
 				var val = parseInt($("div[data-role=page]").css("height"));
 				if (val > maximum)
 					return maximum
 				return val;
 			}
 		},
-		content : {
-			width : function(minimum, maximum) {
+		content: {
+			width: function(minimum, maximum) {
 				var val = parseInt($("div[data-role=content]").css("width"));
 				if (val > maximum)
 					return maximum;
@@ -115,7 +115,7 @@ var plugin_HtmlView = {
 					return minimum;
 				return val;
 			},
-			height : function(minimum, maximum) {
+			height: function(minimum, maximum) {
 				var val = parseInt($("div[data-role=content]").css("height"));
 				if (val > maximum)
 					return maximum;
@@ -124,8 +124,8 @@ var plugin_HtmlView = {
 				return val;
 			}
 		},
-		window : {
-			width : function(minimum, maximum) {
+		window: {
+			width: function(minimum, maximum) {
 				var val = parseInt($(window).width());
 				if (val > maximum)
 					return maximum;
@@ -133,7 +133,7 @@ var plugin_HtmlView = {
 					return minimum;
 				return val;
 			},
-			height : function(minimum, maximum) {
+			height: function(minimum, maximum) {
 				var val = parseInt($(window).height());
 				if (val > maximum)
 					return maximum;

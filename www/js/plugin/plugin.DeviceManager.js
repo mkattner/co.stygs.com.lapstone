@@ -22,9 +22,9 @@
  */
 
 var plugin_DeviceManager = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 
 		console.log("exprimental")
@@ -38,7 +38,7 @@ var plugin_DeviceManager = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_DeviceManager.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 		var js, css, promiseArray = [], dfd, scriptLoading;
 
@@ -124,7 +124,7 @@ var plugin_DeviceManager = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_DeviceManager.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -134,13 +134,13 @@ var plugin_DeviceManager = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_DeviceManager.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_DeviceManager.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 		if (app.dm.hasOwnProperty("current"))
 			app.dm.current.afterHtmlInjectedBeforePageComputing();
@@ -148,7 +148,7 @@ var plugin_DeviceManager = {
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_DeviceManager.pageSpecificEvents()");
 
 	},
@@ -162,7 +162,7 @@ var plugin_DeviceManager = {
 	 * @namespace plugin_DeviceManager.functions
 	 * 
 	 */
-	functions : {
+	functions: {
 
 	}
 };

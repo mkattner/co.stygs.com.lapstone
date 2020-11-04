@@ -19,10 +19,10 @@
 
 var plugin_Informator = {
 
-	config : null,
-	configurationPrefix : "informator-config",
+	config: null,
+	configurationPrefix: "informator-config",
 
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 
 		plugin_Informator.config.excludedPlugins.push("HtmlTemplates");
@@ -33,7 +33,7 @@ var plugin_Informator = {
 		return dfd.promise();
 	},
 
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_Informator.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 
 		var dfd, global;
@@ -74,7 +74,7 @@ var plugin_Informator = {
 	},
 
 	// called after all pages are loaded
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_Informator.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred(), global;
 
@@ -96,24 +96,24 @@ var plugin_Informator = {
 		return dfd.promise();
 	},
 
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_Informator.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 
 	// called by pages.js
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_Informator.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
 	},
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_Informator.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 
 	// private functions
 
-	syncObjectWithHtml5Storage : function(configurationObject, start) {
+	syncObjectWithHtml5Storage: function(configurationObject, start) {
 		app.debug.trace("plugin_Informator.syncObjectWithHtml5Storage(" + app.debug.arguments(arguments) + ")");
 		app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage()");
 		app.debug.debug("plugin_Informator.syncObjectWithHtml5Storage() - if property is in html5 storage then use this value");
@@ -161,7 +161,7 @@ var plugin_Informator = {
 
 	},
 
-	loadValueIntoObject : function(propertyLocation) {
+	loadValueIntoObject: function(propertyLocation) {
 		app.debug.trace("plugin_Informator.loadValueIntoObject(" + app.debug.arguments(arguments) + ")");
 
 		var propertyValue;
@@ -173,16 +173,16 @@ var plugin_Informator = {
 
 		propertyValue = app.store.localStorage.get(propertyLocation);
 		propertyLocation = propertyLocation.substring(plugin_Informator.configurationPrefix.length + 1);
-		
+
 		if (propertyLocation.indexOf("..") < 0)
 			plugin_HTML5Storage.setDeep(window, propertyLocation, propertyValue);
 		else
 			app.debug.debug('plugin_Informator.loadValueIntoObject() - ".." detected');
 	},
 
-	functions : {
+	functions: {
 		// auch direkt die datei ���ndern
-		set : function(key, value) {
+		set: function(key, value) {
 			app.debug.deprecated("Informator will be removed in the future");
 			app.debug.trace("plugin_Informator.functions.set(" + app.debug.arguments(arguments) + ")");
 
@@ -199,7 +199,7 @@ var plugin_Informator = {
 			plugin_HTML5Storage.setDeep(window, key, value);
 		},
 
-		firstUse : function(value) {
+		firstUse: function(value) {
 			app.debug.deprecated("Informator will be removed in the future");
 			app.debug.trace("plugin_Informator.functions.firstUse(" + app.debug.arguments(arguments) + ")");
 
@@ -237,7 +237,7 @@ var plugin_Informator = {
 				return null;
 			}
 		}
-	// data-info-URI
+		// data-info-URI
 
 	}
 };

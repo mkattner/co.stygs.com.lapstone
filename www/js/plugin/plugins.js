@@ -18,9 +18,9 @@
 
 // TODO add try catch to every function that is called in plugins or pages
 app["plugins"] = {
-	config : null,
-	pluginNames : [],
-	constructor : function() {
+	config: null,
+	pluginNames: [],
+	constructor: function() {
 		var dfd = $.Deferred();
 
 		// reverse order
@@ -49,7 +49,7 @@ app["plugins"] = {
 	/**
 	 * 7
 	 */
-	cleanup : function() {
+	cleanup: function() {
 		var dfd;
 
 		dfd = $.Deferred();
@@ -62,7 +62,7 @@ app["plugins"] = {
 	/**
 	 * 1
 	 */
-	loadPluginConfig : function() {
+	loadPluginConfig: function() {
 		var dfd, promise;
 
 		dfd = $.Deferred()
@@ -97,13 +97,13 @@ app["plugins"] = {
 	/**
 	 * 2
 	 */
-	verifyPluginNames : function() {
+	verifyPluginNames: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
 
-	includeDependencies : function() {
+	includeDependencies: function() {
 		var dfd;
 
 		$.each(app.plugins.config, function(pluginName, loaded) {
@@ -124,7 +124,7 @@ app["plugins"] = {
 		return dfd.promise();
 	},
 
-	includeFiles : function() {
+	includeFiles: function() {
 		var dfd = $.Deferred(), pluginIncludePromises;
 
 		// PRODUCTION
@@ -162,7 +162,7 @@ app["plugins"] = {
 		return dfd.promise();
 	},
 
-	loadPluginConfiguration : function(pluginName) {
+	loadPluginConfiguration: function(pluginName) {
 		var dfd = $.Deferred(), promise, currentPlugin;
 
 		currentPlugin = window["plugin_" + pluginName];
@@ -189,7 +189,7 @@ app["plugins"] = {
 		return dfd.promise();
 	},
 
-	onPluginLoaded : function(pluginName) {
+	onPluginLoaded: function(pluginName) {
 		var dfd = $.Deferred(), promise, promiseConfiguration, currentPlugin;
 
 		currentPlugin = window["plugin_" + pluginName];
@@ -243,7 +243,7 @@ app["plugins"] = {
 		return dfd.promise();
 	},
 
-	loadPlugins : function() {
+	loadPlugins: function() {
 		var dfd = $.Deferred(), promises_js = Array(), promiseOfPromises_js, promises_func = Array(), promiseOfPromises_func;
 		$.each(app.plugins.config, function(pluginName, loadPlugin) {
 			if (loadPlugin == true) {
@@ -301,7 +301,7 @@ app["plugins"] = {
 		return dfd.promise();
 	},
 
-	callPluginsLoadedEvent : function() {
+	callPluginsLoadedEvent: function() {
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
 		$.each(app.plugins.pluginNames, function(pluginIndex, pluginName) {
@@ -325,7 +325,7 @@ app["plugins"] = {
 		return dfd.promise();
 	},
 
-	callPluginEvents : function() {
+	callPluginEvents: function() {
 		var dfd = $.Deferred();
 		$.each(app.plugins.pluginNames, function(pluginIndex, pluginName) {
 			var currentPlugin;
@@ -339,8 +339,8 @@ app["plugins"] = {
 		return dfd.promise();
 	},
 
-	functions : {
-		pluginLoaded : function(pluginName) {
+	functions: {
+		pluginLoaded: function(pluginName) {
 			app.debug.trace("app.plugins.functions.pluginLoaded()");
 			if (app.plugins.config.hasOwnProperty(pluginName)) {
 				app.debug.debug("app.plugins.functions.pluginLoaded() - true: " + pluginName);
@@ -354,11 +354,11 @@ app["plugins"] = {
 		},
 
 	},
-	getConfigByName : function(pluginName) {
+	getConfigByName: function(pluginName) {
 		return window["plugin_" + pluginName].config;
 	},
 
-	setConfigByName : function(pluginName, configObject) {
+	setConfigByName: function(pluginName, configObject) {
 		window["plugin_" + pluginName].config = configObject;
 	}
 };

@@ -22,48 +22,48 @@
  */
 
 var plugin_MultilanguageIso639_3 = {
-	config : null,
-	dictionary : null,
-	parameter : null,
-	constructor : function() {
+	config: null,
+	dictionary: null,
+	parameter: null,
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace(this.config.name + ".pluginsLoaded()", 11);
 
 		app.debug.validate(plugin_MultilanguageIso639_3.config.availableLanguages, "object");
 
 		// add dev language to language array
 		app.debug.operation(function() {
-			plugin_MultilanguageIso639_3.config.availableLanguages["dev"] = [ "dev" ];
+			plugin_MultilanguageIso639_3.config.availableLanguages["dev"] = ["dev"];
 		});
 
 		return plugin_MultilanguageIso639_3.loadLanguageIntoDict(plugin_MultilanguageIso639_3.config.defaultLanguage);
 	},
 
 	// called after all pages are loaded
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_" + this.config.name + ".pagesLoaded()", 11);
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
 	},
 
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 	},
 
 	// called by pages.js
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("Plugin: " + this.config.name + ".afterHtmlInjectedBeforePageComputing()", 5);
 	},
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("Plugin: " + this.config.name + ".pageSpecificEvents()", 5);
 	},
 
 	// private functions
-	loadLanguageIntoDict : function(language) {
+	loadLanguageIntoDict: function(language) {
 		var promise, langUri;
 
 		langUri = "../files/language/" + language + ".json";
@@ -74,7 +74,7 @@ var plugin_MultilanguageIso639_3 = {
 
 			// Change the HTML language attribute
 			$("html").attr({
-				"lang" : plugin_MultilanguageIso639_3.config.availableLanguages[language][0]
+				"lang": plugin_MultilanguageIso639_3.config.availableLanguages[language][0]
 			});
 
 			// CHANGE LANGUAGE IN MOMENT
@@ -89,30 +89,30 @@ var plugin_MultilanguageIso639_3 = {
 		return promise;
 	},
 	// public functions
-	functions : {
-		get : function() {
+	functions: {
+		get: function() {
 			return plugin_MultilanguageIso639_3.config.defaultLanguage;
 		},
 
-		getAvailableLanguages : function() {
+		getAvailableLanguages: function() {
 			return plugin_MultilanguageIso639_3.config.availableLanguages;
 		},
 
-		getCurrentLanguage : function() {
+		getCurrentLanguage: function() {
 			return plugin_MultilanguageIso639_3.config.defaultLanguage;
 		},
 
-		languageAvailable : function(language) {
+		languageAvailable: function(language) {
 			return this.getAvailableLanguages().hasOwnProperty(language);
 		},
-		changeLanguage : function(language) {
+		changeLanguage: function(language) {
 			return plugin_MultilanguageIso639_3.loadLanguageIntoDict(language).done(function() {
 				app.info.set("plugin_MultilanguageIso639_3.config.defaultLanguage", language);
 			})
 
 		},
 
-		addParameter : function(key, value) {
+		addParameter: function(key, value) {
 			if (!plugin_MultilanguageIso639_3.parameter) {
 				plugin_MultilanguageIso639_3.parameter = {};
 				if (plugin_HTML5Storage != undefined) {
@@ -125,7 +125,7 @@ var plugin_MultilanguageIso639_3 = {
 			}
 		},
 
-		extendDictionary : function(map, context) {
+		extendDictionary: function(map, context) {
 			if (context !== undefined) {
 				$.extend(true, plugin_MultilanguageIso639_3.dictionary[context], map);
 			} else {
@@ -141,7 +141,7 @@ var plugin_MultilanguageIso639_3 = {
 		// + "In the theme menu you can create themes and delete or edit or hide
 		// them."
 		// + ]
-		string : function(id, context, options) {
+		string: function(id, context, options) {
 			var text = null, toParse;
 			if (!plugin_MultilanguageIso639_3.dictionary) {
 				plugin_MultilanguageIso639_3.loadLanguageIntoDict(plugin_MultilanguageIso639_3.config.defaultLanguage)
@@ -183,7 +183,7 @@ var plugin_MultilanguageIso639_3 = {
 				return id;
 			}
 		},
-		list : function(language) {
+		list: function(language) {
 			var list = "";
 			if (!plugin_MultilanguageIso639_3.dictionary) {
 				plugin_MultilanguageIso639_3.loadLanguageIntoDict(plugin_MultilanguageIso639_3.config.defaultLanguage)
@@ -199,7 +199,7 @@ var plugin_MultilanguageIso639_3 = {
 			});
 			return list;
 		},
-		set : function(language) {
+		set: function(language) {
 			plugin_MultilanguageIso639_3.loadLanguageIntoDict(language);
 			app.info.set("plugin_MultilanguageIso639_3.config.defaultLanguage", language);
 		}

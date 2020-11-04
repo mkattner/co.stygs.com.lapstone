@@ -18,9 +18,9 @@
  */
 
 var plugin_WebServiceError = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 
 		app.debug.validate(plugin_WebServiceError.config.errorFlag, "string");
 
@@ -32,7 +32,7 @@ var plugin_WebServiceError = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_WebServiceError.pluginsLoaded()");
 		var dfd = $.Deferred(), promises = Array(), promiseOfPromises;
 
@@ -67,7 +67,7 @@ var plugin_WebServiceError = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_WebServiceError.pagesLoaded()");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -77,25 +77,25 @@ var plugin_WebServiceError = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_WebServiceError.definePluginEvents()");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_WebServiceError.afterHtmlInjectedBeforePageComputing()");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_WebServiceError.pageSpecificEvents()");
 
 	},
 	// private functions
-	loadDefinitionFileAsync : function(path) {
+	loadDefinitionFileAsync: function(path) {
 		app.debug.trace("plugin_WebServiceError.loadDefinitionFileAsync(" + path + ")", 20);
 		var dfd = $.Deferred(), promise;
 		promise = lapstone.globalLoader.AsyncJsonLoader(path);
@@ -114,7 +114,7 @@ var plugin_WebServiceError = {
 		return dfd.promise();
 	},
 
-	loadDefinitionFile : function(path) {
+	loadDefinitionFile: function(path) {
 		app.debug.trace("plugin_WebServiceError.loadDefinitionFile()");
 		app.debug.debug("Load definition file: " + path);
 		var json = lapstone.globalLoader.JsonLoader(path);
@@ -126,12 +126,12 @@ var plugin_WebServiceError = {
 
 	// public functions
 	// called by user
-	functions : {
-		action : function(exceptionConfig) {
+	functions: {
+		action: function(exceptionConfig) {
 			app.debug.trace("plugin_WebServiceError.functions.action()");
 		},
 
-		getErrorName : function(webserviceResult) {
+		getErrorName: function(webserviceResult) {
 			app.debug.trace("plugin_WebServiceError.functions.getErrorName()");
 			var errorName = false;
 
@@ -158,7 +158,7 @@ var plugin_WebServiceError = {
 			return errorName;
 		},
 
-		getExceptionConfig : function(webserviceResult) {
+		getExceptionConfig: function(webserviceResult) {
 			app.debug.trace("plugin_WebServiceError.functions.getExceptionConfig()");
 
 			var errorName = null;
@@ -167,14 +167,14 @@ var plugin_WebServiceError = {
 			app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - error name: " + errorName + " type: " + typeof errorName);
 			if (typeof errorName === "string") {
 				app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - errors");
-				for ( var key in plugin_WebServiceError.config.wse) {
+				for (var key in plugin_WebServiceError.config.wse) {
 					app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - condition: " + key + " == " + errorName);
 					if (key == errorName) {
 						app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: error found");
 						return {
-							"id" : Math.abs(key.hashCode()),
-							"result" : webserviceResult,
-							"wse" : plugin_WebServiceError.config.wse[key]
+							"id": Math.abs(key.hashCode()),
+							"result": webserviceResult,
+							"wse": plugin_WebServiceError.config.wse[key]
 						};
 					}
 				}
@@ -183,7 +183,7 @@ var plugin_WebServiceError = {
 			if ($.isPlainObject(webserviceResult)) {
 				app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: isPlainObject == true");
 				app.debug.validate(plugin_WebServiceError.config.strictErrorKeys);
-				for ( var key in plugin_WebServiceError.config.strictErrorKeys) {
+				for (var key in plugin_WebServiceError.config.strictErrorKeys) {
 					// $.each(plugin_WebServiceError.config.strictErrorKeys,
 					// function(index, errorKey) {
 					var errorKey
@@ -194,8 +194,8 @@ var plugin_WebServiceError = {
 
 						app.debug.debug("plugin_WebServiceError.functions.getExceptionConfig() - case: strict error found: " + errorKey);
 						return {
-							"id" : Math.abs(errorKey.hashCode()),
-							"result" : webserviceResult
+							"id": Math.abs(errorKey.hashCode()),
+							"result": webserviceResult
 
 						};
 
@@ -207,8 +207,8 @@ var plugin_WebServiceError = {
 			if ($.isPlainObject(webserviceResult) && plugin_WebServiceError.config.errorFlag !== null) {
 				if (webserviceResult[plugin_WebServiceError.config.errorFlag] === false) {
 					return {
-						"id" : "errorFlag",
-						"result" : webserviceResult
+						"id": "errorFlag",
+						"result": webserviceResult
 
 					}
 				}

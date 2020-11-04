@@ -22,9 +22,9 @@
  */
 
 var plugin_Unit = {
-	config : null,
+	config: null,
 	// called by plugins.js
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 		dfd.resolve();
 		return dfd.promise();
@@ -32,11 +32,11 @@ var plugin_Unit = {
 	},
 
 	// called after all plugins are loaded
-	pluginsLoaded : function() {
+	pluginsLoaded: function() {
 		app.debug.trace("plugin_Unit.pluginsLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
-		
-		
+
+
 		dfd.resolve();
 		return dfd.promise();
 
@@ -44,7 +44,7 @@ var plugin_Unit = {
 
 	// called after all pages are loaded
 	// caller pages.js
-	pagesLoaded : function() {
+	pagesLoaded: function() {
 		app.debug.trace("plugin_Unit.pagesLoaded(" + app.debug.arguments(arguments) + ")");
 		var dfd = $.Deferred();
 		dfd.resolve();
@@ -54,20 +54,20 @@ var plugin_Unit = {
 
 	// called after pluginsLoaded()
 	// caller: plugins.js
-	definePluginEvents : function() {
+	definePluginEvents: function() {
 		app.debug.trace("plugin_Unit.definePluginEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called by pages.js
 	// called for each page after createPage();
-	afterHtmlInjectedBeforePageComputing : function(container) {
+	afterHtmlInjectedBeforePageComputing: function(container) {
 		app.debug.trace("plugin_Unit.afterHtmlInjectedBeforePageComputing(" + app.debug.arguments(arguments) + ")");
 
 	},
 	// called once
 	// set the jQuery delegates
 	// caller: pages.js
-	pageSpecificEvents : function(container) {
+	pageSpecificEvents: function(container) {
 		app.debug.trace("plugin_Unit.pageSpecificEvents(" + app.debug.arguments(arguments) + ")");
 
 	},
@@ -81,7 +81,7 @@ var plugin_Unit = {
 	 * @namespace plugin_Unit.functions
 	 * 
 	 */
-	functions : {
+	functions: {
 
 	}
 };
