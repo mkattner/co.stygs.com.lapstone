@@ -133,13 +133,16 @@ public class Deploy {
 			FileUtils.copyFile(new File(www, "js/lapstone.js"), new File(www_debug, "js/lapstone.js"));
 
 			// update app configuration
+			
+			/**
 			File configLapstone = new File(www, "js/lapstone.json");
 			File configApp = new File(www_debug, "js/lapstone.json");
 			LapstoneJSON lapstone = objectMapper.readValue(configLapstone, LapstoneJSON.class);
 			LapstoneJSON app = objectMapper.readValue(configApp, LapstoneJSON.class);
 			app.getVersion().put("lapstone", lapstone.getVersion().get("lapstone"));
 			objectMapper.writeValue(configApp, app);
-
+			**/
+			
 			// ********************************************************************
 			// copy lapstone.jar
 			FileUtils.copyFile(new File(lapstonePath, "target/lapstone.jar"), new File(appPath, "lapstone.jar"), true);
