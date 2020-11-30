@@ -9,8 +9,6 @@ import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import co.stygs.com.lapstone.objects.json.LapstoneJSON;
-
 public class Deploy {
 	// ************************************************************************
 	//

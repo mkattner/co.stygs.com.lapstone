@@ -1,15 +1,11 @@
 package co.stygs.com.lapstone;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
@@ -27,14 +23,8 @@ import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.ComposeWarningsGuard;
-import com.google.javascript.jscomp.DiagnosticGroup;
 import com.google.javascript.jscomp.DiagnosticGroups;
-import com.google.javascript.jscomp.DiagnosticType;
 import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.jscomp.parsing.parser.trees.GetAccessorTree;
-
-import co.stygs.com.lapstone.objects.json.Plugin_JSON;
 
 public class LapstoneCompiler implements ILogger {
 
