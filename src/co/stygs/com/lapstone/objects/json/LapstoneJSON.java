@@ -13,6 +13,7 @@ public class LapstoneJSON {
 	private String startPage_loggedIn;
 	private String startupContent;
 	private String startupStyle;
+	private Boolean reloadLapstoneAfterUpdate;
 	private String title;
 	private Map<String, Object> version;
 	public LapstoneJSON() {
@@ -97,6 +98,14 @@ public class LapstoneJSON {
 
 	public void setVersion(Map<String, Object> version) {
 		this.version = version;
+	}
+
+	public Boolean getReloadLapstoneAfterUpdate() {
+		return reloadLapstoneAfterUpdate;
+	}
+
+	public void setReloadLapstoneAfterUpdate(Boolean reloadLapstoneAfterUpdate) {
+		this.reloadLapstoneAfterUpdate = reloadLapstoneAfterUpdate;
 	}
 
 }

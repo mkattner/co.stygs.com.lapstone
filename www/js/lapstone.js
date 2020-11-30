@@ -27,12 +27,12 @@ window.onerror = function(message, fileURL, lineNumber, columnNumber, errorObjec
  * @namespace app
  */
 var app = {
-	config : {
+	config: {
 		// name : "app",
-		useJQueryMobile : true,
-		apacheCordova : null,
-		jQueryMobile : null,
-		lapstone : null
+		useJQueryMobile: true,
+		apacheCordova: null,
+		jQueryMobile: null,
+		lapstone: null
 	},
 
 	// addObject: function(name, object) {
@@ -41,7 +41,7 @@ var app = {
 	// }
 
 	// ,
-	func : function(qualifyer, func, currentObject) {
+	func: function(qualifyer, func, currentObject) {
 		// console.log(qualifyer)
 		var qualifyers, currentQualifyer;
 
@@ -211,9 +211,9 @@ function updateFramework() {
 		currentAppVersion = app.config.version.app;
 
 		plugin_Informator.syncObjectWithHtml5Storage({
-			"app" : {
-				"config" : {
-					"version" : app.config.version
+			"app": {
+				"config": {
+					"version": app.config.version
 				}
 			}
 		});
@@ -233,14 +233,14 @@ function updateFramework() {
 			}
 
 			app.notify.add.alert({
-				"id" : "updateDone",
-				"title" : app.lang.string("update done - title", "lapstone", {
-					version : app.config.version.app
+				"id": "updateDone",
+				"title": app.lang.string("update done - title", "lapstone", {
+					version: app.config.version.app
 				}),
-				"text" : app.lang.string("update done - text", "lapstone", {
-					version : app.config.version.app
+				"text": app.lang.string("update done - text", "lapstone", {
+					version: app.config.version.app
 				}),
-				"button" : app.lang.string("update done - button", "lapstone")
+				"button": app.lang.string("update done - button", "lapstone")
 			});
 		}
 		// alert(currentAppVersion + oldAppVersion + currentLapstoneVersion +
@@ -289,8 +289,12 @@ function updateFramework() {
 				$.when.apply($, updateScriptPromisses).done(function() {
 					app.info.set("app.config.version.update", true);
 
-					console.log("All update scripts are run. Lapstone scripts are stopped. ");
-					// location.reload();
+					console.log("All update scripts did run.");
+
+					if (app.config.reloadLapstoneAfterUpdate === true)
+						location.reload();
+					else
+						console.log("Lapstone stopped after update. Please reload.")
 					// dfd.resolve();
 				}).fail(function() {
 					dfd.reject();
@@ -353,10 +357,10 @@ var lapstone = {};
 // var globalLoader, startupDefinition, initialisationPanel, startup;
 
 lapstone.globalLoader = {
-	globalTimeout : 10000,
-	globalAttempts : 3,
+	globalTimeout: 10000,
+	globalAttempts: 3,
 
-	AsyncJsonLoader : function(url, attempts, attempt, dfd) {
+	AsyncJsonLoader: function(url, attempts, attempt, dfd) {
 
 		if (dfd == undefined)
 			dfd = $.Deferred();
@@ -368,11 +372,11 @@ lapstone.globalLoader = {
 			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
-			cache : cacheAjax(),
-			url : url,
-			async : true,
-			dataType : "json",
-			timeout : lapstone.globalLoader.globalTimeout
+			cache: cacheAjax(),
+			url: url,
+			async: true,
+			dataType: "json",
+			timeout: lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			if (textStatus === "timeout") {
 				lapstone.startup.log("Timeout while loading: " + url);
@@ -401,20 +405,20 @@ lapstone.globalLoader = {
 		return dfd.promise();
 	},
 
-	JsonLoader : function(url, attempts, attempt) {
+	JsonLoader: function(url, attempts, attempt) {
 		console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
 		var json = null;
 		$.ajax({
-			cache : cacheAjax(),
-			url : url,
-			async : false,
-			dataType : "json",
-			timeout : lapstone.globalLoader.globalTimeout,
-			success : function(data) {
+			cache: cacheAjax(),
+			url: url,
+			async: false,
+			dataType: "json",
+			timeout: lapstone.globalLoader.globalTimeout,
+			success: function(data) {
 				// alert(JSON.stringify(data));
 				json = data;
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function(jqXHR, textStatus, errorThrown) {
 				console.log("Fatal Error: Can't load JSON. Url: " + url + " Status: " + textStatus);
 				console.log("             Message: " + errorThrown.message);
 				console.log("             Stack: " + errorThrown.stack);
@@ -423,7 +427,7 @@ lapstone.globalLoader = {
 		return json;
 	},
 
-	AsyncScriptLoader : function(url, attempts, attempt, dfd) {
+	AsyncScriptLoader: function(url, attempts, attempt, dfd) {
 
 		if (dfd == undefined)
 			dfd = $.Deferred();
@@ -435,11 +439,11 @@ lapstone.globalLoader = {
 			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
-			cache : cacheAjax(),
-			url : url,
-			async : true,
-			dataType : "script",
-			timeout : lapstone.globalLoader.globalTimeout
+			cache: cacheAjax(),
+			url: url,
+			async: true,
+			dataType: "script",
+			timeout: lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			if (textStatus === "timeout") {
 				lapstone.startup.log("Timeout while loading: " + url);
@@ -470,18 +474,18 @@ lapstone.globalLoader = {
 		return dfd.promise();
 	},
 
-	ScriptLoader : function(url, attempts, attempt) {
+	ScriptLoader: function(url, attempts, attempt) {
 		console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
 		$.ajax({
-			cache : cacheAjax(),
-			url : url,
-			async : false,
-			dataType : "script",
-			timeout : lapstone.globalLoader.globalTimeout,
-			success : function(data) {
+			cache: cacheAjax(),
+			url: url,
+			async: false,
+			dataType: "script",
+			timeout: lapstone.globalLoader.globalTimeout,
+			success: function(data) {
 
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function(jqXHR, textStatus, errorThrown) {
 				alert("Fatal Error: Can't load Script. Url: " + url + " Status: " + textStatus);
 				console.log("             Message: " + errorThrown.message);
 				console.log("             Stack: " + errorThrown.stack);
@@ -490,7 +494,7 @@ lapstone.globalLoader = {
 		});
 	},
 
-	AsyncTextLoader : function(url, attempts, attempt, dfd) {
+	AsyncTextLoader: function(url, attempts, attempt, dfd) {
 
 		if (dfd == undefined)
 			dfd = $.Deferred();
@@ -502,11 +506,11 @@ lapstone.globalLoader = {
 			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
-			cache : cacheAjax(),
-			url : url,
-			async : true,
-			dataType : "text",
-			timeout : lapstone.globalLoader.globalTimeout
+			cache: cacheAjax(),
+			url: url,
+			async: true,
+			dataType: "text",
+			timeout: lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			if (textStatus === "timeout") {
 				lapstone.startup.log("Timeout while loading: " + url);
@@ -534,20 +538,20 @@ lapstone.globalLoader = {
 		return dfd.promise();
 	},
 
-	TextLoader : function(url, attempts, attempt) {
+	TextLoader: function(url, attempts, attempt) {
 		console.warn("Lapstone: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. URL: " + url);
 		var text = null;
 		$.ajax({
-			cache : cacheAjax(),
-			url : url,
-			async : false,
-			dataType : "text",
-			timeout : lapstone.globalLoader.globalTimeout,
-			success : function(data) {
+			cache: cacheAjax(),
+			url: url,
+			async: false,
+			dataType: "text",
+			timeout: lapstone.globalLoader.globalTimeout,
+			success: function(data) {
 				// alert(JSON.stringify(data));
 				text = data;
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function(jqXHR, textStatus, errorThrown) {
 				alert("Fatal Error: Can't load TEXT. Url: " + url + " Status: " + textStatus);
 				console.log("             Message: " + errorThrown.message);
 				console.log("             Stack: " + errorThrown.stack);
@@ -556,7 +560,7 @@ lapstone.globalLoader = {
 		return text;
 	},
 
-	AsyncStyleLoader : function(url, attempts, attempt) {
+	AsyncStyleLoader: function(url, attempts, attempt) {
 		var dfd = $.Deferred();
 		lapstone.globalLoader.AsyncTextLoader(url).done(function(styleString) {
 
@@ -589,7 +593,7 @@ lapstone.globalLoader = {
 	// },
 
 	// TODO ??? double function
-	StyleLoader : function(url, attempts, attempt) {
+	StyleLoader: function(url, attempts, attempt) {
 		var cssLink;
 
 		if (!cacheAjax())
@@ -600,7 +604,7 @@ lapstone.globalLoader = {
 		$("head").append(cssLink);
 	},
 
-	AsyncLessLoader : function(url, attempts, attempt, dfd) {
+	AsyncLessLoader: function(url, attempts, attempt, dfd) {
 
 		if (dfd == undefined)
 			dfd = $.Deferred();
@@ -612,11 +616,11 @@ lapstone.globalLoader = {
 			attempts = lapstone.globalLoader.globalAttempts;
 
 		$.ajax({
-			cache : cacheAjax(),
-			url : url,
-			async : true,
-			dataType : "text",
-			timeout : lapstone.globalLoader.globalTimeout
+			cache: cacheAjax(),
+			url: url,
+			async: true,
+			dataType: "text",
+			timeout: lapstone.globalLoader.globalTimeout
 		}).done(function(data, textStatus, jqXHR) {
 			// console.log("+++++++ " + JSON.stringify(jqXHR));
 			if (textStatus === "timeout") {
@@ -651,7 +655,7 @@ lapstone.globalLoader = {
 		return dfd.promise();
 	},
 
-	LessLoader : function(url, attempts, attempt) {
+	LessLoader: function(url, attempts, attempt) {
 		var lessLink;
 
 		if (!cacheAjax())
@@ -746,7 +750,7 @@ function waitForDeviceready() {
 }
 
 lapstone.initialisationPanel = {
-	start : function() {
+	start: function() {
 		var dfd = $.Deferred();
 
 		$('head').append("<title>");
@@ -773,7 +777,7 @@ lapstone.initialisationPanel = {
 		return dfd.promise();
 	},
 
-	hide : function() {
+	hide: function() {
 
 		window.setTimeout(function() {
 			$("#LAPSTONE").remove();
@@ -785,75 +789,75 @@ lapstone.initialisationPanel = {
 
 	},
 
-	updateProgress : function() {
+	updateProgress: function() {
 		var current = parseInt($("progress").attr("value"));
 
 		$("progress").attr("value", current + 5)
 
 	},
 
-	changeStatus : function() {
+	changeStatus: function() {
 		$("#LAPSTONE .lapstone-status").text(lapstone.startup.currentDefinition['status']);
 	},
 
-	finish : function() {
+	finish: function() {
 		lapstone.initialisationPanel.hide();
 	}
 }
 
-lapstone.startupDefinition = [ {
-	"status" : "Lapstone startup: loading configuration",
-	"function" : loadConfiguration
+lapstone.startupDefinition = [{
+	"status": "Lapstone startup: loading configuration",
+	"function": loadConfiguration
 }, {
-	"status" : "Lapstone startup: initialisation",
-	"function" : initialisation
+	"status": "Lapstone startup: initialisation",
+	"function": initialisation
 }, {
-	"status" : "Lapstone startup: load plugins",
-	"function" : loadPlugins
+	"status": "Lapstone startup: load plugins",
+	"function": loadPlugins
 }, {
-	"status" : "Lapstone startup: load pages",
-	"function" : loadPages
+	"status": "Lapstone startup: load pages",
+	"function": loadPages
 }, {
-	"status" : "Lapstone startup: checking for updates",
-	"function" : updateFramework
+	"status": "Lapstone startup: checking for updates",
+	"function": updateFramework
 }, {
-	"status" : "Lapstone startup: load jQueryMobile",
-	"function" : loadJQueryMobile
+	"status": "Lapstone startup: load jQueryMobile",
+	"function": loadJQueryMobile
 }, {
-	"status" : "Lapstone startup: wait for apache cordova deviceready event",
-	"function" : waitForDeviceready
+	"status": "Lapstone startup: wait for apache cordova deviceready event",
+	"function": waitForDeviceready
 }, {
-	"status" : "Lapstone startup: wait for jQuerysmobile mobileinit event",
-	"function" : waitForMobileinit
-} ]
+	"status": "Lapstone startup: wait for jQuerysmobile mobileinit event",
+	"function": waitForMobileinit
+}]
 
 lapstone.startup = {
-	currentDefinition : {
-		"status" : "----------------- Starting the Lapstone Framework",
-	// "function": waitForDeviceready,
-	// "parameter": "",
-	// "result": "",
-	// "image": "deviceready"
+	currentDefinition: {
+		"status": "----------------- Starting the Lapstone Framework",
+		// "function": waitForDeviceready,
+		// "parameter": "",
+		// "result": "",
+		// "image": "deviceready"
 	},
-	dfd : $.Deferred(),
-	timestamp : Date.now() / 1000,
-	startupTimestamp : Date.now() / 1000,
-	promise : null,
-	images : {},
+	dfd: $.Deferred(),
+	timestamp: Date.now() / 1000,
+	startupTimestamp: Date.now() / 1000,
+	promise: null,
+	images: {},
 
-	addFunction : function(status, func) {
+	addFunction: function(status, func) {
 		lapstone.startupDefinition.unshift({
-			"status" : status,
-			"function" : func
+			"status": status,
+			"function": func
 		});
 	},
-	log : function() {
+	log: function() {
 		var timestamp = Date.now() / 1000;
 		console.log("LST " + (timestamp - lapstone.startup.timestamp).toFixed(3) + "s: " + lapstone.startup.currentDefinition['status']);
 		lapstone.startup.timestamp = timestamp;
 	},
 
-	functionDone : function(data) {
+	functionDone: function(data) {
 		var promise;
 
 		// remove that shit, it costs 1000ms
@@ -885,7 +889,7 @@ lapstone.startup = {
 		}
 	},
 
-	functionFail : function() {
+	functionFail: function() {
 		var serializedError;
 
 		console.log(" FAILED");
@@ -900,7 +904,7 @@ lapstone.startup = {
 		lapstone.startup.dfd.reject(arguments);
 	},
 
-	initFramework : function() {
+	initFramework: function() {
 		lapstone.startup.log();
 		lapstone.startup.functionDone();
 
@@ -1039,7 +1043,7 @@ function extendJsAndJquery() {
 		set = url.match(/([^:]\/{2,})/g); // Match (NOT ":") followed by (2 OR
 		// 3 "/")
 
-		for ( var str in set) {
+		for (var str in set) {
 			// Modify the data you have
 			replace_with = set[str].substr(0, 1) + '/';
 
