@@ -34,6 +34,8 @@ public class Deploy {
 
 			// ********************************************************************
 			// update cordova version
+			
+			/**
 			ObjectMapper objectMapper = new ObjectMapper();
 
 			if (argMap.get("updateVersion") != null) {
@@ -50,6 +52,7 @@ public class Deploy {
 				lapstoneJson.getVersion().put("lapstone", newVersion);
 				objectMapper.writeValue(configuration, lapstoneJson);
 			}
+			**/
 			// ********************************************************************
 			// Copy everything if not exist
 			FileUtils.copyDirectory(www, www_debug, new FileFilter() {
