@@ -141,6 +141,8 @@ var plugin_RestClient = {
 			var wsd, tmpWsd;
 			wsd = $.extend(true, {}, plugin_RestClient.config.webservices[webServiceName]);
 
+			app.debug.validate(webServiceName, "string", "The name of the web service must be type of string");
+
 			if (Object.keys(wsd).length === 0) {
 				app.debug.error("Service not defined: " + webServiceName);
 				return null;
@@ -640,19 +642,23 @@ var plugin_RestClient = {
 			app.debug.trace("plugin_RestClient.functions.getJson(" + app.debug.arguments(arguments) + ")");
 			var json, i, promise;
 
-			if (plugin_WebServiceClient.config.server[app.rc.getWsd("box_get").server].useKeepAlive === false
 
-				|| app.plugins.functions.pluginLoaded("KeepAlive") === true && app.alive.isAlive() === true) {
 
-				app.debug.debug("plugin_RestClient.functions.getJson() - case: keepAlive && isAlive");
+			app.debug.debug("plugin_RestClient.functions.getJson() - case: keepAlive && isAlive");
 
-				// get multible json objects
-				if (typeof service === "object") {
-					app.debug.debug("plugin_RestClient.functions.getJson() - case: get multible json objects");
+			// get multible json objects
+			if (typeof service === "object") {
+				app.debug.debug("plugin_RestClient.functions.getJson() - case: get multible json objects");
 
-					// async = false
+
+				if (service.every(function(ws) {
+					return plugin_WebServiceClient.config.server[app.rc.getWsd(ws[0]).server].useKeepAlive === false
+						|| app.plugins.functions.pluginLoaded("KeepAlive") === true && app.alive.isAlive() === true
+				})) {
+
+					// alive & async = false
 					if (parameter === false || parameter === undefined) {
-						app.debug.deprecated();
+						app.debug.deprecated("Syncronous requests will be removed in the future.");
 						app.debug.debug("plugin_RestClient.functions.getJson() case: async = false");
 
 						if (!async)
@@ -667,7 +673,7 @@ var plugin_RestClient = {
 						}
 					}
 
-					// async = true
+					// alive & async = true
 					else if (typeof service == "object" && parameter == true) {
 						app.debug.debug("plugin_RestClient.functions.getJson() - case: async = true");
 
@@ -696,16 +702,44 @@ var plugin_RestClient = {
 						return dfd.promise();
 
 					}
-				}
 
-				// get a single json object
-				else if (typeof service === "string") {
-					app.debug.deprecated();
-					app.debug.debug("plugin_RestClient.functions.getJson() - case: get a single json object");
+					// not alive
+					else {
+						app.debug.debug("plugin_RestClient.functions.getJson() - server is not alive");
+						// call is async
+						if (parameter === true || async === true) {
+							if (dfd === null || dfd === undefined)
+								dfd = $.Deferred();
+							dfd.reject({
+								"id": Math.abs("not alive".hashCode()),
+								"error": "not alive",
+								"arguments": arguments
+							}, null);
+
+							$(document).trigger("webserviceCall", [dfd.promise(), "server is not alive", {}]);
+							return dfd.promise();
+						}
+
+						else {
+							return null;
+						}
+					}
+				}
+			}
+
+
+			// get a single json object
+			else if (typeof service === "string") {
+				app.debug.debug("plugin_RestClient.functions.getJson() - case: get a single json object");
+
+				if (plugin_WebServiceClient.config.server[app.rc.getWsd(service).server].useKeepAlive === false
+
+					|| app.plugins.functions.pluginLoaded("KeepAlive") === true && app.alive.isAlive() === true) {
 
 					// async = false
 					if ((parameter == undefined || typeof parameter == "object") && (async == undefined || async == false)) {
 						app.debug.debug("plugin_RestClient.functions.getJson() - case: async = false");
+						app.debug.deprecated("Syncronous requests will be removed in the future.");
 
 						if (!attempts)
 							attempts = 1;
@@ -747,32 +781,37 @@ var plugin_RestClient = {
 
 						return dfd.promise();
 					}
+
 				}
-			}
-
-			// not alive
-			else {
-				app.debug.debug("plugin_RestClient.functions.getJson() - server is not alive");
-				// call is async
-				if (parameter === true || async === true) {
-					if (dfd === null || dfd === undefined)
-						dfd = $.Deferred();
-					dfd.reject({
-						"id": Math.abs("not alive".hashCode()),
-						"error": "not alive",
-						"arguments": arguments
-					}, null);
-
-					$(document).trigger("webserviceCall", [dfd.promise(), "server is not alive", {}]);
-					return dfd.promise();
-				}
-
+				// not alive
 				else {
-					return null;
+					app.debug.debug("plugin_RestClient.functions.getJson() - server is not alive");
+					// call is async
+					if (parameter === true || async === true) {
+						if (dfd === null || dfd === undefined)
+							dfd = $.Deferred();
+						dfd.reject({
+							"id": Math.abs("not alive".hashCode()),
+							"error": "not alive",
+							"arguments": arguments
+						}, null);
+
+						$(document).trigger("webserviceCall", [dfd.promise(), "server is not alive", {}]);
+						return dfd.promise();
+					}
+
+					else {
+						return null;
+					}
 				}
+
+
 			}
+
+
 
 			// return error
+			app.debug.error("Your shouldn't reach that code.");
 			return null;
 		},
 

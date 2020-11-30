@@ -646,8 +646,17 @@ var plugin_Debug = {
 
 			if (type) {
 
+				// string
+				if (type == "string") {
+					if (typeof object === type) {
+						return true;
+					} else {
+						throw new Error("Validation problem. Please look at the stacktrace; " + message);
+					}
+				}
+
 				// expect true or false
-				if (typeof type == "boolean") {
+				else if (typeof type == "boolean") {
 					if (object === type) {
 						return true;
 					} else {

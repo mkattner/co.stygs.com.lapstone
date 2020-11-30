@@ -21,14 +21,14 @@
 // TODO add try catch to every function that is called in plugins or pages
 app.page = {};
 app["pages"] = {
-	config : null,
-	pageNames : [],
-	includeOnce : [],
+	config: null,
+	pageNames: [],
+	includeOnce: [],
 
 	// history of pages
-	history : [],
+	history: [],
 
-	constructor : function() {
+	constructor: function() {
 		var dfd = $.Deferred();
 
 		// reverse order
@@ -60,21 +60,21 @@ app["pages"] = {
 		return dfd.promise();
 	},
 
-	cleanup : function() {
+	cleanup: function() {
 		var dfd = $.Deferred();
 
 		dfd.resolve();
 		return dfd.promise();
 	},
 
-	include : function() {
+	include: function() {
 		var dfd = $.Deferred(), pageIncludePromises = [];
 
 		if (app.config.min) {
 			includeEverything(); // calls the include functions in
-									// Release.java -> includeContent =
-									// "includeEverything=function(){" +
-									// includeContent + "};";
+			// Release.java -> includeContent =
+			// "includeEverything=function(){" +
+			// includeContent + "};";
 			dfd.resolve();
 		}
 
@@ -104,7 +104,7 @@ app["pages"] = {
 		return dfd.promise();
 	},
 
-	callPluginsPagesLoaded : function() {
+	callPluginsPagesLoaded: function() {
 		var dfd = $.Deferred();
 
 		$.each(app.plugins.pluginNames, function(key, value) {
@@ -116,7 +116,7 @@ app["pages"] = {
 
 	},
 
-	loadPageConfig : function() {
+	loadPageConfig: function() {
 		var dfd = $.Deferred(), promise;
 
 		if (app.config.min) {
@@ -137,7 +137,7 @@ app["pages"] = {
 		return dfd.promise();
 	},
 
-	verifyPageNames : function() {
+	verifyPageNames: function() {
 		var dfd = $.Deferred();
 
 		dfd.resolve();
@@ -145,7 +145,7 @@ app["pages"] = {
 
 	},
 
-	verifyPages : function() {
+	verifyPages: function() {
 		var dfd = $.Deferred(), currentPage;
 		// alert(JSON.stringify(app.pages.pageNames));
 		$.each(app.pages.pageNames, function(key, pageName) {
@@ -233,7 +233,7 @@ app["pages"] = {
 
 	},
 
-	loadPageConfiguration : function(key) {
+	loadPageConfiguration: function(key) {
 		var dfd = $.Deferred(), promise;
 		if (app.config.min) {
 			window['page_' + key].config = window['config_' + key];
@@ -252,7 +252,7 @@ app["pages"] = {
 		return dfd.promise();
 	},
 
-	onPageLoaded : function(key) {
+	onPageLoaded: function(key) {
 		var dfd = $.Deferred(), promise, promiseConfiguration;
 
 		if (window['page_' + key] == undefined) {
@@ -292,7 +292,7 @@ app["pages"] = {
 
 	},
 
-	loadPages : function() {
+	loadPages: function() {
 		var dfd = $.Deferred(), promises_js = new Array(), promiseOfPromises_js, promises_func = Array(), promiseOfPromises_func;
 
 		$.each(app.pages.config, function(key, value) {
@@ -356,7 +356,7 @@ app["pages"] = {
 	// call plugins' page functions
 	// is called only once
 	// use delegates in plugins
-	callPluginPageEventFunctions : function() {
+	callPluginPageEventFunctions: function() {
 		var dfd = $.Deferred();
 
 		$.each(app.plugins.pluginNames, function(key, currentPluginName) {
@@ -371,7 +371,7 @@ app["pages"] = {
 
 	// call plugins' page functions
 	// by pagebeforecreate
-	callPluginsPageFunctions : function($currentLapstonePage) {
+	callPluginsPageFunctions: function($currentLapstonePage) {
 		var dfd = $.Deferred();
 
 		var success = true;
@@ -384,7 +384,7 @@ app["pages"] = {
 
 	},
 
-	globalPages : function() {
+	globalPages: function() {
 
 		var dfd = $.Deferred(), globalPageIncludes = Array(), promises = Array(), promiseOfPromises;
 
@@ -417,10 +417,11 @@ app["pages"] = {
 
 						currentGlobalPage = window["globalPage_" + globalPageName];
 
-						app.debug.validate(currentGlobalPage.async, "jsobject", "A globalPage must contain a async: {} object: " + globalPageName);
-						app.debug.validate(currentGlobalPage.async.done, "jsobject", "A globalPage must contain a async.done() function: " + globalPageName);
-						app.debug.validate(currentGlobalPage.async.fail, "jsobject", "A globalPage must contain a async.fail() function: " + globalPageName);
-						app.debug.validate(currentGlobalPage.async.always, "jsobject", "A globalPage must contain a async.always() function: " + globalPageName);
+						// looks like an experimental feature. Never used again. But a good idea for the future.
+						app.debug.validate(currentGlobalPage.async, "object", "A globalPage must contain a async: {} object: " + globalPageName);
+						app.debug.validate(currentGlobalPage.async.done, "function", "A globalPage must contain a async.done() function: " + globalPageName);
+						app.debug.validate(currentGlobalPage.async.fail, "function", "A globalPage must contain a async.fail() function: " + globalPageName);
+						app.debug.validate(currentGlobalPage.async.always, "function", "A globalPage must contain a async.always() function: " + globalPageName);
 
 					})
 
@@ -437,7 +438,7 @@ app["pages"] = {
 		return dfd.promise();
 	},
 
-	setEvents : function() {
+	setEvents: function() {
 		var dfd = $.Deferred();
 
 		// jQuery Mobile Events
@@ -650,10 +651,10 @@ app["pages"] = {
 	},
 
 	// a function for each event
-	eventPromises : {},
+	eventPromises: {},
 	// eventTimeouts: {},
-	eventFunctions : {
-		pageTypeSelector : function(event, $currentLapstonePage, eventName) {
+	eventFunctions: {
+		pageTypeSelector: function(event, $currentLapstonePage, eventName) {
 			app.debug.trace("plugin.eventFunctions.pageTypeSelector(" + event + ", " + $currentLapstonePage + ", " + eventName + ")");
 			app.debug.debug("PageId: " + $currentLapstonePage.attr('id'));
 
@@ -716,8 +717,8 @@ app["pages"] = {
 
 		},
 
-		lapstonePage : {
-			pagebeforechange : function(event, $currentLapstonePage) {
+		lapstonePage: {
+			pagebeforechange: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforechange(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -730,7 +731,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pagebeforechange(event, $currentLapstonePage);
 			},
-			pagebeforecreate : function(event, $currentLapstonePage) {
+			pagebeforecreate: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforecreate(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -775,7 +776,7 @@ app["pages"] = {
 					return app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage(event, $currentLapstonePage);
 				}
 			},
-			pagebeforecreate_createPage : function(event, $currentLapstonePage) {
+			pagebeforecreate_createPage: function(event, $currentLapstonePage) {
 				app.debug.trace("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage()");
 				app.debug.debug("app.pages.eventFunctions.lapstonePage.pagebeforecreate_createPage() - pageId: " + $currentLapstonePage.attr('id'));
 
@@ -941,7 +942,7 @@ app["pages"] = {
 				return dfdPageCreation.promise();
 
 			},
-			pagebeforehide : function(event, $currentLapstonePage) {
+			pagebeforehide: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforehide(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -955,7 +956,7 @@ app["pages"] = {
 				currentLapstonePage.events.pagebeforehide(event, $currentLapstonePage);
 
 			},
-			pagebeforeload : function(event, $currentLapstonePage) {
+			pagebeforeload: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagebeforeload(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -968,7 +969,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pagebeforeload(event, $currentLapstonePage);
 			},
-			pagebeforeshow : function(event, $currentLapstonePage) {
+			pagebeforeshow: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -982,7 +983,7 @@ app["pages"] = {
 				currentLapstonePage.events.pagebeforeshow(event, $currentLapstonePage);
 
 			},
-			pagechange : function(event, $currentLapstonePage) {
+			pagechange: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechange(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -995,7 +996,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pagechange(event, $currentLapstonePage);
 			},
-			pagechangefailed : function(event, $currentLapstonePage) {
+			pagechangefailed: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagechangefailed(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1008,7 +1009,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pagechangefailed(event, $currentLapstonePage);
 			},
-			pagecreate : function(event, $currentLapstonePage) {
+			pagecreate: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagecreate(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1021,7 +1022,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pagecreate(event, $currentLapstonePage);
 			},
-			pagehide : function(event, $currentLapstonePage) {
+			pagehide: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pagehide(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1045,7 +1046,7 @@ app["pages"] = {
 				$currentLapstonePage.remove();
 				currentLapstonePage.events.pagehide(event, $currentLapstonePage);
 			},
-			pageinit : function(event, $currentLapstonePage) {
+			pageinit: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageinit(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1058,7 +1059,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pageinit(event, $currentLapstonePage);
 			},
-			pageload : function(event, $currentLapstonePage) {
+			pageload: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageload(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1071,7 +1072,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pageload(event, $currentLapstonePage);
 			},
-			pageloadfailed : function(event, $currentLapstonePage) {
+			pageloadfailed: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageloadfailed(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1084,7 +1085,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pageloadfailed(event, $currentLapstonePage);
 			},
-			pageremove : function(event, $currentLapstonePage) {
+			pageremove: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageremove(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1097,7 +1098,7 @@ app["pages"] = {
 
 				currentLapstonePage.events.pageremove(event, $currentLapstonePage);
 			},
-			pageshow : function(event, $currentLapstonePage) {
+			pageshow: function(event, $currentLapstonePage) {
 				app.debug.trace("plugin.eventFunctions.lapstonePage.pageshow(" + event + ", " + $currentLapstonePage + ")");
 
 				var currentLapstonePage;
@@ -1118,7 +1119,7 @@ app["pages"] = {
 		}
 	},
 
-	getCurrent : function() {
+	getCurrent: function() {
 		return window["page_" + $("[data-role=page]").attr("id")];
 	}
 

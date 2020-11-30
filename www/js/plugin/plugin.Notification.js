@@ -87,7 +87,8 @@ var plugin_Notification = {
 		 */
 		$(document).on('pageshow', function(event) {
 			app.debug.event(event);
-			if (app.pages.getCurrent().config.name !== "start") {
+			// getCurrent is undefined if we do the unit tests
+			if (app.pages.getCurrent() && app.pages.getCurrent().config.name !== "start") {
 				plugin_Notification.popupShow();
 			}
 		});
