@@ -35,9 +35,9 @@ public class Deploy {
 			// ********************************************************************
 			// update cordova version
 			
-			/**
+			
 			ObjectMapper objectMapper = new ObjectMapper();
-
+			/**
 			if (argMap.get("updateVersion") != null) {
 				File configuration = new File(www, "js/lapstone.json");
 				LapstoneJSON lapstoneJson;
