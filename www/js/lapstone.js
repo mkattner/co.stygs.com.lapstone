@@ -928,7 +928,9 @@ $(document).ready(function() {
 		app.config.lapstone = true;
 
 		// trigger the lapstone initialisation event
-		$(document).trigger("lapstone");
+		var event = new Event('lapstone');
+		document.dispatchEvent(event);
+		//$(document).trigger("lapstone");
 
 		app.config['startup'] = ((Date.now()) / 1000) - lapstone.startup.startupTimestamp;
 

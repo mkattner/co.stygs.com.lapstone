@@ -1,0 +1,18 @@
+QUnit.module('lapstone basic tests', function() {
+	QUnit.test("check configuration", function(assert) {
+		assert.true(app.config.badConnectionPage !== undefined)
+		assert.true(app.config.min !== undefined)
+		assert.true(app.config.name !== undefined)
+		assert.true(app.config.startPage !== undefined)
+		assert.true(app.config.startPage_firstStart !== undefined)
+		assert.true(app.config.startPage_loggedIn !== undefined)
+		assert.true(app.config.startupContent !== undefined)
+		assert.true(app.config.startupStyle !== undefined)
+		assert.true(app.config.title !== undefined)
+		assert.true(app.config.reloadLapstoneAfterUpdate !== undefined)
+		assert.true(app.config.version !== undefined)
+		assert.true(app.config.version.lapstone !== undefined)
+		assert.true(app.config.version.app !== undefined)
+		assert.true(app.config.version.update !== undefined)
+	})
+})
